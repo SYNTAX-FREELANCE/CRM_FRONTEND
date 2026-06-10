@@ -1,343 +1,70 @@
-# 🚀 CRM Frontend
+# Getting Started with Create React App
 
-<div align="center">
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-# Customer Relationship Management Frontend
+## Available Scripts
 
-A modern, responsive, and user-friendly CRM Frontend built with **React.js** to help businesses manage customers, leads, sales pipelines, tasks, and team activities through an intuitive dashboard experience.
+In the project directory, you can run:
 
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=for-the-badge&logo=javascript)
-![Axios](https://img.shields.io/badge/Axios-API%20Client-blue?style=for-the-badge)
-![React Router](https://img.shields.io/badge/React_Router-Dynamic_Routing-red?style=for-the-badge&logo=react-router)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+### `npm start`
 
-</div>
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
----
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## 📖 Description
+### `npm test`
 
-CRM Frontend is a powerful and responsive web application that provides a seamless interface for managing customers, leads, sales activities, tasks, and business operations.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-Designed with modern UI principles and optimized performance, the application enables businesses to improve productivity, streamline workflows, and make data-driven decisions through an intuitive dashboard.
+### `npm run build`
 
----
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## ✨ Features
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-### 🏠 Dashboard
-- Business Overview
-- Analytics & Reports
-- KPI Monitoring
-- Real-Time Statistics
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### 👥 Customer Management
-- View Customer Profiles
-- Search & Filter Customers
-- Customer Activity Tracking
-- Customer Details Management
+### `npm run eject`
 
-### 🎯 Lead Management
-- Lead Tracking
-- Lead Status Updates
-- Lead Assignment
-- Lead Conversion Monitoring
-
-### 💼 Sales Management
-- Sales Pipeline Tracking
-- Deal Progress Monitoring
-- Revenue Analytics
-- Opportunity Management
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-### 📋 Task Management
-- Create Tasks
-- Assign Tasks
-- Track Progress
-- Due Date Monitoring
-
-### 🔔 Notifications
-- Activity Alerts
-- Follow-Up Reminders
-- System Notifications
-
-### 👤 User Management
-- User Profiles
-- Role-Based Access
-- Team Collaboration
-
-### 🔐 Authentication
-- Login System
-- Protected Routes
-- Session Management
-- JWT Integration
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend Technologies
-
-- React.js
-- JavaScript (ES6+)
-- HTML5
-- CSS3
-- Bootstrap / Tailwind CSS
-- Axios
-- React Router DOM
-- Context API
-- React Hooks
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-## Backend Integration
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-- Node.js
-- Express.js
-- MySQL
-- REST API
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
----
+## Learn More
 
-# 📦 NPM Packages
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-```bash
-npm install react-router-dom axios react-icons react-toastify
-```
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Additional UI Libraries
+### Code Splitting
 
-```bash
-npm install bootstrap
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-or
+### Analyzing the Bundle Size
 
-```bash
-npm install tailwindcss
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
----
+### Making a Progressive Web App
 
-# 📂 Folder Structure
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-```bash
-CRM_FRONTEND/
-│
-├── public/
-│
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── pages/
-│   ├── layouts/
-│   ├── services/
-│   ├── hooks/
-│   ├── context/
-│   ├── routes/
-│   ├── utils/
-│   ├── styles/
-│   │
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-│
-├── package.json
-├── vite.config.js
-└── README.md
-```
+### Advanced Configuration
 
----
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-# 🎨 UI Modules
+### Deployment
 
-### Dashboard
-- Statistics Cards
-- Revenue Overview
-- Customer Growth
-- Lead Analytics
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### Customer Module
-- Customer List
-- Customer Profile
-- Customer History
+### `npm run build` fails to minify
 
-### Lead Module
-- Lead List
-- Lead Details
-- Lead Status Management
-
-### Sales Module
-- Pipeline Board
-- Deal Tracking
-- Sales Reports
-
-### Task Module
-- Task Board
-- Task Assignments
-- Progress Tracking
-
----
-
-# ⚙️ Environment Variables
-
-Create a `.env` file inside the project root.
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
----
-
-# 🚀 Installation
-
-### Clone Repository
-
-```bash
-git clone https://github.com/yourusername/crm-frontend.git
-```
-
-### Navigate To Project
-
-```bash
-cd crm-frontend
-```
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Run Development Server
-
-```bash
-npm run dev
-```
-
-### Build Production Version
-
-```bash
-npm run build
-```
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
-
----
-
-# 🔗 Backend Connection
-
-Configure Axios Base URL:
-
-```javascript
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
-
-export default api;
-```
-
----
-
-# 📱 Responsive Design
-
-✔ Mobile Friendly
-
-✔ Tablet Optimized
-
-✔ Desktop Ready
-
-✔ Cross Browser Support
-
-✔ Fast Performance
-
----
-
-# 🔐 Security Features
-
-- Protected Routes
-- JWT Token Handling
-- Secure API Requests
-- User Session Management
-- Role-Based Navigation
-
----
-
-# 📊 Dashboard Insights
-
-- Total Customers
-- Total Leads
-- Sales Revenue
-- Conversion Rate
-- Task Completion Rate
-- Team Performance
-
----
-
-# 📈 Future Enhancements
-
-- Dark Mode
-- Real-Time Notifications
-- Drag & Drop Kanban Board
-- Advanced Analytics
-- AI Lead Predictions
-- Mobile Application
-- Multi-Language Support
-
----
-
-# 🧪 Testing
-
-```bash
-npm run test
-```
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the Repository
-
-2. Create a Feature Branch
-
-```bash
-git checkout -b feature/new-feature
-```
-
-3. Commit Your Changes
-
-```bash
-git commit -m "Added new feature"
-```
-
-4. Push To GitHub
-
-```bash
-git push origin feature/new-feature
-```
-
-5. Open a Pull Request
-
----
-
-# 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-<div align="center">
-
-## ⚛️ Built with React.js
-
-### Delivering a Modern CRM Experience for Growing Businesses
-
-⭐ If you like this project, don't forget to star the repository!
-
-</div>
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
