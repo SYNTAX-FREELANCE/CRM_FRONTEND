@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import PageWrapper from '../CommonComponents/PageWrapper';
 
 const Settings = () => {
+    
     const navigate = useNavigate();
+
     const master = [
         { label: 'Menu Master', path:  "/home/setting/menumaster" },
         { label: 'Program Master', path: 'setting/programmast' },
