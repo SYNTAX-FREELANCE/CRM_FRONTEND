@@ -1,12 +1,12 @@
 import { Box } from '@mui/joy'
 import { Outlet } from 'react-router-dom'
 import { memo } from 'react'
-import logo from '../../assets/loginimages/logo.png'
+import logo from '../../assets/loginimages/companylogo.png'
 import SchoolIcon from '@mui/icons-material/School';
 import { getAuthUser } from '../../constant/Constant'
 import ReusableSidebar from '../../CommonComponents/ReusableSidebar'
 import ReusableTopBar from '../../CommonComponents/ReusableTopBar'
-import { Menu } from '../../Menu/menu'
+import {Menu} from '../../Menu/menu'
 
 const RouteLayout = () => {
     const user = getAuthUser();
@@ -28,8 +28,8 @@ const RouteLayout = () => {
             >
                 <ReusableSidebar
                     menuItems={Menu}
-                    title="C R M"
-                    subTitle="Customer Relation Management"
+                    title="Clynt"
+                    subTitle=""
                     logo={logo}
                     logoutPath="/faculty/logout"
                 />
@@ -46,7 +46,7 @@ const RouteLayout = () => {
                 }}
             >
                 {/* Top Navbar */}
-                <Box sx={{ flexShrink: 0 }}>
+                {/* <Box sx={{ flexShrink: 0 }}>
                     <ReusableTopBar
                         title="C R M"
                         leftIcon={SchoolIcon}
@@ -54,7 +54,7 @@ const RouteLayout = () => {
                         background="#fffdfd"
                         Department="Customer Relation Management"
                     />
-                </Box>
+                </Box> */}
 
                 {/* Scrollable Content */}
                 <Box
