@@ -35,8 +35,8 @@ const RouteLayout = () => {
             >
                 <ReusableSidebar
                     menuItems={Menu}
-                    title="C R M"
-                    subTitle="Customer Relation Management"
+                    title="Clynt"
+                    subTitle=""
                     logo={logo}
                     logoutPath="/faculty/logout"
                 />
@@ -53,7 +53,7 @@ const RouteLayout = () => {
                 }}
             >
                 {/* Top Navbar */}
-                <Box sx={{ flexShrink: 0 }}>
+                {/* <Box sx={{ flexShrink: 0 }}>
                     <ReusableTopBar
                         title="C R M"
                         leftIcon={SchoolIcon}
@@ -61,7 +61,7 @@ const RouteLayout = () => {
                         background="#fffdfd"
                         Department="Customer Relation Management"
                     />
-                </Box>
+                </Box> */}
 
                 {/* Scrollable Content */}
                 <Box

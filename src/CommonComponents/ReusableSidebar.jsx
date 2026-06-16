@@ -1,37 +1,26 @@
 import React, { useState, memo } from "react";
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemButton,
-  // ListItemContent,
-  Divider,
-  Modal,
-  Button,
-} from "@mui/joy";
+import { Box, Typography, Modal, Button, Avatar, Divider } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import LogoutIcon from "@mui/icons-material/Logout";
-import MenuItem from "./MenuItem";
-
+import { color } from "@mui/system";
 
 const ReusableSidebar = ({
   menuItems = [],
-  title = "Dashboard",
-  subTitle = "",
-  logo = null,
+  user = {
+    name: "Mr Arafat",
+    role: "UI UX Designer",
+    avatar: "",
+  },
 }) => {
   const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
-  const [activeMenu, setActiveMenu] = useState("");
-
-  // Modal state
+  const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [logoutModal, setLogoutModal] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [hoveredSub, setHoveredSub] = useState(null);
 
   const handleMenuClick = (item) => {
     if (!item.nested) {
@@ -55,150 +44,218 @@ const ReusableSidebar = ({
     navigate(sub.path);
   };
 
-  const handleLogout = () => {
-    // Show confirmation modal
-    setLogoutModal(true);
-  };
+  const handleLogout = () => setLogoutModal(true);
 
   const confirmLogout = () => {
-    // Clear only the specific localStorage key
     localStorage.removeItem("authUser");
     setLogoutModal(false);
     navigate("/home");
   };
 
-  const cancelLogout = () => {
-    setLogoutModal(false);
-  };
+  const menuRowStyle = (isActive, isHovered) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: open ? 1.2 : 0,
+    width: "100%",
+    minHeight: 46,
+    padding: open ? "0 14px" : "0",
+    justifyContent: open ? "flex-start" : "center",
+    borderRadius: 14,
+    cursor: "pointer",
+    userSelect: "none",
+    color: isActive || isHovered ? "#ea580c" : "#374151",
+    background: isActive ? "rgba(249,115,22,0.10)" : "transparent",
+    boxShadow: isActive ? "0 0 0 1px rgba(249,115,22,0.12) inset" : "none",
+    transform: isHovered ? "translateX(2px)" : "translateX(0px)",
+    transition: "all 0.18s ease",
+  });
 
   return (
     <Box
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => {
+        setOpen(false);
+        setOpenMenu(null);
+        setHoveredItem(null);
+        setHoveredSub(null);
+      }}
       sx={{
-        width: open ? 260 : 70,
+        width: open ? 280 : 72,
         height: "100vh",
-        bgcolor: "#111827",
+        bgcolor: "#ffffff",
+        color: "#1f2937",
         display: "flex",
         flexDirection: "column",
-        transition: "width 0.3s ease",
+        transition: "width 0.25s ease",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
       }}
     >
-      {/* Header */}
       <Box
-        onClick={() => {
-          setOpen(!open);
-          if (open) setOpenMenu(null);
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          p: open ? 1.5 : 1,
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
         }}
-        sx={{ position: "relative", mb: 1, cursor: "pointer" }}
       >
-        {!open && logo && (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <img src={logo} alt="logo" width={60} height={50} />
-          </Box>
-        )}
+        {menuItems?.map((item) => (
+          <Box key={item.label} sx={{ mb: item.groupLabel ? 1.5 : 0 }}>
 
-        {open && (
-          <>
-            <KeyboardDoubleArrowLeftIcon
-              sx={{
-                position: "absolute",
-                right: 10,
-                top: 10,
-                color: "white",
-                fontSize: 20,
-              }}
-            />
-            <Typography level="h4" sx={{ color: "white" }}>
-              {title}
-            </Typography>
-            <Typography level="body-sm" sx={{ color: "white" }}>
-              {subTitle}
-            </Typography>
-          </>
-        )}
-      </Box>
 
-      <Divider />
-
-      {/* Menu */}
-      <List sx={{ flexGrow: 1 }}>
-        {menuItems.map((item) => (
-          <div key={item.label}>
-            <MenuItem
-              {...item}
-              open={open}
-              active={activeMenu === item.label}
+            <Box
+              role="button"
+              tabIndex={0}
               onClick={() => handleMenuClick(item)}
-              endIcon={
-                item.nested && open && (
-                  <ExpandMoreIcon
-                    sx={{
-                      color: "white",
-                      transform:
-                        openMenu === item.label
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                      transition: "0.3s",
-                    }}
-                  />
-                )
-              }
-            />
+              onMouseEnter={() => setHoveredItem(item.label)}
+              onMouseLeave={() => setHoveredItem(null)}
+              sx={menuRowStyle(activeMenu === item.label, hoveredItem === item.label)}
+            >
+              {item.icon && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minWidth: 18,
+                    color: activeMenu === item.label || hoveredItem === item.label ? "#ea580c" : "#0a0f17",
+                  }}
+                >
+                  <item.icon sx={{ fontSize: 18 }} />
+                </Box>
+              )}
+
+              {open && (
+                <Typography level="body-sm" sx={{ flex: 1, color: "inherit",fontWeight:600}}>
+                  {item.label}
+                </Typography>
+              )}
+
+              {open && item.nested && (
+                <ExpandMoreIcon
+                  sx={{
+                    fontSize: 18,
+                    color: hoveredItem === item.label ? "#ea580c" : "#0e0f11",
+                    transform: openMenu === item.label ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "0.2s",
+                  }}
+                />
+              )}
+            </Box>
 
             {open && openMenu === item.label && item.nested && (
-              <Box sx={{ ml: 3 }}>
-                {item.nested.map((sub) => (
-                  <ListItem key={sub.label}>
-                    <ListItemButton
+              <Box sx={{ ml: 2.5, mt: 0.7 }}>
+                {item.nested.map((sub) => {
+                  const isSubActive = activeMenu === sub.label;
+                  const isSubHover = hoveredSub === sub.label;
+
+                  return (
+                    <Box
+                      key={sub.label}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleSubMenuClick(sub)}
+                      onMouseEnter={() => setHoveredSub(sub.label)}
+                      onMouseLeave={() => setHoveredSub(null)}
                       sx={{
-                        bgcolor:
-                          activeMenu === sub.label ? "#1f2937" : "transparent",
-                        "&:hover": { bgcolor: "#374151" },
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        minHeight: 40,
+                        px: 1.4,
+                        borderRadius: 12,
+                        cursor: "pointer",
+                        userSelect: "none",
+                        color: isSubActive || isSubHover ? "#ea580c" : "#151619",
+                        background: isSubActive ? "rgba(249,115,22,0.08)" : "transparent",
+                        transform: isSubHover ? "translateX(2px)" : "translateX(0px)",
+                        transition: "all 0.18s ease",
                       }}
                     >
                       <AdjustIcon
                         sx={{
-                          fontSize: 14,
-                          mr: 1,
-                          color: "#9ca3af",
+                          fontSize: 11,
+                          color: isSubActive || isSubHover ? "#ea580c" : "#9ca3af",
                         }}
                       />
-                      <span style={{ color: "white" }}>
+                      <Typography level="body-sm" sx={{ color: "inherit",fontWeight:600 }}>
                         {sub.label}
-                      </span>
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                      </Typography>
+                    </Box>
+                  );
+                })}
               </Box>
             )}
-          </div>
+          </Box>
         ))}
-      </List>
+      </Box>
 
-      {/* Logout */}
-      <MenuItem
-        icon={LogoutIcon}
-        label="Logout"
-        open={open}
-        onClick={handleLogout}
-      />
+      <Divider sx={{ opacity: 0.6, borderColor: "#e7e5e4" }} />
 
-      {/* Logout Confirmation Modal */}
-      <Modal
-        open={logoutModal}
-        onClose={cancelLogout}
+      <Box
         sx={{
+          p: 1.4,
+          minHeight: 38,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: open ? "space-between" : "center",
+          bgcolor: "#ffffff",
         }}
+      >
+        {open ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
+            <Avatar src={user.avatar} size="sm" />
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography level="body-sm" fontWeight={600} noWrap sx={{ color: "#111827" }}>
+                {user.name}
+              </Typography>
+              <Typography level="body-xs" sx={{ color: "#6b7280" }} noWrap>
+                {user.role}
+              </Typography>
+            </Box>
+            <Box
+              role="button"
+              tabIndex={0}
+              onClick={handleLogout}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                cursor: "pointer",
+                color: "#6b7280",
+                "&:hover": {
+                  bgcolor: "rgba(249,115,22,0.12)",
+                  color: "#ea580c",
+                },
+              }}
+            >
+              <LogoutIcon fontSize="small" />
+            </Box>
+          </Box>
+        ) : (
+          <Avatar src={user.avatar} size="sm" />
+        )}
+      </Box>
+
+      <Modal
+        open={logoutModal}
+        onClose={() => setLogoutModal(false)}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         <Box
           sx={{
             bgcolor: "white",
             p: 3,
-            borderRadius: 2,
-            width: 300,
+            borderRadius: 16,
+            width: 320,
             textAlign: "center",
           }}
         >
@@ -209,17 +266,12 @@ const ReusableSidebar = ({
             <Button
               variant="outlined"
               color="neutral"
-              onClick={cancelLogout}
+              onClick={() => setLogoutModal(false)}
               sx={{ flex: 1 }}
             >
               Cancel
             </Button>
-            <Button
-              variant="solid"
-              color="danger"
-              onClick={confirmLogout}
-              sx={{ flex: 1 }}
-            >
+            <Button variant="solid" color="danger" onClick={confirmLogout} sx={{ flex: 1 }}>
               Logout
             </Button>
           </Box>
