@@ -18,7 +18,7 @@ export const Menu = [
     // groupLabel: "Main",
     label: "Dashboard",
     icon: DashboardIcon,
-    path: "/dashboard",
+    path: "/home",
   },
   {
     label: "Calendar",
