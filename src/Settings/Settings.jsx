@@ -11,6 +11,9 @@ const Settings = () => {
         { label: 'Program Detail Master', path: '/setting/programdtlmast' },
         { label: 'Designation Master', path: '/setting/designation' },
         { label: 'User Group Master', path: '/setting/usergroup' },
+        { label: 'Bank master', path: "/home/setting/bankmaster"},
+        { label: 'User Registration ', path: "/home/setting/userreg"},
+
     ]
     return (
 
