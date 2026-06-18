@@ -1,6 +1,10 @@
+// src/AppRoutes.js
 import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GlobalLoader from "./CommonComponents/GlobalLoader";
+import ProtectedRoute from "./utils/Protected/ProtectedRoute";
+import { useAuth } from "./Context/AuthContext";
+import PublicRoute from "./utils/Protected/PublicRoute";
 
 // Lazy imports
 const Intro = lazy(() => import("./pages/Intro"));
@@ -10,18 +14,31 @@ const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
 
-// Master imports (non-lazy for faster initial load)
+// Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
-const ModuleCreation = lazy(() => import("./Masters/ModuleMaster/ModuleCreation"));
-const Submodulecreation = lazy(() => import("./Masters/SubmoduleMaster/Submodulecreation"));
-const QualificationCreation = lazy(() => import("./Masters/QualificationMaster/QualificationCreation"));
-const CompanyCreation = lazy(() => import("./Masters/CompanyMaster/CompanyCreation"));
+const ModuleCreation = lazy(
+  () => import("./Masters/ModuleMaster/ModuleCreation"),
+);
+const Submodulecreation = lazy(
+  () => import("./Masters/SubmoduleMaster/Submodulecreation"),
+);
+const QualificationCreation = lazy(
+  () => import("./Masters/QualificationMaster/QualificationCreation"),
+);
+const CompanyCreation = lazy(
+  () => import("./Masters/CompanyMaster/CompanyCreation"),
+);
 const RoleCreation = lazy(() => import("./Masters/RoleMaster/RoleCreation"));
-const StatusCreation = lazy(() => import("./Masters/StatusCreation/StatusCreation"));
-const UserModuleRightCreation = lazy(() => import("./Masters/UserGroupMaster/UserModuleRightCreation"));
-const UserRightCreation = lazy(() => import("./Masters/UserRightMaster/UserRightCreation"));
-
+const StatusCreation = lazy(
+  () => import("./Masters/StatusCreation/StatusCreation"),
+);
+const UserModuleRightCreation = lazy(
+  () => import("./Masters/UserGroupMaster/UserModuleRightCreation"),
+);
+const UserRightCreation = lazy(
+  () => import("./Masters/UserRightMaster/UserRightCreation"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -29,7 +46,7 @@ const withSuspense = (Component) => (
   </Suspense>
 );
 
-
+// Router config
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,11 +55,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: withSuspense(Login),
+    //  Wrap Login with PublicRoute (blocks if authenticated)
+    element: <PublicRoute>{withSuspense(Login)}</PublicRoute>,
   },
   {
     path: "/home",
-    element: withSuspense(RouteLayout),
+    element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
+    errorElement: <h1 className="text-center mt-10">Page Not Found</h1>,
     children: [
       {
         index: true,
@@ -52,52 +71,42 @@ const router = createBrowserRouter([
         path: "settings",
         element: withSuspense(Settings),
       },
-      // Menu Master
       {
         path: "setting/menumaster",
         element: withSuspense(MenuCreation),
       },
-      // User/Employee Master
       {
         path: "setting/employeemaster",
         element: withSuspense(UserCreation),
       },
-      // Module Master
       {
         path: "setting/modulemaster",
         element: withSuspense(ModuleCreation),
       },
-      // Submodule Master
       {
         path: "setting/submodulemaster",
         element: withSuspense(Submodulecreation),
       },
-      // Qualification Master
       {
         path: "setting/qualificationmaster",
         element: withSuspense(QualificationCreation),
       },
-      // Company Master
       {
         path: "setting/companymaster",
         element: withSuspense(CompanyCreation),
       },
-      // Role Master
       {
         path: "setting/rolemaster",
         element: withSuspense(RoleCreation),
       },
-      // Status Master
       {
         path: "setting/statusmaster",
         element: withSuspense(StatusCreation),
       },
-      // User Module Right Master
       {
         path: "setting/usermodulerightmaster",
         element: withSuspense(UserModuleRightCreation),
       },
-      // User Right Master
       {
         path: "setting/userrightmaster",
         element: withSuspense(UserRightCreation),
@@ -110,10 +119,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-
 const AppRoutes = () => {
   return <RouterProvider router={router} />;
 };
-
 
 export default AppRoutes;

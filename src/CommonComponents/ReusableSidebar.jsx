@@ -13,6 +13,7 @@ const ReusableSidebar = ({
     role: "UI UX Designer",
     avatar: "",
   },
+  onLogout
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -46,11 +47,7 @@ const ReusableSidebar = ({
 
   const handleLogout = () => setLogoutModal(true);
 
-  const confirmLogout = () => {
-    localStorage.removeItem("authUser");
-    setLogoutModal(false);
-    navigate("/home");
-  };
+
 
   const menuRowStyle = (isActive, isHovered) => ({
     display: "flex",
@@ -271,7 +268,7 @@ const ReusableSidebar = ({
             >
               Cancel
             </Button>
-            <Button variant="solid" color="danger" onClick={confirmLogout} sx={{ flex: 1 }}>
+            <Button variant="solid" color="danger" onClick={onLogout} sx={{ flex: 1 }}>
               Logout
             </Button>
           </Box>
