@@ -42,3 +42,30 @@ axioslogin.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+// =======
+// export const axiosApi = axios.create({
+//     baseURL: BACKEND_API,
+//     headers: {
+//         "Content-Type": "application/json",
+//     },
+// });
+
+// // Request interceptor to add bearer token dynamically
+// const attachTokenInterceptor = (instance) => {
+//     instance.interceptors.request.use(
+//         (config) => {
+//             const token = localStorage.getItem("token");
+//             if (token) {
+//                 config.headers.Authorization = `Bearer ${token}`;
+//             }
+//             return config;
+//         },
+//         (error) => {
+//             return Promise.reject(error);
+//         }
+//     );
+// };
+
+// attachTokenInterceptor(axiosLogin);
+// attachTokenInterceptor(axiosApi);
+// >>>>>>> 134bf9c22c84c5ff11e553828c7018ac93e9c9f4
