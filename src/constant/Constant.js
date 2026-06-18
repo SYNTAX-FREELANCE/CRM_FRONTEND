@@ -24,6 +24,8 @@ export const warningNotify = (message) => {
   toast.warning(message, baseOptions);
 };
 
+export const warningNofity = warningNotify;
+
 /* ERROR */
 export const errorNotify = (message) => {
   toast.error(message, baseOptions);
