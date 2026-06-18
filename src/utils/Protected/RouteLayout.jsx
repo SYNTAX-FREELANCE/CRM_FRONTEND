@@ -24,7 +24,9 @@ const RouteLayout = () => {
             const attendanceId = localStorage.getItem("attendance_id");
             try {
                 if (attendanceId) {
-                    await axiosApi.post("/user/logout", { attendance_id: attendanceId });
+                    await axiosApi.post("/user/logout", {
+                        attendance_id: attendanceId,
+                    });
                 }
             } catch (error) {
                 console.error("Auto logout API error:", error);
@@ -42,13 +44,24 @@ const RouteLayout = () => {
         const resetInactivityTimer = () => {
             if (inactivityTimeout) clearTimeout(inactivityTimeout);
             // 5 minutes of inactivity (5 * 60 * 1000 ms)
-            inactivityTimeout = setTimeout(() => {
-                handleAutoLogout("Inactivity boundary (5 minutes) exceeded.");
-            }, 5 * 60 * 1000);
+            inactivityTimeout = setTimeout(
+                () => {
+                    handleAutoLogout(
+                        "Inactivity boundary (5 minutes) exceeded.",
+                    );
+                },
+                5 * 60 * 1000,
+            );
         };
 
         // Track user activity events
-        const activityEvents = ["mousemove", "mousedown", "keypress", "scroll", "touchstart"];
+        const activityEvents = [
+            "mousemove",
+            "mousedown",
+            "keypress",
+            "scroll",
+            "touchstart",
+        ];
         activityEvents.forEach((event) => {
             window.addEventListener(event, resetInactivityTimer);
         });
