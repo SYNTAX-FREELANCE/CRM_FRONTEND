@@ -1,29 +1,37 @@
-import { Box } from '@mui/joy'
-import { Outlet } from 'react-router-dom'
-import { memo } from 'react'
-import logo from '../../assets/loginimages/companylogo.png'
-import SchoolIcon from '@mui/icons-material/School';
-import { getAuthUser } from '../../constant/Constant'
-import ReusableSidebar from '../../CommonComponents/ReusableSidebar'
-import ReusableTopBar from '../../CommonComponents/ReusableTopBar'
-import {Menu} from '../../Menu/menu'
+import { Box } from "@mui/joy";
+import { Navigate, Outlet } from "react-router-dom";
+import { memo } from "react";
+import logo from "../../assets/loginimages/logo.png";
+import SchoolIcon from "@mui/icons-material/School";
+import { getAuthUser } from "../../constant/Constant";
+import ReusableSidebar from "../../CommonComponents/ReusableSidebar";
+import ReusableTopBar from "../../CommonComponents/ReusableTopBar";
+import { Menu } from "../../Menu/menu";
+
 
 const RouteLayout = () => {
+    const token = localStorage.getItem("token");
+
+    // 🔐 AUTH CHECK (IMPORTANT)
+    if (!token) {
+        return <Navigate to="/login" replace />;
+    }
+
     const user = getAuthUser();
 
     return (
         <Box
             sx={{
-                display: 'flex',
-                height: '100vh',   //  important
-                overflow: 'hidden' //  prevent full page scroll
+                display: "flex",
+                height: "100vh", //  important
+                overflow: "hidden", //  prevent full page scroll
             }}
         >
             {/* Sidebar */}
             <Box
                 sx={{
-                    height: '100vh',  //  full height
-                    flexShrink: 0
+                    height: "100vh", //  full height
+                    flexShrink: 0,
                 }}
             >
                 <ReusableSidebar
@@ -39,10 +47,10 @@ const RouteLayout = () => {
             <Box
                 sx={{
                     flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     minWidth: 0,
-                    height: '100vh'
+                    height: "100vh",
                 }}
             >
                 {/* Top Navbar */}
@@ -60,17 +68,16 @@ const RouteLayout = () => {
                 <Box
                     sx={{
                         flex: 1,
-                        overflowY: 'auto',  //  only this scrolls
+                        overflowY: "auto", //  only this scrolls
                         p: 2,
-                        bgcolor: '#f9fafb'
+                        bgcolor: "#f9fafb",
                     }}
                 >
                     <Outlet />
                 </Box>
             </Box>
         </Box>
-    )
-}
+    );
+};
 
-export default memo(RouteLayout)
-
+export default memo(RouteLayout);
