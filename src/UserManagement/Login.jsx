@@ -21,6 +21,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import logo from "../assets/loginimages/companylogo.png";
 import { axiosLogin } from "../Axios/axios";
 import { useNavigate } from "react-router-dom";
+import { warningNotify } from "../constant/Constant";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +31,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = async () => {
+        console.log("WORKING")
         try {
             const response = await axiosLogin.post("/user/login", {
                 username,
@@ -45,7 +47,9 @@ const Login = () => {
 
             navigate("/home");
         } catch (error) {
-            alert(error.response?.data?.message || "Login Failed");
+                console.log(error);
+                
+            warningNotify(error.response?.data?.message || "Login Failed");
         }
     };
     return (

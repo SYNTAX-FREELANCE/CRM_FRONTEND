@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import {
   Box,
   Card,
@@ -17,6 +17,8 @@ import WorkIcon from "@mui/icons-material/Work";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { axiosLogin } from "../../Axios/axios";
+import { successNotify, warningNotify } from "../../constant/Constant";
 
 const UserRegistration = () => {
   const [files, setFiles] = useState({
@@ -87,6 +89,98 @@ const [errors, setErrors] = useState({});
     [field]: "",
   }));
 };
+const validateForm = () => {
+
+  const newErrors = {};
+
+  // Aadhaar
+  if (!formData.aadharNumber) {
+
+    newErrors.aadharNumber =
+      "Aadhaar Number is required";
+
+  } else if (!/^\d{12}$/.test(formData.aadharNumber)) {
+
+    newErrors.aadharNumber =
+      "Aadhaar Number must be 12 digits";
+  }
+
+  // Full Name
+  if (!formData.fullName.trim()) {
+
+    newErrors.fullName =
+      "Full Name is required";
+
+  } else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
+
+    newErrors.fullName =
+      "Only alphabets are allowed";
+  }
+
+  // Mobile
+  if (!formData.mobileNumber) {
+
+    newErrors.mobileNumber =
+      "Mobile Number is required";
+
+  } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
+
+    newErrors.mobileNumber =
+      "Mobile Number must be 10 digits";
+  }
+
+  // Age
+  if (!formData.age) {
+
+    newErrors.age =
+      "Age is required";
+
+  } else if (!/^\d+$/.test(formData.age)) {
+
+    newErrors.age =
+      "Age must contain digits only";
+
+  } else if (
+    Number(formData.age) < 18 ||
+    Number(formData.age) > 60
+  ) {
+
+    newErrors.age =
+      "Age must be between 18 and 60";
+  }
+
+  // Qualification
+  if (!formData.qualification.trim()) {
+
+    newErrors.qualification =
+      "Qualification is required";
+  }
+
+  // Account Holder Name
+  if (!formData.accountHolderName.trim()) {
+
+    newErrors.accountHolderName =
+      "Account Holder Name is required";
+  }
+
+  // Bank Name
+  if (!formData.bankName.trim()) {
+
+    newErrors.bankName =
+      "Bank Name is required";
+  }
+
+  // Account Number
+  if (!formData.accountNumber.trim()) {
+
+    newErrors.accountNumber =
+      "Account Number is required";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
 
 const validateForm = () => {
   const newErrors = {};
@@ -125,13 +219,27 @@ const validateForm = () => {
   return Object.keys(newErrors).length === 0;
 };
 
-const handleSubmit = () => {
-  if (!validateForm()) return;
+// const handleSubmit = () => {
+//   if (!validateForm()) return;
 
-  console.log(formData);
+//   // console.log(formData);
 
-  alert("User Registered Successfully");
-};
+//   // alert("User Registered Successfully");
+// };
+
+const handleSubmit=useCallback(()=>{
+if (!validateForm()) return;
+
+const result= await axiosLogin.post('usercreation/insertuser',formData)
+const{message,success}=result.data;
+if(success===1){
+  successNotify(message)
+}
+else{
+  warningNotify(message)
+}
+},[formData])
+
   const uploadCard = (
     title,
     accept,
@@ -342,7 +450,8 @@ const handleSubmit = () => {
   )}
 </FormControl>
           </Grid>
-          <Grid xs={12} md={4}> <FormControl> 
+          <Grid xs={12} md={4}>
+             {/* <FormControl> 
             <FormLabel>Age</FormLabel> 
             <Input
   type="number"
@@ -352,7 +461,31 @@ const handleSubmit = () => {
     handleInputChange("age", e.target.value)
   }
 />
-            </FormControl> </Grid>
+            </FormControl>  */}
+            <FormControl error={!!errors.age}>
+  <FormLabel>Age</FormLabel>
+
+  <Input
+    placeholder="Enter Age"
+    value={formData.age}
+    onChange={(e) =>
+      handleInputChange(
+        "age",
+        e.target.value
+      )
+    }
+  />
+
+  {errors.age && (
+    <Typography
+      level="body-xs"
+      color="danger"
+    >
+      {errors.age}
+    </Typography>
+  )}
+</FormControl>
+            </Grid>
 
           <Grid xs={12} md={4}>
             <FormControl>
