@@ -32,16 +32,25 @@ export const errorNotify = (message) => {
 };
 
 
-export const  getAuthUser = () => {
+// utils/getAuthUser.js (or wherever your getAuthUser is)
+export const getAuthUser = () => {
   try {
-    const storedUser = localStorage.getItem("authUser");
+    const storedUser = localStorage.getItem("user"); // Changed from "authUser" to "user"
 
     if (!storedUser) return null;
 
-    return JSON.parse(atob(storedUser));
+    // Decrypt using atob (reverse of btoa)
+    const decryptedUser = JSON.parse(atob(storedUser));
+
+    // Return the user object with role, id, and name
+    return {
+      id: decryptedUser.id,           // user_id from users table
+      emp_id: Number(decryptedUser.username),// name from users_master
+      role: decryptedUser.role         // role_id or role name
+    };
   } catch (error) {
-    console.error("Invalid authUser in localStorage:", error);
-    localStorage.removeItem("authUser");
+    console.error("Invalid user in localStorage:", error);
+    localStorage.removeItem("user"); // Clear invalid data
     return null;
   }
 };

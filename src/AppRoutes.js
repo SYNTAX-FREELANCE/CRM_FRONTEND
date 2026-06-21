@@ -13,10 +13,15 @@ const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
+const CommonViewPage = lazy(
+  () => import("./Settings/CommonMasterComponent/CommonViewPage"),
+);
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
+
+
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
 );
@@ -111,6 +116,11 @@ const router = createBrowserRouter([
         path: "setting/userrightmaster",
         element: withSuspense(UserRightCreation),
       },
+      {
+        path: "setting/commonview",
+        element: withSuspense(CommonViewPage),
+      },
+
       {
         path: "*",
         element: withSuspense(WorkingPage),
