@@ -42,3 +42,10 @@ export const STATUS_OPTIONS = [
     "-- Select --", "Active", "Inactive", "On Leave",
     "Probation", "Terminated",
 ];
+
+
+export const GENDER_OTPION = [
+  {id:'F',label:'Female'},
+  {id:'M',label:'Male'},
+  {id:'O',label:'Others'},
+]

@@ -47,27 +47,7 @@ const ReusableSidebar = ({
   };
 
   const handleLogout = () => setLogoutModal(true);
-  
-// =======
-//   const confirmLogout = async () => {
-//     const attendanceId = localStorage.getItem("attendance_id");
-//     try {
-//       if (attendanceId) {
-//         await axiosApi.post("/user/logout", { attendance_id: attendanceId });
-//       }
-//     } catch (error) {
-//       console.error("Manual logout API call error:", error);
-//     } finally {
-//       localStorage.removeItem("token");
-//       localStorage.removeItem("user");
-//       localStorage.removeItem("authUser");
-//       localStorage.removeItem("app_auth");
-//       localStorage.removeItem("attendance_id");
-//       setLogoutModal(false);
-//       navigate("/login");
-//     }
-//   };
-// >>>>>>> 134bf9c22c84c5ff11e553828c7018ac93e9c9f4
+
 
   const menuRowStyle = (isActive, isHovered) => ({
     display: "flex",
