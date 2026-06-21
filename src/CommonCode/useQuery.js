@@ -5,6 +5,9 @@ import {
   FetchAllQualificationMaster,
   FetchRolemaster,
   FetchStatusMaster,
+  FetchAllModuleMaster,
+  FetchAllSubmoduleMaster,
+  FetchAllMenuMaster,
 } from "./CommonFun";
 
 
@@ -49,6 +52,30 @@ export const useEmployeeMaster = () => {
     queryKey: ["employee-master"],
     queryFn: FetchAllEmployeeMaster,
     staleTime: Infinity, // optional (5 min cache)
+  });
+};
+
+export const useModuleMaster = () => {
+  return useQuery({
+    queryKey: ["module-master"],
+    queryFn: FetchAllModuleMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useSubmoduleMaster = () => {
+  return useQuery({
+    queryKey: ["submodule-master"],
+    queryFn: FetchAllSubmoduleMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useMenuMaster = () => {
+  return useQuery({
+    queryKey: ["menu-master"],
+    queryFn: FetchAllMenuMaster,
+    staleTime: Infinity,
   });
 };
 

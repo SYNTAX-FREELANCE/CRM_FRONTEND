@@ -1,5 +1,6 @@
 import { Box } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputLg from "../../Settings/CommonMasterComponent/InputLg";
@@ -10,6 +11,9 @@ import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
+import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
+import { axioslogin } from "../../Axios/axios";
+import { useMenuMaster } from "../../CommonCode/useQuery";
 
 const MenuCreation = () => {
     const [menu, setMenu] = useState({
@@ -20,21 +24,14 @@ const MenuCreation = () => {
     });
 
     const [toast, setToast] = useState("");
-    const [savedData, setSavedData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [modules, setModules] = useState([]);
+    const [allSubmodules, setAllSubmodules] = useState([]);
+    const [submodules, setSubmodules] = useState([]);
 
-    const [modules, setModules] = useState([
-        "-- Select --",
-        "MODULE001",
-        "MODULE002",
-        "MODULE003",
-    ]);
-
-    const [submodules, setSubmodules] = useState([
-        "-- Select --",
-        "SUB001",
-        "SUB002",
-        "SUB003",
-    ]);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { id, mode } = location.state || {};
 
     const set = (field) => (e) =>
         setMenu((prev) => ({ ...prev, [field]: e.target.value }));
@@ -44,40 +41,200 @@ const MenuCreation = () => {
         setTimeout(() => setToast(""), 2500);
     };
 
-    const handleSave = () => {
-        if (!menu.menuName.trim()) {
-            showToast("Menu Name is required.");
-            return;
-        }
+    const { refetch: FetchMenuMaster } = useMenuMaster();
 
-        if (!menu.moduleId || menu.moduleId === "-- Select --") {
-            showToast("Please select a Module.");
-            return;
-        }
+    // Fetch active modules & submodules
+    const getDropdownData = async () => {
+        try {
+            // Fetch modules
+            const modResult = await axioslogin.get("/modulemast/get-active");
+            if (modResult.data.success === 1 && Array.isArray(modResult.data.data)) {
+                setModules(modResult.data.data.map(m => ({ id: m.module_id, label: m.module_name })));
+            }
 
-        setSavedData(menu);
-        console.log("Saved Menu Data:", menu);
-        showToast("Menu saved successfully.");
+            // Fetch submodules
+            const subResult = await axioslogin.get("/submodulemast/get-active");
+            if (subResult.data.success === 1 && Array.isArray(subResult.data.data)) {
+                setAllSubmodules(subResult.data.data);
+            }
+        } catch (error) {
+            console.error("getDropdownData error:", error);
+            warningNotify("Failed to fetch dropdown options");
+        }
     };
 
-    const handleCancel = () => {
+    const getMenuById = async (menuId) => {
+        try {
+            const result = await axioslogin.get(`/menumaster/getbyid/${menuId}`);
+            const { data, success, message } = result.data;
+            if (success !== 1) return errorNotify(message);
+            setMenu({
+                menuName: data.menu_name || "",
+                moduleId: data.module_id || "",
+                submoduleId: data.submodule_id || "",
+                isActive: data.is_active === 1 ? "Active" : "Inactive"
+            });
+        } catch (error) {
+            console.error("getMenuById error:", error);
+            warningNotify("Failed to load menu details");
+        }
+    };
+
+    useEffect(() => {
+        getDropdownData();
+        if (mode === "edit" && id) {
+            getMenuById(id);
+        }
+    }, [id, mode]);
+
+    // Filter submodules when selected module changes
+    useEffect(() => {
+        if (menu.moduleId) {
+            const filtered = allSubmodules
+                .filter(sub => String(sub.module_id) === String(menu.moduleId))
+                .map(sub => ({ id: sub.submodule_id, label: sub.submodule_name }));
+            setSubmodules(filtered);
+        } else {
+            setSubmodules([]);
+        }
+    }, [menu.moduleId, allSubmodules]);
+
+    const handleModuleChange = (e) => {
+        const val = e.target.value;
+        setMenu(prev => ({
+            ...prev,
+            moduleId: val,
+            submoduleId: "" // Reset submodule selection
+        }));
+    };
+
+    const validateMenu = () => {
+        if (!menu.menuName || menu.menuName.trim() === "") {
+            warningNotify("Menu Name is required.");
+            return false;
+        }
+
+        if (!menu.moduleId) {
+            warningNotify("Please select a Module.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleReset = () => {
         setMenu({
             menuName: "",
             moduleId: "",
             submoduleId: "",
             isActive: "Active",
         });
-        setSavedData(null);
+    };
+
+    const handleSave = async () => {
+        if (!validateMenu()) {
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const menuData = {
+                menu_name: menu.menuName.trim(),
+                module_id: menu.moduleId,
+                submodule_id: menu.submoduleId || null,
+                isActive: menu.isActive === "Active" ? 1 : 0
+            };
+
+            let response;
+
+            if (mode === "edit") {
+                response = await axioslogin.patch(
+                    `/menumaster/update/${id}`,
+                    menuData
+                );
+            } else {
+                response = await axioslogin.post(
+                    "/menumaster/create",
+                    menuData
+                );
+            }
+
+            const { success, message } = response.data;
+
+            if (success === 1) {
+                successNotify(
+                    mode === "edit"
+                        ? "Menu updated successfully!"
+                        : "Menu created successfully!"
+                );
+                FetchMenuMaster();
+                handleReset();
+                if (mode === "edit") {
+                    navigate("/home/setting/commonview", {
+                        state: {
+                            title: "Menu Master",
+                            type: 'menu',
+                            idField: 'menu_id',
+                            editRoute: "menumaster",
+                            columns: [
+                                { field: "module_name", headerName: "Module Name" },
+                                { field: "submodule_name", headerName: "Submodule Name" },
+                                { field: "menu_name", headerName: "Menu Name" },
+                                { field: "is_active", headerName: "Status", type: "status" }
+                            ]
+                        }
+                    });
+                }
+            } else {
+                warningNotify(
+                    message ||
+                    (mode === "edit" ? "Failed to update menu" : "Failed to create menu")
+                );
+            }
+        } catch (error) {
+            warningNotify(
+                error.response?.data?.message ||
+                (mode === "edit" ? "Error updating menu" : "Error creating menu")
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        handleReset();
         showToast("Form cleared");
     };
 
     const handleView = () => {
-        if (!savedData) {
-            showToast("No data to view. Please save first.");
-            return;
-        }
-        console.log("Viewing Menu Data:", savedData);
-        showToast("Viewing saved data");
+        navigate("/home/setting/commonview", {
+            state: {
+                title: "Menu Master",
+                type: 'menu',
+                idField: 'menu_id',
+                editRoute: "menumaster",
+                columns: [
+                    {
+                        field: "module_name",
+                        headerName: "Module Name"
+                    },
+                    {
+                        field: "submodule_name",
+                        headerName: "Submodule Name"
+                    },
+                    {
+                        field: "menu_name",
+                        headerName: "Menu Name"
+                    },
+                    {
+                        field: "is_active",
+                        headerName: "Status",
+                        type: "status"
+                    }
+                ]
+            }
+        });
     };
 
     const handlePreview = () => {
@@ -90,7 +247,7 @@ const MenuCreation = () => {
     };
 
     const handleClose = () => {
-        showToast("Closing...");
+        navigate(-1);
     };
 
     return (
@@ -112,7 +269,7 @@ const MenuCreation = () => {
                         <FormRow label="Module" required>
                             <SelectLg
                                 value={menu.moduleId}
-                                onChange={set("moduleId")}
+                                onChange={handleModuleChange}
                                 options={modules}
                             />
                         </FormRow>
@@ -131,7 +288,6 @@ const MenuCreation = () => {
                             />
                         </FormRow>
                     </Box>
-
                 </Box>
 
                 <div style={{
@@ -140,8 +296,7 @@ const MenuCreation = () => {
                 }} />
 
                 <ButtonWrapper>
-
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
                     <Button onClick={handlePreview}>Preview</Button>

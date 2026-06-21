@@ -17,7 +17,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { axiosLogin } from "../../Axios/axios";
+import { axioslogin, axiosLogin } from "../../Axios/axios";
 import { successNotify, warningNotify } from "../../constant/Constant";
 
 const UserRegistration = () => {
@@ -89,98 +89,98 @@ const [errors, setErrors] = useState({});
     [field]: "",
   }));
 };
-const validateForm = () => {
+// const validateForm = () => {
 
-  const newErrors = {};
+//   const newErrors = {};
 
-  // Aadhaar
-  if (!formData.aadharNumber) {
+//   // Aadhaar
+//   if (!formData.aadharNumber) {
 
-    newErrors.aadharNumber =
-      "Aadhaar Number is required";
+//     newErrors.aadharNumber =
+//       "Aadhaar Number is required";
 
-  } else if (!/^\d{12}$/.test(formData.aadharNumber)) {
+//   } else if (!/^\d{12}$/.test(formData.aadharNumber)) {
 
-    newErrors.aadharNumber =
-      "Aadhaar Number must be 12 digits";
-  }
+//     newErrors.aadharNumber =
+//       "Aadhaar Number must be 12 digits";
+//   }
 
-  // Full Name
-  if (!formData.fullName.trim()) {
+//   // Full Name
+//   if (!formData.fullName.trim()) {
 
-    newErrors.fullName =
-      "Full Name is required";
+//     newErrors.fullName =
+//       "Full Name is required";
 
-  } else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
+//   } else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
 
-    newErrors.fullName =
-      "Only alphabets are allowed";
-  }
+//     newErrors.fullName =
+//       "Only alphabets are allowed";
+//   }
 
-  // Mobile
-  if (!formData.mobileNumber) {
+//   // Mobile
+//   if (!formData.mobileNumber) {
 
-    newErrors.mobileNumber =
-      "Mobile Number is required";
+//     newErrors.mobileNumber =
+//       "Mobile Number is required";
 
-  } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
+//   } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
 
-    newErrors.mobileNumber =
-      "Mobile Number must be 10 digits";
-  }
+//     newErrors.mobileNumber =
+//       "Mobile Number must be 10 digits";
+//   }
 
-  // Age
-  if (!formData.age) {
+//   // Age
+//   if (!formData.age) {
 
-    newErrors.age =
-      "Age is required";
+//     newErrors.age =
+//       "Age is required";
 
-  } else if (!/^\d+$/.test(formData.age)) {
+//   } else if (!/^\d+$/.test(formData.age)) {
 
-    newErrors.age =
-      "Age must contain digits only";
+//     newErrors.age =
+//       "Age must contain digits only";
 
-  } else if (
-    Number(formData.age) < 18 ||
-    Number(formData.age) > 60
-  ) {
+//   } else if (
+//     Number(formData.age) < 18 ||
+//     Number(formData.age) > 60
+//   ) {
 
-    newErrors.age =
-      "Age must be between 18 and 60";
-  }
+//     newErrors.age =
+//       "Age must be between 18 and 60";
+//   }
 
-  // Qualification
-  if (!formData.qualification.trim()) {
+//   // Qualification
+//   if (!formData.qualification.trim()) {
 
-    newErrors.qualification =
-      "Qualification is required";
-  }
+//     newErrors.qualification =
+//       "Qualification is required";
+//   }
 
-  // Account Holder Name
-  if (!formData.accountHolderName.trim()) {
+//   // Account Holder Name
+//   if (!formData.accountHolderName.trim()) {
 
-    newErrors.accountHolderName =
-      "Account Holder Name is required";
-  }
+//     newErrors.accountHolderName =
+//       "Account Holder Name is required";
+//   }
 
-  // Bank Name
-  if (!formData.bankName.trim()) {
+//   // Bank Name
+//   if (!formData.bankName.trim()) {
 
-    newErrors.bankName =
-      "Bank Name is required";
-  }
+//     newErrors.bankName =
+//       "Bank Name is required";
+//   }
 
-  // Account Number
-  if (!formData.accountNumber.trim()) {
+//   // Account Number
+//   if (!formData.accountNumber.trim()) {
 
-    newErrors.accountNumber =
-      "Account Number is required";
-  }
+//     newErrors.accountNumber =
+//       "Account Number is required";
+//   }
 
-  setErrors(newErrors);
+//   setErrors(newErrors);
 
-  return Object.keys(newErrors).length === 0;
-};
+//   return Object.keys(newErrors).length === 0;
+// };
 
 const validateForm = () => {
   const newErrors = {};
@@ -227,10 +227,10 @@ const validateForm = () => {
 //   // alert("User Registered Successfully");
 // };
 
-const handleSubmit=useCallback(()=>{
+const handleSubmit=useCallback(async()=>{
 if (!validateForm()) return;
 
-const result= await axiosLogin.post('usercreation/insertuser',formData)
+const result= await axioslogin.post('usercreation/insertuser',formData)
 const{message,success}=result.data;
 if(success===1){
   successNotify(message)
