@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import PageWrapper from "../CommonComponents/PageWrapper";
 
 const Settings = () => {
+
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
+
 
   const master = [
     {

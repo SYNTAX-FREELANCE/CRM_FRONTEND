@@ -13,9 +13,9 @@ const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
-const CommonViewPage = lazy(
-  () => import("./Settings/CommonMasterComponent/CommonViewPage"),
-);
+const BankMaster = lazy(()=>import("./Masters/BankMaster/BankMaster"));
+const UserReg = lazy(()=>import("./Masters/UserRegistration/UserRegistration"));
+const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -124,6 +124,14 @@ const router = createBrowserRouter([
       {
         path: "*",
         element: withSuspense(WorkingPage),
+      },
+      {
+        path: "setting/bankmaster",
+        element: withSuspense(BankMaster),
+      },
+      {
+        path: "setting/userreg",
+        element: withSuspense(UserReg),
       },
     ],
   },

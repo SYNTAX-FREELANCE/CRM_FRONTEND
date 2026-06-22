@@ -75,3 +75,42 @@ export const FetchAllEmployeeMaster = async () => {
   }
 };
 
+export const FetchAllModuleMaster = async () => {
+  try {
+    const response = await axioslogin.get("/modulemast/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllModuleMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch modules");
+  }
+};
+
+export const FetchAllSubmoduleMaster = async () => {
+  try {
+    const response = await axioslogin.get("/submodulemast/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllSubmoduleMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch submodules");
+  }
+};
+
+export const FetchAllMenuMaster = async () => {
+  try {
+    const response = await axioslogin.get("/menumaster/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllMenuMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch menus");
+  }
+};
+
+
+
+

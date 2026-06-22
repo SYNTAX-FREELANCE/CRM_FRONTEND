@@ -52,6 +52,7 @@ const Login = () => {
     };
 
     const handleLogin = async () => {
+        console.log("WORKING")
         try {
             if (!username || !password) {
                 warningNotify("Please enter username and password");

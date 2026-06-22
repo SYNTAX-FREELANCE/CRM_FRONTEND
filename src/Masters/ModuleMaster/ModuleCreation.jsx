@@ -1,5 +1,6 @@
 import { Box } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputLg from "../../Settings/CommonMasterComponent/InputLg";
@@ -8,6 +9,9 @@ import Button from "../../Settings/CommonMasterComponent/Button";
 import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
+import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
+import { axioslogin } from "../../Axios/axios";
+import { useModuleMaster } from "../../CommonCode/useQuery";
 
 const ModuleCreation = () => {
     const [module, setModule] = useState({
@@ -15,8 +19,12 @@ const ModuleCreation = () => {
         isActive: "Active",
     });
 
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { id, mode } = location.state || {};
+
     const [toast, setToast] = useState("");
-    const [savedData, setSavedData] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const set = (field) => (e) =>
         setModule((prev) => ({ ...prev, [field]: e.target.value }));
@@ -26,33 +34,159 @@ const ModuleCreation = () => {
         setTimeout(() => setToast(""), 2500);
     };
 
-    const handleSave = () => {
-        if (!module.moduleName.trim()) {
-            showToast("Module Name is required.");
-            return;
-        }
+    const { refetch: FetchModuleMaster } = useModuleMaster();
 
-        setSavedData(module);
-        console.log("Saved Module Data:", module);
-        showToast("Module saved successfully.");
+    const getModuleById = async (id) => {
+        try {
+            const result = await axioslogin.get(`/modulemast/getbyid/${id}`);
+            const { data, success, message } = result?.data;
+            if (success !== 1) return errorNotify(message);
+            setModule({
+                moduleName: data.module_name || "",
+                isActive: data.is_active === 1 ? "Active" : "Inactive"
+            });
+        } catch (error) {
+            console.error(error);
+            warningNotify("Failed to load module details");
+        }
     };
 
-    const handleCancel = () => {
+    useEffect(() => {
+        if (mode === "edit" && id) {
+            getModuleById(id);
+        }
+    }, [id, mode]);
+
+    const validateModule = () => {
+        if (!module.moduleName || module.moduleName.trim() === "") {
+            warningNotify("Module Name is required.");
+            return false;
+        }
+
+        if (module.moduleName.trim().length < 3) {
+            warningNotify("Module Name must be at least 3 characters.");
+            return false;
+        }
+
+        if (module.moduleName.trim().length > 100) {
+            warningNotify("Module Name must not exceed 100 characters.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleReset = () => {
         setModule({
             moduleName: "",
             isActive: "Active",
         });
-        setSavedData(null);
+    };
+
+    const handleSave = async () => {
+        if (!validateModule()) {
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const moduleData = {
+                module_name: module.moduleName.trim(),
+                isActive: module.isActive === "Active" ? 1 : 0
+            };
+
+            let response;
+
+            if (mode === "edit") {
+                response = await axioslogin.patch(
+                    `/modulemast/update/${id}`,
+                    moduleData
+                );
+            } else {
+                response = await axioslogin.post(
+                    "/modulemast/create",
+                    moduleData
+                );
+            }
+
+            const { success, message } = response.data;
+
+            if (success === 1) {
+                successNotify(
+                    mode === "edit"
+                        ? "Module updated successfully!"
+                        : "Module created successfully!"
+                );
+                FetchModuleMaster();
+                handleReset();
+                if (mode === "edit") {
+                    navigate("/home/setting/commonview", {
+                        state: {
+                            title: "Module Master",
+                            type: 'module',
+                            idField: 'module_id',
+                            editRoute: "modulemaster",
+                            columns: [
+                                {
+                                    field: "module_name",
+                                    headerName: "Module Name"
+                                },
+                                {
+                                    field: "is_active",
+                                    headerName: "Status",
+                                    type: "status"
+                                }
+                            ]
+                        }
+                    });
+                }
+            } else {
+                warningNotify(
+                    message ||
+                    (mode === "edit"
+                        ? "Failed to update module"
+                        : "Failed to create module")
+                );
+            }
+
+        } catch (error) {
+            warningNotify(
+                error.response?.data?.message ||
+                (mode === "edit"
+                    ? "Error updating module"
+                    : "Error creating module")
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        handleReset();
         showToast("Form cleared");
     };
 
     const handleView = () => {
-        if (!savedData) {
-            showToast("No data to view. Please save first.");
-            return;
-        }
-        console.log("Viewing Module Data:", savedData);
-        showToast("Viewing saved data");
+        navigate("/home/setting/commonview", {
+            state: {
+                title: "Module Master",
+                type: 'module',
+                idField: 'module_id',
+                editRoute: "modulemaster",
+                columns: [
+                    {
+                        field: "module_name",
+                        headerName: "Module Name"
+                    },
+                    {
+                        field: "is_active",
+                        headerName: "Status",
+                        type: "status"
+                    }
+                ]
+            }
+        });
     };
 
     const handlePreview = () => {
@@ -65,7 +199,7 @@ const ModuleCreation = () => {
     };
 
     const handleClose = () => {
-        showToast("Closing...");
+        navigate(-1);
     };
 
     return (
@@ -104,7 +238,7 @@ const ModuleCreation = () => {
                     gap: "10px",
                     paddingTop: "8px",
                 }}>
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
                     <Button onClick={handlePreview}>Preview</Button>

@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
-import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster } from "../../CommonCode/useQuery";
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -31,7 +31,10 @@ const CommonViewPage = () => {
     const { data: CompnayMasterDetail } = useCompanyMaster();
     const { data: StuatuMaster } = useStatusMaster();
     const { data: QualificationMaster } = useQualificationMaster();
-     const { data: Employee_master } = useEmployeeMaster();
+    const { data: Employee_master } = useEmployeeMaster();
+    const { data: ModuleMasterDetail } = useModuleMaster();
+    const { data: SubmoduleMasterDetail } = useSubmoduleMaster();
+    const { data: MenuMasterDetail } = useMenuMaster();
 
 
     const dataMap = {
@@ -39,7 +42,10 @@ const CommonViewPage = () => {
         company: CompnayMasterDetail,
         status: StuatuMaster,
         qualification: QualificationMaster,
-        employee:Employee_master
+        employee:Employee_master,
+        module: ModuleMasterDetail,
+        submodule: SubmoduleMasterDetail,
+        menu: MenuMasterDetail
     };
 
 
