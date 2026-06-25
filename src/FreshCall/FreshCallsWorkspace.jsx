@@ -15,6 +15,7 @@ import {
   IconButton,
   Stack,
   TextField,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -24,12 +25,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import DetailRow from "./DetailRow";
 import StatusChip from "./StatusChip";
 import { leadsSeed, statusOptions, summaryData } from "../CommonCode/Reusable";
-
-
-
-
-
-
 
 export default function FreshCallsWorkspace() {
   const [leads, setLeads] = useState(leadsSeed);
@@ -153,48 +148,63 @@ export default function FreshCallsWorkspace() {
   ];
 
   return (
-    <Box sx={{ height: "95vh", overflow: "hidden" }}>
+    <Box
+      sx={{
+  height: "95vh",
+  overflow: "hidden",
+  background: `
+    radial-gradient(circle at top left, rgba(37,99,235,.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(249,115,22,.18), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(59,130,246,.12), transparent 25%),
+    linear-gradient(135deg,#eef5ff 0%,#f8fbff 45%,#fff7ef 100%)
+  `,
+}}
+    >
       <Paper
         elevation={0}
         sx={{
           height: "100%",
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+          border: "1px solid rgba(255,255,255,0.55)",
+          boxShadow: "0 18px 50px rgba(15, 23, 42, 0.10)",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#fff",
+          background: "rgba(255,255,255,0.58)",
+          backdropFilter: "blur(18px)",
         }}
       >
         <Box
           sx={{
             px: 3,
             py: 2,
-            borderBottom: "1px solid #e5e7eb",
-            background: "linear-gradient(90deg, #eff6ff 0%, #ffffff 100%)",
+            borderBottom: "1px solid rgba(255,255,255,0.6)",
+            background:
+              "linear-gradient(90deg, rgba(219,234,254,0.72) 0%, rgba(255,255,255,0.68) 50%, rgba(255,237,213,0.72) 100%)",
             flex: "0 0 auto",
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
             <Box>
-              <Typography variant="h5" fontWeight={800} color="#0f172a">
-                Fresh Calls
+              <Typography variant="h5" fontWeight={900} color="#0f172a">
+                Task Queue
               </Typography>
-              <Typography variant="body2" color="#64748b">
-                Telecaller workspace with status filters and modal lead details
+              <Typography variant="body2" color="#475569">
+                Process 10 leads at a time, update status, and auto-pull the next task
               </Typography>
             </Box>
             <Button
               variant="contained"
               startIcon={<PhoneIcon />}
               sx={{
-                bgcolor: "#1d4ed8",
+                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 55%, #f97316 140%)",
                 textTransform: "none",
-                fontWeight: 700,
-                borderRadius: 2.5,
+                fontWeight: 800,
+                borderRadius: 3,
+                px: 2.5,
+                boxShadow: "0 10px 24px rgba(37,99,235,0.24)",
               }}
             >
-              Get Fresh Tasks
+              Load Next Queue
             </Button>
           </Stack>
         </Box>
@@ -206,9 +216,11 @@ export default function FreshCallsWorkspace() {
                 <Card
                   elevation={0}
                   sx={{
-                    borderRadius: 3,
-                    border: "1px solid #e5e7eb",
-                    boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
+                    borderRadius: 4,
+                    border: "1px solid rgba(255,255,255,0.7)",
+                    background: "rgba(255,255,255,0.6)",
+                    backdropFilter: "blur(14px)",
+                    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.08)",
                   }}
                 >
                   <CardContent sx={{ p: 2 }}>
@@ -235,12 +247,14 @@ export default function FreshCallsWorkspace() {
                 onClick={() => setStatusFilter(status)}
                 sx={{
                   fontWeight: 700,
-                  borderRadius: 2,
-                  bgcolor: statusFilter === status ? "#1d4ed8" : "#f8fafc",
+                  borderRadius: 2.5,
+                  bgcolor: statusFilter === status ? "#1d4ed8" : "rgba(255,255,255,0.72)",
                   color: statusFilter === status ? "#fff" : "#334155",
-                  border: "1px solid #e2e8f0",
+                  border: "1px solid rgba(148,163,184,0.22)",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: statusFilter === status ? "0 8px 18px rgba(37,99,235,0.22)" : "none",
                   "&:hover": {
-                    bgcolor: statusFilter === status ? "#1d4ed8" : "#eff6ff",
+                    bgcolor: statusFilter === status ? "#1d4ed8" : "rgba(255,255,255,0.92)",
                   },
                 }}
               />
@@ -257,9 +271,12 @@ export default function FreshCallsWorkspace() {
             elevation={0}
             sx={{
               flex: 1,
-              borderRadius: 3,
-              border: "1px solid #e5e7eb",
+              borderRadius: 4,
               overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.68)",
+              background: "rgba(255,255,255,0.62)",
+              backdropFilter: "blur(16px)",
+              boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
             }}
           >
             <DataGrid
@@ -281,28 +298,39 @@ export default function FreshCallsWorkspace() {
               sx={{
                 border: "none",
                 fontSize: "13px",
+                backgroundColor: "transparent",
                 "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#f7f7f7",
+                  background:
+                    "linear-gradient(90deg, rgba(219,234,254,0.72), rgba(255,247,237,0.72))",
                   minHeight: "36px !important",
                   maxHeight: "36px !important",
+                  borderBottom: "1px solid rgba(226,232,240,0.9)",
                 },
                 "& .MuiDataGrid-columnHeader": {
                   padding: "0 8px",
                 },
                 "& .MuiDataGrid-columnHeaderTitle": {
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: "13px",
+                  color: "#334155",
                 },
                 "& .MuiDataGrid-cell": {
                   padding: "0 8px",
                   fontSize: "13px",
+                  color: "#0f172a",
                   outline: "none !important",
-                },
-                "& .MuiDataGrid-footerContainer": {
-                  minHeight: "40px",
+                  borderBottom: "1px solid rgba(241,245,249,0.85)",
                 },
                 "& .MuiDataGrid-row": {
                   cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "rgba(37,99,235,0.06)",
+                  },
+                },
+                "& .MuiDataGrid-footerContainer": {
+                  minHeight: "40px",
+                  background: "rgba(255,255,255,0.7)",
+                  borderTop: "1px solid rgba(226,232,240,0.9)",
                 },
               }}
             />
@@ -319,6 +347,10 @@ export default function FreshCallsWorkspace() {
           sx: {
             borderRadius: 4,
             overflow: "hidden",
+            background: "rgba(255,255,255,0.82)",
+            backdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.7)",
+            boxShadow: "0 20px 50px rgba(15, 23, 42, 0.16)",
           },
         }}
       >
@@ -332,10 +364,10 @@ export default function FreshCallsWorkspace() {
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ backgroundColor: "#f8fbff" }}>
+        <DialogContent dividers sx={{ backgroundColor: "rgba(248,251,255,0.7)" }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid #e5e7eb" }}>
+              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(12px)" }}>
                 <CardContent>
                   <Typography fontWeight={800} color="#1d4ed8" sx={{ mb: 1.5 }}>
                     Customer Details
@@ -351,7 +383,7 @@ export default function FreshCallsWorkspace() {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid #e5e7eb" }}>
+              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(12px)" }}>
                 <CardContent>
                   <Typography fontWeight={800} color="#1d4ed8" sx={{ mb: 1.5 }}>
                     Vehicle Details
@@ -367,7 +399,7 @@ export default function FreshCallsWorkspace() {
             </Grid>
 
             <Grid item xs={12}>
-              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid #e5e7eb" }}>
+              <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(12px)" }}>
                 <CardContent>
                   <Typography fontWeight={800} color="#1d4ed8" sx={{ mb: 1.5 }}>
                     Notes & Remarks
@@ -379,6 +411,7 @@ export default function FreshCallsWorkspace() {
                       </Typography>
                       <Typography color="#0f172a">{selectedLead?.previousNotes}</Typography>
                     </Box>
+                    <Divider />
                     <Box>
                       <Typography variant="caption" color="#64748b">
                         Important Remarks
