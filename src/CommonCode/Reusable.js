@@ -49,3 +49,73 @@ export const GENDER_OTPION = [
   {id:'M',label:'Male'},
   {id:'O',label:'Others'},
 ]
+
+export const summaryData = [
+  { label: "New Calls", value: 24, color: "#2563eb" },
+  { label: "Today's Follow-ups", value: 12, color: "#f59e0b" },
+  { label: "Pending Quotes", value: 8, color: "#2563eb" },
+  { label: "Appointments", value: 5, color: "#10b981" },
+  { label: "Converted Leads", value: 18, color: "#7c3aed" },
+];
+export const statusOptions = ["All", "New", "Call Back", "Quote", "Appointment", "Sold", "Lost"];
+
+export const leadsSeed = [
+  {
+    id: 1,
+    customerName: "Ajith Kumar",
+    mobile: "9876543210",
+    alternateMobile: "9876501234",
+    regNo: "KL-07-AB-1234",
+    vehicleModel: "Hyundai Creta",
+    vehicleType: "SUV",
+    leadAge: "12 mins",
+    status: "New",
+    address: "Kakkanad, Kochi, Kerala",
+    previousNotes: "Customer called earlier asking about insurance renewal and service history.",
+    remarks: "High priority, call before 5 PM.",
+    source: "Walk-in",
+    nextFollowUp: "Today, 4:30 PM",
+  },
+  {
+    id: 2,
+    customerName: "Neha Thomas",
+    mobile: "8899001122",
+    alternateMobile: "8899001133",
+    regNo: "KL-17-CD-8899",
+    vehicleModel: "Toyota Innova",
+    vehicleType: "MPV",
+    leadAge: "1 hr",
+    status: "Call Back",
+    address: "Palarivattom, Ernakulam",
+    previousNotes: "Requested quote for annual service package.",
+    remarks: "Ask about discount on package service.",
+    source: "Website",
+    nextFollowUp: "Today, 5:15 PM",
+  },
+  {
+    id: 3,
+    customerName: "Rahul Menon",
+    mobile: "9447009988",
+    alternateMobile: "9447009989",
+    regNo: "KL-40-ZZ-7777",
+    vehicleModel: "Tata Nexon",
+    vehicleType: "SUV",
+    leadAge: "3 hrs",
+    status: "Quote",
+    address: "Thrippunithura, Kochi",
+    previousNotes: "Waiting for quotation on denting and painting.",
+    remarks: "Needs quick quote on WhatsApp.",
+    source: "Admin Added",
+    nextFollowUp: "Tomorrow, 10:00 AM",
+  },
+];
+
+
+export const statusColors = {
+  New: { bg: "#dbeafe", color: "#1d4ed8" },
+  "Call Back": { bg: "#fef3c7", color: "#d97706" },
+  Quote: { bg: "#ffedd5", color: "#ea580c" },
+  Appointment: { bg: "#e0e7ff", color: "#4338ca" },
+  Sold: { bg: "#dcfce7", color: "#15803d" },
+  Lost: { bg: "#fee2e2", color: "#dc2626" },
+};

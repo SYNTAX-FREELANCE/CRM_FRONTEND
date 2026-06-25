@@ -16,6 +16,7 @@ const Settings = lazy(() => import("./Settings/Settings"));
 const BankMaster = lazy(()=>import("./Masters/BankMaster/BankMaster"));
 const UserReg = lazy(()=>import("./Masters/UserRegistration/UserRegistration"));
 const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
+const FreshCallsWorkspace = lazy(() => import("./FreshCall/FreshCallsWorkspace"));
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: withSuspense(Settings),
+      },
+       {
+        path: "freshcalls",
+        element: withSuspense(FreshCallsWorkspace),
       },
       {
         path: "setting/menumaster",

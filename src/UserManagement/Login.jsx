@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
     Box,
@@ -52,7 +53,6 @@ const Login = () => {
     };
 
     const handleLogin = async () => {
-        console.log("WORKING")
         try {
             if (!username || !password) {
                 warningNotify("Please enter username and password");
@@ -79,47 +79,309 @@ const Login = () => {
                 display: "flex",
                 overflow: "hidden",
                 position: "relative",
-                background: "linear-gradient( #eef7ff , #fff5ec )"
-                // background: {
-                //     xs: "linear-gradient(180deg, #eef7ff 0%, #fff5ec 100%)",
-                //     md: "linear-gradient(90deg, #eef7ff 0%, #eef7ff 50%, #fff5ec 50%, #fff5ec 100%)",
-                // },
+                background: "linear-gradient(#eef7ff, #fff5ec)",
             }}
         >
+            {/* Left Side - CRM & Nexus Info (visible on ALL screens) */}
             <Box
                 sx={{
-                    position: "absolute",
-                    top: { xs: 12, sm: 16, md: 18 },
-                    left: { xs: 12, sm: 16, md: 18 },
-                    zIndex: 2,
-                    width: { xs: 40, sm: 46, md: 48 },
-                    height: { xs: 40, sm: 46, md: 48 },
-                    borderRadius: "50%",
-                    display: "flex",
+                    // display: "flex",
+                    display: { xs: "none", md: "flex" },
+                    flex: { xs: 1, md: 1 },
                     alignItems: "center",
                     justifyContent: "center",
-                    p: 0.5,
+                    px: { xs: 2, sm: 3, md: 4, lg: 6, xl: 8 },
+                    py: { xs: 2, sm: 3, md: 3, lg: 4, xl: 5 },
+                    background: { xs: "transparent", md: "linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(255,143,31,0.08) 100%)" },
+                    borderRight: { xs: "none", md: "1px solid rgba(255,255,255,0.5)" },
                 }}
             >
-                <Box
-                    component="img"
-                    src={logo}
-                    alt="logo"
-                    sx={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                    }}
-                />
+                <Box sx={{ maxWidth: 520 }}>
+                    {/* Nexus Brand Header */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                            mb: 3,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                minWidth: 52,
+                                minHeight: 52,
+                                borderRadius: 14,
+                                background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                                boxShadow: "0 8px 24px rgba(234, 88, 12, 0.35)",
+                                animation: "float 3s ease-in-out infinite",
+                                '@keyframes float': {
+                                    '0%, 100%': {
+                                        transform: 'translateY(0px)',
+                                    },
+                                    '50%': {
+                                        transform: 'translateY(-8px)',
+                                    },
+                                },
+                            }}
+                        >
+                            <SupportAgentIcon
+                                sx={{
+                                    fontSize: 28,
+                                    color: "#ffffff",
+                                    animation: "iconPulse 3s ease-in-out infinite",
+                                    '@keyframes iconPulse': {
+                                        '0%, 100%': {
+                                            transform: 'scale(1)',
+                                        },
+                                        '50%': {
+                                            transform: 'scale(1.1)',
+                                        },
+                                    },
+                                }}
+                            />
+                        </Box>
+                        <Typography
+                            level="h3"
+                            sx={{
+                                color: "#ea580c",
+                                fontWeight: 800,
+                                fontSize: "36px",
+                                letterSpacing: "1.5px",
+                                textTransform: "uppercase",
+                                background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                                backgroundClip: "text",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                            }}
+                        >
+                            Nexus
+                        </Typography>
+                        <Chip
+                            label="PRO"
+                            sx={{
+                                bgcolor: "rgba(234, 88, 12, 0.1)",
+                                color: "#ea580c",
+                                fontWeight: 700,
+                                fontSize: "11px",
+                                height: 24,
+                                border: "1px solid rgba(234, 88, 12, 0.2)",
+                            }}
+                        />
+                    </Box>
+
+                    {/* Main Title */}
+                    <Typography
+                        level="h2"
+                        sx={{
+                            fontWeight: 800,
+                            fontSize: { xs: "24px", sm: "28px", md: "32px", lg: "38px", xl: "42px" },
+                            color: "#1f2937",
+                            mb: 2,
+                            lineHeight: 1.2,
+                        }}
+                    >
+                        Advanced <span style={{ color: "#2563eb" }}>CRM</span>
+                        <br />
+                        Platform for Your Business
+                    </Typography>
+
+                    {/* Description */}
+                    <Typography
+                        sx={{
+                            fontSize: { xs: "14px", sm: "15px", md: "16px" },
+                            color: "#6b7280",
+                            lineHeight: 1.7,
+                            mb: 3,
+                            maxWidth: "90%",
+                        }}
+                    >
+                        Transform your business with Nexus CRM - the all-in-one solution
+                        for managing customers, sales, and workflows with intelligence and speed.
+                    </Typography>
+
+                    {/* Feature Cards - hidden on xs */}
+                    <Stack spacing={2} sx={{ mb: 3, display: { xs: "none", sm: "flex" } }}>
+                        {/* Feature 1 */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5,
+                                p: 1.5,
+                                borderRadius: 12,
+                                background: "rgba(255, 255, 255, 0.7)",
+                                border: "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    minWidth: 38,
+                                    minHeight: 38,
+                                    borderRadius: 8,
+                                    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                                }}
+                            >
+                                <GroupOutlinedIcon sx={{ fontSize: 18, color: "#ffffff" }} />
+                            </Box>
+                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                                Customer Management
+                            </Typography>
+                        </Box>
+
+                        {/* Feature 2 */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5,
+                                p: 1.5,
+                                borderRadius: 12,
+                                background: "rgba(255, 255, 255, 0.7)",
+                                border: "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    minWidth: 38,
+                                    minHeight: 38,
+                                    borderRadius: 8,
+                                    background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+                                }}
+                            >
+                                <TrendingUpIcon sx={{ fontSize: 18, color: "#ffffff" }} />
+                            </Box>
+                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                                Sales Analytics & Insights
+                            </Typography>
+                        </Box>
+
+                        {/* Feature 3 */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5,
+                                p: 1.5,
+                                borderRadius: 12,
+                                background: "rgba(255, 255, 255, 0.7)",
+                                border: "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    minWidth: 38,
+                                    minHeight: 38,
+                                    borderRadius: 8,
+                                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                }}
+                            >
+                                <PhoneAndroidIcon sx={{ fontSize: 18, color: "#ffffff" }} />
+                            </Box>
+                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                                Automated Workflows
+                            </Typography>
+                        </Box>
+                    </Stack>
+
+                    {/* Stats Badge - hidden on xs */}
+                    <Box
+                        sx={{
+                            display: { xs: "none", sm: "flex" },
+                            gap: 2,
+                            pt: 2,
+                            borderTop: "1px solid rgba(231, 229, 228, 0.4)",
+                        }}
+                    >
+
+                        <Box>
+                            <Typography
+                                sx={{
+                                    fontWeight: 800,
+                                    fontSize: "20px",
+                                    color: "#f97316",
+                                }}
+                            >
+                                99.9%
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: "11px",
+                                    color: "#6b7280",
+                                    fontWeight: 600,
+                                }}
+                            >
+                                Uptime
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Typography
+                                sx={{
+                                    fontWeight: 800,
+                                    fontSize: "20px",
+                                    color: "#2563eb",
+                                }}
+                            >
+                                24/7
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: "11px",
+                                    color: "#6b7280",
+                                    fontWeight: 600,
+                                }}
+                            >
+                                Support
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Typography
+                                sx={{
+                                    fontWeight: 800,
+                                    fontSize: "20px",
+                                    color: "#ea580c",
+                                }}
+                            >
+                                85%
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: "11px",
+                                    color: "#6b7280",
+                                    fontWeight: 600,
+                                }}
+                            >
+                                Lead Conversion
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
             </Box>
+
+            {/* Right Side - Login Form (visible on ALL screens) */}
             <Box
                 sx={{
-                    flex: 1,
                     display: "flex",
+                    flex: { xs: 1, md: 1 },
                     alignItems: "center",
                     justifyContent: "center",
-                    px: { xs: 1.5, sm: 2, md: 3 },
-                    py: { xs: 9, sm: 8, md: 3 },
+                    px: { xs: 2, sm: 2, md: 3, lg: 5, xl: 6 },
+                    py: { xs: 3, sm: 4, md: 3, lg: 4, xl: 5 },
+                    bgcolor: { xs: "rgba(255,255,255,0.5)", md: "transparent" },
                 }}
             >
                 <Paper
