@@ -111,6 +111,30 @@ export const FetchAllMenuMaster = async () => {
   }
 };
 
+export const FetchAllCustomers = async () => {
+  try {
+    const response = await axioslogin.get("/customer/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllCustomers error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch customers");
+  }
+};
+
+export const FetchAllVehicles = async () => {
+  try {
+    const response = await axioslogin.get("/customer/getall-vehicles");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
+  }
+};
+
 
 
 

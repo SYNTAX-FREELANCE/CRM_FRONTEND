@@ -13,8 +13,8 @@ const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
-const BankMaster = lazy(()=>import("./Masters/BankMaster/BankMaster"));
-const UserReg = lazy(()=>import("./Masters/UserRegistration/UserRegistration"));
+const BankMaster = lazy(() => import("./Masters/BankMaster/BankMaster"));
+const UserReg = lazy(() => import("./Masters/UserRegistration/UserRegistration"));
 const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
 
 // Masters imports
@@ -44,6 +44,10 @@ const UserModuleRightCreation = lazy(
 const UserRightCreation = lazy(
   () => import("./Masters/UserRightMaster/UserRightCreation"),
 );
+const Uploadmaster = lazy(
+  () => import("./Masters/ExcelUploadmaster/Uploadmaster"),
+);
+
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -120,11 +124,6 @@ const router = createBrowserRouter([
         path: "setting/commonview",
         element: withSuspense(CommonViewPage),
       },
-
-      {
-        path: "*",
-        element: withSuspense(WorkingPage),
-      },
       {
         path: "setting/bankmaster",
         element: withSuspense(BankMaster),
@@ -133,6 +132,19 @@ const router = createBrowserRouter([
         path: "setting/userreg",
         element: withSuspense(UserReg),
       },
+      {
+        path: "setting/Uploadmaster",
+        element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "setting/uploadmaster",
+        element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "*",
+        element: withSuspense(WorkingPage),
+      },
+
     ],
   },
 ]);

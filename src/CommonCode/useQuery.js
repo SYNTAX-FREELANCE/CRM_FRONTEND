@@ -8,6 +8,8 @@ import {
   FetchAllModuleMaster,
   FetchAllSubmoduleMaster,
   FetchAllMenuMaster,
+  FetchAllCustomers,
+  FetchAllVehicles,
 } from "./CommonFun";
 
 
@@ -75,6 +77,22 @@ export const useMenuMaster = () => {
   return useQuery({
     queryKey: ["menu-master"],
     queryFn: FetchAllMenuMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useCustomerMaster = () => {
+  return useQuery({
+    queryKey: ["customer-master"],
+    queryFn: FetchAllCustomers,
+    staleTime: Infinity,
+  });
+};
+
+export const useVehicleMaster = () => {
+  return useQuery({
+    queryKey: ["vehicle-master"],
+    queryFn: FetchAllVehicles,
     staleTime: Infinity,
   });
 };

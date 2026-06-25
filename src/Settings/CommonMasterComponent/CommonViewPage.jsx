@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
-import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster } from "../../CommonCode/useQuery";
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -20,10 +20,12 @@ const CommonViewPage = () => {
     } = location.state || {};
 
     const handleEdit = (row) => {
+        const recordId = row[idField] || row.id;
         navigate(`/home/setting/${editRoute}`, {
             state: {
                 mode: "edit",
-                id: row[idField]
+                id: recordId,
+                type: type
             }
         });
     };
@@ -35,6 +37,8 @@ const CommonViewPage = () => {
     const { data: ModuleMasterDetail } = useModuleMaster();
     const { data: SubmoduleMasterDetail } = useSubmoduleMaster();
     const { data: MenuMasterDetail } = useMenuMaster();
+    const { data: CustomerMasterDetail } = useCustomerMaster();
+    const { data: VehicleMasterDetail } = useVehicleMaster();
 
 
     const dataMap = {
@@ -45,7 +49,9 @@ const CommonViewPage = () => {
         employee:Employee_master,
         module: ModuleMasterDetail,
         submodule: SubmoduleMasterDetail,
-        menu: MenuMasterDetail
+        menu: MenuMasterDetail,
+        customer: CustomerMasterDetail,
+        vehicle: VehicleMasterDetail
     };
 
 
@@ -128,6 +134,7 @@ const CommonViewPage = () => {
                     columns={columns}
                     rows={data}
                     onEdit={handleEdit}
+                    idField={idField}
                 />
             </div>
         </div>
