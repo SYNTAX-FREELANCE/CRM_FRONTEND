@@ -100,7 +100,7 @@ export const styles = {
     },
     inputMd: {
         height: "30px",
-        width: "240px",
+        width: "100%",
         fontSize: "13px",
         border: "1px solid #d1d5db",
         borderRadius: "4px",
@@ -120,7 +120,7 @@ export const styles = {
     },
     inputDate: {
         height: "30px",
-        width: "200px",
+        width: "100%",
         fontSize: "13px",
         border: "1px solid #d1d5db",
         borderRadius: "4px",

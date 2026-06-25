@@ -8,6 +8,9 @@ import {
   FetchAllModuleMaster,
   FetchAllSubmoduleMaster,
   FetchAllMenuMaster,
+  FetchLeadMaster,
+  FetchVehicleTypeMaster,
+  FetchInsuranceCompanyMaster,
 } from "./CommonFun";
 
 
@@ -75,6 +78,30 @@ export const useMenuMaster = () => {
   return useQuery({
     queryKey: ["menu-master"],
     queryFn: FetchAllMenuMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useLeadMaster = () => {
+  return useQuery({
+    queryKey: ["lead-master"],
+    queryFn: FetchLeadMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useVehicleTypeMaster = () => {
+  return useQuery({
+    queryKey: ["vehicle-type-master"],
+    queryFn: FetchVehicleTypeMaster,
+    staleTime: Infinity,
+  });
+};
+
+export const useInsuranceCompanyMaster = () => {
+  return useQuery({
+    queryKey: ["insurance-company-master"],
+    queryFn: FetchInsuranceCompanyMaster,
     staleTime: Infinity,
   });
 };

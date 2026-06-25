@@ -19,6 +19,9 @@ const Settings = () => {
         { label: "Qualification Master", path: "/home/setting/qualificationmaster" },
         { label: "Company Master", path: "/home/setting/companymaster" },
         { label: "Status Master", path: "/home/setting/statusmaster" },
+        { label: "Lead Master", path: "/home/setting/leadmaster" },
+        { label: "Vehicle Type Master", path: "/home/setting/vehicletypemaster" },
+        { label: "Insurance Company Master", path: "/home/setting/insurancecompany" },
       ],
     },
     {
@@ -26,7 +29,7 @@ const Settings = () => {
       children: [
         { label: "Employee Master", path: "/home/setting/employeemaster" },
         { label: "Role Master", path: "/home/setting/rolemaster" },
-        { label: "User Module Right Master", path: "/home/setting/usermodulerightmaster" },
+        // { label: "User Module Right Master", path: "/home/setting/usermodulerightmaster" },
         { label: "User Right Master", path: "/home/setting/userrightmaster" },
       ],
     },

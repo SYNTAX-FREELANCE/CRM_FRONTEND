@@ -475,8 +475,8 @@ const UserCreation = () => {
 
             <Panel title="User Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '24px' }}>
-                    <Box sx={{ width: '48%' }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', gap: '24px' }}>
+                    <Box sx={{ width: { xs: '100%', md: '48%' } }}>
 
                         <FormRow label="Name" required>
                             <InputLg
@@ -532,7 +532,7 @@ const UserCreation = () => {
                         </FormRow>
                     </Box>
 
-                    <Box sx={{ width: '48%' }}>
+                    <Box sx={{ width: { xs: '100%', md: '48%' } }}>
                         <FormRow label="Qualification" required>
                             <SelectLg
                                 value={employee.qualification}

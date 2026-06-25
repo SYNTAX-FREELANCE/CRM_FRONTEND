@@ -13,13 +13,14 @@ const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
-const BankMaster = lazy(()=>import("./Masters/BankMaster/BankMaster"));
-const UserReg = lazy(()=>import("./Masters/UserRegistration/UserRegistration"));
+const BankMaster = lazy(() => import("./Masters/BankMaster/BankMaster"));
+const UserReg = lazy(() => import("./Masters/UserRegistration/UserRegistration"));
 const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
+const UserInfo = lazy(() => import("./UserManagement/UserInfo"));
 
 
 const ModuleCreation = lazy(
@@ -38,9 +39,18 @@ const RoleCreation = lazy(() => import("./Masters/RoleMaster/RoleCreation"));
 const StatusCreation = lazy(
   () => import("./Masters/StatusCreation/StatusCreation"),
 );
-const UserModuleRightCreation = lazy(
-  () => import("./Masters/UserGroupMaster/UserModuleRightCreation"),
+const LeadCreation = lazy(
+  () => import("./Masters/LeadMaster/LeadCreation"),
 );
+const VehicleTypeCreation = lazy(
+  () => import("./Masters/VehicleTypeMaster/VehicleTypeCreation"),
+);
+const InsuranceCompanyCreation = lazy(
+  () => import("./Masters/InsuranceCompany/InsuranceCompanyCreation"),
+);
+// const UserModuleRightCreation = lazy(
+//   () => import("./Masters/UserGroupMaster/UserModuleRightCreation"),
+// );
 const UserRightCreation = lazy(
   () => import("./Masters/UserRightMaster/UserRightCreation"),
 );
@@ -109,9 +119,21 @@ const router = createBrowserRouter([
         element: withSuspense(StatusCreation),
       },
       {
-        path: "setting/usermodulerightmaster",
-        element: withSuspense(UserModuleRightCreation),
+        path: "setting/leadmaster",
+        element: withSuspense(LeadCreation),
       },
+      {
+        path: "setting/vehicletypemaster",
+        element: withSuspense(VehicleTypeCreation),
+      },
+      {
+        path: "setting/insurancecompany",
+        element: withSuspense(InsuranceCompanyCreation),
+      },
+      // {
+      //   path: "setting/usermodulerightmaster",
+      //   element: withSuspense(UserModuleRightCreation),
+      // },
       {
         path: "setting/userrightmaster",
         element: withSuspense(UserRightCreation),
@@ -132,6 +154,10 @@ const router = createBrowserRouter([
       {
         path: "setting/userreg",
         element: withSuspense(UserReg),
+      },
+      {
+        path: "userinfo",
+        element: withSuspense(UserInfo),
       },
     ],
   },
