@@ -28,6 +28,8 @@ const Settings = () => {
         { label: "Role Master", path: "/home/setting/rolemaster" },
         { label: "User Module Right Master", path: "/home/setting/usermodulerightmaster" },
         { label: "User Right Master", path: "/home/setting/userrightmaster" },
+        { label: "Data Upload Master", path: "/home/setting/Uploadmaster" },
+
       ],
     },
   ];
