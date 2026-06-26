@@ -159,6 +159,20 @@ export const FetchAllVehicles = async () => {
   }
 };
 
+
+export const FetchNewCustomer = async (month) => {
+  try {
+    const response = await axioslogin.get(`/customer/new-customer/${month}`);
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
+  }
+};
+
+
 export const FetchInsuranceCompanyMaster = async () => {
   try {
     const response = await axioslogin.get("/insurancecompany/getall");
