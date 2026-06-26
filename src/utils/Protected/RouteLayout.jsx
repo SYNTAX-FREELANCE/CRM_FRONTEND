@@ -227,6 +227,7 @@ const RouteLayout = () => {
                 display: "flex",
                 height: "100vh",
                 overflow: "hidden",
+                background: "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
             }}
         >
             {/* Sidebar */}
@@ -267,7 +268,12 @@ const RouteLayout = () => {
                         flex: 1,
                         overflowY: "auto",
                         p: 2,
-                        bgcolor: "#f9fafb",
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        // bgcolor: "#f9fafb",
                     }}
                 >
                     <Outlet />

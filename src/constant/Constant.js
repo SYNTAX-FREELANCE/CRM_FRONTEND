@@ -44,8 +44,8 @@ export const getAuthUser = () => {
 
     // Return the user object with role, id, and name
     return {
-      id: decryptedUser.id,           // user_id from users table
-      emp_id: Number(decryptedUser.username),// name from users_master
+      id: Number(decryptedUser.id),           // user_id from users table
+      emp_name: decryptedUser.username,// name from users_master
       role: decryptedUser.role         // role_id or role name
     };
   } catch (error) {
