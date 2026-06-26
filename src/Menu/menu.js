@@ -48,4 +48,5 @@ export const Menu = [
     icon: SettingsSuggestIcon,
     path: "/home/settings",
   },
+
 ];

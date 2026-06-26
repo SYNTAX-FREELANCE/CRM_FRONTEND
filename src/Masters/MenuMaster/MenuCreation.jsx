@@ -19,15 +19,12 @@ const MenuCreation = () => {
     const [menu, setMenu] = useState({
         menuName: "",
         moduleId: "",
-        submoduleId: "",
         isActive: "Active",
     });
 
     const [toast, setToast] = useState("");
     const [loading, setLoading] = useState(false);
     const [modules, setModules] = useState([]);
-    const [allSubmodules, setAllSubmodules] = useState([]);
-    const [submodules, setSubmodules] = useState([]);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,19 +40,13 @@ const MenuCreation = () => {
 
     const { refetch: FetchMenuMaster } = useMenuMaster();
 
-    // Fetch active modules & submodules
+    // Fetch active modules
     const getDropdownData = async () => {
         try {
             // Fetch modules
             const modResult = await axioslogin.get("/modulemast/get-active");
             if (modResult.data.success === 1 && Array.isArray(modResult.data.data)) {
                 setModules(modResult.data.data.map(m => ({ id: m.module_id, label: m.module_name })));
-            }
-
-            // Fetch submodules
-            const subResult = await axioslogin.get("/submodulemast/get-active");
-            if (subResult.data.success === 1 && Array.isArray(subResult.data.data)) {
-                setAllSubmodules(subResult.data.data);
             }
         } catch (error) {
             console.error("getDropdownData error:", error);
@@ -71,7 +62,6 @@ const MenuCreation = () => {
             setMenu({
                 menuName: data.menu_name || "",
                 moduleId: data.module_id || "",
-                submoduleId: data.submodule_id || "",
                 isActive: data.is_active === 1 ? "Active" : "Inactive"
             });
         } catch (error) {
@@ -87,24 +77,11 @@ const MenuCreation = () => {
         }
     }, [id, mode]);
 
-    // Filter submodules when selected module changes
-    useEffect(() => {
-        if (menu.moduleId) {
-            const filtered = allSubmodules
-                .filter(sub => String(sub.module_id) === String(menu.moduleId))
-                .map(sub => ({ id: sub.submodule_id, label: sub.submodule_name }));
-            setSubmodules(filtered);
-        } else {
-            setSubmodules([]);
-        }
-    }, [menu.moduleId, allSubmodules]);
-
     const handleModuleChange = (e) => {
         const val = e.target.value;
         setMenu(prev => ({
             ...prev,
-            moduleId: val,
-            submoduleId: "" // Reset submodule selection
+            moduleId: val
         }));
     };
 
@@ -126,7 +103,6 @@ const MenuCreation = () => {
         setMenu({
             menuName: "",
             moduleId: "",
-            submoduleId: "",
             isActive: "Active",
         });
     };
@@ -142,7 +118,6 @@ const MenuCreation = () => {
             const menuData = {
                 menu_name: menu.menuName.trim(),
                 module_id: menu.moduleId,
-                submodule_id: menu.submoduleId || null,
                 isActive: menu.isActive === "Active" ? 1 : 0
             };
 
@@ -179,7 +154,6 @@ const MenuCreation = () => {
                             editRoute: "menumaster",
                             columns: [
                                 { field: "module_name", headerName: "Module Name" },
-                                { field: "submodule_name", headerName: "Submodule Name" },
                                 { field: "menu_name", headerName: "Menu Name" },
                                 { field: "is_active", headerName: "Status", type: "status" }
                             ]
@@ -218,10 +192,6 @@ const MenuCreation = () => {
                     {
                         field: "module_name",
                         headerName: "Module Name"
-                    },
-                    {
-                        field: "submodule_name",
-                        headerName: "Submodule Name"
                     },
                     {
                         field: "menu_name",
@@ -274,13 +244,6 @@ const MenuCreation = () => {
                             />
                         </FormRow>
 
-                        <FormRow label="Submodule">
-                            <SelectLg
-                                value={menu.submoduleId}
-                                onChange={set("submoduleId")}
-                                options={submodules}
-                            />
-                        </FormRow>
                         <FormRow label="Active Status">
                             <Checkbox
                                 value={menu.isActive}
