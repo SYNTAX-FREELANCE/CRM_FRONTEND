@@ -54,6 +54,10 @@ const InsuranceCompanyCreation = lazy(
 const UserRightCreation = lazy(
   () => import("./Masters/UserRightMaster/UserRightCreation"),
 );
+const Uploadmaster = lazy(
+  () => import("./Masters/ExcelUploadmaster/Uploadmaster"),
+);
+
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -142,11 +146,6 @@ const router = createBrowserRouter([
         path: "setting/commonview",
         element: withSuspense(CommonViewPage),
       },
-
-      {
-        path: "*",
-        element: withSuspense(WorkingPage),
-      },
       {
         path: "setting/bankmaster",
         element: withSuspense(BankMaster),
@@ -159,6 +158,19 @@ const router = createBrowserRouter([
         path: "userinfo",
         element: withSuspense(UserInfo),
       },
+      {
+        path: "setting/Uploadmaster",
+        element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "setting/uploadmaster",
+        element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "*",
+        element: withSuspense(WorkingPage),
+      },
+
     ],
   },
 ]);

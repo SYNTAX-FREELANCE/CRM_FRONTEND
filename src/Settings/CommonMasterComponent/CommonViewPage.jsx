@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
 import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster } from "../../CommonCode/useQuery";
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -20,10 +21,12 @@ const CommonViewPage = () => {
     } = location.state || {};
 
     const handleEdit = (row) => {
+        const recordId = row[idField] || row.id;
         navigate(`/home/setting/${editRoute}`, {
             state: {
                 mode: "edit",
-                id: row[idField]
+                id: recordId,
+                type: type
             }
         });
     };
@@ -38,6 +41,8 @@ const CommonViewPage = () => {
     const { data: LeadMasterDetail } = useLeadMaster();
     const { data: VehicleTypeMasterDetail } = useVehicleTypeMaster();
     const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
+    const { data: CustomerMasterDetail } = useCustomerMaster();
+    const { data: VehicleMasterDetail } = useVehicleMaster();
 
 
     const dataMap = {
@@ -51,7 +56,9 @@ const CommonViewPage = () => {
         menu: MenuMasterDetail,
         lead: LeadMasterDetail,
         vehicletype: VehicleTypeMasterDetail,
-        insurancecompany: InsuranceCompanyMasterDetail
+        insurancecompany: InsuranceCompanyMasterDetail,
+        customer: CustomerMasterDetail,
+        vehicle: VehicleMasterDetail
     };
 
 
@@ -134,6 +141,7 @@ const CommonViewPage = () => {
                     columns={columns}
                     rows={data}
                     onEdit={handleEdit}
+                    idField={idField}
                 />
             </div>
         </div>
