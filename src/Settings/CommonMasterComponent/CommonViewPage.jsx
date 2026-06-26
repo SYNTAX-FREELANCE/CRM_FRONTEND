@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster } from "../../CommonCode/useQuery";
 import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
@@ -37,6 +38,9 @@ const CommonViewPage = () => {
     const { data: ModuleMasterDetail } = useModuleMaster();
     const { data: SubmoduleMasterDetail } = useSubmoduleMaster();
     const { data: MenuMasterDetail } = useMenuMaster();
+    const { data: LeadMasterDetail } = useLeadMaster();
+    const { data: VehicleTypeMasterDetail } = useVehicleTypeMaster();
+    const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
     const { data: CustomerMasterDetail } = useCustomerMaster();
     const { data: VehicleMasterDetail } = useVehicleMaster();
 
@@ -50,6 +54,9 @@ const CommonViewPage = () => {
         module: ModuleMasterDetail,
         submodule: SubmoduleMasterDetail,
         menu: MenuMasterDetail,
+        lead: LeadMasterDetail,
+        vehicletype: VehicleTypeMasterDetail,
+        insurancecompany: InsuranceCompanyMasterDetail,
         customer: CustomerMasterDetail,
         vehicle: VehicleMasterDetail
     };

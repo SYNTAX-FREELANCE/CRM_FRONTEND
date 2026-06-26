@@ -111,6 +111,18 @@ export const FetchAllMenuMaster = async () => {
   }
 };
 
+export const FetchLeadMaster = async () => {
+  try {
+    const response = await axioslogin.get("/leadmast/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchLeadMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch leads");
+  }
+};
+
 export const FetchAllCustomers = async () => {
   try {
     const response = await axioslogin.get("/customer/getall");
@@ -120,6 +132,18 @@ export const FetchAllCustomers = async () => {
   } catch (error) {
     console.error("FetchAllCustomers error:", error);
     throw new Error(error?.response?.data?.message || "Failed to fetch customers");
+  }
+};
+
+export const FetchVehicleTypeMaster = async () => {
+  try {
+    const response = await axioslogin.get("/vehicletype/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchVehicleTypeMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch vehicle types");
   }
 };
 
@@ -134,6 +158,24 @@ export const FetchAllVehicles = async () => {
     throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
   }
 };
+
+export const FetchInsuranceCompanyMaster = async () => {
+  try {
+    const response = await axioslogin.get("/insurancecompany/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchInsuranceCompanyMaster error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch insurance companies");
+  }
+};
+
+
+
+
+
+
 
 
 

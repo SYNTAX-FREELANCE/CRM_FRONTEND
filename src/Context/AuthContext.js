@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const encryptedUser = btoa(JSON.stringify(userData));
             localStorage.setItem("user", encryptedUser);
-            
+
             setUser(userData);
             setIsAuthenticated(true);
 
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = async () => {        
+    const logout = async () => {
         try {
             //  Cookie is auto-sent by browser for logout
             await axioslogin.post("/user/logout");
