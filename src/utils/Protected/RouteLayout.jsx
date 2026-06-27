@@ -13,6 +13,7 @@ import { axioslogin } from "../../Axios/axios";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import GroupsIcon from "@mui/icons-material/Groups";
+import { Menu } from "../../Menu/menu";
 
 // Map database menu names to their corresponding frontend routes
 const menuPathMap = {
@@ -145,9 +146,9 @@ const RouteLayout = () => {
 
                 if (result.data.success !== 1) return;
 
-                console.log("rolee:",user.role);
-                
-console.log("Menu:",result.data.data);
+                console.log("rolee:", user.role);
+
+                console.log("Menu:", result.data.data);
 
                 const modules = {};
 
@@ -242,7 +243,7 @@ console.log("Menu:",result.data.data);
                 }}
             >
                 <ReusableSidebar
-                    menuItems={menuItems}
+                    menuItems={Menu}
                     user={{
                         name: user?.username || "Employee",
                         role: user?.role_name || (user?.role === 1 ? "Admin" : "User"),
