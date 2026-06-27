@@ -12,7 +12,9 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WorkIcon from "@mui/icons-material/Work";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
+
 
 export const Menu = [
   {
@@ -26,6 +28,12 @@ export const Menu = [
     icon: LocalPhoneIcon,
     path: "/home/freshcalls",
   },
+  {
+    label: "Allocate",
+    icon: DataThresholdingIcon,
+    path: "/home/allocation",
+  },
+
   {
     label: "Campaigns",
     icon: WorkIcon,
@@ -48,5 +56,4 @@ export const Menu = [
     icon: SettingsSuggestIcon,
     path: "/home/settings",
   },
-
 ];
