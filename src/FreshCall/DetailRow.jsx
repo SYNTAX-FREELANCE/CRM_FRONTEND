@@ -9,16 +9,16 @@ const DetailRow = ({ label, value }) => {
       alignItems="center"
       gap={2}
       sx={{
-        py: 1,
-        borderBottom: "1px solid #e2e8f0",
+        py: 1.2,
+        borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
       }}
     >
       <Typography
         variant="body2"
-        color="#64748b"
         sx={{
           minWidth: 140,
           fontWeight: 500,
+          color: "#64748b",
         }}
       >
         {label}
