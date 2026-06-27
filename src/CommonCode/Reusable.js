@@ -17,37 +17,37 @@ export const formatDateForMySQL = (date) => {
   if (!date) return null;
   return new Date(date).toISOString().split("T")[0];
 };
-    
+
 
 
 
 // src/constants/options.js
 
 export const QUALIFICATION_OPTIONS = [
-    "-- Select --", "10th", "12th", "Diploma", "ITI",
-    "Graduate", "Post Graduate", "PhD", "Other",
+  "-- Select --", "10th", "12th", "Diploma", "ITI",
+  "Graduate", "Post Graduate", "PhD", "Other",
 ];
 
 export const COMPANY_OPTIONS = [
-    "-- Select --", "Head Office", "Branch - Chennai",
-    "Branch - Mumbai", "Branch - Delhi", "Branch - Bengaluru",
+  "-- Select --", "Head Office", "Branch - Chennai",
+  "Branch - Mumbai", "Branch - Delhi", "Branch - Bengaluru",
 ];
 
 export const ROLE_OPTIONS = [
-    "-- Select --", "Admin", "Manager", "Team Lead",
-    "Telecaller", "Field Agent", "Accounts", "HR", "IT Support",
+  "-- Select --", "Admin", "Manager", "Team Lead",
+  "Telecaller", "Field Agent", "Accounts", "HR", "IT Support",
 ];
 
 export const STATUS_OPTIONS = [
-    "-- Select --", "Active", "Inactive", "On Leave",
-    "Probation", "Terminated",
+  "-- Select --", "Active", "Inactive", "On Leave",
+  "Probation", "Terminated",
 ];
 
 
 export const GENDER_OTPION = [
-  {id:'F',label:'Female'},
-  {id:'M',label:'Male'},
-  {id:'O',label:'Others'},
+  { id: 'F', label: 'Female' },
+  { id: 'M', label: 'Male' },
+  { id: 'O', label: 'Others' },
 ]
 
 export const summaryData = [
@@ -119,3 +119,14 @@ export const statusColors = {
   Sold: { bg: "#dcfce7", color: "#15803d" },
   Lost: { bg: "#fee2e2", color: "#dc2626" },
 };
+
+
+// export const colorConfig = {
+//   All: { color: "#475569", bg: "rgba(71, 85, 105, 0.08)", activeBg: "linear-gradient(135deg, #475569 0%, #334155 100%)", activeShadow: "0 6px 15px rgba(71, 85, 105, 0.25)" },
+//   New: { color: "#2563eb", bg: "rgba(37, 99, 235, 0.08)", activeBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", activeShadow: "0 6px 15px rgba(37, 99, 235, 0.25)" },
+//   "Call Back": { color: "#d97706", bg: "rgba(217, 119, 6, 0.08)", activeBg: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", activeShadow: "0 6px 15px rgba(217, 119, 6, 0.25)" },
+//   Quote: { color: "#ea580c", bg: "rgba(234, 88, 12, 0.08)", activeBg: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)", activeShadow: "0 6px 15px rgba(234, 88, 12, 0.25)" },
+//   Appointment: { color: "#7c3aed", bg: "rgba(124, 58, 237, 0.08)", activeBg: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", activeShadow: "0 6px 15px rgba(124, 58, 237, 0.25)" },
+//   Sold: { color: "#16a34a", bg: "rgba(22, 163, 74, 0.08)", activeBg: "linear-gradient(135deg, #10b981 0%, #059669 100%)", activeShadow: "0 6px 15px rgba(22, 163, 74, 0.25)" },
+//   Lost: { color: "#dc2626", bg: "rgba(220, 38, 38, 0.08)", activeBg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", activeShadow: "0 6px 15px rgba(220, 38, 38, 0.25)" }
+// }[status] || { color: "#2563eb", bg: "rgba(37, 99, 235, 0.08)", activeBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", activeShadow: "0 6px 15px rgba(37, 99, 235, 0.25)" };

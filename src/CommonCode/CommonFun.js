@@ -1,4 +1,5 @@
-import {  axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Axios/axios";
+import { infoNotify } from "../constant/Constant";
 
 
 export const FetchRolemaster = async () => {
@@ -164,8 +165,8 @@ export const FetchNewCustomer = async (month) => {
   try {
     const response = await axioslogin.get(`/customer/new-customer/${month}`);
     const { success, data } = response.data;
-   
-    
+
+
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -173,6 +174,24 @@ export const FetchNewCustomer = async (month) => {
     throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
   }
 };
+
+
+
+export const getFreshCalls = async (empid) => {
+  if (!empid) return []
+  try {
+    const response = await axioslogin.get(`/lead/get-fresh-lead/${empid}`);
+    const { success, data, message } = response.data;
+    if (success === 0) return infoNotify(message)
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
+  }
+};
+
+
 
 
 export const FetchInsuranceCompanyMaster = async () => {

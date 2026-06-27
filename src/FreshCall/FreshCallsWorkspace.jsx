@@ -25,6 +25,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import DetailRow from "./DetailRow";
 import StatusChip from "./StatusChip";
 import { leadsSeed, statusOptions, summaryData } from "../CommonCode/Reusable";
+import { useFectchFreshCalls, useLeadMaster } from "../CommonCode/useQuery";
+import { getAuthUser } from "../constant/Constant";
 
 export default function FreshCallsWorkspace() {
   const [leads, setLeads] = useState(leadsSeed);
@@ -34,7 +36,24 @@ export default function FreshCallsWorkspace() {
   const [followupStatus, setFollowupStatus] = useState("");
   const [followupDate, setFollowupDate] = useState("");
   const [followupRemarks, setFollowupRemarks] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState(1);
+
+  const authUser = getAuthUser();
+  const { id } = authUser ?? {};
+
+  const { data: LeadMasterDetail } = useLeadMaster();
+
+  const {
+    data: FreshCalls,
+    refetch: refetchFreshCalls
+  } = useFectchFreshCalls(id);
+
+
+  const ActiveStatus = LeadMasterDetail && Array.isArray(LeadMasterDetail)
+    ? LeadMasterDetail?.filter(stat => stat.is_active === 1) : [];
+  console.log({
+    FreshCalls
+  });
 
   const filteredRows = useMemo(() => {
     if (statusFilter === "All") return leads;
@@ -235,6 +254,7 @@ export default function FreshCallsWorkspace() {
             </Box>
             <Button
               variant="contained"
+              onClick={() => refetchFreshCalls()}
               startIcon={<PhoneIcon />}
               sx={{
                 background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
@@ -303,46 +323,38 @@ export default function FreshCallsWorkspace() {
         {/* Filter and Table Workspace */}
         <Box sx={{ px: 3, py: 2, flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
           <Stack direction="row" gap={1} flexWrap="wrap" sx={{ mb: 2, alignItems: "center" }}>
-            {statusOptions.map((status) => {
-              const isActive = statusFilter === status;
-              const colorConfig = {
-                All: { color: "#475569", bg: "rgba(71, 85, 105, 0.08)", activeBg: "linear-gradient(135deg, #475569 0%, #334155 100%)", activeShadow: "0 6px 15px rgba(71, 85, 105, 0.25)" },
-                New: { color: "#2563eb", bg: "rgba(37, 99, 235, 0.08)", activeBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", activeShadow: "0 6px 15px rgba(37, 99, 235, 0.25)" },
-                "Call Back": { color: "#d97706", bg: "rgba(217, 119, 6, 0.08)", activeBg: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", activeShadow: "0 6px 15px rgba(217, 119, 6, 0.25)" },
-                Quote: { color: "#ea580c", bg: "rgba(234, 88, 12, 0.08)", activeBg: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)", activeShadow: "0 6px 15px rgba(234, 88, 12, 0.25)" },
-                Appointment: { color: "#7c3aed", bg: "rgba(124, 58, 237, 0.08)", activeBg: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", activeShadow: "0 6px 15px rgba(124, 58, 237, 0.25)" },
-                Sold: { color: "#16a34a", bg: "rgba(22, 163, 74, 0.08)", activeBg: "linear-gradient(135deg, #10b981 0%, #059669 100%)", activeShadow: "0 6px 15px rgba(22, 163, 74, 0.25)" },
-                Lost: { color: "#dc2626", bg: "rgba(220, 38, 38, 0.08)", activeBg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", activeShadow: "0 6px 15px rgba(220, 38, 38, 0.25)" }
-              }[status] || { color: "#2563eb", bg: "rgba(37, 99, 235, 0.08)", activeBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", activeShadow: "0 6px 15px rgba(37, 99, 235, 0.25)" };
+            {(ActiveStatus || [])?.map((status) => {
+              const isActive = statusFilter === status.status_id;
 
               return (
                 <Chip
-                  key={status}
-                  label={status}
+                  key={status.status_id}
+                  label={status.status_name?.toUpperCase()}
                   clickable
-                  onClick={() => setStatusFilter(status)}
+                  onClick={() => setStatusFilter(status.status_id)}
+                  variant={isActive ? "filled" : "outlined"}
                   sx={{
                     fontWeight: 800,
                     fontSize: "12px",
                     borderRadius: 3.5,
-                    width: { xs: "calc(50% - 8px)", sm: "115px" },
+                    color: isActive ? "rgb(253, 253, 253)" : "#000000",
+                    width: { xs: "calc(50% - 8px)", sm: "125px" },
                     py: 2,
-                    background: isActive ? colorConfig.activeBg : colorConfig.bg,
-                    color: isActive ? "#ffffff" : colorConfig.color,
-                    border: `1.5px solid ${isActive ? "transparent" : "rgba(255, 255, 255, 0.7)"}`,
-                    backdropFilter: "blur(12px)",
-                    boxShadow: isActive ? colorConfig.activeShadow : "none",
-                    transform: isActive ? "scale(1.05) translateY(-1px)" : "none",
-                    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                    borderColor: isActive ? "#cbd5e1" : "#e2e8f0",
+                    backgroundColor: isActive ? "#b3c8ff" : "#ffffff",
+                    color: "#334155",
+                    boxShadow: isActive ? "0 4px 10px rgba(15, 23, 42, 0.08)" : "none",
+                    transform: isActive ? "translateY(-1px)" : "none",
+                    transition: "all 0.2s ease",
                     "&:hover": {
-                      background: isActive ? colorConfig.activeBg : `${colorConfig.color}15`,
-                      transform: isActive ? "scale(1.05) translateY(-1px)" : "translateY(-1.5px)",
-                      boxShadow: isActive ? colorConfig.activeShadow : "0 4px 10px rgba(0,0,0,0.04)",
+                      backgroundColor: "#f8fafc",
+                      transform: "translateY(-1px)",
+                      boxShadow: "0 4px 10px rgba(15, 23, 42, 0.06)",
                     },
                     "& .MuiChip-label": {
                       textAlign: "center",
                       width: "100%",
-                    }
+                    },
                   }}
                 />
               );

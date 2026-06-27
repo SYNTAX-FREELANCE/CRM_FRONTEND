@@ -14,6 +14,7 @@ import {
   FetchAllCustomers,
   FetchAllVehicles,
   FetchNewCustomer,
+  getFreshCalls,
 } from "./CommonFun";
 
 
@@ -131,3 +132,14 @@ export const useNewCustomers = (month) => {
   });
 };
 
+
+
+export const useFectchFreshCalls = (empid) => {
+  return useQuery({
+    queryKey: ["freshcalls", empid],
+    queryFn: () => getFreshCalls(empid),
+    staleTime: Infinity,
+    enabled: !!empid,
+    refetchOnWindowFocus: false,
+  });
+};
