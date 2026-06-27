@@ -146,6 +146,10 @@ const RouteLayout = () => {
 
                 if (result.data.success !== 1) return;
 
+                console.log("rolee:", user.role);
+
+                console.log("Menu:", result.data.data);
+
                 const modules = {};
 
                 result.data.data.forEach(row => {
@@ -168,11 +172,11 @@ const RouteLayout = () => {
                 const sidebarData = [];
 
                 // Always add Dashboard first
-                sidebarData.push({
-                    label: "Dashboard",
-                    icon: DashboardIcon,
-                    path: "/home",
-                });
+                // sidebarData.push({
+                //     label: "Dashboard",
+                //     icon: DashboardIcon,
+                //     path: "/home",
+                // });
 
                 Object.keys(modules).forEach(moduleName => {
 
@@ -185,18 +189,18 @@ const RouteLayout = () => {
                 });
 
                 // Always add User Info at the end
-                sidebarData.push({
-                    label: "User Info",
-                    icon: GroupsIcon,
-                    path: "/home/userinfo",
-                });
+                // sidebarData.push({
+                //     label: "User Info",
+                //     icon: GroupsIcon,
+                //     path: "/home/userinfo",
+                // });
 
-                // Always add Settings at the end
-                sidebarData.push({
-                    label: "Settings",
-                    icon: SettingsSuggestIcon,
-                    path: "/home/settings",
-                });
+                // // Always add Settings at the end
+                // sidebarData.push({
+                //     label: "Settings",
+                //     icon: SettingsSuggestIcon,
+                //     path: "/home/settings",
+                // });
 
                 setMenuItems(sidebarData);
 
@@ -239,7 +243,6 @@ const RouteLayout = () => {
                 }}
             >
                 <ReusableSidebar
-                    // menuItems={menuItems}
                     menuItems={Menu}
                     user={{
                         name: user?.username || "Employee",

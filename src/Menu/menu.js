@@ -16,6 +16,7 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
 
 
+
 export const Menu = [
   {
     // groupLabel: "Main",
@@ -24,9 +25,9 @@ export const Menu = [
     path: "/home",
   },
   {
-    label: "Calls",
-    icon: LocalPhoneIcon,
-    path: "/home/freshcalls",
+    label: "Calendar",
+    icon: CalendarMonthIcon,
+    path: "/calendar",
   },
   {
     label: "Allocate",
