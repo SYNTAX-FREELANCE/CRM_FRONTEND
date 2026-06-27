@@ -102,13 +102,15 @@ const ReusableSidebar = ({
       p: 1
     }}>
       <Box
+
         onMouseEnter={() => setOpen(true)}
         // onMouseLeave={() => {
         //   setOpen(fatlse);
-        //   setOpenMenu(null);
-        //   setHoveredItem(null);
-        //   setHoveredSub(null);
-        // }}
+
+        // onMouseEnter={() => setOpen(true)}
+        // onMouseLeave={() => {
+        //   setOpen(false);
+
         sx={{
           width: open ? 280 : 72,
           height: "95vh",

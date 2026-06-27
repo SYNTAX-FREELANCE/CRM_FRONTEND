@@ -13,6 +13,7 @@ import {
   FetchInsuranceCompanyMaster,
   FetchAllCustomers,
   FetchAllVehicles,
+  FetchNewCustomer,
 } from "./CommonFun";
 
 
@@ -117,6 +118,16 @@ export const useVehicleMaster = () => {
     queryKey: ["vehicle-master"],
     queryFn: FetchAllVehicles,
     staleTime: Infinity,
+  });
+};
+
+
+export const useNewCustomers = (month) => {
+  return useQuery({
+    queryKey: ["new-customer",month],
+    queryFn: ()=>FetchNewCustomer(month),
+    staleTime: Infinity,
+    enabled:!!month
   });
 };
 

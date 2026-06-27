@@ -1,8 +1,8 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
-import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster, useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster, useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
