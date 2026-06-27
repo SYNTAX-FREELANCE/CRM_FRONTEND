@@ -69,6 +69,11 @@ const activities = [
 const AdminDashboard = () => {
   const authUser = getAuthUser();
 
+  console.log({
+    authUser
+  });
+  
+
   return (
     <Box
       sx={{

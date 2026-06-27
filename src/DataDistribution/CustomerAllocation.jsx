@@ -1,151 +1,377 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
     Box,
     Typography,
     Card,
-    Table,
-    Sheet,
     Select,
     Option,
     Button,
+    RadioGroup,
+    Radio,
     Checkbox,
+    Divider,
+    Stack,
+    Chip,
+    Sheet,
 } from "@mui/joy";
-import { useCustomerMaster, useEmployeeMaster, useNewCustomers, useVehicleMaster } from "../CommonCode/useQuery";
+import { useEmployeeMaster, useNewCustomers } from "../CommonCode/useQuery";
+import CustomerAllocationTable from "../Settings/CommonMasterComponent/CustomerAllocationTable";
+import {
+    errorNotify,
+    getAuthUser,
+    successNotify,
+    warningNofity,
+} from "../constant/Constant";
+import { format } from "date-fns";
+import { axioslogin } from "../Axios/axios";
+
+const months = [
+    { label: "January", value: 1 },
+    { label: "February", value: 2 },
+    { label: "March", value: 3 },
+    { label: "April", value: 4 },
+    { label: "May", value: 5 },
+    { label: "June", value: 6 },
+    { label: "July", value: 7 },
+    { label: "August", value: 8 },
+    { label: "September", value: 9 },
+    { label: "October", value: 10 },
+    { label: "November", value: 11 },
+    { label: "December", value: 12 },
+];
 
 const CustomerAllocation = () => {
-    const { data: CustomerMasterDetail } = useCustomerMaster();
-    const { data: VehicleMasterDetail } = useVehicleMaster();
-    const { data: Employee_master } = useEmployeeMaster();
-    const { data: newCustomers } = useNewCustomers();
+    const authUser = getAuthUser();
+    const LogedEmpId = authUser?.id;
+
+    const [month, setMonth] = useState(0);
+    const [selectedCustomers, setSelectedCustomers] = useState({});
+    const [allocationMode, setAllocationMode] = useState("single");
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [availableEmployees, setAvailableEmployees] = useState([]);
+
+    const { data: Employee_master = [] } = useEmployeeMaster();
+    const { data: newCustomers = [] } = useNewCustomers(month);
+
+    const customers = Array.isArray(newCustomers) ? newCustomers : newCustomers?.data ?? [];
+    const employees = Array.isArray(Employee_master) ? Employee_master : Employee_master?.data ?? [];
+
+    const selectedRows = useMemo(
+        () => customers.filter((customer) => selectedCustomers[customer.customer_id]),
+        [customers, selectedCustomers]
+    );
+
+    const handleAvailableEmployee = (userId) => {
+        setAvailableEmployees((prev) =>
+            prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+        );
+    };
+
+    const handleAllocate = async () => {
+        if (loading) return;
+
+        if (!selectedRows.length) {
+            alert("Please select customers.");
+            return;
+        }
+
+        let allocations = [];
+
+        if (allocationMode === "single") {
+            if (!selectedEmployee) {
+                alert("Please select an employee.");
+                return;
+            }
+
+            const employee = employees.find((emp) => emp.user_id === selectedEmployee);
+            if (!employee) {
+                alert("Selected employee not found.");
+                return;
+            }
+
+            allocations = selectedRows.map((customer) => ({
+                customer_id: customer.customer_id,
+                vehicle_id: customer.vehicle_id,
+                employee_id: employee.user_id,
+                employee_name: employee.name,
+            }));
+        } else {
+            if (!availableEmployees.length) {
+                alert("Select available employees.");
+                return;
+            }
+
+            const filteredEmployees = employees.filter((emp) =>
+                availableEmployees.includes(emp.user_id)
+            );
+
+            allocations = selectedRows.map((customer, index) => {
+                const employee = filteredEmployees[index % filteredEmployees.length];
+                return {
+                    customer_id: customer.customer_id,
+                    vehicle_id: customer.vehicle_id,
+                    employee_id: employee.user_id,
+                    employee_name: employee.name,
+                };
+            });
+        }
+
+        const payload = allocations.map((item) => ({
+            customer_id: item.customer_id,
+            vehicle_id: item.vehicle_id,
+            policy_id: null,
+            status_id: 1,
+            lead_priority: "MEDIUM",
+            assigned_to: item.employee_id,
+            assigned_date: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+            is_assigned: 1,
+            lead_source: "WhatsApp",
+            remarks: "",
+            created_by: LogedEmpId,
+        }));
+
+        try {
+            setLoading(true);
+
+            const { data } = await axioslogin.post("/customer/allocate-customer", {
+                allocations: payload,
+            });
+
+            if (data.success !== 1) {
+                warningNofity(data.message || "Error in Distributing Customers");
+                return;
+            }
+
+            successNotify(data.message);
+
+            setSelectedCustomers({});
+            setSelectedEmployee(null);
+            setAvailableEmployees([]);
+        } catch (error) {
+            errorNotify("Error in Distributing Customers");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const selectedMonthLabel =
+        months.find((m) => m.value === month)?.label || "Select Month";
 
     return (
-        <Box sx={{ p: 3, background: "#f5f7fb", minHeight: "100vh" }}>
-            {/* Heading */}
-            <Typography level="h2" sx={{ mb: 3 }}>
-                Customer Allocation
-            </Typography>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                // background:
+                //     "linear-gradient(135deg, #f7faff 0%, #eef4ff 45%, #ffffff 100%)",
+            }}
+        >
 
-            {/* Filter Card */}
-            <Card
-                sx={{
-                    p: 2,
-                    mb: 3,
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 2,
-                    alignItems: "center",
-                }}
+            <Stack
+                direction={{ xs: "column", sm: 'column', md: 'row', lg: 'row', xl: "row" }}
+                spacing={2.2}
+                alignItems="stretch"
             >
-                <Typography level="title-md">Expiry Month</Typography>
-
-                <Select sx={{ width: 180 }} defaultValue={8}>
-                    <Option value={1}>January</Option>
-                    <Option value={2}>February</Option>
-                    <Option value={3}>March</Option>
-                    <Option value={4}>April</Option>
-                    <Option value={5}>May</Option>
-                    <Option value={6}>June</Option>
-                    <Option value={7}>July</Option>
-                    <Option value={8}>August</Option>
-                    <Option value={9}>September</Option>
-                    <Option value={10}>October</Option>
-                    <Option value={11}>November</Option>
-                    <Option value={12}>December</Option>
-                </Select>
-
-                <Button>Search Customers</Button>
-            </Card>
-
-            {/* Allocation Card */}
-            <Card sx={{ p: 2 }}>
-                <Box
+                <Card
                     sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 2,
-                        alignItems: "center",
+                        width: { xs: "95%", xl: 340 },
+                        flexShrink: 0,
+                        borderRadius: "24px",
+                        p: 2.2,
+                        background:
+                            "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,250,255,0.84) 100%)",
+                        border: "1px solid rgba(148,163,184,0.18)",
+                        boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
                     }}
                 >
-                    <Typography level="title-lg">
-                        Customers Awaiting Allocation
-                    </Typography>
+                    <Stack spacing={2}>
+                        <Box>
+                            <Typography level="h3" sx={{ fontWeight: 800, color: "#17324a" }}>
+                                Allocation Setup
+                            </Typography>
+                            <Typography level="body-sm" sx={{ color: "#6b7d90", mt: 0.5 }}>
+                                Choose month and allocation preferences.
+                            </Typography>
+                        </Box>
 
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                        <Select
-                            placeholder="Select Employee"
-                            sx={{ minWidth: 250 }}
+                        <Divider />
+
+                        <Box>
+                            <Typography level="title-sm" sx={{ mb: 0.8, color: "#284862" }}>
+                                Expiry Month
+                            </Typography>
+                            <Select
+                                value={month}
+                                onChange={(_, value) => setMonth(value)}
+                                placeholder="Select month"
+                                sx={{
+                                    width: "100%",
+                                    "--Select-minHeight": "48px",
+                                    "--Select-radius": "14px",
+                                    background: "#fff",
+                                    boxShadow: "0 8px 18px rgba(15,23,42,0.05)",
+                                }}
+                            >
+                                {months.map((m) => (
+                                    <Option key={m.value} value={m.value}>
+                                        {m.label}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Box>
+
+                        <Box>
+                            <Typography level="title-sm" sx={{ mb: 0.8, color: "#284862" }}>
+                                Allocation Mode
+                            </Typography>
+                            <RadioGroup
+                                value={allocationMode}
+                                onChange={(e) => setAllocationMode(e.target.value)}
+                                sx={{
+                                    gap: 1,
+                                    p: 1,
+                                    borderRadius: "16px",
+                                    background: "#f8fbff",
+                                    border: "1px solid rgba(148,163,184,0.14)",
+                                }}
+                            >
+                                <Radio value="single" label="Single Employee" />
+                                <Radio value="equal" label="Equal Distribution" />
+                            </RadioGroup>
+                        </Box>
+
+                        {allocationMode === "single" && (
+                            <Box>
+                                <Typography level="title-sm" sx={{ mb: 0.8, color: "#284862" }}>
+                                    Select Employee
+                                </Typography>
+                                <Select
+                                    value={selectedEmployee}
+                                    onChange={(_, value) => setSelectedEmployee(value)}
+                                    placeholder="Choose employee"
+                                    sx={{
+                                        width: "100%",
+                                        "--Select-minHeight": "48px",
+                                        "--Select-radius": "14px",
+                                        background: "#fff",
+                                    }}
+                                >
+                                    {Employee_master.map((emp) => (
+                                        <Option key={emp.user_id} value={emp.user_id}>
+                                            {emp.name}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Box>
+                        )}
+
+                        {allocationMode === "equal" && (
+                            <Box>
+                                <Typography level="title-sm" sx={{ mb: 1, color: "#284862" }}>
+                                    Available Employees
+                                </Typography>
+                                <Stack spacing={1}>
+                                    {Employee_master.map((emp) => (
+                                        <Box
+                                            key={emp.user_id}
+                                            sx={{
+                                                p: 1.2,
+                                                borderRadius: "14px",
+                                                background: availableEmployees.includes(emp.user_id)
+                                                    ? "rgba(37,99,235,0.08)"
+                                                    : "#fff",
+                                                border: "1px solid rgba(148,163,184,0.16)",
+                                            }}
+                                        >
+                                            <Checkbox
+                                                label={emp.name}
+                                                checked={availableEmployees.includes(emp.user_id)}
+                                                onChange={() => handleAvailableEmployee(emp.user_id)}
+                                            />
+                                        </Box>
+                                    ))}
+                                </Stack>
+                            </Box>
+                        )}
+
+                        <Button
+                            onClick={handleAllocate}
+                            loading={loading}
+                            disabled={loading}
+                            sx={{
+                                mt: 1,
+                                height: 48,
+                                borderRadius: "14px",
+                                fontWeight: 800,
+                                color: "#fff",
+                                background: "linear-gradient(135deg, #f97316 0%, #2563eb 100%)",
+                                boxShadow: "0 12px 24px rgba(37,99,235,0.18)",
+                                "&:hover": {
+                                    background: "linear-gradient(135deg, #ea580c 0%, #1d4ed8 100%)",
+                                },
+                            }}
                         >
-                            {Employee_master?.map((emp) => (
-                                <Option key={emp.user_id} value={emp.user_id}>
-                                    {emp.name}
-                                </Option>
-                            ))}
-                        </Select>
-
-                        <Button color="primary">
-                            Allocate Selected
+                            {loading ? "Allocating..." : "Allocate Customers"}
                         </Button>
-                    </Box>
-                </Box>
+                    </Stack>
+                </Card>
 
-                <Sheet
-                    variant="outlined"
+                <Card
                     sx={{
-                        borderRadius: "md",
-                        overflow: "auto",
+                        flex: 1,
+                        borderRadius: "24px",
+                        p: { xs: 2, md: 2.5 },
+                        background:
+                            "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,251,255,0.98) 100%)",
+                        border: "1px solid rgba(148,163,184,0.18)",
+                        boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
+                        minHeight: 700,
                     }}
                 >
-                    <Table hoverRow stickyHeader>
-                        <thead>
-                            <tr>
-                                <th style={{ width: 50 }}>
-                                    <Checkbox />
-                                </th>
-                                <th>Customer</th>
-                                <th>Mobile</th>
-                                <th>Registration No.</th>
-                                <th>Registration Date</th>
-                                <th>Expiry Date</th>
-                            </tr>
-                        </thead>
+                    <Stack spacing={1.8}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                                gap: 1,
+                            }}
+                        >
+                            <Box>
+                                <Typography level="h3" sx={{ fontWeight: 800, color: "#17324a" }}>
+                                    Customers Awaiting Allocation
+                                </Typography>
+                                <Typography level="body-sm" sx={{ color: "#6b7d90", mt: 0.4 }}>
+                                    Review and select customers from the filtered list.
+                                </Typography>
+                            </Box>
 
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <Checkbox />
-                                </td>
-                                <td>Arun Kumar</td>
-                                <td>9876543210</td>
-                                <td>KL07AB1234</td>
-                                <td>10-03-2025</td>
-                                <td>10-03-2026</td>
-                            </tr>
+                            <Chip variant="soft" color="primary">
+                                {selectedMonthLabel}
+                            </Chip>
+                        </Box>
 
-                            <tr>
-                                <td>
-                                    <Checkbox />
-                                </td>
-                                <td>Rahul Raj</td>
-                                <td>9988776655</td>
-                                <td>KL08CD5678</td>
-                                <td>18-03-2025</td>
-                                <td>18-03-2026</td>
-                            </tr>
+                        <Divider />
 
-                            <tr>
-                                <td>
-                                    <Checkbox />
-                                </td>
-                                <td>Anu Thomas</td>
-                                <td>9123456789</td>
-                                <td>KL11EF4321</td>
-                                <td>25-03-2025</td>
-                                <td>25-03-2026</td>
-                            </tr>
-                        </tbody>
-                    </Table>
-                </Sheet>
-            </Card>
+                        <Sheet
+                            variant="outlined"
+                            sx={{
+                                borderRadius: "18px",
+                                overflow: "hidden",
+                                borderColor: "rgba(148,163,184,0.16)",
+                            }}
+                        >
+                            <CustomerAllocationTable
+                                data={newCustomers}
+                                selectedRows={selectedCustomers}
+                                setSelectedRows={setSelectedCustomers}
+                            />
+                        </Sheet>
+                    </Stack>
+                </Card>
+            </Stack>
+
         </Box>
     );
 };

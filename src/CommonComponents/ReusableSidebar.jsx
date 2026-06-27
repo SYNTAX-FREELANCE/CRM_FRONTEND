@@ -20,7 +20,7 @@ const ReusableSidebar = ({
   onLogout
 }) => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [logoutModal, setLogoutModal] = useState(false);
@@ -102,13 +102,15 @@ const ReusableSidebar = ({
       p: 1
     }}>
       <Box
-        // onMouseEnter={() => setOpen(true)}
-        // onMouseLeave={() => {
-        //   setOpen(false);
-        //   setOpenMenu(null);
-        //   setHoveredItem(null);
-        //   setHoveredSub(null);
-        // }}
+
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
