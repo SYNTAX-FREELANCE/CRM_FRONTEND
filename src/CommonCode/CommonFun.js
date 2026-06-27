@@ -164,6 +164,8 @@ export const FetchNewCustomer = async (month) => {
   try {
     const response = await axioslogin.get(`/customer/new-customer/${month}`);
     const { success, data } = response.data;
+   
+    
     if (success !== 0) return data;
     return [];
   } catch (error) {

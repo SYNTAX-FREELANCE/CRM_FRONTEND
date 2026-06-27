@@ -124,10 +124,10 @@ export const useVehicleMaster = () => {
 
 export const useNewCustomers = (month) => {
   return useQuery({
-    queryKey: ["new-customer",month],
-    queryFn: ()=>FetchNewCustomer(month),
-    staleTime: Infinity,
-    enabled:!!month
+    queryKey: ["new-customer", month],
+    queryFn: () => FetchNewCustomer(month),
+    staleTime: 0,
+    enabled: !!month
   });
 };
 
