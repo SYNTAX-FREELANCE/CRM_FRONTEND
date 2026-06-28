@@ -15,11 +15,8 @@ import {
   FetchAllVehicles,
   FetchNewCustomer,
   getFreshCalls,
+  getMyActiveCalls,
 } from "./CommonFun";
-
-
-
-
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -28,7 +25,6 @@ export const useRoleMaster = () => {
     staleTime: Infinity, // optional (5 min cache)
   });
 };
-
 
 export const useCompanyMaster = () => {
   return useQuery({
@@ -91,7 +87,7 @@ export const useLeadMaster = () => {
     queryKey: ["lead-master"],
     queryFn: FetchLeadMaster,
   });
-}
+};
 export const useCustomerMaster = () => {
   return useQuery({
     queryKey: ["customer-master"],
@@ -113,7 +109,7 @@ export const useInsuranceCompanyMaster = () => {
     queryKey: ["insurance-company-master"],
     queryFn: FetchInsuranceCompanyMaster,
   });
-}
+};
 export const useVehicleMaster = () => {
   return useQuery({
     queryKey: ["vehicle-master"],
@@ -122,17 +118,14 @@ export const useVehicleMaster = () => {
   });
 };
 
-
 export const useNewCustomers = (month) => {
   return useQuery({
     queryKey: ["new-customer", month],
     queryFn: () => FetchNewCustomer(month),
     staleTime: 0,
-    enabled: !!month
+    enabled: !!month,
   });
 };
-
-
 
 export const useFectchFreshCalls = (empid) => {
   return useQuery({
@@ -140,6 +133,16 @@ export const useFectchFreshCalls = (empid) => {
     queryFn: () => getFreshCalls(empid),
     staleTime: Infinity,
     enabled: !!empid,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useGetMyActiveCalls = (empid, statusFilter) => {
+  return useQuery({
+    queryKey: ["mycalls", empid, statusFilter],
+    queryFn: () => getMyActiveCalls(empid, statusFilter),
+    staleTime: 0,
+    enabled: !!empid && !!statusFilter,
     refetchOnWindowFocus: false,
   });
 };
