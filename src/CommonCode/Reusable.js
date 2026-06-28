@@ -130,3 +130,25 @@ export const statusColors = {
 //   Sold: { color: "#16a34a", bg: "rgba(22, 163, 74, 0.08)", activeBg: "linear-gradient(135deg, #10b981 0%, #059669 100%)", activeShadow: "0 6px 15px rgba(22, 163, 74, 0.25)" },
 //   Lost: { color: "#dc2626", bg: "rgba(220, 38, 38, 0.08)", activeBg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", activeShadow: "0 6px 15px rgba(220, 38, 38, 0.25)" }
 // }[status] || { color: "#2563eb", bg: "rgba(37, 99, 235, 0.08)", activeBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", activeShadow: "0 6px 15px rgba(37, 99, 235, 0.25)" };
+
+
+export const statusReasonMap = {
+  ANSWERED: "Customer answered",
+  NO_ANSWER: "Customer did not answer",
+  BUSY: "Customer was busy",
+  SWITCHED_OFF: "Phone switched off",
+  INVALID_NUMBER: "Invalid phone number",
+  WRONG_NUMBER: "Wrong phone number",
+  CALL_BACK_REQUESTED: "Customer requested callback",
+  INTERESTED: "Customer is interested",
+  NOT_INTERESTED: "Customer is not interested",
+  QUOTE_REQUESTED: "Quotation requested",
+  FOLLOW_UP_REQUIRED: "Follow-up required",
+  MEETING_SCHEDULED: "Meeting scheduled",
+  POLICY_RENEWED: "Policy renewed",
+  POLICY_PURCHASED: "Policy purchased",
+  ALREADY_INSURED: "Already insured",
+  DO_NOT_CALL: "Customer requested no further calls",
+  OTHER: "Other",
+};
+

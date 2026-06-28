@@ -174,7 +174,6 @@ const AdminDashboard = () => {
               sx={{
                 borderRadius: 5,
                 height: "100%",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
                 transition: "0.3s",
                 border: "1px solid rgba(255,255,255,0.8)",
                 boxShadow: "0 25px 10px rgba(189, 208, 249, 0.3)",

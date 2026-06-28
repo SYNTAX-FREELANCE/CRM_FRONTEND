@@ -13,9 +13,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WorkIcon from "@mui/icons-material/Work";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
-
-
+import DataThresholdingIcon from "@mui/icons-material/DataThresholding";
 
 export const Menu = [
   {
@@ -25,9 +23,14 @@ export const Menu = [
     path: "/home",
   },
   {
-    label: "Calendar",
-    icon: CalendarMonthIcon,
-    path: "/calendar",
+    label: "Calls",
+    icon: LocalPhoneIcon,
+    path: "/home/freshcalls",
+  },
+  {
+    label: "Employee",
+    icon: LocalPhoneIcon,
+    path: "/home/employee",
   },
   {
     label: "Allocate",

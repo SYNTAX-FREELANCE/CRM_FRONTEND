@@ -18,6 +18,7 @@ const UserReg = lazy(() => import("./Masters/UserRegistration/UserRegistration")
 const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
 const FreshCallsWorkspace = lazy(() => import("./FreshCall/FreshCallsWorkspace"));
 const CustomerAllocation = lazy(() => import("./DataDistribution/CustomerAllocation"));
+const EmployeeDashboard = lazy(() => import("./Employee/EmployeeDashboard"));
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -88,6 +89,11 @@ const router = createBrowserRouter([
         index: true,
         element: withSuspense(AdminDashboard),
       },
+      {
+         path: "employee",
+        element: withSuspense(EmployeeDashboard),
+      },
+      
       {
         path: "settings",
         element: withSuspense(Settings),
