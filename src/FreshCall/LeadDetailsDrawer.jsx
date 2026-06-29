@@ -17,11 +17,18 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import ArticleIcon from "@mui/icons-material/Article";
-
+import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import CommentIcon from "@mui/icons-material/Comment";
+import HistoryIcon from "@mui/icons-material/History";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
 import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
 import Row from "./Components/Row";
-import { useLeadMaster } from "../CommonCode/useQuery";
+import { useFollowUpDetail, useGetLeadHistory, useLeadMaster } from "../CommonCode/useQuery";
 import StatusActionCards from "./Components/StatusActionCards";
 import FollowUpForm from "./Components/FollowUpForm";
 import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
@@ -29,6 +36,8 @@ import axios from "axios";
 import { axioslogin } from "../Axios/axios";
 import { statusReasonMap } from "../CommonCode/Reusable";
 import { useQueryClient } from "@tanstack/react-query";
+import LeadHistoryTimelineItem from "./Components/LeadHistoryTimelineItem";
+import LeadFollowUpCard from "./Components/LeadFollowUpCard";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -45,10 +54,44 @@ const LeadDetailsDrawer = ({
 }) => {
   const lead = selectedLead || {};
 
+
+  const leadId = lead?.lead_id;
+  const statusId = lead?.status_id;
+  const isCallAccess = lead?.is_call_required === 1;
+
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
 
   const { data: LeadMasterDetail } = useLeadMaster();
+
+
+  const shouldFetchHistory = open && !!leadId;
+  const shouldFetchFollowUp =
+    open &&
+    !!leadId &&
+    !!statusId &&
+    Number(lead?.requires_followup) === 1;
+
+  const { data: LeadHistory = [] } = useGetLeadHistory(
+    leadId,
+    shouldFetchHistory
+  );
+
+  const { data: LeadFollowUp = null } = useFollowUpDetail(
+    leadId,
+    statusId,
+    shouldFetchFollowUp
+  );
+
+  const hasHistory = LeadHistory && LeadHistory?.length > 0
+  const hasFollowUp = LeadFollowUp && LeadFollowUp?.length > 0;
+  console.log({
+    LeadHistory,
+    LeadFollowUp,
+  });
+
+
+
   const ActiveStatus = Array.isArray(LeadMasterDetail)
     ? LeadMasterDetail.filter((stat) => stat.is_active === 1 && stat.status_id !== 1)
     : [];
@@ -56,7 +99,6 @@ const LeadDetailsDrawer = ({
   const hasPolicy =
     lead.policy_id ||
     lead.policy_number ||
-    lead.policy_type ||
     lead.start_date ||
     lead.expiry_date ||
     lead.premium_amount;
@@ -77,7 +119,78 @@ const LeadDetailsDrawer = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const callMenuOpen = Boolean(callAnchorEl);
   const [followUpOutcome, setFollowUpOutcome] = useState("");
+  const [policyData, setPolicyData] = useState({
+    insurance_company_id: "",
+    policy_number: "",
+    renewal_cycle: "Annual",
+    start_date: "",
+    expiry_date: "",
+    premium_amount: "",
+    insured_declared_value: "",
+    reminder_days: 30,
+    renewal_year: new Date().getFullYear(),
+    remarks: "",
+  });
 
+
+ 
+  const validatePolicy = () => {
+    if (!policyData.insurance_company_id) {
+      warningNotify("Please select the insurance company.");
+      return false;
+    }
+
+    if (!policyData.policy_number?.trim()) {
+      warningNotify("Please enter the policy number.");
+      return false;
+    }
+
+
+    if (!policyData.renewal_cycle) {
+      warningNotify("Please select the renewal cycle.");
+      return false;
+    }
+
+    if (!policyData.start_date) {
+      warningNotify("Please select the policy start date.");
+      return false;
+    }
+
+    if (!policyData.expiry_date) {
+      warningNotify("Please select the policy expiry date.");
+      return false;
+    }
+
+    if (new Date(policyData.start_date) >= new Date(policyData.expiry_date)) {
+      warningNotify("Expiry date must be greater than the start date.");
+      return false;
+    }
+
+    if (!policyData.premium_amount || Number(policyData.premium_amount) <= 0) {
+      warningNotify("Please enter a valid premium amount.");
+      return false;
+    }
+
+    if (
+      !policyData.insured_declared_value ||
+      Number(policyData.insured_declared_value) <= 0
+    ) {
+      warningNotify("Please enter a valid Net amount.");
+      return false;
+    }
+
+    if (!policyData.renewal_year) {
+      warningNotify("Please enter the renewal year.");
+      return false;
+    }
+
+    if (!policyData.reminder_days) {
+      warningNotify("Please select reminder days.");
+      return false;
+    }
+
+    return true;
+  };
 
   const queryClient = useQueryClient();
   const handleCallClick = (event) => setCallAnchorEl(event.currentTarget);
@@ -101,12 +214,17 @@ const LeadDetailsDrawer = ({
       return warningNotify("Session expired. Please login again.");
     }
 
+    if (selectedStatus?.is_policy_required === 1) {
+      const isValid = validatePolicy();
+
+      if (!isValid) {
+        return;
+      }
+    }
     // Status Validation
     if (!followUpAction) {
       return warningNotify("Please select the lead status.");
     }
-
-    // Call Outcome Validation
 
     // Require date only for specific statuses
     if (selectedStatus?.requires_followup === 1) {
@@ -146,6 +264,21 @@ const LeadDetailsDrawer = ({
       next_followup_date: followUpDate,
       status_change_reason: statusReasonMap[followUpOutcome] || "Status Updated",
       created_by: id,
+      policyrequierd: selectedStatus?.is_policy_required,
+      ...(selectedStatus?.is_policy_required === 1 && {
+        policy: {
+          insurance_company_id: policyData.insurance_company_id,
+          policy_number: policyData.policy_number.trim(),
+          renewal_year: policyData.renewal_year,
+          renewal_cycle: policyData.renewal_cycle,
+          start_date: policyData.start_date,
+          expiry_date: policyData.expiry_date,
+          premium_amount: policyData.premium_amount,
+          insured_declared_value: policyData.insured_declared_value,
+          reminder_days: policyData.reminder_days,
+          remarks: policyData.remarks,
+        },
+      }),
     };
 
     try {
@@ -283,8 +416,8 @@ const LeadDetailsDrawer = ({
             anchorEl={callAnchorEl}
             open={callMenuOpen}
             onClose={handleCallClose}
-            mobile1={lead.mobile_number_1}
-            mobile2={lead.mobile_number_2}
+            mobile1={lead?.mobile_number_1}
+            mobile2={lead?.mobile_number_2}
           />
         </Box>
 
@@ -310,13 +443,13 @@ const LeadDetailsDrawer = ({
             >
               <Row
                 label="Address"
-                value={lead.address}
+                value={lead?.address}
                 icon={<LocationOnIcon sx={{ fontSize: 14 }} />}
                 accent="blue"
               />
               <Row
                 label="District - City"
-                value={`${lead.district || "-"} - ${lead.city || "-"}`}
+                value={`${lead?.district || "-"} - ${lead.city || "-"}`}
                 icon={<LocationOnIcon sx={{ fontSize: 14 }} />}
                 accent="blue"
               />
@@ -353,6 +486,45 @@ const LeadDetailsDrawer = ({
                 accent="orange"
               />
             </Section>
+            {
+              hasFollowUp && (
+                <Section
+                  title="Follow Up History"
+                  icon={<FollowTheSignsIcon sx={{ fontSize: 16 }} />}
+                  accent="blue"
+                  defaultExpanded
+                >
+                  <Stack spacing={2}>
+                    {LeadFollowUp?.map((item, index) => (
+                      <LeadFollowUpCard
+                        key={item.followup_id}
+                        item={item}
+                        index={index}
+                      />
+                    ))}
+                  </Stack>
+                </Section>
+              )
+            }
+
+            {hasHistory && (
+              <Section
+                title="Lead Status History"
+                icon={<HistoryIcon sx={{ fontSize: 16 }} />}
+                accent="purple"
+                defaultExpanded
+              >
+                <Stack spacing={2}>
+                  {LeadHistory?.map((item, index) => (
+                    <LeadHistoryTimelineItem
+                      key={item.history_id}
+                      item={item}
+                      isLast={index === LeadHistory.length - 1}
+                    />
+                  ))}
+                </Stack>
+              </Section>
+            )}
 
             {hasPolicy && (
               <Section
@@ -393,62 +565,67 @@ const LeadDetailsDrawer = ({
                 />
               </Section>
             )}
-
-            <Box
-              sx={{
-                mt: 0.5,
-                p: 1.5,
-                borderRadius: 2.5,
-                ...glassEffect,
-                bgcolor: "rgba(255,255,255,0.6)",
-              }}
-            >
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 900, color: "#2563eb", letterSpacing: 0.8 }}
-              >
-                LEAD STATUS
-              </Typography>
-
-              <Divider sx={{ my: 1.2, borderColor: "rgba(37,99,235,0.12)" }} />
-
-              <StatusActionCards
-                statuses={ActiveStatus}
-                selectedStatus={selectedStatus}
-                onStatusClick={(item) => {
-                  setSelectedStatus(item);
-                  handleStatusClick(item.status_id);
-                }}
-                onReset={() => {
-                  setSelectedStatus("");
-                  setFollowUpAction("");
-                  setFollowUpDate("");
-                  setFollowUpRemarks("");
-                }}
-              />
-
-
-              {followUpAction && (
-                <FollowUpForm
-                  statusName={selectedStatus}
-                  followUpDate={followUpDate}
-                  setFollowUpDate={setFollowUpDate}
-                  followUpRemarks={followUpRemarks}
-                  setFollowUpRemarks={setFollowUpRemarks}
-                  outcome={followUpOutcome}
-                  setOutcome={setFollowUpOutcome}
-                  onCancel={() => {
-                    setFollowUpAction("");
-                    setFollowUpDate("");
-                    setFollowUpRemarks("");
-                    setFollowUpOutcome("");
-                    setSelectedStatus("")
+            {
+              isCallAccess && (
+                <Box
+                  sx={{
+                    mt: 0.5,
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    ...glassEffect,
+                    bgcolor: "rgba(255,255,255,0.6)",
                   }}
-                  onSave={HandleSaveFollowup}
-                />
-              )}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: 900, color: "#2563eb", letterSpacing: 0.8 }}
+                  >
+                    LEAD STATUS
+                  </Typography>
 
-            </Box>
+                  <Divider sx={{ my: 1.2, borderColor: "rgba(37,99,235,0.12)" }} />
+
+                  <StatusActionCards
+                    statuses={ActiveStatus}
+                    selectedStatus={selectedStatus}
+                    onStatusClick={(item) => {
+                      setSelectedStatus(item);
+                      handleStatusClick(item.status_id);
+                    }}
+                    onReset={() => {
+                      setSelectedStatus("");
+                      setFollowUpAction("");
+                      setFollowUpDate("");
+                      setFollowUpRemarks("");
+                    }}
+                  />
+
+
+                  {followUpAction && (
+                    <FollowUpForm
+                      statusName={selectedStatus}
+                      followUpDate={followUpDate}
+                      policyData={policyData}
+                      setPolicyData={setPolicyData}
+                      setFollowUpDate={setFollowUpDate}
+                      followUpRemarks={followUpRemarks}
+                      setFollowUpRemarks={setFollowUpRemarks}
+                      outcome={followUpOutcome}
+                      setOutcome={setFollowUpOutcome}
+                      onCancel={() => {
+                        setFollowUpAction("");
+                        setFollowUpDate("");
+                        setFollowUpRemarks("");
+                        setFollowUpOutcome("");
+                        setSelectedStatus("")
+                      }}
+                      onSave={HandleSaveFollowup}
+                    />
+                  )}
+
+                </Box>
+              )
+            }
           </Stack>
         </Box>
       </Box>

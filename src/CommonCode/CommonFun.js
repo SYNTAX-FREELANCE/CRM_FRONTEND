@@ -201,6 +201,33 @@ export const getFreshCalls = async (empid) => {
     );
   }
 };
+
+
+export const getDashboardCounts = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/get-dashboard-count/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 1) return [];
+    return data ?? [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+  }
+};
+
+export const getDashboardReminders = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/dashboard-reminders/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 1) return [];
+    return data ?? [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+  }
+};
+
+
 export const getMyActiveCalls = async (empid, filter) => {
   if (!empid) return [];
   try {
@@ -218,6 +245,36 @@ export const getMyActiveCalls = async (empid, filter) => {
     );
   }
 };
+
+export const getCallFollowUp = async (leadid, statusId) => {
+  if (!leadid || !statusId) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-call-followup/${leadid}/${statusId}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
+export const getLeadCallHistory = async (leadid) => {
+  if (!leadid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/get-lead-history/${leadid}`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 
 export const FetchInsuranceCompanyMaster = async () => {
   try {

@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+    Autocomplete,
     Box,
     Button,
     Chip,
     Divider,
     Grid,
+    InputAdornment,
+    MenuItem,
     Stack,
     TextField,
     Typography,
@@ -25,6 +28,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SecurityIcon from "@mui/icons-material/Security";
 import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useInsuranceCompanyMaster } from "../../CommonCode/useQuery";
+import PolicyDetailsForm from "./PolicyDetailsForm";
 
 
 const glassCard = {
@@ -150,9 +155,13 @@ const FollowUpForm = ({
     setOutcome,
     onCancel,
     onSave,
+    policyData,
+    setPolicyData
 }) => {
     const isMobile = useMediaQuery("(max-width:600px)");
     const needsDate = statusName?.requires_followup === 1;
+    const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
+    
 
     return (
         <Box sx={{ mt: 3, p: { xs: 2, md: 3 }, borderRadius: 4, ...glassCard }}>
@@ -249,9 +258,15 @@ const FollowUpForm = ({
                 )}
 
                 <Box>
-                    <Typography sx={{ mb: 1, fontWeight: 800, color: "#334155" }}>
-                        Discussion Notes
-                    </Typography>
+                    {
+                        statusName?.status_name === "SOLD" && (
+                            <PolicyDetailsForm
+                                policyData={policyData}
+                                setPolicyData={setPolicyData}
+                                insuranceCompanies={InsuranceCompanyMasterDetail}
+                            />
+                        )
+                    }
 
                     <TextField
                         multiline
