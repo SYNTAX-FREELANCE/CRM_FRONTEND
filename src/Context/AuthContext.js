@@ -71,14 +71,16 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
+            const attendance_id = localStorage.getItem("attendance_id");
             //  Cookie is auto-sent by browser for logout
-            await axioslogin.post("/user/logout");
+            await axioslogin.post("/user/logout", { attendance_id });
         } catch (error) {
             console.error("Logout error:", error);
         }
 
         // Remove ONLY user data - NO tokens to remove
         localStorage.removeItem("user");
+        localStorage.removeItem("attendance_id");
         setUser(null);
         setIsAuthenticated(false);
     };
