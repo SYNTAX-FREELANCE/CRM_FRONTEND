@@ -14,6 +14,8 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { Menu } from "../../Menu/menu";
+import { useMediaQuery } from "@mui/material";
+import MobileSidebar from "../../CommonComponents/MobileSidebar";
 
 // Map database menu names to their corresponding frontend routes
 const menuPathMap = {
@@ -41,6 +43,7 @@ const RouteLayout = () => {
     const { isAuthenticated, loading, user, logout } = useAuth();
     const [menuItems, setMenuItems] = useState([]);
 
+    const isMobile = useMediaQuery("(max-width: 768px)");
     // useEffect(() => {
     //     if (!isAuthenticated || !user?.role) return;
 
@@ -230,34 +233,62 @@ const RouteLayout = () => {
         <Box
             sx={{
                 display: "flex",
+                flexDirection: "row",
                 height: "100vh",
                 overflow: "hidden",
-                background: "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
+                background:
+                    "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
             }}
         >
-            {/* Sidebar */}
-            <Box
-                sx={{
-                    height: "100vh",
-                    flexShrink: 0,
-                }}
-            >
-                <ReusableSidebar
-                    menuItems={Menu}
-                    user={{
-                        name: user?.username || "Employee",
-                        role: user?.role_name || (user?.role === 1 ? "Admin" : "User"),
-                        avatar: "",
+            {/* MOBILE TOP SIDEBAR */}
+            {isMobile && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 60,
+                        width:20,
+                        zIndex: 1200,
+                        display: "flex",
+                        alignItems: "center",
+                        px: 2,
+                        
                     }}
-                    title="Clynt"
-                    subTitle=""
-                    logo={logo}
-                    logoutPath="/logout"
-                    onLogout={logout}
-                />
-            </Box>
+                >
+                    <MobileSidebar
+                        menuItems={Menu}
+                        user={{
+                            name: user?.username || "Employee",
+                            role: user?.role_name || "User",
+                        }}
+                        onLogout={logout}
+                    />
+                </Box>
+            )}
 
-            {/* Right side */}
+            {/* DESKTOP SIDEBAR */}
+            {!isMobile && (
+                <Box
+                    sx={{
+                        height: "100vh",
+                        flexShrink: 0,
+                    }}
+                >
+                    <ReusableSidebar
+                        menuItems={Menu}
+                        user={{
+                            name: user?.username || "Employee",
+                            role: user?.role_name || "User",
+                            avatar: "",
+                        }}
+                        onLogout={logout}
+                    />
+                </Box>
+            )}
+
+            {/* MAIN CONTENT */}
             <Box
                 sx={{
                     flex: 1,
@@ -265,9 +296,9 @@ const RouteLayout = () => {
                     flexDirection: "column",
                     minWidth: 0,
                     height: "100vh",
+                    pt: isMobile ? 3 : 0, // IMPORTANT: space for top bar
                 }}
             >
-                {/* Scrollable Content */}
                 <Box
                     sx={{
                         flex: 1,
@@ -278,7 +309,6 @@ const RouteLayout = () => {
                         "&::-webkit-scrollbar": {
                             display: "none",
                         },
-                        // bgcolor: "#f9fafb",
                     }}
                 >
                     <Outlet />
@@ -286,6 +316,74 @@ const RouteLayout = () => {
             </Box>
         </Box>
     );
+
+    // return (
+    //     <Box
+    //         sx={{
+    //             display: "flex",
+    //             height: "100vh",
+    //             overflow: "hidden",
+    //             background: "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
+    //         }}
+    //     >
+    //         {/* Sidebar */}
+    //         <Box
+    //             sx={{
+    //                 height: "100vh",
+    //                 flexShrink: 0,
+    //             }}
+    //         >
+    //             {isMobile ? (
+    //                 <MobileSidebar
+    //                     menuItems={Menu}
+    //                     user={{
+    //                         name: user?.username || "Employee",
+    //                         role: user?.role_name || "User",
+    //                     }}
+    //                     onLogout={logout}
+    //                 />
+    //             ) : (
+    //                 <ReusableSidebar
+    //                     menuItems={Menu}
+    //                     user={{
+    //                         name: user?.username || "Employee",
+    //                         role: user?.role_name || "User",
+    //                         avatar: "",
+    //                     }}
+    //                     onLogout={logout}
+    //                 />
+    //             )}
+    //         </Box>
+
+    //         {/* Right side */}
+    //         <Box
+    //             sx={{
+    //                 flex: 1,
+    //                 display: "flex",
+    //                 flexDirection: "column",
+    //                 minWidth: 0,
+    //                 height: "100vh",
+    //             }}
+    //         >
+    //             {/* Scrollable Content */}
+    //             <Box
+    //                 sx={{
+    //                     flex: 1,
+    //                     overflowY: "auto",
+    //                     p: 2,
+    //                     scrollbarWidth: "none",
+    //                     msOverflowStyle: "none",
+    //                     "&::-webkit-scrollbar": {
+    //                         display: "none",
+    //                     },
+    //                     // bgcolor: "#f9fafb",
+    //                 }}
+    //             >
+    //                 <Outlet />
+    //             </Box>
+    //         </Box>
+    //     </Box>
+    // );
 };
 
 export default memo(RouteLayout);

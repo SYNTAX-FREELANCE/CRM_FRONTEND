@@ -20,6 +20,7 @@ import { TastkColumns } from "./callcolumn";
 import LeadDetailsDialog from "./LeadDetailsDrawer";
 import LeadDetailsDrawer from "./LeadDetailsDrawer";
 import { axioslogin } from "../Axios/axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 export default function FreshCallsWorkspace() {
@@ -29,17 +30,17 @@ export default function FreshCallsWorkspace() {
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
-
+  const queryClient = useQueryClient();
 
   const { data: LeadMasterDetail } = useLeadMaster();
 
-  const { data: FreshCalls = [], refetch: refetchmyactivecalls } = useGetMyActiveCalls(id, statusFilter);
-
+  const { data: FreshCalls = [], isLoading: LoadingTableData } = useGetMyActiveCalls(id, statusFilter);
 
   const openLead = (lead) => {
     setSelectedLead(lead);
     setDetailOpen(true);
   };
+
 
   const getFreshCalls = async () => {
     console.log("calling");
@@ -50,7 +51,9 @@ export default function FreshCallsWorkspace() {
       const { success, data, message } = response.data;
       if (success === 0) return infoNotify(message);
       if (success !== 0) return successNotify("Next Batch Fetched Successfully");
-      refetchmyactivecalls()
+      queryClient.invalidateQueries({
+        queryKey: ["mycalls", id],
+      });
     } catch (error) {
       errorNotify("Error in Fetching Next Queue..!", error);
     }
@@ -150,94 +153,6 @@ export default function FreshCallsWorkspace() {
             </Button>
           </Stack>
         </Box>
-
-        {/* <Box sx={{ px: { xs: 2, md: 3 }, pt: 3, pb: 1, flex: "0 0 auto" }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 2,
-              flexWrap: { xs: "wrap", md: "nowrap" },
-              width: "100%",
-            }}
-          >
-            {summaryData.map((item) => (
-              <Card
-                key={item.label}
-                elevation={0}
-                sx={{
-                  flex: "1 1 0px",
-                  minWidth: { xs: "calc(50% - 8px)", sm: "calc(33.33% - 12px)", md: "0" },
-                  borderRadius: 4,
-                  border: "1px solid rgba(255, 255, 255, 0.65)",
-                  borderLeft: `4px solid ${item.color}`,
-                  background: "rgb(255, 255, 255)",
-                  // backdropFilter: "blur(12px)",
-                  boxShadow: "0 25px 10px rgba(189, 208, 249, 0.3)",
-                }}
-              >
-                <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
-                  <Typography variant="caption" color="#475569" fontWeight={800} sx={{ textTransform: "uppercase", letterSpacing: "0.5px", fontSize: 10 }}>
-                    {item.label}
-                  </Typography>
-                  <Typography variant="h4" fontWeight={900} sx={{ color: item.color, mt: 1, letterSpacing: "-1px" }}>
-                    {item.value}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        </Box> */}
-
-        {/* <Box sx={{ px: { xs: 2, md: 3 }, pt: 3, pb: 1, flex: "0 0 auto" }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "repeat(2, minmax(0, 1fr))",
-                sm: "repeat(3, minmax(0, 1fr))",
-                md: "repeat(5, minmax(0, 1fr))",
-                 lg: "repeat(5, minmax(0, 1fr))",
-              },
-              gap: 2,
-              width: "100%",
-            }}
-          >
-            {summaryData.map((item) => (
-              <Card
-                key={item.label}
-                elevation={0}
-                sx={{
-                  minWidth: 0,
-                  borderRadius: 4,
-                  border: "1px solid rgba(255, 255, 255, 0.65)",
-                  borderLeft: `4px solid ${item.color}`,
-                  background: "rgb(255, 255, 255)",
-                  boxShadow: "0 25px 10px rgba(189, 208, 249, 0.3)",
-                }}
-              >
-                <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
-                  <Typography
-                    variant="caption"
-                    color="#475569"
-                    fontWeight={800}
-                    sx={{ textTransform: "uppercase", letterSpacing: "0.5px", fontSize: 10 }}
-                  >
-                    {item.label}
-                  </Typography>
-                  <Typography
-                    variant="h4"
-                    fontWeight={900}
-                    sx={{ color: item.color, mt: 1, letterSpacing: "-1px" }}
-                  >
-                    {item.value}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        </Box> */}
-
         <Box
           sx={{
             px: { xs: 2, md: 3 },
@@ -255,7 +170,7 @@ export default function FreshCallsWorkspace() {
             flexWrap="wrap"
             sx={{ mb: 2, alignItems: "center", flex: "0 0 auto" }}
           >
-            {(ActiveStatus || []).map((status) => {
+            {(ActiveStatus || [])?.map((status) => {
               const isActive = statusFilter === status.status_id;
 
               return (
@@ -290,8 +205,10 @@ export default function FreshCallsWorkspace() {
               );
             })}
 
-            <Typography variant="body2" sx={{ alignSelf: "center", ml: "auto", color: "#475569", fontWeight: 700 }}>
-              Showing {filteredRows.length} records
+            <Typography variant="body2"
+              sx={{ alignSelf: "center", ml: "auto", color: "#475569", fontWeight: 700 }}>
+              Showing {filteredRows?.length}
+              records
             </Typography>
           </Stack>
 
@@ -317,6 +234,13 @@ export default function FreshCallsWorkspace() {
               onRowClick={(params) => openLead(params.row)}
               pageSizeOptions={[5, 10, 25, 50]}
               rowHeight={36}
+              loading={LoadingTableData}
+              slotProps={{
+                loadingOverlay: {
+                  variant: "skeleton",
+                  noRowsVariant: "skeleton",
+                },
+              }}
               columnHeaderHeight={44}
               initialState={{
                 pagination: {
@@ -370,13 +294,13 @@ export default function FreshCallsWorkspace() {
             />
           </Paper>
         </Box>
+
       </Paper>
 
       <LeadDetailsDrawer
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
         selectedLead={selectedLead}
-        refetchFreshCalls={refetchmyactivecalls}
       />
     </Box>
   );
