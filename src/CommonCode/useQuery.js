@@ -16,6 +16,10 @@ import {
   FetchNewCustomer,
   getFreshCalls,
   getMyActiveCalls,
+  getCallFollowUp,
+  getLeadCallHistory,
+  getDashboardCounts,
+  getDashboardReminders,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -137,6 +141,33 @@ export const useFectchFreshCalls = (empid) => {
   });
 };
 
+
+export const useFetchDashBoardCounts = (empid) => {
+  return useQuery({
+    queryKey: ["emp-dashbordcount", empid],
+    queryFn: () => getDashboardCounts(empid),
+    staleTime: Infinity,
+    enabled: !!empid
+  });
+};
+
+
+export const useFetchDashBoardReminders = (empid) => {
+  return useQuery({
+    queryKey: ["emp-reminders", empid],
+    queryFn: () => getDashboardReminders(empid),
+    enabled: !!empid,
+    //  keeps data "fresh for a while"
+    staleTime: 60 * 1000, // 1 minute
+    //  refresh when user comes back
+    refetchOnWindowFocus: true,
+    //  avoid unnecessary refetch loops
+    refetchOnMount: false,
+    refetchOnReconnect: false
+  });
+};
+
+
 export const useGetMyActiveCalls = (empid, statusFilter) => {
   return useQuery({
     queryKey: ["mycalls", empid, statusFilter],
@@ -144,5 +175,29 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
     staleTime: 0,
     enabled: !!empid && !!statusFilter,
     refetchOnWindowFocus: false,
+  });
+};
+
+
+
+
+export const useGetLeadHistory = (leadId, enabled) => {
+  return useQuery({
+    queryKey: ["call-history", leadId],
+    queryFn: () => getLeadCallHistory(leadId),
+    enabled,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
+};
+export const useFollowUpDetail = (leadId, statusId, enabled) => {
+  return useQuery({
+    queryKey: ["call-followup", leadId, statusId],
+    queryFn: () => getCallFollowUp(leadId, statusId),
+    enabled,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 };
