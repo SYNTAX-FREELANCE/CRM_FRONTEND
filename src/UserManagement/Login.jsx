@@ -62,8 +62,11 @@ const Login = () => {
                 username,
                 password,
             });
-            const { success, message, user } = response?.data ?? {}
+            const { success, message, user, attendance_id } = response?.data ?? {}
             if (success !== 1) return warningNotify(message);
+            if (attendance_id) {
+                localStorage.setItem("attendance_id", attendance_id);
+            }
             storeUserData(user);
             login(user);
             navigate("/home", { replace: true });
