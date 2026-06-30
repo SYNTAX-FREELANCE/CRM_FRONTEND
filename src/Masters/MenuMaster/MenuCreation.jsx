@@ -50,7 +50,7 @@ const MenuCreation = () => {
             }
         } catch (error) {
             console.error("getDropdownData error:", error);
-            warningNotify("Failed to fetch dropdown options");
+            // warningNotify("Failed to fetch dropdown options");
         }
     };
 

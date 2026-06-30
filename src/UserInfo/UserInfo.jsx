@@ -15,8 +15,6 @@ import {
 } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import BusinessIcon from "@mui/icons-material/Business";
-import WorkIcon from "@mui/icons-material/Work";
 import GridViewIcon from "@mui/icons-material/GridView";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
@@ -88,7 +86,8 @@ const UserInfo = () => {
 
     // Handle viewing employee details
     const handleViewDetails = (emp) => {
-        navigate(`/home/userinfo/${emp.employee_id}`);
+        // navigate(`/home/userinfo/${emp.employee_id}`);
+        navigate(`/home/userinfo/${emp.user_id}`);
     };
 
 

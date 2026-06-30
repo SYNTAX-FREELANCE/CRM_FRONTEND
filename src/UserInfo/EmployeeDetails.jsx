@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Avatar,
     Box,
@@ -11,7 +11,6 @@ import {
     Stack,
     Typography,
     CircularProgress,
-    Tooltip,
 } from "@mui/joy";
 
 import {
@@ -25,46 +24,41 @@ import {
     LocationOn,
     PhoneAndroid,
     Work,
-    Groups,
-    TrendingUp,
-    EventAvailable,
     KeyboardArrowDown,
     KeyboardArrowUp,
     ContentCopy,
-    PlayArrow,
-    Pause,
     ChevronLeft,
     ChevronRight,
-    Settings,
-    ExitToApp,
-    Assignment,
-    LocalOffer,
-    AutoAwesome,
     NorthEast,
 } from "@mui/icons-material";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { axioslogin } from "../Axios/axios";
 import { errorNotify, successNotify } from "../constant/Constant";
+import { useEmployeeProfile, useEmployeePerformance, useFetchDashBoardCounts, useFetchDashBoardReminders, useGetAttendanceByDate } from "../CommonCode/useQuery";
 
 const EmployeeDetails = () => {
     const navigate = useNavigate();
     const { employeeId } = useParams();
 
-    const [employee, setEmployee] = useState(null);
-    const [loadingEmp, setLoadingEmp] = useState(true);
+    const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
 
-    const [performanceData, setPerformanceData] = useState(null);
-    const [loadingPerf, setLoadingPerf] = useState(false);
+    const { data: employee, isLoading: loadingEmp } = useEmployeeProfile(employeeId);
+    const { data: performanceData, } = useEmployeePerformance(employee ? employeeId : null);
+    const { data: TotalCount = [] } = useFetchDashBoardCounts(employee?.user_id);
+    const { data: remindersData = [] } = useFetchDashBoardReminders(employee?.user_id);
+    const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
 
-    // Accordion Expansion states (Initially collapsed)
-    const [personalExpanded, setPersonalExpanded] = useState(false);
-    const [companyExpanded, setCompanyExpanded] = useState(false);
+
+    console.log("employee:", employee);
+
+    console.log("performanceData", performanceData);
+
+    console.log("TotalCount:", TotalCount);
+
+    console.log("remindersData:", remindersData);
+
+
     const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
-
-    // Play/Pause active task state
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [activeTime, setActiveTime] = useState("03:21:49");
 
     // Dynamic Interactive Calendar state (Defaulting to current local date)
     const [calendarDate, setCalendarDate] = useState(new Date());
@@ -140,93 +134,6 @@ const EmployeeDetails = () => {
 
     const activeEvents = getActiveEvents(selectedDate);
 
-    // Dynamic Log In & Log Out Times generator
-    const getLoginLogoutLog = (date) => {
-        const dateKey = formatDateKey(date);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-
-        const baseLogs = {
-            [`${year}-${month}-05`]: { login: "08:55 AM", logout: "06:00 PM", status: "On Time", color: "success" },
-            [`${year}-${month}-12`]: { login: "08:50 AM", logout: "06:05 PM", status: "On Time", color: "success" },
-            [`${year}-${month}-19`]: { login: "09:15 AM", logout: "06:00 PM", status: "Late Check-in", color: "warning" },
-            [`${year}-${month}-26`]: { login: "08:58 AM", logout: "05:58 PM", status: "On Time", color: "success" }
-        };
-
-        if (baseLogs[dateKey]) return baseLogs[dateKey];
-
-        const todayStr = formatDateKey(new Date());
-        if (dateKey === todayStr) {
-            return { login: "08:58 AM", logout: "06:02 PM", status: "On Time", color: "success" };
-        }
-
-        const dayOfWeek = date.getDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6 && date <= new Date()) {
-            const hash = (date.getDate() + date.getMonth() + date.getFullYear()) % 3;
-            if (hash === 0) {
-                return { login: "08:54 AM", logout: "05:59 PM", status: "On Time", color: "success" };
-            } else if (hash === 1) {
-                return { login: "09:08 AM", logout: "06:02 PM", status: "Late Check-in", color: "warning" };
-            } else {
-                return { login: "08:48 AM", logout: "06:10 PM", status: "On Time", color: "success" };
-            }
-        }
-        return null;
-    };
-
-    const activeLog = getLoginLogoutLog(selectedDate);
-
-    // Fetch employee main profile info
-    useEffect(() => {
-        const fetchEmployeeProfile = async () => {
-            setLoadingEmp(true);
-            try {
-                const response = await axioslogin.get("/userinfo/employees");
-                if (response.data && response.data.success === 1) {
-                    const list = response.data.data || [];
-                    const found = list.find((e) => String(e.employee_id) === String(employeeId));
-                    if (found) {
-                        setEmployee(found);
-                        // Fetch performance details initially in monthly range
-                        fetchPerformance(found.employee_id);
-                    } else {
-                        errorNotify("Employee profile not found");
-                    }
-                } else {
-                    errorNotify("Failed to load employee directory");
-                }
-            } catch (error) {
-                console.error("Error fetching employee details:", error);
-                errorNotify("Error retrieving employee profile data");
-            } finally {
-                setLoadingEmp(false);
-            }
-        };
-
-        if (employeeId) {
-            fetchEmployeeProfile();
-        }
-    }, [employeeId]);
-
-    // Fetch performance details
-    const fetchPerformance = async (empId) => {
-        setLoadingPerf(true);
-        try {
-            const response = await axioslogin.get(
-                `/userinfo/performance/${empId}?range=monthly`
-            );
-            if (response.data && response.data.success === 1) {
-                setPerformanceData(response.data.data);
-            } else {
-                setPerformanceData(null);
-            }
-        } catch (error) {
-            console.error("Error fetching performance details:", error);
-            setPerformanceData(null);
-        } finally {
-            setLoadingPerf(false);
-        }
-    };
 
     // Calculate sum of metrics
     const getSummaryMetrics = () => {
@@ -259,29 +166,40 @@ const EmployeeDetails = () => {
         }
     };
 
+    const getStatusStyle = (statusName) => {
+        const name = statusName.toUpperCase();
+        if (name.includes("NEW")) return { color: "#3b82f6", bg: "rgba(59, 130, 246, 0.08)" };
+        if (name.includes("CALLBACK")) return { color: "#ea580c", bg: "rgba(234, 88, 12, 0.08)" };
+        if (name.includes("QUOTE")) return { color: "#6366f1", bg: "rgba(99, 102, 241, 0.08)" };
+        if (name.includes("APPOINMENT") || name.includes("APPOINTMENT")) return { color: "#a855f7", bg: "rgba(168, 85, 247, 0.08)" };
+        if (name.includes("SOLD")) return { color: "#10b981", bg: "rgba(16, 185, 129, 0.08)" };
+        return { color: "#ef4444", bg: "rgba(239, 68, 68, 0.08)" };
+    };
+
     const metricsSummary = getSummaryMetrics();
+
+    const perfRecord = performanceData && performanceData.length > 0 ? performanceData[0] : null;
 
     // Map DB values to template attributes with Call Center profession fallbacks
     const displayEmployee = employee ? {
         employee_id: employee.employee_id,
-        name: employee.name || "Najitha Basheer",
-        role: employee.role_name || "Call Center Executive",
-        company: employee.company_name || "ABC Technologies",
-        department: "Tele-Marketing & Sales",
-        mobile: employee.mobile_number_1 || "+91 7356825344",
-        email: employee.email || "najithabasheer86@gmail.com",
-        gender: "Female",
-        dob: "29 Oct 1992",
-        address: "Kochi, Kerala",
+        name: employee.name || "-",
+        role: employee.role_name || "-",
+        company: employee.company_name || "-",
+        mobile: employee.mobile_number_1 || "-",
+        email: employee.email || "-",
+        gender: (perfRecord && perfRecord.gender) || "-",
+        dob: (perfRecord && perfRecord.age ? `${perfRecord.age} years old` : null) || "-",
+        address: "-",
         joining: formatDate(employee.date_of_join),
-        reporting: "David Sir",
-        calls: metricsSummary.calls || 321,
-        appointments: metricsSummary.appointments || 82,
-        attendance: "96%",
-        leads: metricsSummary.callbacks || 45,
-        sold: 14,
-    } : null;
+        calls: metricsSummary.calls || 0,
+        appointments: metricsSummary.appointments || 0,
+        attendance: "-",
+        leads: metricsSummary.callbacks || 0,
+        sold: 0,
+    } : null
 
+    // role_name,company_name
     // Helper color schemas for visual capsules
     const getColorStyles = (color) => {
         const schemas = {
@@ -399,115 +317,44 @@ const EmployeeDetails = () => {
                 </Button>
             </Box>
 
-            {/* Top Row: 3 Stats Cards */}
-            <Grid container spacing={3.5}>
-                {/* Card 1: Calls / In Progress */}
-                <Grid xs={12} sm={4}>
-                    <Card
-                        sx={{
-                            p: 3,
-                            borderRadius: "24px",
-                            bgcolor: "white",
-                            border: "1px solid rgba(0,0,0,0.02)",
-                            borderLeft: "6px solid #3b82f6",
-                            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.02)",
-                            position: "relative",
-                            overflow: "hidden",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                transform: "translateY(-4px)",
-                                boxShadow: "0 15px 35px rgba(59, 130, 246, 0.06)"
-                            }
-                        }}
-                    >
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Calls Handled
-                            </Typography>
-                            <Avatar size="sm" sx={{ bgcolor: "rgba(59, 130, 246, 0.08)", color: "#3b82f6", width: 26, height: 26 }}>
-                                <NorthEast sx={{ fontSize: 12 }} />
-                            </Avatar>
-                        </Box>
-                        <Typography level="h1" sx={{ fontWeight: 900, color: "#1e1b4b", mt: 1.5, fontSize: "32px", fontFamily: "monospace" }}>
-                            {displayEmployee.calls}
-                        </Typography>
-                        <Typography level="body-xs" sx={{ color: "success.500", fontWeight: 800, mt: 0.5, alignSelf: "flex-end", bgcolor: "rgba(16, 185, 129, 0.06)", px: 1, py: 0.25, borderRadius: "6px" }}>
-                            +12% last week
-                        </Typography>
-                    </Card>
-                </Grid>
-
-                {/* Card 2: Appointments / Completed */}
-                <Grid xs={12} sm={4}>
-                    <Card
-                        sx={{
-                            p: 3,
-                            borderRadius: "24px",
-                            bgcolor: "white",
-                            border: "1px solid rgba(0,0,0,0.02)",
-                            borderLeft: "6px solid #ea580c",
-                            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.02)",
-                            position: "relative",
-                            overflow: "hidden",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                transform: "translateY(-4px)",
-                                boxShadow: "0 15px 35px rgba(234, 88, 12, 0.06)"
-                            }
-                        }}
-                    >
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Appointments
-                            </Typography>
-                            <Avatar size="sm" sx={{ bgcolor: "rgba(234, 88, 12, 0.08)", color: "#ea580c", width: 26, height: 26 }}>
-                                <NorthEast sx={{ fontSize: 12 }} />
-                            </Avatar>
-                        </Box>
-                        <Typography level="h1" sx={{ fontWeight: 900, color: "#1e1b4b", mt: 1.5, fontSize: "32px", fontFamily: "monospace" }}>
-                            {displayEmployee.appointments}
-                        </Typography>
-                        <Typography level="body-xs" sx={{ color: "danger.500", fontWeight: 800, mt: 0.5, alignSelf: "flex-end", bgcolor: "rgba(239, 68, 68, 0.06)", px: 1, py: 0.25, borderRadius: "6px" }}>
-                            -3% last week
-                        </Typography>
-                    </Card>
-                </Grid>
-
-                {/* Card 3: Leads / Salary */}
-                <Grid xs={12} sm={4}>
-                    <Card
-                        sx={{
-                            p: 3,
-                            borderRadius: "24px",
-                            bgcolor: "white",
-                            border: "1px solid rgba(0,0,0,0.02)",
-                            borderLeft: "6px solid #10b981",
-                            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.02)",
-                            position: "relative",
-                            overflow: "hidden",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                transform: "translateY(-4px)",
-                                boxShadow: "0 15px 35px rgba(16, 185, 129, 0.06)"
-                            }
-                        }}
-                    >
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Leads Distribution
-                            </Typography>
-                            <Avatar size="sm" sx={{ bgcolor: "rgba(16, 185, 129, 0.08)", color: "#10b981", width: 26, height: 26 }}>
-                                <NorthEast sx={{ fontSize: 12 }} />
-                            </Avatar>
-                        </Box>
-                        <Typography level="h1" sx={{ fontWeight: 900, color: "#1e1b4b", mt: 1.5, fontSize: "32px", fontFamily: "monospace" }}>
-                            {displayEmployee.leads}
-                        </Typography>
-                        <Typography level="body-xs" sx={{ color: "success.500", fontWeight: 800, mt: 0.5, alignSelf: "flex-end", bgcolor: "rgba(16, 185, 129, 0.06)", px: 1, py: 0.25, borderRadius: "6px" }}>
-                            +10% last month
-                        </Typography>
-                    </Card>
-                </Grid>
+            {/* Top Row: Dynamic Stats Cards */}
+            <Grid container spacing={2.5}>
+                {TotalCount.map((item, idx) => {
+                    const style = getStatusStyle(item.status_name);
+                    return (
+                        <Grid key={idx} xs={12} sm={4} md={2}>
+                            <Card
+                                sx={{
+                                    p: 2.5,
+                                    borderRadius: "20px",
+                                    bgcolor: "white",
+                                    border: "1px solid rgba(0,0,0,0.02)",
+                                    borderLeft: `6px solid ${style.color}`,
+                                    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.015)",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    transition: "all 0.3s ease",
+                                    "&:hover": {
+                                        transform: "translateY(-4px)",
+                                        boxShadow: `0 10px 25px rgba(15, 23, 42, 0.06)`
+                                    }
+                                }}
+                            >
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                    <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                        {item.status_name}
+                                    </Typography>
+                                    <Avatar size="sm" sx={{ bgcolor: style.bg, color: style.color, width: 24, height: 24 }}>
+                                        <NorthEast sx={{ fontSize: 11 }} />
+                                    </Avatar>
+                                </Box>
+                                <Typography level="h2" sx={{ fontWeight: 950, color: "#1e1b4b", mt: 1.5, fontSize: "26px", fontFamily: "monospace" }}>
+                                    {item.total_count}
+                                </Typography>
+                            </Card>
+                        </Grid>
+                    );
+                })}
             </Grid>
 
             {/* Row 2: Profile Widget (Left) + Overall Performance (Middle) + Calendar Widget (Right) */}
@@ -575,7 +422,7 @@ const EmployeeDetails = () => {
                                     bgcolor: "#e0e7ff",
                                     color: "#4f46e5",
                                     fontSize: "32px",
-                                    fontWeight: 900
+                                    fontWeight: 800
                                 }}
                             >
                                 {displayEmployee.name.charAt(0)}
@@ -589,9 +436,26 @@ const EmployeeDetails = () => {
                                     <Typography level="title-lg" sx={{ fontWeight: 900, color: "#1e1b4b" }} noWrap>
                                         {displayEmployee.name}
                                     </Typography>
-                                    <Typography level="body-xs" sx={{ color: "#7c3aed", fontWeight: 800, mt: 0.25 }} noWrap>
-                                        {displayEmployee.role}
-                                    </Typography>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+                                        {/* <Typography level="body-xs" sx={{ color: "#7c3aed", fontWeight: 800 }} noWrap>
+                                            {displayEmployee.role}
+                                        </Typography> */}
+                                        <Chip
+                                            size="sm"
+                                            variant="soft"
+                                            sx={{
+                                                fontSize: "10px",
+                                                fontWeight: 800,
+                                                bgcolor: "rgba(124, 58, 237, 0.08)",
+                                                color: "#7c3aed",
+                                                px: 1,
+                                                py: 0.25,
+                                                borderRadius: "6px"
+                                            }}
+                                        >
+                                            #{displayEmployee.employee_id}
+                                        </Chip>
+                                    </Box>
                                 </Box>
 
                                 {/* Action Buttons Capsule */}
@@ -640,13 +504,10 @@ const EmployeeDetails = () => {
                             </Box>
                             <Divider sx={{ mb: 2, opacity: 0.6 }} />
                             <Stack spacing={1.5}>
-                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                    <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>Department</Typography>
-                                    <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.department}</Typography>
-                                </Box>
+
                                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                                     <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>Worksite Location</Typography>
-                                    <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.address}</Typography>
+                                    <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.company}</Typography>
                                 </Box>
                             </Stack>
                         </Box>
@@ -880,169 +741,83 @@ const EmployeeDetails = () => {
                             height: "100%"
                         }}
                     >
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2.5, flexWrap: "wrap", gap: 1 }}>
                             <Box>
                                 <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b" }}>
-                                    Log In & Log Out Times
-                                </Typography>
-                                <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, mt: 0.25 }}>
-                                    For: {selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                    Attendance Session
                                 </Typography>
                             </Box>
-                            <Avatar size="sm" sx={{ bgcolor: "rgba(99, 102, 241, 0.08)", color: "#6366f1", width: 28, height: 28 }}>
-                                <CalendarMonth sx={{ fontSize: 15 }} />
-                            </Avatar>
+                            <input
+                                type="date"
+                                value={attendanceDate}
+                                onChange={(e) => setAttendanceDate(e.target.value)}
+                                style={{
+                                    border: "1px solid rgba(0,0,0,0.08)",
+                                    background: "#f8fafc",
+                                    fontSize: "12px",
+                                    fontWeight: 800,
+                                    padding: "6px 12px",
+                                    borderRadius: "8px",
+                                    color: "#1e1b4b",
+                                    fontFamily: "inherit",
+                                    outline: "none",
+                                    cursor: "pointer"
+                                }}
+                            />
                         </Box>
 
-                        {/* Active selected date log */}
-                        {activeLog ? (
-                            <Box
-                                sx={{
-                                    p: 2,
-                                    borderRadius: "18px",
-                                    bgcolor: "rgba(59, 130, 246, 0.03)",
-                                    border: "1px solid rgba(59, 130, 246, 0.12)",
-                                    mb: 2.5,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1.5
-                                }}
-                            >
-                                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Typography level="title-sm" sx={{ fontWeight: 800, color: "#1e1b4b" }}>
-                                        Selected Date Log
-                                    </Typography>
-                                    <Chip
-                                        size="sm"
-                                        variant="soft"
-                                        color={activeLog.color}
-                                        sx={{ fontWeight: 800, fontSize: "10px" }}
-                                    >
-                                        {activeLog.status}
-                                    </Chip>
-                                </Stack>
+                        {loadingAttendance ? (
+                            <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+                                <CircularProgress size="sm" />
+                            </Box>
+                        ) : attendanceData ? (
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                {/* Check In / Out Cards */}
                                 <Grid container spacing={2}>
                                     <Grid xs={6}>
-                                        <Box sx={{ p: 1.5, borderRadius: "12px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.02)" }}>
-                                            <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, mb: 0.5 }}>Check In</Typography>
-                                            <Typography level="title-sm" sx={{ fontWeight: 900, color: "#10b981", fontFamily: "monospace" }}>
-                                                {activeLog.login}
+                                        <Box sx={{ p: 2, borderRadius: "16px", bgcolor: "rgba(16, 185, 129, 0.04)", border: "1px solid rgba(16, 185, 129, 0.12)", textAlign: "center" }}>
+                                            <Typography level="body-xs" sx={{ color: "success.700", fontWeight: 800, textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.2px" }}>First Log In</Typography>
+                                            <Typography level="title-md" sx={{ fontWeight: 900, color: "#10b981", fontFamily: "monospace", mt: 1, fontSize: "14px" }}>
+                                                {attendanceData.first_login ? new Date(attendanceData.first_login).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }) : "N/A"}
                                             </Typography>
                                         </Box>
                                     </Grid>
                                     <Grid xs={6}>
-                                        <Box sx={{ p: 1.5, borderRadius: "12px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.02)" }}>
-                                            <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, mb: 0.5 }}>Check Out</Typography>
-                                            <Typography level="title-sm" sx={{ fontWeight: 900, color: "#ea580c", fontFamily: "monospace" }}>
-                                                {activeLog.logout}
+                                        <Box sx={{ p: 2, borderRadius: "16px", bgcolor: "rgba(249, 115, 22, 0.04)", border: "1px solid rgba(249, 115, 22, 0.12)", textAlign: "center" }}>
+                                            <Typography level="body-xs" sx={{ color: "orange.700", fontWeight: 800, textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.2px" }}>Last Log Out</Typography>
+                                            <Typography level="title-md" sx={{ fontWeight: 900, color: "#ea580c", fontFamily: "monospace", mt: 1, fontSize: "14px" }}>
+                                                {attendanceData.last_logout ? new Date(attendanceData.last_logout).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }) : "N/A"}
                                             </Typography>
                                         </Box>
                                     </Grid>
                                 </Grid>
+
+                                {/* Productivity hours */}
+                                <Box sx={{ p: 2, borderRadius: "16px", bgcolor: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.12)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <Box>
+                                        <Typography level="body-xs" sx={{ color: "primary.700", fontWeight: 800, textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.2px" }}>Productivity</Typography>
+                                        <Typography level="title-sm" sx={{ fontWeight: 800, color: "#1e1b4b", mt: 0.5 }}>Total Hours Logged</Typography>
+                                    </Box>
+                                    <Typography level="h3" sx={{ fontWeight: 900, color: "#2563eb", fontFamily: "monospace", fontSize: "18px" }}>
+                                        {attendanceData.total_productivity_hours ? `${Number(attendanceData.total_productivity_hours).toFixed(2)} Hrs` : "0.00 Hrs"}
+                                    </Typography>
+                                </Box>
                             </Box>
                         ) : (
                             <Box
                                 sx={{
-                                    p: 2.5,
+                                    p: 3,
                                     borderRadius: "18px",
                                     bgcolor: "rgba(241, 245, 249, 0.5)",
                                     border: "1px dashed rgba(0,0,0,0.1)",
-                                    mb: 2.5,
                                     textAlign: "center"
                                 }}
                             >
-                                <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>
-                                    No log records found for this date (Weekend / Future Date)
+                                <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700 }}>
+                                    No attendance records found for this date.
                                 </Typography>
                             </Box>
                         )}
-
-                        {/* Section header for history */}
-                        <Typography level="body-xs" sx={{ fontWeight: 800, color: "neutral.500", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>
-                            Recent Logs History (Last 5 Workdays)
-                        </Typography>
-
-                        {/* Scrollable list of recent check-in times */}
-                        <Box
-                            sx={{
-                                overflowY: "auto",
-                                maxHeight: "150px",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 1.2,
-                                pr: 0.5,
-                                "&::-webkit-scrollbar": { width: "4px" },
-                                "&::-webkit-scrollbar-thumb": {
-                                    bgcolor: "rgba(0,0,0,0.08)",
-                                    borderRadius: "2px"
-                                }
-                            }}
-                        >
-                            {(() => {
-                                const historyLogs = [];
-                                // Generate past 5 workdays
-                                let daysAgo = 1;
-                                while (historyLogs.length < 5 && daysAgo < 15) {
-                                    const pastDate = new Date();
-                                    pastDate.setDate(pastDate.getDate() - daysAgo);
-                                    const dayOfWeek = pastDate.getDay();
-                                    // Ignore weekends
-                                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                                        const log = getLoginLogoutLog(pastDate);
-                                        if (log) {
-                                            historyLogs.push({ date: pastDate, ...log });
-                                        }
-                                    }
-                                    daysAgo++;
-                                }
-
-                                return historyLogs.map((historyLog, idx) => {
-                                    const dateLabel = historyLog.date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                                    return (
-                                        <Box
-                                            key={idx}
-                                            onClick={() => {
-                                                setSelectedDate(historyLog.date);
-                                                setCalendarDate(historyLog.date);
-                                            }}
-                                            sx={{
-                                                p: 1.25,
-                                                borderRadius: "12px",
-                                                bgcolor: "rgba(248, 250, 252, 0.75)",
-                                                border: "1px solid rgba(0,0,0,0.02)",
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                cursor: "pointer",
-                                                transition: "all 0.25s ease",
-                                                "&:hover": {
-                                                    bgcolor: "rgba(99, 102, 241, 0.05)",
-                                                    borderColor: "rgba(99, 102, 241, 0.15)",
-                                                    transform: "translateX(4px)"
-                                                }
-                                            }}
-                                        >
-                                            <Box>
-                                                <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700 }}>
-                                                    {dateLabel}
-                                                </Typography>
-                                                <Typography level="body-xs" sx={{ fontWeight: 800, color: "#1e1b4b", mt: 0.1 }}>
-                                                    In: {historyLog.login} | Out: {historyLog.logout}
-                                                </Typography>
-                                            </Box>
-                                            <Chip
-                                                size="sm"
-                                                variant="soft"
-                                                color={historyLog.color}
-                                                sx={{ fontWeight: 800, fontSize: "9px" }}
-                                            >
-                                                {historyLog.status}
-                                            </Chip>
-                                        </Box>
-                                    );
-                                });
-                            })()}
-                        </Box>
                     </Card>
                 </Grid>
 
@@ -1235,10 +1010,8 @@ const EmployeeDetails = () => {
                                     }}
                                 >
                                     <InfoRow icon={<Business />} label="Company" value={displayEmployee.company} color="blue" />
-                                    <InfoRow icon={<Groups />} label="Department" value={displayEmployee.department} color="indigo" />
                                     <InfoRow icon={<Work />} label="Designation" value={displayEmployee.role} color="teal" />
                                     <InfoRow icon={<CalendarMonth />} label="Joining Date" value={displayEmployee.joining} color="blue" />
-                                    <InfoRow icon={<Person />} label="Reporting Manager" value={displayEmployee.reporting} color="orange" />
                                 </Box>
                             </Box>
                         </Grid>

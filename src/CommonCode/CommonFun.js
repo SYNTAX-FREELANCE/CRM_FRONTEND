@@ -289,3 +289,46 @@ export const FetchInsuranceCompanyMaster = async () => {
     );
   }
 };
+
+export const FetchEmployeeProfile = async (employeeId) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get("/userinfo/employees");
+    if (response.data && response.data.success === 1) {
+      const list = response.data.data || [];
+      const found = list.find((e) => String(e.user_id) === String(employeeId));
+      if (found) return found;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchEmployeeProfile error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch employee profile");
+  }
+};
+
+export const FetchEmployeePerformance = async (employeeId) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get(`/userinfo/performance/${employeeId}?range=monthly`);
+    if (response.data && response.data.success === 1) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchEmployeePerformance error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch employee performance");
+  }
+};
+
+export const getAttendanceByDate = async (userId, date) => {
+  if (!userId || !date) return null;
+  try {
+    const response = await axioslogin.get(`/userinfo/attendance?userId=${userId}&date=${date}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return null;
+  } catch (error) {
+    console.error("getAttendanceByDate error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch attendance details");
+  }
+};

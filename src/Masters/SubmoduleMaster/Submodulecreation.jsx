@@ -54,7 +54,7 @@ const Submodulecreation = () => {
             }
         } catch (error) {
             console.error("getActiveModules error:", error);
-            warningNotify("Failed to fetch modules list");
+            // warningNotify("Failed to fetch modules list");
         }
     };
 
@@ -74,7 +74,7 @@ const Submodulecreation = () => {
         }
     };
 
-    
+
     useEffect(() => {
         getActiveModules();
         if (mode === "edit" && id) {
