@@ -24,7 +24,8 @@ const CustomerSearchPage = lazy(() => import("./pages/CustomerSearchPage"));
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
-const UserInfo = lazy(() => import("./UserManagement/UserInfo"));
+const UserInfo = lazy(() => import("./UserInfo/UserInfo"));
+const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
 
 
 const ModuleCreation = lazy(
@@ -60,6 +61,12 @@ const UserRightCreation = lazy(
 );
 const Uploadmaster = lazy(
   () => import("./Masters/ExcelUploadmaster/Uploadmaster"),
+);
+const CustomerCreation = lazy(
+  () => import("./Masters/CustomerMaster/CustomerCreation"),
+);
+const VehicleCreation = lazy(
+  () => import("./Masters/VehicleMaster/VehicleCreation"),
 );
 
 
@@ -99,15 +106,14 @@ const router = createBrowserRouter([
         path: "settings",
         element: withSuspense(Settings),
       },
-       {
+      {
         path: "freshcalls",
         element: withSuspense(FreshCallsWorkspace),
       },
- {
+      {
         path: "allocation",
         element: withSuspense(CustomerAllocation),
       },
-
        {
         path: "search",
         element: withSuspense(CustomerSearchPage),
@@ -181,12 +187,24 @@ const router = createBrowserRouter([
         element: withSuspense(UserInfo),
       },
       {
+        path: "userinfo/:employeeId",
+        element: withSuspense(EmployeeDetails),
+      },
+      {
         path: "setting/Uploadmaster",
         element: withSuspense(Uploadmaster),
       },
       {
         path: "setting/uploadmaster",
         element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "setting/customermaster",
+        element: withSuspense(CustomerCreation),
+      },
+      {
+        path: "setting/vehiclemaster",
+        element: withSuspense(VehicleCreation),
       },
       {
         path: "*",

@@ -10,7 +10,7 @@ import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
-import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
+import { successNotify, warningNotify } from "../../constant/Constant";
 import { axioslogin } from "../../Axios/axios";
 
 const UserRightCreation = () => {
@@ -49,7 +49,7 @@ const UserRightCreation = () => {
             }
         } catch (error) {
             console.error("getDropdownData error:", error);
-            warningNotify("Failed to fetch dropdown options");
+            // warningNotify("Failed to fetch dropdown options");
         }
     };
 

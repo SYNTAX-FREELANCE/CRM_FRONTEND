@@ -20,6 +20,9 @@ import {
   getLeadCallHistory,
   getDashboardCounts,
   getDashboardReminders,
+  FetchEmployeeProfile,
+  FetchEmployeePerformance,
+  getAttendanceByDate,
   getAdminDashboardCount,
   getRecentActivity,
 } from "./CommonFun";
@@ -181,7 +184,6 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
 };
 
 
-
 export const useAdminDashBoardCounts = (from, to) => {
   return useQuery({
     queryKey: ["admin-counts", from, to],
@@ -222,5 +224,29 @@ export const useFollowUpDetail = (leadId, statusId, enabled) => {
     staleTime: 0,
     refetchOnWindowFocus: false,
     keepPreviousData: true,
+  });
+};
+
+export const useEmployeeProfile = (employeeId) => {
+  return useQuery({
+    queryKey: ["employeeProfile", employeeId],
+    queryFn: () => FetchEmployeeProfile(employeeId),
+    enabled: !!employeeId,
+  });
+};
+
+export const useEmployeePerformance = (employeeId) => {
+  return useQuery({
+    queryKey: ["employeePerformance", employeeId],
+    queryFn: () => FetchEmployeePerformance(employeeId),
+    enabled: !!employeeId,
+  });
+};
+
+export const useGetAttendanceByDate = (userId, date) => {
+  return useQuery({
+    queryKey: ["userAttendance", userId, date],
+    queryFn: () => getAttendanceByDate(userId, date),
+    enabled: !!userId && !!date,
   });
 };

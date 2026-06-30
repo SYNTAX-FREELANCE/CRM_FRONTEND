@@ -63,10 +63,10 @@ const Uploadmaster = () => {
     rto: "",
     registration_data: "",
     model: "",
-    vechile_maker: "",
+    vehicle_maker: "",
     engine_number: "",
     chassis_number: "",
-    vechile_class: "",
+    vehicle_class: "",
     vehicle_category: "",
     fuel_type: "",
     seat_capacity: ""
@@ -119,10 +119,10 @@ const Uploadmaster = () => {
                 rto: data.rto || "",
                 registration_data: formatDate(data.registration_date  ),
                 model: data.model || "",
-                vechile_maker: data.vechile_maker || "",
+                vehicle_maker: data.vehicle_maker || "",
                 engine_number: data.engine_number || "",
                 chassis_number: data.chassis_number || "",
-                vechile_class: data.vechile_class || "",
+                vehicle_class: data.vehicle_class || "",
                 vehicle_category: data.vehicle_category || "",
                 fuel_type: data.fuel_type || "",
                 seat_capacity: data.seat_capacity || ""
@@ -353,10 +353,10 @@ const Uploadmaster = () => {
             { field: "rto", headerName: "RTO", width: 120, flex: 0.5 },
             { field: "registration_date", headerName: "Reg Date", width: 120, flex: 0.5 },
             { field: "model", headerName: "Model", width: 120, flex: 0.5 },
-            { field: "vechile_maker", headerName: "Maker", width: 120, flex: 0.5 },
+            { field: "vehicle_maker", headerName: "Maker", width: 120, flex: 0.5 },
             { field: "engine_number", headerName: "Engine No", width: 130, flex: 0.6 },
             { field: "chassis_number", headerName: "Chassis No", width: 140, flex: 0.6 },
-            { field: "vechile_class", headerName: "Class", width: 120, flex: 0.5 },
+            { field: "vehicle_class", headerName: "Class", width: 120, flex: 0.5 },
             { field: "vehicle_category", headerName: "Category", width: 120, flex: 0.5 },
             { field: "fuel_type", headerName: "Fuel", width: 100, flex: 0.4 },
             { field: "seat_capacity", headerName: "Seats", width: 80, flex: 0.3 },
@@ -528,8 +528,8 @@ const Uploadmaster = () => {
             <FormRow label="Vehicle Maker">
               <InputLg
                 placeholder="Enter Vehicle Maker"
-                value={vehicle.vechile_maker}
-                onChange={(e) => setVehicle(prev => ({ ...prev, vechile_maker: e.target.value }))}
+                value={vehicle.vehicle_maker}
+                onChange={(e) => setVehicle(prev => ({ ...prev, vehicle_maker: e.target.value }))}
               />
             </FormRow>
           </Box>
@@ -555,8 +555,8 @@ const Uploadmaster = () => {
             <FormRow label="Vehicle Class">
               <InputLg
                 placeholder="Enter Vehicle Class"
-                value={vehicle.vechile_class}
-                onChange={(e) => setVehicle(prev => ({ ...prev, vechile_class: e.target.value }))}
+                value={vehicle.vehicle_class}
+                onChange={(e) => setVehicle(prev => ({ ...prev, vehicle_class: e.target.value }))}
               />
             </FormRow>
           </Box>
@@ -857,7 +857,7 @@ const Uploadmaster = () => {
                               <td style={{ padding: "8px 12px" }}>{record.mobile_number_1}</td>
                               <td style={{ padding: "8px 12px", fontWeight: 600, color: "#1e3a8a" }}>{record.registration_number}</td>
                               <td style={{ padding: "8px 12px" }}>{record.model || "-"}</td>
-                              <td style={{ padding: "8px 12px" }}>{record.vechile_maker || "-"}</td>
+                              <td style={{ padding: "8px 12px" }}>{record.vehicle_maker || "-"}</td>
                               <td style={{ padding: "8px 12px" }}>{record.fuel_type || "-"}</td>
                             </tr>
                           ))}
