@@ -105,7 +105,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     };
 
     return (
-        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%" }}>
+        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%", }}>
             <Paper
                 elevation={0}
                 sx={{
@@ -222,14 +222,14 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                     Start typing to search customers
                                 </Typography>
                             </Box>
-                        ) : options.length === 0 && !loading ? (
+                        ) : options?.length === 0 && !loading ? (
                             <Box sx={{ p: 2.5, textAlign: "center" }}>
                                 <Typography sx={{ color: "#64748b", fontWeight: 600 }}>
                                     No matching customer found
                                 </Typography>
                             </Box>
                         ) : (
-                            options.map((option) => (
+                            options?.map((option) => (
                                 <Box
                                     key={`${option.customer_id}-${option.vehicle_id || ""}-${option.lead_id || ""}`}
                                     onClick={() => handleSelect(option)}
@@ -255,25 +255,26 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                             bgcolor: "rgba(37,99,235,0.10)",
                                             color: "#2563eb",
                                             fontWeight: 800,
+                                            fontSize: { xs: 14, sm: 16, md: 18 }
                                         }}
                                     >
                                         {(option.customer_name || "?").charAt(0).toUpperCase()}
                                     </Avatar>
 
                                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                                        <Typography sx={{ fontWeight: 800, color: "#0f172a" }} noWrap>
+                                        <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: { xs: 12, sm: 14, md: 16 } }} noWrap>
                                             {option.customer_name || "-"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 13, color: "#2563eb", mt: 0.2 }} noWrap>
+                                        <Typography sx={{ fontSize: 13, color: "#2563eb", mt: 0.2, fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
                                             {option.registration_number
                                                 ? `${option.registration_number}`
                                                 : option.mobile_number_1
-                                                    ? `📞 ${option.mobile_number_1}`
-                                                    : "👤 Customer"}
+                                                    ? ` ${option.mobile_number_1}`
+                                                    : " Customer"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 12, color: "#64748b" }} noWrap>
+                                        <Typography sx={{ fontSize: 12, color: "#64748b", fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
                                             {getSubtitle(option) || "Search result"}
                                         </Typography>
                                     </Box>

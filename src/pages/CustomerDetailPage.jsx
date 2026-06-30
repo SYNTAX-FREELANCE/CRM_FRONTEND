@@ -22,6 +22,7 @@ import Section from "../FreshCall/Components/Section";
 import Row from "../FreshCall/Components/Row";
 import LeadFollowUpCard from "../FreshCall/Components/LeadFollowUpCard";
 import LeadHistoryTimelineItem from "../FreshCall/Components/LeadHistoryTimelineItem";
+import EmptyCustomerState from "./EmptyCustomerState";
 
 const themeColors = {
     blue: "#2563eb",
@@ -115,7 +116,7 @@ const CustomerDetailPanel = ({ customer, loading }) => {
         );
     }
 
-    if (!customer) return null;
+    if (!customer) return <EmptyCustomerState />;
 
     const customerInfo = customer.customer || {};
     const vehicles = customer.vehicles || [];

@@ -247,6 +247,28 @@ export const getMyActiveCalls = async (empid, filter) => {
   }
 };
 
+export const getAdminDashboardCount = async (from, to) => {
+  console.log({
+    from, to
+  });
+
+  if (!from || !to) return [];
+  try {
+    const response = await axioslogin.post(
+      `/lead/admin-count`, {
+      from: from,
+      to: to
+    },
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 export const getCallFollowUp = async (leadid, statusId) => {
   if (!leadid || !statusId) return [];
   try {
@@ -274,6 +296,18 @@ export const getLeadCallHistory = async (leadid) => {
     console.error("getMyActiveCalls error:", error);
   }
 };
+
+export const getRecentActivity = async () => {
+  try {
+    const response = await axioslogin.get(`/lead/employee-recent-activity`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 
 
 
@@ -306,3 +340,45 @@ export const FetchUserInfoEmployees = async () => {
   }
 };
 
+export const FetchEmployeeProfile = async (employeeId) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get("/userinfo/employees");
+    if (response.data && response.data.success === 1) {
+      const list = response.data.data || [];
+      const found = list.find((e) => String(e.user_id) === String(employeeId));
+      if (found) return found;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchEmployeeProfile error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch employee profile");
+  }
+};
+
+export const FetchEmployeePerformance = async (employeeId) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get(`/userinfo/performance/${employeeId}?range=monthly`);
+    if (response.data && response.data.success === 1) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchEmployeePerformance error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch employee performance");
+  }
+};
+
+export const getAttendanceByDate = async (userId, date) => {
+  if (!userId || !date) return null;
+  try {
+    const response = await axioslogin.get(`/userinfo/attendance?userId=${userId}&date=${date}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return null;
+  } catch (error) {
+    console.error("getAttendanceByDate error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch attendance details");
+  }
+};

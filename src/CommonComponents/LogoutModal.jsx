@@ -36,10 +36,11 @@ const LogoutModal = ({ open, onClose, onStartLogout }) => {
         >
             <Box
                 sx={{
-                    width: 340,
+                    width: { xs: 300, sm: 340 },
+                    maxWidth: "95vw",
                     bgcolor: "#ffffff",
-                    borderRadius: 24,
-                    p: 4,
+                    borderRadius: { xs: 16, sm: 24 },
+                    p: { xs: 2.5, sm: 4 },
                     textAlign: "center",
                     position: "relative",
                     overflow: "hidden",
