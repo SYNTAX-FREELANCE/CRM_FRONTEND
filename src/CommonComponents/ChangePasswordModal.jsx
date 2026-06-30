@@ -86,10 +86,11 @@ const ChangePasswordModal = ({ open, onClose }) => {
     >
       <Box
         sx={{
-          width: 380,
+          width: { xs: 320, sm: 380 },
+          maxWidth: "95vw",
           bgcolor: "#ffffff",
-          borderRadius: 24,
-          p: 4,
+          borderRadius: { xs: 16, sm: 24 },
+          p: { xs: 2.5, sm: 4 },
           position: "relative",
           overflow: "hidden",
           boxShadow: "0 20px 40px rgba(0, 0, 0, 0.12)",
@@ -200,15 +201,21 @@ const ChangePasswordModal = ({ open, onClose }) => {
 
             <Box sx={{ display: "flex", gap: 2, mt: 1.5 }}>
               <Button
-                variant="plain"
-                color="neutral"
+                variant="outlined"
                 onClick={handleClose}
                 sx={{
                   flex: 1,
+                  py: 1.4,
                   borderRadius: 12,
-                  color: "#4b5563",
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  border: "1px solid rgba(148, 163, 184, 0.3)",
+                  bgcolor: "rgba(148, 163, 184, 0.1)",
+                  color: "#94a3b8",
+                  boxShadow: "none",
                   "&:hover": {
-                    bgcolor: "#f3f4f6",
+                    bgcolor: "rgba(148, 163, 184, 0.2)",
+                    border: "1px solid rgba(148, 163, 184, 0.5)",
                   },
                 }}
               >
@@ -217,12 +224,19 @@ const ChangePasswordModal = ({ open, onClose }) => {
               <Button
                 type="submit"
                 loading={loading}
+                variant="solid"
                 sx={{
                   flex: 1,
+                  py: 1.4,
                   borderRadius: 12,
-                  bgcolor: "#ea580c",
-                  "&:hover": {
-                    bgcolor: "#d97706",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  bgcolor: "#f4a32a",
+                  boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
+                  color: "#ffffff",
+                  "&:hover:not(:disabled)": {
+                    bgcolor: "#2563eb",
+                    boxShadow: "0 8px 24px rgba(37, 99, 235, 0.4)",
                   },
                 }}
               >

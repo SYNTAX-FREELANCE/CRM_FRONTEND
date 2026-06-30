@@ -10,6 +10,7 @@ import { getAuthUser } from "../constant/Constant";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutModal from "./LogoutModal";
 import ChangePasswordModal from "./ChangePasswordModal";
+import LockResetIcon from "@mui/icons-material/LockReset";
 
 const ReusableSidebar = ({
   menuItems = [],
@@ -33,12 +34,18 @@ const ReusableSidebar = ({
 
   const handleAvatarClick = (event) => {
     event.stopPropagation();
-    setAvatarAnchorEl(event.currentTarget);
+    if (open) {
+      setAvatarAnchorEl(event.currentTarget);
+    }
   };
 
   const handleCloseAvatarMenu = () => {
     setAvatarAnchorEl(null);
   };
+
+  useEffect(() => {
+    setAvatarAnchorEl(null);
+  }, [open]);
 
   const authUser = getAuthUser();
   const {
@@ -114,15 +121,6 @@ const ReusableSidebar = ({
       p: 1
     }}>
       <Box
-
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
@@ -153,6 +151,8 @@ const ReusableSidebar = ({
         >
           {/* Logo/Icon */}
           <Box
+            onClick={() => setOpen(prev => !prev)}
+
             sx={{
               display: "flex",
               alignItems: "center",
@@ -410,7 +410,7 @@ const ReusableSidebar = ({
           onStartLogout={onLogout}
         />
 
-        <Menu
+        {/* <Menu
           anchorEl={avatarAnchorEl}
           open={Boolean(avatarAnchorEl)}
           onClose={handleCloseAvatarMenu}
@@ -440,6 +440,111 @@ const ReusableSidebar = ({
             }}
           >
             Change Password
+          </MenuItem>
+        </Menu> */}
+
+
+        <Menu
+          anchorEl={avatarAnchorEl}
+          open={Boolean(avatarAnchorEl)}
+          onClose={handleCloseAvatarMenu}
+          placement="top-start"
+          sx={{
+            zIndex: 1400,
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 16px 40px rgba(234, 88, 12, 0.15))',
+            mt: { xs: 0, sm: -1 },
+            ml: { xs: 1, sm: 2 },
+            borderRadius: { xs: '16px', sm: '20px' },
+            minWidth: { xs: 200, sm: 240 },
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255, 255, 255, 1)',
+            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.5)',
+            padding: { xs: '6px 0', sm: '8px 0' },
+            '--ListItem-radius': { xs: '12px', sm: '14px' },
+            '& .JoyMenuItem-root': {
+              px: { xs: 1, sm: 1.5 },
+              py: { xs: 1, sm: 1.2 },
+              mx: { xs: 1, sm: 1.5 },
+              my: 0.5,
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              position: 'relative',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: '1px dashed rgba(231, 229, 228, 0.8)' }}>
+            <Typography fontSize={{ xs: "10px", sm: "11px" }} fontWeight={800} color="#ea580c" textTransform="uppercase" letterSpacing="0.8px">
+              Security Settings
+            </Typography>
+          </Box>
+
+          <MenuItem
+            onClick={() => {
+              handleCloseAvatarMenu();
+              setPasswordModalOpen(true);
+            }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: { xs: 1.5, sm: 2 },
+              color: "#374151",
+              fontWeight: 600,
+              fontSize: { xs: "13px", sm: "14px" },
+              zIndex: 1,
+              "&:hover": {
+                bgcolor: "transparent",
+                color: "#ea580c",
+                transform: "translateX(4px)",
+                "& .icon-container": {
+                  transform: "rotate(10deg) scale(1.15)",
+                  background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                  color: "#ffffff",
+                  boxShadow: "0 4px 12px rgba(234, 88, 12, 0.3)",
+                },
+              },
+              "&::before": {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, rgba(234, 88, 12, 0.08) 0%, rgba(249, 115, 22, 0) 100%)',
+                opacity: 0,
+                zIndex: -1,
+                transition: 'opacity 0.3s ease',
+              },
+              "&:hover::before": {
+                opacity: 1,
+              }
+            }}
+          >
+            <Box
+              className="icon-container"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: { xs: 32, sm: 36 },
+                height: { xs: 32, sm: 36 },
+                borderRadius: '10px',
+                background: 'rgba(243, 244, 246, 0.8)',
+                color: '#6b7280',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              <LockResetIcon sx={{ fontSize: { xs: '18px', sm: '20px' } }} />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography sx={{ fontWeight: 600, fontSize: { xs: "13px", sm: "14px" }, lineHeight: 1.2, color: 'inherit' }}>
+                Change Password
+              </Typography>
+              <Typography sx={{ fontSize: { xs: "10px", sm: "11px" }, color: "#9ca3af", mt: 0.3, fontWeight: 500, transition: 'color 0.3s', '.JoyMenuItem-root:hover &': { color: '#fb923c' } }}>
+                Update your credentials
+              </Typography>
+            </Box>
           </MenuItem>
         </Menu>
 
