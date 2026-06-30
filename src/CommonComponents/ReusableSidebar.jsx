@@ -115,14 +115,6 @@ const ReusableSidebar = ({
     }}>
       <Box
 
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
@@ -153,6 +145,7 @@ const ReusableSidebar = ({
         >
           {/* Logo/Icon */}
           <Box
+            onClick={() => setOpen(prev => !prev)}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -160,6 +153,7 @@ const ReusableSidebar = ({
               minWidth: 52,
               minHeight: 52,
               borderRadius: 50,
+              cursor: 'pointer',
               background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
               boxShadow: "0 8px 24px rgba(234, 88, 12, 0.35)",
               animation: "float 3s ease-in-out infinite",

@@ -246,6 +246,28 @@ export const getMyActiveCalls = async (empid, filter) => {
   }
 };
 
+export const getAdminDashboardCount = async (from, to) => {
+  console.log({
+    from, to
+  });
+
+  if (!from || !to) return [];
+  try {
+    const response = await axioslogin.post(
+      `/lead/admin-count`, {
+      from: from,
+      to: to
+    },
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 export const getCallFollowUp = async (leadid, statusId) => {
   if (!leadid || !statusId) return [];
   try {
@@ -273,6 +295,18 @@ export const getLeadCallHistory = async (leadid) => {
     console.error("getMyActiveCalls error:", error);
   }
 };
+
+export const getRecentActivity = async () => {
+  try {
+    const response = await axioslogin.get(`/lead/employee-recent-activity`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 
 
 

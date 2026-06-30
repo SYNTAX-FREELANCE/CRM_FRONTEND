@@ -15,6 +15,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import DataThresholdingIcon from "@mui/icons-material/DataThresholding";
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
+import GridViewIcon from '@mui/icons-material/GridView';
 
 export const Menu = [
   {
@@ -30,7 +31,7 @@ export const Menu = [
   },
   {
     label: "Employee",
-    icon: LocalPhoneIcon,
+    icon: GridViewIcon,
     path: "/home/employee",
   },
   {
@@ -43,12 +44,6 @@ export const Menu = [
     label: "Search",
     icon: SavedSearchIcon,
     path: "/home/search",
-  },
-  {
-    // groupLabel: "Account",
-    label: "Notification",
-    icon: NotificationsIcon,
-    path: "/notifications",
   },
   {
     // groupLabel: "Account",

@@ -54,12 +54,18 @@ const StatusCountCard = ({
                 </Typography>
 
                 <Typography
-                    variant="h4"
+                    fontWeight={900}
+                    fontSize={{ xs: 32, sm: 36, md: 42 }}
                     sx={{
-                        mt: 1,
-                        fontWeight: 900,
-                        color:'#010101',
-                        letterSpacing: "-1px",
+                        mb: 0.5,
+                        color: "#050505",
+                        letterSpacing: 1,
+                        textShadow: `
+                     1px 1px 0px #fff,
+                     2px 2px 0px #d1d5db,
+                     3px 3px 0px #cbd5e1,
+                     4px 4px 6px rgba(0,0,0,0.25)
+                   `,
                     }}
                 >
                     {count}
