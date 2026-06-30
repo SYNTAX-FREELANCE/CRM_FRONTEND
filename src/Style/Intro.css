@@ -1,0 +1,55 @@
+/* Container with smooth fade transition */
+.intro-container {
+  height: 100vh;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: opacity 0.8s ease; /* smooth fade */
+  perspective: 800px;
+}
+
+.intro-container.exit {
+  opacity: 0; /* triggers fade */
+}
+
+/* Logo letters */
+.logo {
+  display: flex;
+  gap: 6px;
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  transform-style: preserve-3d;
+}
+
+/* Each letter pop-in */
+.logo span {
+  display: inline-block;
+  color: white;
+  opacity: 0;
+  transform: translateY(-50px) scale(0.5);
+  animation: letterStepIn 0.8s forwards;
+}
+
+@keyframes letterStepIn {
+  0% { opacity: 0; transform: translateY(-50px) scale(0.5); }
+  50% { opacity: 1; transform: translateY(10px) scale(1.2); }
+  70% { transform: translateY(-5px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Tagline fades in */
+.tagline {
+  margin-top: 12px;
+  color: #9ca3af;
+  opacity: 0;
+  animation: taglineIn 0.8s ease forwards;
+}
+
+@keyframes taglineIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
