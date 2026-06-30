@@ -29,6 +29,8 @@ const menuPathMap = {
     "Bank Master": "/home/setting/bankmaster",
     "User Reg": "/home/setting/userreg",
     "Common View": "/home/setting/commonview",
+    "Customer Master": "/home/setting/customermaster",
+    "Vehicle Master": "/home/setting/vehiclemaster",
 };
 
 // Map database module names to their respective icons

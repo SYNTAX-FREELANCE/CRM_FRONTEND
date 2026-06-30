@@ -14,7 +14,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
-
+import PersonIcon from '@mui/icons-material/Person';
 
 
 export const Menu = [
@@ -56,5 +56,11 @@ export const Menu = [
     label: "Settings",
     icon: SettingsSuggestIcon,
     path: "/home/settings",
+  },
+    {
+    // groupLabel: "Account",
+    label: "Userinfo",
+    icon: PersonIcon,
+    path: "/home/userinfo",
   },
 ];

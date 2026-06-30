@@ -23,7 +23,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [expandedIndex, setExpandedIndex] = useState(0); // Default expand the first section
+  const [expandedIndex, setExpandedIndex] = useState(null); // Default to no expanded section
 
   const master = [
     {
@@ -41,6 +41,8 @@ const Settings = () => {
         { label: "Lead Master", path: "/home/setting/leadmaster", icon: <LeaderboardIcon /> },
         { label: "Vehicle Type Master", path: "/home/setting/vehicletypemaster", icon: <DirectionsCarIcon /> },
         { label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
+        { label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
+        { label: "Vehicle Master", path: "/home/setting/vehiclemaster", icon: <DirectionsCarIcon /> },
       ],
     },
     {
