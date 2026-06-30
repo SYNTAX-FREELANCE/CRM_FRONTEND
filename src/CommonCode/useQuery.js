@@ -14,11 +14,13 @@ import {
   FetchAllCustomers,
   FetchAllVehicles,
   FetchNewCustomer,
+  getFreshCalls,
+  getMyActiveCalls,
+  getCallFollowUp,
+  getLeadCallHistory,
+  getDashboardCounts,
+  getDashboardReminders,
 } from "./CommonFun";
-
-
-
-
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -27,7 +29,6 @@ export const useRoleMaster = () => {
     staleTime: Infinity, // optional (5 min cache)
   });
 };
-
 
 export const useCompanyMaster = () => {
   return useQuery({
@@ -90,7 +91,7 @@ export const useLeadMaster = () => {
     queryKey: ["lead-master"],
     queryFn: FetchLeadMaster,
   });
-}
+};
 export const useCustomerMaster = () => {
   return useQuery({
     queryKey: ["customer-master"],
@@ -112,7 +113,7 @@ export const useInsuranceCompanyMaster = () => {
     queryKey: ["insurance-company-master"],
     queryFn: FetchInsuranceCompanyMaster,
   });
-}
+};
 export const useVehicleMaster = () => {
   return useQuery({
     queryKey: ["vehicle-master"],
@@ -121,13 +122,82 @@ export const useVehicleMaster = () => {
   });
 };
 
-
 export const useNewCustomers = (month) => {
   return useQuery({
-    queryKey: ["new-customer",month],
-    queryFn: ()=>FetchNewCustomer(month),
-    staleTime: Infinity,
-    enabled:!!month
+    queryKey: ["new-customer", month],
+    queryFn: () => FetchNewCustomer(month),
+    staleTime: 0,
+    enabled: !!month,
   });
 };
 
+export const useFectchFreshCalls = (empid) => {
+  return useQuery({
+    queryKey: ["freshcalls", empid],
+    queryFn: () => getFreshCalls(empid),
+    staleTime: Infinity,
+    enabled: !!empid,
+    refetchOnWindowFocus: false,
+  });
+};
+
+
+export const useFetchDashBoardCounts = (empid) => {
+  return useQuery({
+    queryKey: ["emp-dashbordcount", empid],
+    queryFn: () => getDashboardCounts(empid),
+    staleTime: Infinity,
+    enabled: !!empid
+  });
+};
+
+
+export const useFetchDashBoardReminders = (empid) => {
+  return useQuery({
+    queryKey: ["emp-reminders", empid],
+    queryFn: () => getDashboardReminders(empid),
+    enabled: !!empid,
+    //  keeps data "fresh for a while"
+    staleTime: 60 * 1000, // 1 minute
+    //  refresh when user comes back
+    refetchOnWindowFocus: true,
+    //  avoid unnecessary refetch loops
+    refetchOnMount: false,
+    refetchOnReconnect: false
+  });
+};
+
+
+export const useGetMyActiveCalls = (empid, statusFilter) => {
+  return useQuery({
+    queryKey: ["mycalls", empid, statusFilter],
+    queryFn: () => getMyActiveCalls(empid, statusFilter),
+    staleTime: 0,
+    enabled: !!empid && !!statusFilter,
+    refetchOnWindowFocus: false,
+  });
+};
+
+
+
+
+export const useGetLeadHistory = (leadId, enabled) => {
+  return useQuery({
+    queryKey: ["call-history", leadId],
+    queryFn: () => getLeadCallHistory(leadId),
+    enabled,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
+};
+export const useFollowUpDetail = (leadId, statusId, enabled) => {
+  return useQuery({
+    queryKey: ["call-followup", leadId, statusId],
+    queryFn: () => getCallFollowUp(leadId, statusId),
+    enabled,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
+};

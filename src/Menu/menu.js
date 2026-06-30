@@ -15,7 +15,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
 import PersonIcon from '@mui/icons-material/Person';
-
+import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 
 export const Menu = [
   {
@@ -25,9 +25,14 @@ export const Menu = [
     path: "/home",
   },
   {
-    label: "Calendar",
-    icon: CalendarMonthIcon,
-    path: "/calendar",
+    label: "Calls",
+    icon: LocalPhoneIcon,
+    path: "/home/freshcalls",
+  },
+  {
+    label: "Employee",
+    icon: LocalPhoneIcon,
+    path: "/home/employee",
   },
   {
     label: "Allocate",
@@ -36,14 +41,9 @@ export const Menu = [
   },
 
   {
-    label: "Campaigns",
-    icon: WorkIcon,
-    nested: [
-      { label: "My Camp", path: "/campaigns/my-camp" },
-      { label: "Checklist", path: "/campaigns/checklist" },
-      { label: "Campers", path: "/campaigns/campers" },
-      { label: "Save Spots", path: "/campaigns/save-spots" },
-    ],
+    label: "Search",
+    icon: SavedSearchIcon,
+    path: "/home/search",
   },
   {
     // groupLabel: "Account",

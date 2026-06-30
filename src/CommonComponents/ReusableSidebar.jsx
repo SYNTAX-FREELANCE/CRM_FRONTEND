@@ -1,5 +1,5 @@
 import React, { useState, memo, useEffect } from "react";
-import { Box, Typography, Modal, Button, Avatar, Divider } from "@mui/joy";
+import { Box, Typography, Modal, Button, Avatar, Divider, Menu, MenuItem } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AdjustIcon from "@mui/icons-material/Adjust";
@@ -9,6 +9,7 @@ import { axiosApi } from "../Axios/axios";
 import { getAuthUser } from "../constant/Constant";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutModal from "./LogoutModal";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const ReusableSidebar = ({
   menuItems = [],
@@ -20,13 +21,24 @@ const ReusableSidebar = ({
   onLogout
 }) => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [logoutModal, setLogoutModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [hoveredSub, setHoveredSub] = useState(null);
   const [logoutCountdown, setLogoutCountdown] = useState(null);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
+
+  const handleAvatarClick = (event) => {
+    event.stopPropagation();
+    setAvatarAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseAvatarMenu = () => {
+    setAvatarAnchorEl(null);
+  };
 
   const authUser = getAuthUser();
   const {
@@ -102,13 +114,15 @@ const ReusableSidebar = ({
       p: 1
     }}>
       <Box
-        // onMouseEnter={() => setOpen(true)}
-        // onMouseLeave={() => {
-        //   setOpen(false);
-        //   setOpenMenu(null);
-        //   setHoveredItem(null);
-        //   setHoveredSub(null);
-        // }}
+
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
@@ -344,7 +358,12 @@ const ReusableSidebar = ({
         >
           {open ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
-              <Avatar src={user.avatar} size="sm" />
+              <Avatar
+                src={user.avatar}
+                size="sm"
+                onClick={handleAvatarClick}
+                sx={{ cursor: "pointer" }}
+              />
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography level="body-sm" fontWeight={600} noWrap sx={{ color: "#111827" }}>
                   {emp_name}
@@ -376,7 +395,12 @@ const ReusableSidebar = ({
               </Box>
             </Box>
           ) : (
-            <Avatar src={user.avatar} size="sm" />
+            <Avatar
+              src={user.avatar}
+              size="sm"
+              onClick={handleAvatarClick}
+              sx={{ cursor: "pointer" }}
+            />
           )}
         </Box>
 
@@ -384,6 +408,44 @@ const ReusableSidebar = ({
           open={logoutModal}
           onClose={() => setLogoutModal(false)}
           onStartLogout={onLogout}
+        />
+
+        <Menu
+          anchorEl={avatarAnchorEl}
+          open={Boolean(avatarAnchorEl)}
+          onClose={handleCloseAvatarMenu}
+          placement="top-start"
+          sx={{
+            minWidth: 160,
+            borderRadius: 12,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            "--ListItem-radius": "8px",
+            p: 0.6,
+            zIndex: 1400,
+          }}
+        >
+          <MenuItem
+            onClick={() => {
+              handleCloseAvatarMenu();
+              setPasswordModalOpen(true);
+            }}
+            sx={{
+              fontWeight: 500,
+              fontSize: "14px",
+              color: "#374151",
+              "&:hover": {
+                bgcolor: "rgba(249,115,22,0.08)",
+                color: "#ea580c",
+              },
+            }}
+          >
+            Change Password
+          </MenuItem>
+        </Menu>
+
+        <ChangePasswordModal
+          open={passwordModalOpen}
+          onClose={() => setPasswordModalOpen(false)}
         />
       </Box>
     </Box>

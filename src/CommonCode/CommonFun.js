@@ -1,5 +1,5 @@
-import {  axioslogin } from "../Axios/axios";
-
+import { axioslogin } from "../Axios/axios";
+import { infoNotify } from "../constant/Constant";
 
 export const FetchRolemaster = async () => {
   try {
@@ -15,7 +15,6 @@ export const FetchRolemaster = async () => {
   }
 };
 
-
 export const FechCompanyMaster = async () => {
   try {
     const response = await axioslogin.get("/companimast/getall");
@@ -30,7 +29,6 @@ export const FechCompanyMaster = async () => {
   }
 };
 
-
 export const FetchStatusMaster = async () => {
   try {
     const response = await axioslogin.get("/statusmast/getall");
@@ -44,8 +42,6 @@ export const FetchStatusMaster = async () => {
     throw new Error(error?.response?.data?.message || "Failed to fetch PDFs");
   }
 };
-
-
 
 export const FetchAllQualificationMaster = async () => {
   try {
@@ -83,7 +79,9 @@ export const FetchAllModuleMaster = async () => {
     return [];
   } catch (error) {
     console.error("FetchAllModuleMaster error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch modules");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch modules",
+    );
   }
 };
 
@@ -95,7 +93,9 @@ export const FetchAllSubmoduleMaster = async () => {
     return [];
   } catch (error) {
     console.error("FetchAllSubmoduleMaster error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch submodules");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch submodules",
+    );
   }
 };
 
@@ -131,7 +131,9 @@ export const FetchAllCustomers = async () => {
     return [];
   } catch (error) {
     console.error("FetchAllCustomers error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch customers");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch customers",
+    );
   }
 };
 
@@ -143,7 +145,9 @@ export const FetchVehicleTypeMaster = async () => {
     return [];
   } catch (error) {
     console.error("FetchVehicleTypeMaster error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch vehicle types");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch vehicle types",
+    );
   }
 };
 
@@ -155,22 +159,121 @@ export const FetchAllVehicles = async () => {
     return [];
   } catch (error) {
     console.error("FetchAllVehicles error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch vehicles",
+    );
   }
 };
-
 
 export const FetchNewCustomer = async (month) => {
   try {
     const response = await axioslogin.get(`/customer/new-customer/${month}`);
     const { success, data } = response.data;
+
     if (success !== 0) return data;
     return [];
   } catch (error) {
     console.error("FetchAllVehicles error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch vehicles");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch vehicles",
+    );
   }
 };
+
+export const getFreshCalls = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/get-fresh-lead/${empid}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      infoNotify(message);
+      return [];
+    }
+    if (success !== 0) {
+      infoNotify(message);
+      return data;
+    }
+    return [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch vehicles",
+    );
+  }
+};
+
+
+export const getDashboardCounts = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/get-dashboard-count/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 1) return [];
+    return data ?? [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+  }
+};
+
+export const getDashboardReminders = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/dashboard-reminders/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 1) return [];
+    return data ?? [];
+  } catch (error) {
+    console.error("FetchAllVehicles error:", error);
+  }
+};
+
+
+export const getMyActiveCalls = async (empid, filter) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-active-batch/${empid}/${filter}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch vehicles",
+    );
+  }
+};
+
+export const getCallFollowUp = async (leadid, statusId) => {
+  if (!leadid || !statusId) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-call-followup/${leadid}/${statusId}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
+export const getLeadCallHistory = async (leadid) => {
+  if (!leadid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/get-lead-history/${leadid}`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 
 
 export const FetchInsuranceCompanyMaster = async () => {
@@ -181,16 +284,8 @@ export const FetchInsuranceCompanyMaster = async () => {
     return [];
   } catch (error) {
     console.error("FetchInsuranceCompanyMaster error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch insurance companies");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch insurance companies",
+    );
   }
 };
-
-
-
-
-
-
-
-
-
-
