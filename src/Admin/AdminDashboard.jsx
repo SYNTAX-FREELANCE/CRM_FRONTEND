@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -22,39 +22,60 @@ import {
   Email,
 } from "@mui/icons-material";
 import { getAuthUser } from "../constant/Constant";
+import DashboardDateFilter from "./Components/DashboardDateFilter";
+import { format, subDays } from "date-fns";
+import { useAdminDashBoardCounts, useAllEmployeeRecentActivity } from "../CommonCode/useQuery";
+import { getActivityDetails } from "../CommonCode/Reusable";
 
 const stats = [
   {
-    title: "Total Employees",
-    value: 128,
-    change: "+12%",
+    title: "Completed",
+    key: "totalCompleted",
+    icon: <TrendingUp />,
+    color: "#10b981",
+    bgColor: "rgba(16,185,129,0.1)",
+  },
+  {
+    title: "New",
+    key: "totalNew",
     icon: <People />,
     color: "#2563eb",
-    bgColor: "rgba(37, 99, 235, 0.1)",
+    bgColor: "rgba(37,99,235,0.1)",
   },
   {
-    title: "Calls Today",
-    value: 864,
-    change: "+23%",
+    title: "Callback",
+    key: "totalCallback",
     icon: <Phone />,
-    color: "#f97316",
-    bgColor: "rgba(249, 115, 22, 0.1)",
+    color: "#8b5cf6",
+    bgColor: "rgba(139,92,246,0.1)",
   },
   {
-    title: "Appointments",
-    value: 43,
-    change: "+8%",
+    title: "Quote",
+    key: "totalQuote",
+    icon: <Email />,
+    color: "#06b6d4",
+    bgColor: "rgba(6,182,212,0.1)",
+  },
+  {
+    title: "Appointment",
+    key: "totalAppointment",
     icon: <EventAvailable />,
-    color: "#2563eb",
-    bgColor: "rgba(37, 99, 235, 0.1)",
+    color: "#f97316",
+    bgColor: "rgba(249,115,22,0.1)",
   },
   {
-    title: "Conversion Rate",
-    value: "78%",
-    change: "+5%",
+    title: "Sold",
+    key: "totalSold",
     icon: <TrendingUp />,
-    color: "#f97316",
-    bgColor: "rgba(249, 115, 22, 0.1)",
+    color: "#16a34a",
+    bgColor: "rgba(22,163,74,0.1)",
+  },
+  {
+    title: "Lost",
+    key: "totalLost",
+    icon: <TrendingUp />,
+    color: "#dc2626",
+    bgColor: "rgba(220,38,38,0.1)",
   },
 ];
 
@@ -68,8 +89,25 @@ const activities = [
 
 const AdminDashboard = () => {
   const authUser = getAuthUser();
+  const today = new Date();
+  const [dateFilter, setDateFilter] = useState("7days");
+  const [fromDate, setFromDate] = useState(
+    format(subDays(today, 6), "yyyy-MM-dd")
+  );
 
- 
+  const [toDate, setToDate] = useState(
+    format(today, "yyyy-MM-dd")
+  );
+
+  const { data: DashboardCount } = useAdminDashBoardCounts(fromDate, toDate)
+  const { data: RecentActivities } = useAllEmployeeRecentActivity()
+
+
+
+  console.log({ DashboardCount });
+
+
+
   return (
     <Box
       sx={{
@@ -119,57 +157,45 @@ const AdminDashboard = () => {
           }}
         />
 
-        <Grid container spacing={12} alignItems="center">
+        <Grid container spacing={2} alignItems="center" justifyContent={'space-between'}>
           <Grid item xs={12} md={8}>
-            <Typography
-              fontSize={{ xs: 24, md: 24 }}
-              fontWeight={800}
-              color="#fff"
-            >
-              WELCOME BACK {authUser?.emp_name}.
+            <Typography fontSize={{ xs: 16, sm: 20, md: 26 }} fontWeight={900} color="#fff">
+              WELCOME BACK {authUser?.emp_name || "EMPLOYEE"}.
             </Typography>
-            <Typography fontSize={{ xs: 10, md: 13 }} color="rgba(255,255,255,0.85)">
-              Monitor team performance, leads, appointments and CRM activities
+            <Typography fontSize={{ xs: 10, sm: 11, md: 13 }} color="rgba(255,255,255,0.88)">
+              Track calls, follow-ups, appointments, renewals, and overall performance in one place.
             </Typography>
           </Grid>
+
           <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                justifyContent: { xs: "flex-start", md: "flex-end" },
-                flexWrap: "wrap",
-              }}
-            >
-              <Chip
-                label="128 Employees"
-                icon={<People sx={{ fontSize: 16 }} />}
-                sx={{
-                  bgcolor: "rgba(255,255,255,0.2)",
-                  color: "#fff",
-                  fontWeight: 600,
-                  height: 42,
-                }}
-              />
-              <Chip
-                label="864 Calls"
-                icon={<Phone sx={{ fontSize: 16 }} />}
-                sx={{
-                  bgcolor: "rgba(255,255,255,0.2)",
-                  color: "#fff",
-                  fontWeight: 600,
-                  height: 42,
-                }}
-              />
-            </Box>
+            <DashboardDateFilter
+              value={dateFilter}
+              onChange={setDateFilter}
+              fromDate={fromDate}
+              toDate={toDate}
+              onFromDateChange={setFromDate}
+              onToDateChange={setToDate}
+            />
           </Grid>
         </Grid>
       </Card>
 
       {/* Stat Cards */}
-      <Grid container spacing={3}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(2, minmax(0, 1fr))",
+            sm: "repeat(4, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
+            lg: "repeat(7, minmax(0, 1fr))",
+          },
+          gap: 1,
+          width: "100%",
+        }}
+      >
         {stats?.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Box key={index}>
             <Card
               sx={{
                 borderRadius: 5,
@@ -187,30 +213,68 @@ const AdminDashboard = () => {
               <CardContent sx={{ p: 3 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="start">
                   <Box sx={{ flex: 1 }}>
-                    <Typography color="text.secondary" fontSize={13} sx={{ mb: 0.5 }}>
-                      {item.title}
+                    <Typography
+                      color="text.secondary"
+                      sx={{ mb: 0.5, fontSize: { xs: 9, sm: 10, md: 12, fontWeight: 900 } }}
+                    >
+                      {item?.title?.toUpperCase()}
                     </Typography>
-                    <Typography fontWeight={800} fontSize={{ xs: 28, sm: 32, md: 36 }} sx={{ mb: 1 }}>
-                      {item.value}
+
+                    <Typography
+                      fontWeight={900}
+                      fontSize={{ xs: 32, sm: 36, md: 42 }}
+                      sx={{
+                        mb: 0.5,
+                        color: "#1e293b",
+                        letterSpacing: 1,
+                        textShadow: `
+      1px 1px 0px #fff,
+      2px 2px 0px #d1d5db,
+      3px 3px 0px #cbd5e1,
+      4px 4px 6px rgba(0,0,0,0.25)
+    `,
+                      }}
+                    >
+                      {DashboardCount?.[item.key] ?? 0}
                     </Typography>
+
+                    {item.key !== "totalUploaded" && (
+                      <Typography
+                        fontSize={12}
+                        color="text.secondary"
+                        sx={{ mb: 1, fontSize: { xs: 9, sm: 10, md: 12, fontWeight: 900 } }}
+                      >
+                        of {DashboardCount?.totalUploaded ?? 0}
+                      </Typography>
+                    )}
+
                     <Chip
-                      label={item.change}
-                      icon={<ArrowUpward sx={{ fontSize: 14 }} />}
+                      label={
+                        item.key === "totalUploaded"
+                          ? "Overall Leads"
+                          : `${(
+                            ((Number(DashboardCount?.[item.key] || 0) /
+                              Number(DashboardCount?.totalUploaded || 1)) *
+                              100) || 0
+                          ).toFixed(0)}%`
+                      }
                       sx={{
                         bgcolor: item.bgColor,
                         color: item.color,
                         fontWeight: 700,
                         fontSize: 12,
                         height: 28,
+
                       }}
                     />
                   </Box>
+
                   <Avatar
                     sx={{
                       bgcolor: item.color,
                       width: 56,
                       height: 56,
-                      ml: 2,
+                      ml: 2
                     }}
                   >
                     {item.icon}
@@ -218,9 +282,9 @@ const AdminDashboard = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
       {/* Activity Section */}
       <Card
@@ -237,48 +301,81 @@ const AdminDashboard = () => {
             Recent Activities
           </Typography>
 
-          {activities.map((activity, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: 2,
-                p: 2,
-                borderRadius: 16,
-                bgcolor: "#fff",
-                border: "1px solid rgba(229,231,235,0.5)",
-                cursor: 'pointer',
-                transition: "0.2s",
-                "&:hover": {
-                  bgcolor: "#f8fafc",
-                  transform: "translateX(4px)",
-                  boxShadow: "0 25px 10px rgba(37, 99, 235, 0.3)",
-                },
-              }}
-            >
-              <Avatar
+          {RecentActivities?.map((activity, index) => {
+            const { icon, color, bgcolor } = getActivityDetails(activity);
+            return (
+              <Box
+                key={index}
                 sx={{
-                  bgcolor: activity.color,
-                  width: 44,
-                  height: 44,
-                  mr: 2,
-                  borderRadius: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 2,
+                  p: 2,
+                  borderRadius: 16,
+                  bgcolor: "#fff",
+                  border: "1px solid rgba(229,231,235,0.5)",
+                  cursor: 'pointer',
+                  transition: "0.2s",
+                  "&:hover": {
+                    bgcolor: "#f8fafc",
+                    transform: "translateX(4px)",
+                    boxShadow: "0 25px 10px rgba(37, 99, 235, 0.3)",
+                  },
                 }}
               >
-                {activity.icon}
-              </Avatar>
+                <Avatar
+                  sx={{
+                    bgcolor: color,
+                    width: 44,
+                    height: 44,
+                    mr: 2,
+                    borderRadius: 12,
+                  }}
+                >
+                  {icon}
+                </Avatar>
 
-              <Box sx={{ flex: 1 }}>
-                <Typography fontSize={14} fontWeight={600}>
-                  {activity.text}
-                </Typography>
-                <Typography fontSize={12} color="text.secondary" sx={{ mt: 0.5 }}>
-                  {activity.time}
-                </Typography>
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                  }}>
+                    <Typography fontSize={14} fontWeight={600}>
+                      {activity.name}
+                    </Typography>
+
+                    <Box sx={{
+                      // border: `1px solid ${color}`,
+                      color: color,
+                      textAlign: 'center',
+                      px: 2,
+                      borderRadius: 2,
+                      alignItems: "center", justifyContent: 'center',
+                      bgcolor: bgcolor,
+                      display:'flex',
+                      alignItems:'center',
+                      justifyContent:'center'
+                     
+                    }} >
+                      <Typography fontSize={8} fontWeight={900}>
+                        {activity.status_name}
+                      </Typography>
+
+
+                    </Box>
+                  </Box>
+
+                  <Typography fontSize={12} fontWeight={600}>
+                    {activity.remarks}
+                  </Typography>
+
+                  <Typography fontSize={12} color="text.secondary" sx={{ mt: 0.5 }}>
+                    {format(new Date(activity.changed_at), "dd MMM yyyy, hh:mm a")}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          ))}
+            )
+          })}
         </CardContent>
       </Card>
     </Box>

@@ -23,6 +23,8 @@ import {
   FetchEmployeeProfile,
   FetchEmployeePerformance,
   getAttendanceByDate,
+  getAdminDashboardCount,
+  getRecentActivity,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -180,6 +182,28 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
     refetchOnWindowFocus: false,
   });
 };
+
+
+export const useAdminDashBoardCounts = (from, to) => {
+  return useQuery({
+    queryKey: ["admin-counts", from, to],
+    queryFn: () => getAdminDashboardCount(from, to),
+    enabled: !!from && !!to,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+};
+
+export const useAllEmployeeRecentActivity = () => {
+  return useQuery({
+    queryKey: ["recent-activity"],
+    queryFn: getRecentActivity,
+    staleTime: Infinity
+  });
+};
+
 
 
 export const useGetLeadHistory = (leadId, enabled) => {
