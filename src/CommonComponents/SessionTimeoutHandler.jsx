@@ -15,13 +15,13 @@ const SessionTimeoutHandler = () => {
   const { isAuthenticated, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(10);
-  
+
   const inactivityTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
 
   // Time thresholds: 2 minutes inactivity limit, 10 seconds warning countdown
-  const INACTIVITY_LIMIT = 2 * 60 * 1000; 
-  const COUNTDOWN_LIMIT = 10; 
+  const INACTIVITY_LIMIT = 20 * 60 * 1000;
+  const COUNTDOWN_LIMIT = 10;
 
   const resetInactivityTimer = () => {
     if (inactivityTimerRef.current) {
@@ -47,7 +47,7 @@ const SessionTimeoutHandler = () => {
 
     // List of user events to listen for to determine activity
     const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
-    
+
     const handleActivity = () => {
       resetInactivityTimer();
     };
