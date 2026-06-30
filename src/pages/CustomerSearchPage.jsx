@@ -16,10 +16,10 @@ const CustomerSearchPage = () => {
                 }}>
                 <Typography variant="h4"
                     fontWeight={900}
-                    sx={{ mb:0.5, color: "#0f172a", fontSize: { xs: 25, md: 30 } }}>
+                    sx={{ mb: 0.5, color: "#0f172a", fontSize: { xs: 25, md: 30 } }}>
                     Global Customer Search
                 </Typography>
-                <Typography variant="body2" sx={{ mb: 3, color: "text.secondary",fontSize: { xs: 8, md: 12 } }}>
+                <Typography variant="body2" sx={{ mb: 3, color: "text.secondary", fontSize: { xs: 8, md: 12 } }}>
                     Search by vehicle number, phone number, or customer name.
                 </Typography>
 

@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useMemo, useRef, useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, subDays, subMonths } from "date-fns";
 
-const filters = [
-  { value: "7days", label: "Last 7 Days" },
-  { value: "1month", label: "1 Month" },
-  { value: "3months", label: "3 Months" },
-  { value: "custom", label: "Custom" },
-];
+// const filters = [
+//   { value: "7days", label: "Last 7 Days" },
+//   { value: "1month", label: "1 Month" },
+//   { value: "3months", label: "3 Months" },
+//   { value: "custom", label: "Custom" },
+// ];
 
 const useOnClickOutside = (ref, handler) => {
   useEffect(() => {
@@ -39,6 +39,33 @@ const DashboardDateFilter = ({
   const [tempTo, setTempTo] = useState(toDate || "");
   const wrapperRef = useRef(null);
 
+  const today = new Date();
+
+  const filters = [
+    {
+      value: "7days",
+      label: "Last 7 Days",
+      from: format(subDays(today, 6), "yyyy-MM-dd"),
+      to: format(today, "yyyy-MM-dd"),
+    },
+    {
+      value: "1month",
+      label: "1 Month",
+      from: format(subMonths(today, 1), "yyyy-MM-dd"),
+      to: format(today, "yyyy-MM-dd"),
+    },
+    {
+      value: "3months",
+      label: "3 Months",
+      from: format(subMonths(today, 3), "yyyy-MM-dd"),
+      to: format(today, "yyyy-MM-dd"),
+    },
+    {
+      value: "custom",
+      label: "Custom",
+    },
+  ];
+
   useOnClickOutside(wrapperRef, () => {
     setShowPicker(false);
     setTempFrom(fromDate || "");
@@ -57,19 +84,26 @@ const DashboardDateFilter = ({
     return "Custom";
   }, [fromDate, toDate, formatDate]);
 
-  const handleSelectChange = (e) => {
-    const selected = e.target.value;
 
-    if (selected === "custom") {
-      onChange("custom");
-      setTempFrom(fromDate || "");
-      setTempTo(toDate || "");
-      setShowPicker(true);
+  const handleSelectChange = (e) => {
+    const selected = filters.find((f) => f.value === e.target.value);
+
+    if (!selected) return;
+    if (selected.value === "custom") {
+      if (!showPicker) {
+        setTempFrom(fromDate || "");
+        setTempTo(toDate || "");
+        setShowPicker(true);
+      }
       return;
     }
 
     setShowPicker(false);
-    onChange(selected);
+
+    onChange(selected.value);
+
+    onFromDateChange(selected.from);
+    onToDateChange(selected.to);
   };
 
   const handleApply = () => {
@@ -93,6 +127,7 @@ const DashboardDateFilter = ({
             display: "flex",
             justifyContent: { xs: "flex-start", md: "flex-end" },
             width: "100%",
+            cursor: 'pointer'
           }}
         >
           <select

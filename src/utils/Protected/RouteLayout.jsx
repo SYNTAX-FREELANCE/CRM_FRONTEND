@@ -135,87 +135,87 @@ const RouteLayout = () => {
     // }, [isAuthenticated, user]);
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (!isAuthenticated || !user?.role) return;
+    //     if (!isAuthenticated || !user?.role) return;
 
-        const fetchMenus = async () => {
+    //     const fetchMenus = async () => {
 
-            try {
+    //         try {
 
-                const result = await axioslogin.get(
-                    `/userrights/allowed/${user.role}`
-                );
+    //             const result = await axioslogin.get(
+    //                 `/userrights/allowed/${user.role}`
+    //             );
 
-                if (result.data.success !== 1) return;
+    //             if (result.data.success !== 1) return;
 
-                console.log("rolee:", user.role);
+    //             console.log("rolee:", user.role);
 
-                console.log("Menu:", result.data.data);
+    //             console.log("Menu:", result.data.data);
 
-                const modules = {};
+    //             const modules = {};
 
-                result.data.data.forEach(row => {
+    //             result.data.data.forEach(row => {
 
-                    if (!modules[row.module_name]) {
-                        modules[row.module_name] = [];
-                    }
+    //                 if (!modules[row.module_name]) {
+    //                     modules[row.module_name] = [];
+    //                 }
 
-                    modules[row.module_name].push({
-                        label: row.menu_name,
-                        path:
-                            menuPathMap[row.menu_name] ||
-                            `/home/${row.menu_name
-                                .toLowerCase()
-                                .replace(/\s+/g, "")}`
-                    });
+    //                 modules[row.module_name].push({
+    //                     label: row.menu_name,
+    //                     path:
+    //                         menuPathMap[row.menu_name] ||
+    //                         `/home/${row.menu_name
+    //                             .toLowerCase()
+    //                             .replace(/\s+/g, "")}`
+    //                 });
 
-                });
+    //             });
 
-                const sidebarData = [];
+    //             const sidebarData = [];
 
-                // Always add Dashboard first
-                // sidebarData.push({
-                //     label: "Dashboard",
-                //     icon: DashboardIcon,
-                //     path: "/home",
-                // });
+    //             // Always add Dashboard first
+    //             // sidebarData.push({
+    //             //     label: "Dashboard",
+    //             //     icon: DashboardIcon,
+    //             //     path: "/home",
+    //             // });
 
-                Object.keys(modules).forEach(moduleName => {
+    //             Object.keys(modules).forEach(moduleName => {
 
-                    sidebarData.push({
-                        label: moduleName,
-                        icon: moduleIconMap[moduleName] || SettingsSuggestIcon,
-                        nested: modules[moduleName]
-                    });
+    //                 sidebarData.push({
+    //                     label: moduleName,
+    //                     icon: moduleIconMap[moduleName] || SettingsSuggestIcon,
+    //                     nested: modules[moduleName]
+    //                 });
 
-                });
+    //             });
 
-                // Always add User Info at the end
-                // sidebarData.push({
-                //     label: "User Info",
-                //     icon: GroupsIcon,
-                //     path: "/home/userinfo",
-                // });
+    //             // Always add User Info at the end
+    //             // sidebarData.push({
+    //             //     label: "User Info",
+    //             //     icon: GroupsIcon,
+    //             //     path: "/home/userinfo",
+    //             // });
 
-                // // Always add Settings at the end
-                // sidebarData.push({
-                //     label: "Settings",
-                //     icon: SettingsSuggestIcon,
-                //     path: "/home/settings",
-                // });
+    //             // // Always add Settings at the end
+    //             // sidebarData.push({
+    //             //     label: "Settings",
+    //             //     icon: SettingsSuggestIcon,
+    //             //     path: "/home/settings",
+    //             // });
 
-                setMenuItems(sidebarData);
+    //             setMenuItems(sidebarData);
 
-            } catch (err) {
-                console.log(err);
-            }
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
 
-        };
+    //     };
 
-        fetchMenus();
+    //     fetchMenus();
 
-    }, [isAuthenticated, user]);
+    // }, [isAuthenticated, user]);
 
     if (loading) {
         return (
