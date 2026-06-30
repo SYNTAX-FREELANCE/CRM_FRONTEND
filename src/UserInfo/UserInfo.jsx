@@ -21,10 +21,8 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 import { useNavigate } from "react-router-dom";
-import { axioslogin } from "../Axios/axios";
-import { errorNotify, warningNotify } from "../constant/Constant";
-import { useRoleMaster } from "../CommonCode/useQuery";
-import { useQuery } from "@tanstack/react-query";
+import { useRoleMaster, useUserInfoEmployees } from "../CommonCode/useQuery";
+
 
 const UserInfo = () => {
     const navigate = useNavigate();
@@ -40,23 +38,7 @@ const UserInfo = () => {
     const [viewMode, setViewMode] = useState("card");
 
     // Fetch employee list using useQuery
-    const { data: employeeListData, isLoading: loading } = useQuery({
-        queryKey: ["userInfoEmployees"],
-        queryFn: async () => {
-            try {
-                const response = await axioslogin.get("/userinfo/employees");
-                if (response.data && response.data.success === 1) {
-                    return response.data.data || [];
-                }
-                warningNotify(response.data?.message || "No employees found");
-                return [];
-            } catch (error) {
-                console.error("Error fetching employees:", error);
-                errorNotify("Failed to load employee list");
-                return [];
-            }
-        }
-    });
+    const { data: employeeListData, isLoading: loading } = useUserInfoEmployees();
 
     const employees = employeeListData || [];
 

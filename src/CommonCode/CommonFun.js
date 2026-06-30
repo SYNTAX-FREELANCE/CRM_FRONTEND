@@ -1,5 +1,6 @@
 import { axioslogin } from "../Axios/axios";
-import { infoNotify } from "../constant/Constant";
+import { infoNotify, warningNotify, errorNotify } from "../constant/Constant";
+
 
 export const FetchRolemaster = async () => {
   try {
@@ -289,3 +290,19 @@ export const FetchInsuranceCompanyMaster = async () => {
     );
   }
 };
+
+export const FetchUserInfoEmployees = async () => {
+  try {
+    const response = await axioslogin.get("/userinfo/employees");
+    if (response.data && response.data.success === 1) {
+      return response.data.data || [];
+    }
+    warningNotify(response.data?.message || "No employees found");
+    return [];
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    errorNotify("Failed to load employee list");
+    return [];
+  }
+};
+

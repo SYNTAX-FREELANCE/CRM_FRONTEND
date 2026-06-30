@@ -20,7 +20,9 @@ import {
   getLeadCallHistory,
   getDashboardCounts,
   getDashboardReminders,
+  FetchUserInfoEmployees,
 } from "./CommonFun";
+
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -201,3 +203,10 @@ export const useFollowUpDetail = (leadId, statusId, enabled) => {
     keepPreviousData: true,
   });
 };
+
+export const useUserInfoEmployees = () => {
+  return useQuery({
+    queryKey: ["userInfoEmployees"],
+    queryFn: FetchUserInfoEmployees,
+  });
+};
