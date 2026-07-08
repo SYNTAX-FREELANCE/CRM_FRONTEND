@@ -16,10 +16,17 @@ export const axioslogin = axios.create({
 axioslogin.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
+        const originalRequest = error.config;
+
+        if (originalRequest.url === "/user/refresh-token") {
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
             try {
                 await axioslogin.post("/user/refresh-token");
-                return axioslogin.request(error.config);
+                return axioslogin(originalRequest);
             } catch (refreshError) {
                 localStorage.clear();
                 window.location.href = "/login";
