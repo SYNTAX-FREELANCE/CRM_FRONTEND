@@ -43,14 +43,13 @@ export default function FreshCallsWorkspace() {
 
 
   const getFreshCalls = async () => {
-    console.log("calling");
     if (!id) return warningNotify("Employee Id is missing Please Login Again");
     if (FreshCalls?.length > 0 && statusFilter !== 1) return infoNotify("Please Complete the First Batch Before Fetching")
     try {
       const response = await axioslogin.get(`/lead/get-fresh-lead/${id}`);
       const { success, data, message } = response.data;
       if (success === 0) return infoNotify(message);
-      if (success !== 0) return successNotify("Next Batch Fetched Successfully");
+      if (success !== 0) return successNotify(message || "Next Batch Fetched Successfully");
       queryClient.invalidateQueries({
         queryKey: ["mycalls", id],
       });
@@ -104,7 +103,6 @@ export default function FreshCallsWorkspace() {
           borderRadius: 0,
           background: "rgba(255, 255, 255, 0.5)",
           backdropFilter: "blur(24px)",
-
         }}
       >
         <Box

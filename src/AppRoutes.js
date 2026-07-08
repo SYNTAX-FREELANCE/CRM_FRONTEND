@@ -14,19 +14,32 @@ const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
 const BankMaster = lazy(() => import("./Masters/BankMaster/BankMaster"));
-const UserReg = lazy(() => import("./Masters/UserRegistration/UserRegistration"));
-const CommonViewPage = lazy(() => import("./Settings/CommonMasterComponent/CommonViewPage"),);
-const FreshCallsWorkspace = lazy(() => import("./FreshCall/FreshCallsWorkspace"));
-const CustomerAllocation = lazy(() => import("./DataDistribution/CustomerAllocation"));
+const UserReg = lazy(
+  () => import("./Masters/UserRegistration/UserRegistration"),
+);
+const CommonViewPage = lazy(
+  () => import("./Settings/CommonMasterComponent/CommonViewPage"),
+);
+const FreshCallsWorkspace = lazy(
+  () => import("./FreshCall/FreshCallsWorkspace"),
+);
+const CustomerAllocation = lazy(
+  () => import("./DataDistribution/CustomerAllocation"),
+);
 const EmployeeDashboard = lazy(() => import("./Employee/EmployeeDashboard"));
 const CustomerSearchPage = lazy(() => import("./pages/CustomerSearchPage"));
+const EmployeeBatchDetail = lazy(
+  () => import("./EmployeeBatchControl/EmployeeBatchDetail"),
+);
+const EmployeeBatchControl = lazy(
+  () => import("./EmployeeBatchControl/EmployeeBatchControl"),
+);
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
 const UserInfo = lazy(() => import("./UserInfo/UserInfo"));
 const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
-
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -44,9 +57,7 @@ const RoleCreation = lazy(() => import("./Masters/RoleMaster/RoleCreation"));
 const StatusCreation = lazy(
   () => import("./Masters/StatusCreation/StatusCreation"),
 );
-const LeadCreation = lazy(
-  () => import("./Masters/LeadMaster/LeadCreation"),
-);
+const LeadCreation = lazy(() => import("./Masters/LeadMaster/LeadCreation"));
 const VehicleTypeCreation = lazy(
   () => import("./Masters/VehicleTypeMaster/VehicleTypeCreation"),
 );
@@ -68,7 +79,6 @@ const CustomerCreation = lazy(
 const VehicleCreation = lazy(
   () => import("./Masters/VehicleMaster/VehicleCreation"),
 );
-
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -98,10 +108,17 @@ const router = createBrowserRouter([
         element: withSuspense(AdminDashboard),
       },
       {
-         path: "employee",
+        path: "employee",
         element: withSuspense(EmployeeDashboard),
       },
-      
+      {
+        path: "batchcontrol",
+        element: withSuspense(EmployeeBatchControl),
+      },
+      {
+        path: "batchcontrol/:empid",
+        element: withSuspense(EmployeeBatchDetail),
+      },
       {
         path: "settings",
         element: withSuspense(Settings),
@@ -114,7 +131,7 @@ const router = createBrowserRouter([
         path: "allocation",
         element: withSuspense(CustomerAllocation),
       },
-       {
+      {
         path: "search",
         element: withSuspense(CustomerSearchPage),
       },
@@ -210,7 +227,6 @@ const router = createBrowserRouter([
         path: "*",
         element: withSuspense(WorkingPage),
       },
-
     ],
   },
 ]);
