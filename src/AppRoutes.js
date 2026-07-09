@@ -6,6 +6,7 @@ import ProtectedRoute from "./utils/Protected/ProtectedRoute";
 import { useAuth } from "./Context/AuthContext";
 import PublicRoute from "./utils/Protected/PublicRoute";
 
+
 // Lazy imports
 const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
@@ -20,6 +21,7 @@ const FreshCallsWorkspace = lazy(() => import("./FreshCall/FreshCallsWorkspace")
 const CustomerAllocation = lazy(() => import("./DataDistribution/CustomerAllocation"));
 const EmployeeDashboard = lazy(() => import("./Employee/EmployeeDashboard"));
 const CustomerSearchPage = lazy(() => import("./pages/CustomerSearchPage"));
+const ViewAllocation = lazy(() => import("./DataDistribution/ViewAllocation"));
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -113,7 +115,11 @@ const router = createBrowserRouter([
       {
         path: "allocation",
         element: withSuspense(CustomerAllocation),
+      },{
+        path: "view-allocation",
+        element: withSuspense(ViewAllocation),
       },
+      
        {
         path: "search",
         element: withSuspense(CustomerSearchPage),

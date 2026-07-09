@@ -38,7 +38,11 @@ export const Menu = [
   {
     label: "Allocate",
     icon: DataThresholdingIcon,
-    path: "/home/allocation",
+    nested: [
+      { label: "Allocat", path: "/home/allocation", },
+      { label: "View", path: "/home/view-allocation", },
+
+    ]
   },
 
   {
@@ -52,7 +56,7 @@ export const Menu = [
     icon: SettingsSuggestIcon,
     path: "/home/settings",
   },
-    {
+  {
     // groupLabel: "Account",
     label: "Userinfo",
     icon: PersonIcon,

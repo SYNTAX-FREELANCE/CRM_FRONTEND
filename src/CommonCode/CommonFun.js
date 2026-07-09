@@ -308,6 +308,21 @@ export const getRecentActivity = async () => {
 };
 
 
+export const getEmployeeAssignDetails = async () => {
+  try {
+    const response = await axioslogin.get(`/lead/employee/assigndtl`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    if (success === 2) {
+      infoNotify(message)
+      return []
+    }
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 
 
 export const FetchInsuranceCompanyMaster = async () => {

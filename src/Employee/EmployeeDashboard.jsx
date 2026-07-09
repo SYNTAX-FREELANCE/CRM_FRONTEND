@@ -39,6 +39,7 @@ import DashboardRemindersCard from "../Admin/Components/DashboardRemindersCard";
 
 import ReminderBarChartCard from "../Admin/Components/ReminderBarChartCard";
 import ReminderAreaChartCard from "../Admin/Components/ReminderAreaChartCard";
+import TopSalesExecutives from "../Admin/Components/TopSalesExecutives";
 
 const summaryData = [
     { label: "New Calls", value: 24, color: "#2563eb" },
@@ -118,9 +119,26 @@ const EmployeeDashboard = () => {
     const { data: remindersData = [] } = useFetchDashBoardReminders(id);
 
 
-    console.log({
-        remindersData
-    });
+    const salesData = [
+        {
+            id: 1,
+            name: "Anil Kumar",
+            calls: 182,
+            sold: 74,
+        },
+        {
+            id: 2,
+            name: "Ravi Menon",
+            calls: 165,
+            sold: 68,
+        },
+        {
+            id: 3,
+            name: "Sajith S",
+            calls: 149,
+            sold: 61,
+        },
+    ];
 
 
     const totalCalls = useMemo(
@@ -197,7 +215,7 @@ const EmployeeDashboard = () => {
                 </Grid>
             </Card>
 
-            <Box sx={{  pt: 3, pb: 1, flex: "0 0 auto" }}>
+            <Box sx={{ pt: 3, pb: 1, flex: "0 0 auto" }}>
                 <Box
                     sx={{
                         display: "grid",
@@ -221,7 +239,7 @@ const EmployeeDashboard = () => {
                     ))}
                 </Box>
             </Box>
-            
+
             <Box
                 sx={{
                     mt: 2.5,
@@ -229,14 +247,20 @@ const EmployeeDashboard = () => {
                     gap: 2.5,
                     flexDirection: { xs: "column", lg: "row" },
                     alignItems: "stretch",
-                }} >
-
+                }} > 
                 <Box
                     sx={{
-                        flex: 1, // ~66%
-                        minWidth: 0, // IMPORTANT for charts
+                        flex: 1,
+                        minWidth: 0,
                     }}>
                     <ReminderAreaChartCard reminders={remindersData} />
+                </Box>
+                <Box
+                    sx={{
+                        flex: 1,
+                        minWidth: 0,
+                    }}>
+                    <TopSalesExecutives data={salesData} />
                 </Box>
                 <Box
                     sx={{

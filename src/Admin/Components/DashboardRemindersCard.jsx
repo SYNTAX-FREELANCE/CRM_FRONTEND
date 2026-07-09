@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 import {
     Card,
     CardContent,
@@ -112,64 +112,74 @@ const DashboardRemindersCard = ({ remindersData }) => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
+                position: 'relative',
 
             }}
         >
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <CardContent sx={{ px:2 }}>
                 <Box
                     sx={{
-                        display: "flex",
-                        alignItems: { xs: "flex-start", sm: "center" },
-                        justifyContent: "space-between",
-                        gap: 1.5,
-                        flexDirection: { xs: "column", sm: "row" },
-                        mb: 2,
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 100,
+                        bgcolor: "background.paper",
+                        p:2
                     }}
                 >
-                    <Box>
-                        <Typography sx={{ fontSize: { xs: 18, md: 22 }, fontWeight: 900, color: "#0f172a" }}>
-                            Today’s Reminders
-                        </Typography>
-                        <Typography sx={{ fontSize: { xs: 12, md: 13 }, color: "text.secondary", mt: 0.3 }}>
-                            Tap a header to show the matching reminders below
-                        </Typography>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: { xs: "flex-start", sm: "center" },
+                            justifyContent: "space-between",
+                            gap: 1.5,
+                            flexDirection: { xs: "column", sm: "row" },
+                            mb: 2,
+
+                        }} >
+                        <Box>
+                            <Typography sx={{ fontSize: { xs: 18, md: 22 }, fontWeight: 900, color: "#0f172a" }}>
+                                Today’s Reminders
+                            </Typography>
+                            <Typography sx={{ fontSize: { xs: 12, md: 13 }, color: "text.secondary", mt: 0.3 }}>
+                                Tap a header to show the matching reminders below
+                            </Typography>
+                        </Box>
+
+                        <Chip
+                            label={`${total} total`}
+                            sx={{
+                                bgcolor: "rgba(37,99,235,0.08)",
+                                color: "#2563eb",
+                                fontWeight: 800,
+                                fontSize: { xs: 12, md: 13 }
+                            }}
+                        />
                     </Box>
 
-                    <Chip
-                        label={`${total} total`}
+                    <Box
                         sx={{
-                            bgcolor: "rgba(37,99,235,0.08)",
-                            color: "#2563eb",
-                            fontWeight: 800,
-                             fontSize: { xs: 12, md: 13 }
+                            display: "grid",
+                            gridTemplateColumns: {
+                                xs: "repeat(2, minmax(0, 1fr))",
+                                sm: "repeat(2, minmax(0, 1fr))",
+                                md: "repeat(4, minmax(0, 1fr))",
+                                lg: "repeat(4, minmax(0, 1fr))",
+                            },
+                            gap: 2,
+                            width: "100%",
                         }}
-                    />
+                    >
+                        {summaryItems?.map((item) => (
+                            <Grid item xs={6} sm={6} md={3} key={item.key}>
+                                <ReminderCard
+                                    {...item}
+                                    active={activeStatus === item.key}
+                                    onClick={() => setActiveStatus(item.key)}
+                                />
+                            </Grid>
+                        ))}
+                    </Box>
                 </Box>
-
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                            xs: "repeat(2, minmax(0, 1fr))",
-                            sm: "repeat(2, minmax(0, 1fr))",
-                            md: "repeat(4, minmax(0, 1fr))",
-                            lg: "repeat(4, minmax(0, 1fr))",
-                        },
-                        gap: 2,
-                        width: "100%",
-                    }}
-                >
-                    {summaryItems?.map((item) => (
-                        <Grid item xs={6} sm={6} md={3} key={item.key}>
-                            <ReminderCard
-                                {...item}
-                                active={activeStatus === item.key}
-                                onClick={() => setActiveStatus(item.key)}
-                            />
-                        </Grid>
-                    ))}
-                </Box>
-
                 <Divider sx={{ my: 2 }} />
 
                 <Box
@@ -223,4 +233,4 @@ const DashboardRemindersCard = ({ remindersData }) => {
     );
 };
 
-export default DashboardRemindersCard;
+export default memo(DashboardRemindersCard);

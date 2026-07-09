@@ -121,6 +121,7 @@ const ReminderAreaChartCard = ({ reminders }) => {
                 boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
                 border: "1px solid rgba(255,255,255,0.85)",
                 overflow: "hidden",
+                height:'100%'
             }}
         >
             <CardContent sx={{ p: { xs: 2, md: 3 } }}>
@@ -156,7 +157,7 @@ const ReminderAreaChartCard = ({ reminders }) => {
                         options={options}
                         series={series}
                         type="area"
-                        height={350}
+                        height={'90%'}
                         width="100%"
                     />
                 </Box>

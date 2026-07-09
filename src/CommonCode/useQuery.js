@@ -25,6 +25,7 @@ import {
   getAttendanceByDate,
   getAdminDashboardCount,
   getRecentActivity,
+  getEmployeeAssignDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -203,6 +204,16 @@ export const useAllEmployeeRecentActivity = () => {
     staleTime: Infinity
   });
 };
+
+export const useEmployeeAssignDetails = () => {
+  return useQuery({
+    queryKey: ["assign-details"],
+    queryFn: getEmployeeAssignDetails,
+    staleTime: Infinity
+  });
+};
+
+
 
 
 
