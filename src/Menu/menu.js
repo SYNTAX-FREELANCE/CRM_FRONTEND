@@ -17,6 +17,8 @@ import DataThresholdingIcon from '@mui/icons-material/DataThresholding';
 import PersonIcon from '@mui/icons-material/Person';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import GridViewIcon from '@mui/icons-material/GridView';
+import FlagCircleIcon from '@mui/icons-material/FlagCircle';
+
 
 export const Menu = [
   {
@@ -50,6 +52,13 @@ export const Menu = [
     icon: SavedSearchIcon,
     path: "/home/search",
   },
+{
+    label: "Queue Control",
+    icon: FlagCircleIcon,
+    path: "/home/batchcontrol",
+  },
+
+  
   {
     // groupLabel: "Account",
     label: "Settings",

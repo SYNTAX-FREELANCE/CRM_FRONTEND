@@ -26,6 +26,8 @@ import {
   getAdminDashboardCount,
   getRecentActivity,
   getEmployeeAssignDetails,
+  getActiveBatches,
+  getActiveBatchDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -147,16 +149,14 @@ export const useFectchFreshCalls = (empid) => {
   });
 };
 
-
 export const useFetchDashBoardCounts = (empid) => {
   return useQuery({
     queryKey: ["emp-dashbordcount", empid],
     queryFn: () => getDashboardCounts(empid),
     staleTime: Infinity,
-    enabled: !!empid
+    enabled: !!empid,
   });
 };
-
 
 export const useFetchDashBoardReminders = (empid) => {
   return useQuery({
@@ -169,10 +169,9 @@ export const useFetchDashBoardReminders = (empid) => {
     refetchOnWindowFocus: true,
     //  avoid unnecessary refetch loops
     refetchOnMount: false,
-    refetchOnReconnect: false
+    refetchOnReconnect: false,
   });
 };
-
 
 export const useGetMyActiveCalls = (empid, statusFilter) => {
   return useQuery({
@@ -183,7 +182,6 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
     refetchOnWindowFocus: false,
   });
 };
-
 
 export const useAdminDashBoardCounts = (from, to) => {
   return useQuery({
@@ -201,9 +199,10 @@ export const useAllEmployeeRecentActivity = () => {
   return useQuery({
     queryKey: ["recent-activity"],
     queryFn: getRecentActivity,
-    staleTime: Infinity
+    staleTime: Infinity,
   });
 };
+
 
 export const useEmployeeAssignDetails = () => {
   return useQuery({
@@ -212,9 +211,6 @@ export const useEmployeeAssignDetails = () => {
     staleTime: Infinity
   });
 };
-
-
-
 
 
 export const useGetLeadHistory = (leadId, enabled) => {
@@ -259,5 +255,20 @@ export const useGetAttendanceByDate = (userId, date) => {
     queryKey: ["userAttendance", userId, date],
     queryFn: () => getAttendanceByDate(userId, date),
     enabled: !!userId && !!date,
+  });
+};
+
+export const useGetBatchDetails = (empid) => {
+  return useQuery({
+    queryKey: ["batch-detils", empid],
+    queryFn: () => getActiveBatchDetails(empid),
+    enabled: !!empid,
+  });
+};
+export const useGetActiveBatchs = () => {
+  return useQuery({
+    queryKey: ["active-batches"],
+    queryFn: getActiveBatches,
+    staleTime:Infinity
   });
 };
