@@ -49,12 +49,13 @@ const Row = ({ label, value, icon, accent = "blue" }) => (
     <Typography
       variant="body2"
       sx={{
-        fontSize: "0.76rem",
+        fontSize: { xs: 10, sm: 14 },
         fontWeight: 600,
         color: "text.primary",
         textAlign: "right",
         wordBreak: "break-word",
         ml: 1,
+        width: '80%'
       }}
     >
       {value || "-"}

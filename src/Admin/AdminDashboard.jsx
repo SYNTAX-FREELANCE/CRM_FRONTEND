@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   Box,
   Typography,
@@ -79,18 +79,16 @@ const stats = [
   },
 ];
 
-const activities = [
-  { text: "Rohith Krishna uploaded new lead data", time: "2 min ago", icon: <UploadFile />, color: "#2563eb" },
-  { text: "12 appointments booked today", time: "15 min ago", icon: <EventAvailable />, color: "#f97316" },
-  { text: "TL assigned 50 fresh leads", time: "1 hour ago", icon: <People />, color: "#2563eb" },
-  { text: "Customer quotation generated", time: "2 hours ago", icon: <Email />, color: "#f97316" },
-  { text: "New employee added", time: "3 hours ago", icon: <People />, color: "#2563eb" },
-];
+
 
 const AdminDashboard = () => {
+
   const authUser = getAuthUser();
+
   const today = new Date();
+
   const [dateFilter, setDateFilter] = useState("7days");
+
   const [fromDate, setFromDate] = useState(
     format(subDays(today, 6), "yyyy-MM-dd")
   );
@@ -104,7 +102,6 @@ const AdminDashboard = () => {
 
 
 
-  console.log({ DashboardCount });
 
 
 
@@ -321,8 +318,7 @@ const AdminDashboard = () => {
                     transform: "translateX(4px)",
                     boxShadow: "0 25px 10px rgba(37, 99, 235, 0.3)",
                   },
-                }}
-              >
+                }}>
                 <Avatar
                   sx={{
                     bgcolor: color,
@@ -330,8 +326,7 @@ const AdminDashboard = () => {
                     height: 44,
                     mr: 2,
                     borderRadius: 12,
-                  }}
-                >
+                  }}>
                   {icon}
                 </Avatar>
 
@@ -343,25 +338,20 @@ const AdminDashboard = () => {
                     <Typography fontSize={14} fontWeight={600}>
                       {activity.name}
                     </Typography>
-
                     <Box sx={{
-                      // border: `1px solid ${color}`,
                       color: color,
                       textAlign: 'center',
                       px: 2,
                       borderRadius: 2,
                       alignItems: "center", justifyContent: 'center',
                       bgcolor: bgcolor,
-                      display:'flex',
-                      alignItems:'center',
-                      justifyContent:'center'
-                     
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }} >
                       <Typography fontSize={8} fontWeight={900}>
                         {activity.status_name}
                       </Typography>
-
-
                     </Box>
                   </Box>
 
@@ -382,4 +372,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default memo(AdminDashboard);

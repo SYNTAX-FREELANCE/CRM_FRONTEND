@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import { Box, Stack, Typography } from "@mui/joy";
 import { Paper, Button, useMediaQuery } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -10,20 +10,31 @@ import {
 import { AllocationColumns } from "./Components/AllocationColumns";
 import EmployeeAssignedDrawer from "./Components/EmployeeAssignedDrawer";
 import EmployeeSelect from "../CommonComponents/EmployeeSelect";
-import AllocationPreviewModal from "./Components/AllocationPreviewModal";
-import { warningNofity } from "../constant/Constant";
+
+import { errorNotify, getAuthUser, successNotify, warningNofity } from "../constant/Constant";
+import { axioslogin } from "../Axios/axios";
+import GlobalLoader from "../CommonComponents/GlobalLoader";
+
+
+
+const AllocationPreviewModal = lazy(() => import("./Components/AllocationPreviewModal"));
 
 const ViewAllocation = () => {
     const [isReallocateMode, setIsReallocateMode] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [rowfullselect, setRowFullSelect] = useState([])
     const [open, setOpen] = useState(false);
     const [selectedAssignedLead, setSelectedAssignedLead] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState("");
     const [previewOpen, setPreviewOpen] = useState(false);
 
+    const authUser = getAuthUser();
+    const { id } = authUser ?? {}
+
+
 
     const { data: Employee_master = [] } = useEmployeeMaster();
-    const { data: AssignDetails = [], isLoading: LoadingTableData } =
+    const { data: AssignDetails = [], isLoading: LoadingTableData, refetch: FechtAllocationDetail } =
         useEmployeeAssignDetails();
 
     const isMobile = useMediaQuery("(max-width:600px)");
@@ -44,8 +55,7 @@ const ViewAllocation = () => {
     }, [employees, selectedEmployee]);
 
 
-    const handleSelect = (row, checked) => {
-
+    const handleSelect = useCallback((row, checked) => {
 
         if (!selectedEmployee || selectedEmployee?.trim() === "") return warningNofity("Select Employee First");
 
@@ -56,15 +66,25 @@ const ViewAllocation = () => {
 
         if (checked) {
             setSelectedRows((prev) => [...prev, row.lead_id]);
+            setRowFullSelect((prev) => [...prev, row]);
+
         } else {
             setSelectedRows((prev) => prev.filter((id) => id !== row.lead_id));
+            setRowFullSelect((prev) => prev.filter((val) => val.lead_id !== row.lead_id));
         }
-    };
+    }, [selectedEmployee]);
 
     const openLead = (row) => {
         setSelectedAssignedLead(row);
         setOpen(true);
     };
+
+    const resetDetail = useCallback(() => {
+        setSelectedRows([])
+        setRowFullSelect([])
+        setSelectedEmployee("")
+        setIsReallocateMode(false)
+    }, [])
 
     const handleClose = () => {
         setOpen(false);
@@ -75,25 +95,39 @@ const ViewAllocation = () => {
         setPreviewOpen(true);
     };
 
-    const handleAllocate = () => {
-        console.log("Allocate", {
-            selectedRows,
-            selectedRowDetails,
-            selectedEmployee,
-            selectedEmployeeName,
-        });
-        setPreviewOpen(false);
-    };
+    const handleAllocate = useCallback(async (work_status, is_locked, remarks) => {
+        if (!remarks || remarks?.trim() === "") return warningNofity("Please Enter Remarks Details");
+        if (!selectedEmployee || selectedEmployee?.trim() === "") return warningNofity("Select Employee First");
+        const payload = {
+            selectedLead: selectedRows,
+            selectedEmployee: Number(selectedEmployee),
+            remarks: remarks,
+            is_locked: is_locked,
+            work_status: work_status,
+            assigned_by: id,
+            leads: rowfullselect
+        }
+        try {
+            const respose = await axioslogin.post('/lead/update-reallocation', payload);
+            const { success, message } = respose?.data ?? {};
+            if (success !== 1) return errorNotify("Api Error While Updating Leads");
+            successNotify(message || "Reallocated SuccessFully");
+            setPreviewOpen(false);
+            FechtAllocationDetail()
+            resetDetail()
+        } catch (error) {
+            errorNotify("Error in Handling Allocation")
+            console.error("Error in Handling Allocation")
+        }
+    }, [
+        selectedEmployee,
+        selectedRows,
+        rowfullselect,
+        id,
+        FechtAllocationDetail,
+        resetDetail
+    ]);
 
-    const handleAllocateAndAssign = () => {
-        console.log("Allocate & Assign", {
-            selectedRows,
-            selectedRowDetails,
-            selectedEmployee,
-            selectedEmployeeName,
-        });
-        setPreviewOpen(false);
-    };
 
     const columns = AllocationColumns(
         openLead,
@@ -336,15 +370,18 @@ const ViewAllocation = () => {
                 assigned={selectedAssignedLead}
             />
 
-            <AllocationPreviewModal
-                open={previewOpen}
-                onClose={() => setPreviewOpen(false)}
-                selectedRows={selectedRows}
-                selectedRowDetails={selectedRowDetails}
-                selectedEmployeeName={selectedEmployeeName}
-                onAllocate={handleAllocate}
-                onAllocateAndAssign={handleAllocateAndAssign}
-            />
+            <Suspense fallback={<GlobalLoader />}>
+                <AllocationPreviewModal
+                    open={previewOpen}
+                    onClose={() => setPreviewOpen(false)}
+                    selectedRows={selectedRows}
+                    selectedRowDetails={selectedRowDetails}
+                    selectedEmployeeName={selectedEmployeeName}
+                    onAllocate={handleAllocate}
+                    onAllocateAndAssign={handleAllocate}
+                />
+            </Suspense>
+
         </Box>
     );
 };

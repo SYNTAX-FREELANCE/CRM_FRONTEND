@@ -55,6 +55,7 @@ const Settings = () => {
         { label: "Role Master", path: "/home/setting/rolemaster", icon: <SecurityIcon /> },
         { label: "User Right Master", path: "/home/setting/userrightmaster", icon: <VpnKeyIcon /> },
         { label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
+        { label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
       ],
     },
   ];

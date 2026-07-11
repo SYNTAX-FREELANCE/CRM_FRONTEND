@@ -1,6 +1,7 @@
 // src/context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from "react";
 import { axioslogin } from "../Axios/axios";
+import { infoNotify } from "../constant/Constant";
 
 export const AuthContext = createContext();
 
@@ -44,6 +45,7 @@ export const AuthProvider = ({ children }) => {
                 setIsAuthenticated(true);
             } else {
                 localStorage.removeItem("user");
+                infoNotify("Session Time Out")
                 setIsAuthenticated(false);
             }
         } catch (error) {

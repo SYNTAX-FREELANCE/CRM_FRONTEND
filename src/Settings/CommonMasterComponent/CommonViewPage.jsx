@@ -31,11 +31,11 @@ const CommonViewPage = () => {
         });
     };
     const { data: RoleMasterDetil } = useRoleMaster();
+    const { data: ModuleMasterDetail } = useModuleMaster();
     const { data: CompnayMasterDetail } = useCompanyMaster();
     const { data: StuatuMaster } = useStatusMaster();
     const { data: QualificationMaster } = useQualificationMaster();
     const { data: Employee_master } = useEmployeeMaster();
-    const { data: ModuleMasterDetail } = useModuleMaster();
     const { data: SubmoduleMasterDetail } = useSubmoduleMaster();
     const { data: MenuMasterDetail } = useMenuMaster();
     const { data: LeadMasterDetail } = useLeadMaster();

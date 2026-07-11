@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useState } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -10,7 +10,9 @@ import {
     Typography,
     Divider,
     Chip,
+    TextField,
 } from "@mui/material";
+import LeadPreviewCard from "./LeadPreviewCard";
 
 const FieldRow = ({ label, value }) => (
     <Box>
@@ -30,14 +32,22 @@ const AllocationPreviewModal = ({
     selectedRowDetails = [],
     selectedEmployeeName = "",
     onAllocate,
-    onAllocateAndAssign,
+    onAllocateAndAssign
 }) => {
     const firstRow = selectedRowDetails?.[0] || {};
+
+    const [remarks, setRemarks] = useState("");
+
+
+    const handleClose = () => {
+        setRemarks("");
+        onClose();
+    };
 
     return (
         <Dialog
             open={open}
-            onClose={onClose}
+            onClose={handleClose}
             fullWidth
             maxWidth="sm"
             PaperProps={{
@@ -75,8 +85,8 @@ const AllocationPreviewModal = ({
                             justifyContent: 'space-between'
                         }}
                     >
-                        <FieldRow label="Previous Staff" value={firstRow.employee_name} />
-                        <FieldRow label="New Staff" value={selectedEmployeeName} />
+                        <FieldRow label="Previous Staff" value={firstRow.employee_name?.toUpperCase()} />
+                        <FieldRow label="New Staff" value={selectedEmployeeName?.toUpperCase()} />
                     </Box>
                     <Box>
                         <Typography sx={{ fontSize: 12, color: "#64748b", mb: 1 }}>
@@ -84,42 +94,50 @@ const AllocationPreviewModal = ({
                         </Typography>
 
                         <Stack spacing={1}>
-                            {selectedRowDetails.map((row) => (
-                                <Box
-                                    key={row.lead_id}
-                                    sx={{
-                                        p: 1.2,
-                                        borderRadius: 2,
-                                        bgcolor: "#fff",
-                                        border: "1px solid #e2e8f0",
-                                    }}
-                                >
-                                    <Stack direction="row" justifyContent="space-between" gap={1}>
-                                        <Box>
-                                            <Typography sx={{ fontSize: { xs: 10, sm: 13 }, fontWeight: 800 }}>
-                                                {row.customer_name}
-                                            </Typography>
-                                            <Typography sx={{ fontSize: { xs: 8, sm: 10 }, color: "#64748b" }}>
-                                                {row.registration_number}
-                                            </Typography>
-                                        </Box>
-
-                                        <Chip
-                                            size="small"
-                                            label={row.work_status?.replace("_", " ") || "-"}
-                                            sx={{
-                                                fontWeight: 700,
-                                                bgcolor: "#e0f2fe",
-                                                color: "#0369a1",
-                                                fontSize: { xs: 8, sm: 10 }
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                            {selectedRowDetails?.map((row) => (
+                                <LeadPreviewCard
+                                    key={row?.lead_id}
+                                    row={row}
+                                />
                             ))}
                         </Stack>
                     </Box>
                 </Stack>
+                <TextField
+                    fullWidth
+                    multiline
+                    minRows={2}
+                    maxRows={4}
+                    value={remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                    placeholder="Add remarks for this allocation..."
+                    variant="outlined"
+                    size="small"
+                    inputProps={{
+                        maxLength: 300,
+                        style: { resize: "vertical" }
+                    }}
+                    sx={{
+                        mt: 2,
+                        "& .MuiInputBase-root": {
+                            alignItems: "flex-start",
+                        },
+                        "& textarea": {
+                            cursor: "text",
+                        },
+                        "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                                borderColor: "#cbd5e1",
+                            },
+                            "&:hover fieldset": {
+                                borderColor: "#f9a719",
+                            },
+                            "&.Mui-focused fieldset": {
+                                borderColor: "rgb(27, 26, 23)",
+                            },
+                        },
+                    }}
+                />
             </DialogContent>
 
             <DialogActions sx={{ p: 2, gap: 1, flexWrap: "wrap" }}>
@@ -128,7 +146,7 @@ const AllocationPreviewModal = ({
                 </Button>
 
                 <Button
-                    onClick={onAllocate}
+                    onClick={() => onAllocate("PENDING", 0, remarks)}
                     variant="contained"
                     sx={{ textTransform: "none", fontWeight: 700, fontSize: { xs: 8, sm: 13 }, }}
                 >
@@ -136,7 +154,7 @@ const AllocationPreviewModal = ({
                 </Button>
 
                 <Button
-                    onClick={onAllocateAndAssign}
+                    onClick={() => onAllocateAndAssign("IN_PROGRESS", 1, remarks)}
                     variant="contained"
                     color="success"
                     sx={{ textTransform: "none", fontWeight: 700, fontSize: { xs: 8, sm: 13 }, }}
@@ -148,4 +166,4 @@ const AllocationPreviewModal = ({
     );
 };
 
-export default AllocationPreviewModal;
+export default memo(AllocationPreviewModal);

@@ -12,7 +12,7 @@ const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
 const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
-const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
+// const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
 const BankMaster = lazy(() => import("./Masters/BankMaster/BankMaster"));
 const UserReg = lazy(
@@ -27,7 +27,9 @@ const FreshCallsWorkspace = lazy(
 const CustomerAllocation = lazy(
   () => import("./DataDistribution/CustomerAllocation"),
 );
-const EmployeeDashboard = lazy(() => import("./Employee/EmployeeDashboard"));
+
+// const EmployeeDashboard = lazy(() => import("./Employee/EmployeeDashboard"));
+
 const CustomerSearchPage = lazy(() => import("./pages/CustomerSearchPage"));
 
 const ViewAllocation = lazy(() => import("./DataDistribution/ViewAllocation"));
@@ -37,6 +39,10 @@ const EmployeeBatchDetail = lazy(
 );
 const EmployeeBatchControl = lazy(
   () => import("./EmployeeBatchControl/EmployeeBatchControl"),
+);
+
+const HomePage = lazy(
+  () => import("./pages/HomePage"),
 );
 
 
@@ -69,9 +75,9 @@ const VehicleTypeCreation = lazy(
 const InsuranceCompanyCreation = lazy(
   () => import("./Masters/InsuranceCompany/InsuranceCompanyCreation"),
 );
-// const UserModuleRightCreation = lazy(
-//   () => import("./Masters/UserGroupMaster/UserModuleRightCreation"),
-// );
+const UserModuleRightMaster = lazy(
+  () => import("./Masters/UserModuleRights/UserModuleRightMaster"),
+);
 const UserRightCreation = lazy(
   () => import("./Masters/UserRightMaster/UserRightCreation"),
 );
@@ -110,12 +116,12 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: withSuspense(AdminDashboard),
+        element: withSuspense(HomePage),
       },
-      {
-        path: "employee",
-        element: withSuspense(EmployeeDashboard),
-      },
+      // {
+      //   path: "employee",
+      //   element: withSuspense(EmployeeDashboard),
+      // },
       {
         path: "batchcontrol",
         element: withSuspense(EmployeeBatchControl),
@@ -135,7 +141,7 @@ const router = createBrowserRouter([
       {
         path: "allocation",
         element: withSuspense(CustomerAllocation),
-      },{
+      }, {
         path: "view-allocation",
         element: withSuspense(ViewAllocation),
       },
@@ -188,10 +194,10 @@ const router = createBrowserRouter([
         path: "setting/insurancecompany",
         element: withSuspense(InsuranceCompanyCreation),
       },
-      // {
-      //   path: "setting/usermodulerightmaster",
-      //   element: withSuspense(UserModuleRightCreation),
-      // },
+      {
+        path: "setting/usermodulerightmaster",
+        element: withSuspense(UserModuleRightMaster),
+      },
       {
         path: "setting/userrightmaster",
         element: withSuspense(UserRightCreation),

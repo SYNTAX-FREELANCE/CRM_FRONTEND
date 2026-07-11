@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import {
   Box,
   Paper,
@@ -17,16 +17,19 @@ import { summaryData } from "../CommonCode/Reusable";
 import { useFectchFreshCalls, useGetMyActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
-import LeadDetailsDialog from "./LeadDetailsDrawer";
-import LeadDetailsDrawer from "./LeadDetailsDrawer";
 import { axioslogin } from "../Axios/axios";
 import { useQueryClient } from "@tanstack/react-query";
 
+
+const LeadDetailsDrawer = lazy(() =>
+  import("./LeadDetailsDrawer")
+);
 
 export default function FreshCallsWorkspace() {
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(1);
+  const [drawerLoaded, setDrawerLoaded] = useState(false);
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
@@ -36,13 +39,13 @@ export default function FreshCallsWorkspace() {
 
   const { data: FreshCalls = [], isLoading: LoadingTableData } = useGetMyActiveCalls(id, statusFilter);
 
-  const openLead = (lead) => {
+  const openLead = useCallback((lead) => {
     setSelectedLead(lead);
     setDetailOpen(true);
-  };
+    setDrawerLoaded(true);
+  }, []);
 
-
-  const getFreshCalls = async () => {
+  const getFreshCalls = useCallback(async () => {
     if (!id) return warningNotify("Employee Id is missing Please Login Again");
     if (FreshCalls?.length > 0 && statusFilter !== 1) return infoNotify("Please Complete the First Batch Before Fetching")
     try {
@@ -56,14 +59,15 @@ export default function FreshCallsWorkspace() {
     } catch (error) {
       errorNotify("Error in Fetching Next Queue..!", error);
     }
-  };
+  }, [id, FreshCalls, statusFilter, queryClient]);
 
   const isMobile = useMediaQuery("(max-width:600px)");
   const columns = useMemo(() => TastkColumns(openLead, isMobile), [openLead, isMobile]);
 
-  const ActiveStatus = Array.isArray(LeadMasterDetail)
-    ? LeadMasterDetail.filter((stat) => stat.is_active === 1)
-    : [];
+  const ActiveStatus = useMemo(() => {
+    if (!Array.isArray(LeadMasterDetail)) return [];
+    return LeadMasterDetail.filter(stat => stat.is_active === 1);
+  }, [LeadMasterDetail]);
 
   const filteredRows = useMemo(() => {
     if (!Array.isArray(FreshCalls)) return [];
@@ -292,14 +296,17 @@ export default function FreshCallsWorkspace() {
             />
           </Paper>
         </Box>
-
       </Paper>
-
-      <LeadDetailsDrawer
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        selectedLead={selectedLead}
-      />
+      <Suspense fallback={null}>
+        {
+          drawerLoaded &&
+          <LeadDetailsDrawer
+            open={detailOpen}
+            onClose={() => setDetailOpen(false)}
+            selectedLead={selectedLead}
+          />
+        }
+      </Suspense>
     </Box>
   );
 }

@@ -77,28 +77,8 @@ const reminders = [
     },
 ];
 
-const activities = [
-    { text: "Rohith Krishna uploaded new lead data", time: "2 min ago", icon: <UploadFile />, color: "#2563eb" },
-    { text: "12 appointments booked today", time: "15 min ago", icon: <EventAvailable />, color: "#f97316" },
-    { text: "TL assigned 50 fresh leads", time: "1 hour ago", icon: <People />, color: "#2563eb" },
-    { text: "Customer quotation generated", time: "2 hours ago", icon: <Email />, color: "#f97316" },
-    { text: "New employee added", time: "3 hours ago", icon: <People />, color: "#2563eb" },
-];
 
-const performanceData = [
-    { month: "Jan", calls: 120, followups: 45, appointments: 22, conversions: 18 },
-    { month: "Feb", calls: 132, followups: 52, appointments: 26, conversions: 20 },
-    { month: "Mar", calls: 145, followups: 58, appointments: 31, conversions: 24 },
-    { month: "Apr", calls: 160, followups: 60, appointments: 33, conversions: 28 },
-    { month: "May", calls: 155, followups: 63, appointments: 35, conversions: 30 },
-    { month: "Jun", calls: 172, followups: 70, appointments: 38, conversions: 34 },
-    { month: "Jul", calls: 180, followups: 72, appointments: 42, conversions: 36 },
-    { month: "Aug", calls: 188, followups: 76, appointments: 44, conversions: 39 },
-    { month: "Sep", calls: 176, followups: 74, appointments: 41, conversions: 37 },
-    { month: "Oct", calls: 192, followups: 81, appointments: 46, conversions: 41 },
-    { month: "Nov", calls: 205, followups: 88, appointments: 50, conversions: 45 },
-    { month: "Dec", calls: 214, followups: 92, appointments: 54, conversions: 49 },
-];
+
 
 const EmployeeDashboard = () => {
     const authUser = getAuthUser();
@@ -110,12 +90,9 @@ const EmployeeDashboard = () => {
 
     const { id } = authUser ?? {}
 
-    console.log({
-        id
-    });
-
 
     const { data: TotalCount = [] } = useFetchDashBoardCounts(id);
+
     const { data: remindersData = [] } = useFetchDashBoardReminders(id);
 
 
@@ -140,11 +117,6 @@ const EmployeeDashboard = () => {
         },
     ];
 
-
-    const totalCalls = useMemo(
-        () => performanceData.reduce((sum, item) => sum + item.calls, 0),
-        []
-    );
 
     return (
         <Box
@@ -239,7 +211,6 @@ const EmployeeDashboard = () => {
                     ))}
                 </Box>
             </Box>
-
             <Box
                 sx={{
                     mt: 2.5,
@@ -247,11 +218,11 @@ const EmployeeDashboard = () => {
                     gap: 2.5,
                     flexDirection: { xs: "column", lg: "row" },
                     alignItems: "stretch",
-                }} > 
+                }} >
                 <Box
                     sx={{
                         flex: 1,
-                        minWidth: 0,
+                        minWidth: 0
                     }}>
                     <ReminderAreaChartCard reminders={remindersData} />
                 </Box>

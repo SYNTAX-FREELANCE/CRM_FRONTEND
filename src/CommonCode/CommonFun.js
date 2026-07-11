@@ -407,3 +407,28 @@ export const getActiveBatchDetails = async (empid) => {
     console.error("getAttendanceByDate error:", error);
   }
 };
+
+
+export const getModuleRights = async (roleId) => {
+  if (!roleId) return [];
+  try {
+    const response = await axioslogin.get(`/moduleright/${roleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Get Module Rights Error:", error);
+  }
+};
+
+export const getActiveModuleRights = async (roleId) => {
+  if (!roleId) return [];
+  try {
+    const response = await axioslogin.get(`/moduleright/active/${roleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Get Active Module Rights Error:", error);
+  }
+};

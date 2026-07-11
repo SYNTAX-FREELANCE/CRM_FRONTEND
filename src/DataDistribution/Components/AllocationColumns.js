@@ -83,8 +83,8 @@ export const AllocationColumns = (
             minWidth: 220,
             renderCell: ({ row }) => (
                 <Stack spacing={0.4} sx={{ py: 1 }}>
-                    <Typography fontWeight={700} sx={{ fontSize: 10, fontWeight: 600 }}>
-                        {row.employee_name}
+                    <Typography fontWeight={700} sx={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase' }}>
+                        {row?.employee_name}
                     </Typography>
                     <Typography sx={{ fontSize: 9 }}>{row.customer_name}({row.registration_number})</Typography>
                     <Typography sx={{ fontSize: 8, color: getStatusColor(row.work_status) }}> {row.work_status?.replace("_", " ")}</Typography>
@@ -105,7 +105,7 @@ export const AllocationColumns = (
             renderCell: ({ value }) => (
                 <Stack direction="row" spacing={1} alignItems="center">
                     <PersonIcon sx={{ fontSize: 18, color: "#64748b" }} />
-                    <Typography sx={{ fontSize: 12 }} fontWeight={600}>
+                    <Typography sx={{ fontSize: 12, textTransform: 'uppercase' }} fontWeight={600}>
                         {value}
                     </Typography>
                 </Stack>
@@ -117,7 +117,9 @@ export const AllocationColumns = (
             minWidth: 180,
             flex: 1,
             renderCell: ({ value }) => (
-                <Typography sx={{ fontSize: 12 }} fontWeight={600}>
+                <Typography sx={{ fontSize: 12 }} fontWeight={600} style={{
+                    textTransform: 'uppercase'
+                }}>
                     {value}
                 </Typography>
             ),
