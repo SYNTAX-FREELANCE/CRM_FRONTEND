@@ -203,7 +203,6 @@ export const getFreshCalls = async (empid) => {
   }
 };
 
-
 export const getDashboardCounts = async (empid) => {
   if (!empid) return [];
   try {
@@ -228,7 +227,6 @@ export const getDashboardReminders = async (empid) => {
   }
 };
 
-
 export const getMyActiveCalls = async (empid, filter) => {
   if (!empid) return [];
   try {
@@ -249,17 +247,16 @@ export const getMyActiveCalls = async (empid, filter) => {
 
 export const getAdminDashboardCount = async (from, to) => {
   console.log({
-    from, to
+    from,
+    to,
   });
 
   if (!from || !to) return [];
   try {
-    const response = await axioslogin.post(
-      `/lead/admin-count`, {
+    const response = await axioslogin.post(`/lead/admin-count`, {
       from: from,
-      to: to
-    },
-    );
+      to: to,
+    });
     const { success, data, message } = response.data;
     if (success !== 0) return data;
     return [];
@@ -267,7 +264,6 @@ export const getAdminDashboardCount = async (from, to) => {
     console.error("getMyActiveCalls error:", error);
   }
 };
-
 
 export const getCallFollowUp = async (leadid, statusId) => {
   if (!leadid || !statusId) return [];
@@ -283,7 +279,6 @@ export const getCallFollowUp = async (leadid, statusId) => {
     console.error("getMyActiveCalls error:", error);
   }
 };
-
 
 export const getLeadCallHistory = async (leadid) => {
   if (!leadid) return [];
@@ -307,9 +302,6 @@ export const getRecentActivity = async () => {
     console.error("getMyActiveCalls error:", error);
   }
 };
-
-
-
 
 export const FetchInsuranceCompanyMaster = async () => {
   try {
@@ -352,33 +344,66 @@ export const FetchEmployeeProfile = async (employeeId) => {
     return null;
   } catch (error) {
     console.error("FetchEmployeeProfile error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch employee profile");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch employee profile",
+    );
   }
 };
 
 export const FetchEmployeePerformance = async (employeeId) => {
   if (!employeeId) return null;
   try {
-    const response = await axioslogin.get(`/userinfo/performance/${employeeId}?range=monthly`);
+    const response = await axioslogin.get(
+      `/userinfo/performance/${employeeId}?range=monthly`,
+    );
     if (response.data && response.data.success === 1) {
       return response.data.data;
     }
     return null;
   } catch (error) {
     console.error("FetchEmployeePerformance error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch employee performance");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch employee performance",
+    );
   }
 };
 
 export const getAttendanceByDate = async (userId, date) => {
   if (!userId || !date) return null;
   try {
-    const response = await axioslogin.get(`/userinfo/attendance?userId=${userId}&date=${date}`);
+    const response = await axioslogin.get(
+      `/userinfo/attendance?userId=${userId}&date=${date}`,
+    );
     const { success, data } = response.data;
     if (success === 1) return data;
     return null;
   } catch (error) {
     console.error("getAttendanceByDate error:", error);
-    throw new Error(error?.response?.data?.message || "Failed to fetch attendance details");
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch attendance details",
+    );
+  }
+};
+
+export const getActiveBatches = async () => {
+  try {
+    const response = await axioslogin.get(`/lead/active-batches`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getAttendanceByDate error:", error);
+  }
+};
+
+export const getActiveBatchDetails = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/employee-batch/${empid}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getAttendanceByDate error:", error);
   }
 };

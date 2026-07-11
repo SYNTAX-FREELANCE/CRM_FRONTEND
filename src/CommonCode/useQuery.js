@@ -21,6 +21,13 @@ import {
   getDashboardCounts,
   getDashboardReminders,
   FetchUserInfoEmployees,
+  FetchEmployeeProfile,
+  FetchEmployeePerformance,
+  getAttendanceByDate,
+  getAdminDashboardCount,
+  getRecentActivity,
+  getActiveBatches,
+  getActiveBatchDetails,
 } from "./CommonFun";
 
 
@@ -143,16 +150,14 @@ export const useFectchFreshCalls = (empid) => {
   });
 };
 
-
 export const useFetchDashBoardCounts = (empid) => {
   return useQuery({
     queryKey: ["emp-dashbordcount", empid],
     queryFn: () => getDashboardCounts(empid),
     staleTime: Infinity,
-    enabled: !!empid
+    enabled: !!empid,
   });
 };
-
 
 export const useFetchDashBoardReminders = (empid) => {
   return useQuery({
@@ -165,10 +170,9 @@ export const useFetchDashBoardReminders = (empid) => {
     refetchOnWindowFocus: true,
     //  avoid unnecessary refetch loops
     refetchOnMount: false,
-    refetchOnReconnect: false
+    refetchOnReconnect: false,
   });
 };
-
 
 export const useGetMyActiveCalls = (empid, statusFilter) => {
   return useQuery({
@@ -180,8 +184,25 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
   });
 };
 
+export const useAdminDashBoardCounts = (from, to) => {
+  return useQuery({
+    queryKey: ["admin-counts", from, to],
+    queryFn: () => getAdminDashboardCount(from, to),
+    enabled: !!from && !!to,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+};
 
-
+export const useAllEmployeeRecentActivity = () => {
+  return useQuery({
+    queryKey: ["recent-activity"],
+    queryFn: getRecentActivity,
+    staleTime: Infinity,
+  });
+};
 
 export const useGetLeadHistory = (leadId, enabled) => {
   return useQuery({
@@ -208,5 +229,36 @@ export const useUserInfoEmployees = () => {
   return useQuery({
     queryKey: ["userInfoEmployees"],
     queryFn: FetchUserInfoEmployees,
+  });
+};
+
+export const useEmployeePerformance = (employeeId) => {
+  return useQuery({
+    queryKey: ["employeePerformance", employeeId],
+    queryFn: () => FetchEmployeePerformance(employeeId),
+    enabled: !!employeeId,
+  });
+};
+
+export const useGetAttendanceByDate = (userId, date) => {
+  return useQuery({
+    queryKey: ["userAttendance", userId, date],
+    queryFn: () => getAttendanceByDate(userId, date),
+    enabled: !!userId && !!date,
+  });
+};
+
+export const useGetBatchDetails = (empid) => {
+  return useQuery({
+    queryKey: ["batch-detils", empid],
+    queryFn: () => getActiveBatchDetails(empid),
+    enabled: !!empid,
+  });
+};
+export const useGetActiveBatchs = () => {
+  return useQuery({
+    queryKey: ["active-batches"],
+    queryFn: getActiveBatches,
+    staleTime: Infinity
   });
 };
