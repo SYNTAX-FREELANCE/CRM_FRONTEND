@@ -256,7 +256,7 @@ const CustomerAllocation = () => {
                                         background: "#fff",
                                     }}
                                 >
-                                    {Employee_master.map((emp) => (
+                                    {Employee_master?.map((emp) => (
                                         <Option key={emp.user_id} value={emp.user_id}>
                                             {emp.name}
                                         </Option>

@@ -46,7 +46,8 @@ export const getAuthUser = () => {
     return {
       id: Number(decryptedUser.id),           // user_id from users table
       emp_name: decryptedUser.username,// name from users_master
-      role: decryptedUser.role         // role_id or role name
+      role: decryptedUser.role,         // role name
+      role_id: decryptedUser.role_id,         // role name
     };
   } catch (error) {
     console.error("Invalid user in localStorage:", error);

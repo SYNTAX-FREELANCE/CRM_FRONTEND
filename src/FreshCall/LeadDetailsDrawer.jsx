@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import {
   Avatar,
   Box,
@@ -25,12 +25,11 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+
 import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
 import Row from "./Components/Row";
-import { useFollowUpDetail, useGetLeadHistory, useLeadMaster } from "../CommonCode/useQuery";
-import StatusActionCards from "./Components/StatusActionCards";
-import FollowUpForm from "./Components/FollowUpForm";
+import { useFollowUpDetail, useGetLeadHistory } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
 import axios from "axios";
 import { axioslogin } from "../Axios/axios";
@@ -38,12 +37,21 @@ import { statusReasonMap } from "../CommonCode/Reusable";
 import { useQueryClient } from "@tanstack/react-query";
 import LeadHistoryTimelineItem from "./Components/LeadHistoryTimelineItem";
 import LeadFollowUpCard from "./Components/LeadFollowUpCard";
+import { format } from "date-fns";
+import StatusActionCardsSkeleton from "../SkeletonComponent/StatusActionCardsSkeleton";
+import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
   WebkitBackdropFilter: "blur(12px) saturate(1.5)",
   border: "1px solid rgba(255, 255, 255, 0.18)",
 };
+
+
+const StatusActionCards = lazy(() => import("./Components/StatusActionCards"))
+const FollowUpForm = lazy(() => import("./Components/FollowUpForm"))
+const LeadHeader = lazy(() => import("./Components/LeadHeader"))
+
 
 const leadColor = "#2563eb";
 
@@ -52,20 +60,27 @@ const LeadDetailsDrawer = ({
   onClose,
   selectedLead
 }) => {
-  const lead = selectedLead || {};
 
+  const [callAnchorEl, setCallAnchorEl] = useState(null);
+  const [followUpAction, setFollowUpAction] = useState("");
+
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  const authUser = getAuthUser();
+
+  const lead = selectedLead || {};
 
   const leadId = lead?.lead_id;
   const statusId = lead?.status_id;
   const isCallAccess = lead?.is_call_required === 1;
 
-  const authUser = getAuthUser();
-  const { id } = authUser ?? {};
 
-  const { data: LeadMasterDetail } = useLeadMaster();
+
+  const { id } = authUser ?? {};
 
 
   const shouldFetchHistory = open && !!leadId;
+
   const shouldFetchFollowUp =
     open &&
     !!leadId &&
@@ -83,25 +98,24 @@ const LeadDetailsDrawer = ({
     shouldFetchFollowUp
   );
 
-  const hasHistory = LeadHistory && LeadHistory?.length > 0
-  const hasFollowUp = LeadFollowUp && LeadFollowUp?.length > 0;
-  console.log({
-    LeadHistory,
-    LeadFollowUp,
-  });
+  const hasHistory = useMemo(
+    () => LeadHistory?.length > 0,
+    [LeadHistory]
+  );
+
+  const hasFollowUp = useMemo(
+    () => LeadFollowUp?.length > 0,
+    [LeadFollowUp]
+  );
 
 
-
-  const ActiveStatus = Array.isArray(LeadMasterDetail)
-    ? LeadMasterDetail.filter((stat) => stat.is_active === 1 && stat.status_id !== 1)
-    : [];
-
-  const hasPolicy =
+  const hasPolicy = useMemo(() => (
     lead.policy_id ||
     lead.policy_number ||
     lead.start_date ||
     lead.expiry_date ||
-    lead.premium_amount;
+    lead.premium_amount
+  ), [lead]);
 
   const initials = useMemo(() => {
     return (lead.customer_name || "L")
@@ -112,29 +126,28 @@ const LeadDetailsDrawer = ({
       .toUpperCase();
   }, [lead.customer_name]);
 
-  const [callAnchorEl, setCallAnchorEl] = useState(null);
-  const [followUpAction, setFollowUpAction] = useState("");
-  const [followUpDate, setFollowUpDate] = useState("");
-  const [followUpRemarks, setFollowUpRemarks] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const callMenuOpen = Boolean(callAnchorEl);
-  const [followUpOutcome, setFollowUpOutcome] = useState("");
-  const [policyData, setPolicyData] = useState({
-    insurance_company_id: "",
-    policy_number: "",
-    renewal_cycle: "Annual",
-    start_date: "",
-    expiry_date: "",
-    premium_amount: "",
-    insured_declared_value: "",
-    reminder_days: 30,
-    renewal_year: new Date().getFullYear(),
-    remarks: "",
-  });
+
+  const handleSelectStatus = useCallback((item) => {
+    setSelectedStatus(item);
+    handleStatusClick(item.status_id);
+  }, []);
 
 
- 
-  const validatePolicy = () => {
+  const handleReset = useCallback(() => {
+    setSelectedStatus("");
+    setFollowUpAction("");
+
+  }, []);
+
+
+  const resetFollowup = useCallback(() => {
+    setFollowUpAction("");
+    setSelectedStatus("");
+  }, []);
+
+
+  const validatePolicy = (policyData) => {
     if (!policyData.insurance_company_id) {
       warningNotify("Please select the insurance company.");
       return false;
@@ -199,56 +212,71 @@ const LeadDetailsDrawer = ({
   const handleStatusClick = (id) => {
     const normalized = id;
     setFollowUpAction(normalized);
-    setFollowUpDate("");
-    setFollowUpRemarks("");
   };
 
-  const HandleSaveFollowup = async () => {
+
+  const HandleSaveFollowup = async ({
+    remarks: followUpRemarks,
+    followUpDate,
+    followUpOutcome,
+    policyData,
+  }) => {
     // Lead Validation
     if (!lead?.lead_id) {
-      return warningNotify("Lead information is missing.");
+      warningNotify("Lead information is missing.");
+      return false;
     }
 
     // User Validation
     if (!id) {
-      return warningNotify("Session expired. Please login again.");
+      warningNotify("Session expired. Please login again.");
+      return false;
     }
 
+    // Policy Validation
     if (selectedStatus?.is_policy_required === 1) {
-      const isValid = validatePolicy();
+      const isValid = validatePolicy(policyData);
 
       if (!isValid) {
-        return;
+        return false;
       }
     }
+
     // Status Validation
     if (!followUpAction) {
-      return warningNotify("Please select the lead status.");
+      warningNotify("Please select the lead status.");
+      return false;
     }
 
-    // Require date only for specific statuses
+    // Follow-up Validation
     if (selectedStatus?.requires_followup === 1) {
       if (!followUpDate) {
-        return warningNotify("Please select the next follow-up date.");
+        warningNotify("Please select the next follow-up date.");
+        return false;
       }
 
       if (!followUpOutcome) {
-        return warningNotify("Please select the call outcome.");
+        warningNotify("Please select the call outcome.");
+        return false;
       }
 
       if (new Date(followUpDate) <= new Date()) {
-        return warningNotify(
+        warningNotify(
           "Follow-up date must be greater than the current date and time."
         );
+        return false;
       }
     }
+
     // Remarks Validation
     if (!followUpRemarks?.trim()) {
-      return warningNotify("Please enter discussion remarks.");
+      warningNotify("Please enter discussion remarks.");
+      return false;
     }
 
     if (followUpRemarks.trim().length < 5) {
-      return warningNotify("Remarks should contain at least 5 characters.");
+      warningNotify("Remarks should contain at least 5 characters.");
+      return false;
     }
 
     const payload = {
@@ -256,15 +284,19 @@ const LeadDetailsDrawer = ({
       customer_id: lead.customer_id,
       vehicle_id: lead.vehicle_id,
       current_status_id: lead.status_id,
-      new_status_id: followUpAction,
-      requires_followup: selectedStatus.requires_followup,
       old_status_id: lead.status_id,
+      new_status_id: followUpAction,
+      requires_followup: selectedStatus?.requires_followup,
       call_outcome: followUpOutcome,
       remarks: followUpRemarks.trim(),
-      next_followup_date: followUpDate,
-      status_change_reason: statusReasonMap[followUpOutcome] || "Status Updated",
+      next_followup_date: followUpDate
+        ? format(new Date(followUpDate), "yyyy-MM-dd HH:mm:ss")
+        : null,
+      status_change_reason:
+        statusReasonMap[followUpOutcome] || "Status Updated",
       created_by: id,
       policyrequierd: selectedStatus?.is_policy_required,
+
       ...(selectedStatus?.is_policy_required === 1 && {
         policy: {
           insurance_company_id: policyData.insurance_company_id,
@@ -282,25 +314,26 @@ const LeadDetailsDrawer = ({
     };
 
     try {
-      const response = await axioslogin.post('/lead/update-status', payload);
-      const { success, message } = response?.data ?? {}
-      if (success !== 1) return warningNotify(message || "Error in Updating Lead");
-      successNotify(message)
-      queryClient.invalidateQueries({
+      const response = await axioslogin.post(
+        "/lead/update-status",
+        payload
+      );
+      const { success, message } = response?.data ?? {};
+      if (success !== 1) {
+        warningNotify(message || "Error in Updating Lead");
+        return false;
+      }
+      successNotify(message);
+      await queryClient.invalidateQueries({
         queryKey: ["mycalls", id],
       });
-      onClose()
-      setFollowUpAction("");
-      setFollowUpDate("");
-      setFollowUpRemarks("");
-      setFollowUpOutcome("");
-      setSelectedStatus("")
+      resetFollowup()
+      onClose();
+      return true;
     } catch (error) {
-      console.log({
-        error
-      });
-
-      errorNotify("Error in Updating Status")
+      console.log(error);
+      errorNotify("Error in Updating Status");
+      return false;
     }
   };
 
@@ -312,7 +345,7 @@ const LeadDetailsDrawer = ({
       ModalProps={{ keepMounted: true }}
       PaperProps={{
         sx: {
-          width: { xs: "100%", sm: "80%", md: "50%" },
+          width: { xs: "100%", sm: "80%", md: "70%" },
           maxWidth: "100%",
           height: "100%",
           ...glassEffect,
@@ -324,102 +357,17 @@ const LeadDetailsDrawer = ({
       }}
     >
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <Box
-          sx={{
-            p: 2,
-            background:
-              "linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(249, 115, 22, 0.12) 100%)",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
-            flex: "0 0 auto",
-          }}
-        >
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            gap={2}
-          >
-            <Stack
-              direction="row"
-              spacing={1.5}
-              alignItems="center"
-              sx={{ minWidth: 0, flex: 1 }}
-            >
-              <Avatar
-                sx={{
-                  width: 56,
-                  height: 56,
-                  bgcolor: leadColor,
-                  fontWeight: 800,
-                }}
-              >
-                {initials}
-              </Avatar>
 
-              <Box sx={{ minWidth: 0, flex: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.15 }}>
-                  {lead.customer_name || "Customer"}
-                </Typography>
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ mt: 0.5, flexWrap: "wrap" }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize: "0.78rem", color: "text.secondary" }}
-                  >
-                    {lead.state || "-"}
-                  </Typography>
-                  <Chip
-                    size="small"
-                    label={lead.status_name || "NEW"}
-                    sx={{
-                      height: 24,
-                      fontWeight: 800,
-                      bgcolor: "rgba(249, 115, 22, 0.2)",
-                      color: "#f97316",
-                      border: "1px solid rgba(249, 115, 22, 0.25)",
-                      fontSize: "0.7rem",
-                    }}
-                  />
-                </Stack>
-              </Box>
-            </Stack>
-
-            <Stack direction="row" spacing={1}>
-              <IconButton
-                onClick={handleCallClick}
-                size="small"
-                sx={{
-                  bgcolor: "rgba(37, 99, 235, 0.2)",
-                  color: "#2563eb",
-                  border: "1px solid rgba(37, 99, 235, 0.25)",
-                }}
-              >
-                <PhoneIcon fontSize="small" />
-              </IconButton>
-
-              <IconButton
-                onClick={onClose}
-                size="small"
-                sx={{ bgcolor: "rgba(255,255,255,0.55)" }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Stack>
-          </Stack>
-
-          <CallPopover
-            anchorEl={callAnchorEl}
-            open={callMenuOpen}
-            onClose={handleCallClose}
-            mobile1={lead?.mobile_number_1}
-            mobile2={lead?.mobile_number_2}
-          />
-        </Box>
+        <LeadHeader
+          lead={lead}
+          initials={initials}
+          leadColor={leadColor}
+          onClose={onClose}
+          handleCallClick={handleCallClick}
+          handleCallClose={handleCallClose}
+          callAnchorEl={callAnchorEl}
+          callMenuOpen={callMenuOpen}
+        />
 
         <Box
           sx={{
@@ -486,6 +434,7 @@ const LeadDetailsDrawer = ({
                 accent="orange"
               />
             </Section>
+
             {
               hasFollowUp && (
                 <Section
@@ -565,6 +514,9 @@ const LeadDetailsDrawer = ({
                 />
               </Section>
             )}
+
+
+
             {
               isCallAccess && (
                 <Box
@@ -585,42 +537,23 @@ const LeadDetailsDrawer = ({
 
                   <Divider sx={{ my: 1.2, borderColor: "rgba(37,99,235,0.12)" }} />
 
-                  <StatusActionCards
-                    statuses={ActiveStatus}
-                    selectedStatus={selectedStatus}
-                    onStatusClick={(item) => {
-                      setSelectedStatus(item);
-                      handleStatusClick(item.status_id);
-                    }}
-                    onReset={() => {
-                      setSelectedStatus("");
-                      setFollowUpAction("");
-                      setFollowUpDate("");
-                      setFollowUpRemarks("");
-                    }}
-                  />
-
+                  <Suspense fallback={<StatusActionCardsSkeleton />}>
+                    <StatusActionCards
+                      // statuses={ActiveStatus}
+                      selectedStatus={selectedStatus}
+                      onStatusClick={handleSelectStatus}
+                      onReset={handleReset}
+                    />
+                  </Suspense>
 
                   {followUpAction && (
-                    <FollowUpForm
-                      statusName={selectedStatus}
-                      followUpDate={followUpDate}
-                      policyData={policyData}
-                      setPolicyData={setPolicyData}
-                      setFollowUpDate={setFollowUpDate}
-                      followUpRemarks={followUpRemarks}
-                      setFollowUpRemarks={setFollowUpRemarks}
-                      outcome={followUpOutcome}
-                      setOutcome={setFollowUpOutcome}
-                      onCancel={() => {
-                        setFollowUpAction("");
-                        setFollowUpDate("");
-                        setFollowUpRemarks("");
-                        setFollowUpOutcome("");
-                        setSelectedStatus("")
-                      }}
-                      onSave={HandleSaveFollowup}
-                    />
+                    <Suspense fallback={<FollowUpFormSkeleton />}>
+                      <FollowUpForm
+                        statusName={selectedStatus}
+                        onCancel={resetFollowup}
+                        onSave={HandleSaveFollowup}
+                      />
+                    </Suspense>
                   )}
 
                 </Box>
@@ -633,4 +566,4 @@ const LeadDetailsDrawer = ({
   );
 };
 
-export default LeadDetailsDrawer;
+export default memo(LeadDetailsDrawer);

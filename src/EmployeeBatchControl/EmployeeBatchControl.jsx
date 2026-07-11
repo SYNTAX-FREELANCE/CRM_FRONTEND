@@ -37,74 +37,70 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import EastIcon from '@mui/icons-material/East';
-import RequestedDrawer from './Components/RequestedDrawer';
+// import RequestedDrawer from './Components/RequestedDrawer';
 import { DataGrid } from '@mui/x-data-grid';
 import { EmployeeBatchColumns } from './Components/EmployeeBatchColumns';
 import { useNavigate } from 'react-router-dom';
 import { useGetActiveBatchs } from '../CommonCode/useQuery';
 
-const pendingLeads = [
-    { id: 98, customer: 'Arun' },
-    { id: 99, customer: 'Ajith' },
-    { id: 100, customer: 'Joseph' },
-];
 
-const requestItems = [
-    {
-        id: 1,
-        name: 'Rahul Kumar',
-        empId: 'EMP004',
-        designation: 'Telecaller',
-        time: '2 min ago',
-        message: 'Requested one extra batch permission.',
-        status: 'Open',
-    },
-    {
-        id: 2,
-        name: 'Anjali S',
-        empId: 'EMP019',
-        designation: 'Telecaller',
-        time: '15 min ago',
-        message: 'Need next batch to continue calling.',
-        status: 'Closed',
-    },
-    {
-        id: 3,
-        name: 'Vishnu P',
-        empId: 'EMP021',
-        designation: 'Senior Telecaller',
-        time: 'Today 10:40 AM',
-        message: 'Batch completed, asking for next queue.',
-        status: 'Open',
-    },
-    {
-        id: 3,
-        name: 'Vishnu P',
-        empId: 'EMP021',
-        designation: 'Senior Telecaller',
-        time: 'Today 10:40 AM',
-        message: 'Batch completed, asking for next queue.',
-        status: 'Open',
-    },
-    {
-        id: 3,
-        name: 'Vishnu P',
-        empId: 'EMP021',
-        designation: 'Senior Telecaller',
-        time: 'Today 10:40 AM',
-        message: 'Batch completed, asking for next queue.',
-        status: 'Open',
-    },
-    {
-        id: 3,
-        name: 'Vishnu P',
-        empId: 'EMP021',
-        designation: 'Senior Telecaller',
-        time: 'Today 10:40 AM',
-        message: 'Batch completed, asking for next queue.',
-        status: 'Open',
-    }
-];
+
+// const requestItems = [
+//     {
+//         id: 1,
+//         name: 'Rahul Kumar',
+//         empId: 'EMP004',
+//         designation: 'Telecaller',
+//         time: '2 min ago',
+//         message: 'Requested one extra batch permission.',
+//         status: 'Open',
+//     },
+//     {
+//         id: 2,
+//         name: 'Anjali S',
+//         empId: 'EMP019',
+//         designation: 'Telecaller',
+//         time: '15 min ago',
+//         message: 'Need next batch to continue calling.',
+//         status: 'Closed',
+//     },
+//     {
+//         id: 3,
+//         name: 'Vishnu P',
+//         empId: 'EMP021',
+//         designation: 'Senior Telecaller',
+//         time: 'Today 10:40 AM',
+//         message: 'Batch completed, asking for next queue.',
+//         status: 'Open',
+//     },
+//     {
+//         id: 3,
+//         name: 'Vishnu P',
+//         empId: 'EMP021',
+//         designation: 'Senior Telecaller',
+//         time: 'Today 10:40 AM',
+//         message: 'Batch completed, asking for next queue.',
+//         status: 'Open',
+//     },
+//     {
+//         id: 3,
+//         name: 'Vishnu P',
+//         empId: 'EMP021',
+//         designation: 'Senior Telecaller',
+//         time: 'Today 10:40 AM',
+//         message: 'Batch completed, asking for next queue.',
+//         status: 'Open',
+//     },
+//     {
+//         id: 3,
+//         name: 'Vishnu P',
+//         empId: 'EMP021',
+//         designation: 'Senior Telecaller',
+//         time: 'Today 10:40 AM',
+//         message: 'Batch completed, asking for next queue.',
+//         status: 'Open',
+//     }
+// ];
 
 const EmployeeBatchControl = () => {
 
@@ -121,108 +117,17 @@ const EmployeeBatchControl = () => {
     }, [navigate]);
 
 
-    const handleOpenRequest = useCallback((item) => {
-        setRequestPanelOpen(false)
-        navigate(`/home/batchcontrol/${item.id}`)
-    }, [navigate])
+    // const handleOpenRequest = useCallback((item) => {
+    //     setRequestPanelOpen(false)
+    //     navigate(`/home/batchcontrol/${item.id}`)
+    // }, [navigate])
 
     const columns = useMemo(
         () => EmployeeBatchColumns(openEmployee, isMobile),
         [isMobile]
     );
 
-    const rows = [
-        {
-            empid: 1,
-            emp_code: "EMP001",
-            employee_name: "Rahul Kumar",
-            designation: "Telecaller",
-            batch_no: 1,
-            pending_leads: 3,
-            assigned_at: "08 Jul 2026, 09:30 AM",
-        },
-        {
-            empid: 2,
-            emp_code: "EMP002",
-            employee_name: "Anjali S",
-            designation: "Senior Telecaller",
-            batch_no: 2,
-            pending_leads: 7,
-            assigned_at: "08 Jul 2026, 10:10 AM",
-        },
-        {
-            empid: 3,
-            emp_code: "EMP003",
-            employee_name: "Vishnu P",
-            designation: "Telecaller",
-            batch_no: 1,
-            pending_leads: 5,
-            assigned_at: "08 Jul 2026, 10:45 AM",
-        },
-        {
-            empid: 4,
-            emp_code: "EMP004",
-            employee_name: "Arun Joseph",
-            designation: "Relationship Executive",
-            batch_no: 3,
-            pending_leads: 2,
-            assigned_at: "08 Jul 2026, 11:20 AM",
-        },
-        {
-            empid: 5,
-            emp_code: "EMP005",
-            employee_name: "Sneha R",
-            designation: "Telecaller",
-            batch_no: 2,
-            pending_leads: 9,
-            assigned_at: "08 Jul 2026, 12:15 PM",
-        },
-        {
-            empid: 6,
-            emp_code: "EMP006",
-            employee_name: "Akhil Krishna",
-            designation: "Senior Telecaller",
-            batch_no: 4,
-            pending_leads: 1,
-            assigned_at: "08 Jul 2026, 01:05 PM",
-        },
-        {
-            empid: 7,
-            emp_code: "EMP007",
-            employee_name: "Neethu S",
-            designation: "Telecaller",
-            batch_no: 3,
-            pending_leads: 6,
-            assigned_at: "08 Jul 2026, 01:40 PM",
-        },
-        {
-            empid: 8,
-            emp_code: "EMP008",
-            employee_name: "Adithya Nair",
-            designation: "Relationship Executive",
-            batch_no: 5,
-            pending_leads: 4,
-            assigned_at: "08 Jul 2026, 02:20 PM",
-        },
-        {
-            empid: 9,
-            emp_code: "EMP009",
-            employee_name: "Reshma K",
-            designation: "Telecaller",
-            batch_no: 2,
-            pending_leads: 8,
-            assigned_at: "08 Jul 2026, 02:55 PM",
-        },
-        {
-            empid: 10,
-            emp_code: "EMP010",
-            employee_name: "Jithin Paul",
-            designation: "Senior Telecaller",
-            batch_no: 6,
-            pending_leads: 3,
-            assigned_at: "08 Jul 2026, 03:10 PM",
-        },
-    ];
+
 
     return (
         <Box
@@ -310,7 +215,7 @@ const EmployeeBatchControl = () => {
                                 </Box>
                             </Stack>
                         </Box>
-
+                        {/* 
                         <IconButton
                             onClick={() => setRequestPanelOpen(true)}
                             sx={{
@@ -333,7 +238,7 @@ const EmployeeBatchControl = () => {
                                     fontSize: { xs: 16, sm: 26 }
                                 }} />
                             </Badge>
-                        </IconButton>
+                        </IconButton> */}
                     </Stack>
                 </Box>
 
@@ -421,12 +326,12 @@ const EmployeeBatchControl = () => {
                 </Box>
             </Paper>
 
-            <RequestedDrawer
+            {/* <RequestedDrawer
                 open={requestPanelOpen}
                 onClose={() => setRequestPanelOpen(false)}
                 requestItems={requestItems}
                 onSelectRequest={(item) => handleOpenRequest(item)}
-            />
+            /> */}
         </Box>
     );
 };
