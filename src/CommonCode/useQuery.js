@@ -20,16 +20,17 @@ import {
   getLeadCallHistory,
   getDashboardCounts,
   getDashboardReminders,
-  FetchUserInfoEmployees,
   FetchEmployeeProfile,
   FetchEmployeePerformance,
   getAttendanceByDate,
   getAdminDashboardCount,
   getRecentActivity,
+  getEmployeeAssignDetails,
   getActiveBatches,
   getActiveBatchDetails,
+  getModuleRights,
+  getActiveModuleRights,
 } from "./CommonFun";
-
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -204,6 +205,16 @@ export const useAllEmployeeRecentActivity = () => {
   });
 };
 
+
+export const useEmployeeAssignDetails = () => {
+  return useQuery({
+    queryKey: ["assign-details"],
+    queryFn: getEmployeeAssignDetails,
+    staleTime: Infinity
+  });
+};
+
+
 export const useGetLeadHistory = (leadId, enabled) => {
   return useQuery({
     queryKey: ["call-history", leadId],
@@ -225,10 +236,11 @@ export const useFollowUpDetail = (leadId, statusId, enabled) => {
   });
 };
 
-export const useUserInfoEmployees = () => {
+export const useEmployeeProfile = (employeeId) => {
   return useQuery({
-    queryKey: ["userInfoEmployees"],
-    queryFn: FetchUserInfoEmployees,
+    queryKey: ["employeeProfile", employeeId],
+    queryFn: () => FetchEmployeeProfile(employeeId),
+    enabled: !!employeeId,
   });
 };
 
@@ -255,10 +267,33 @@ export const useGetBatchDetails = (empid) => {
     enabled: !!empid,
   });
 };
+
 export const useGetActiveBatchs = () => {
   return useQuery({
     queryKey: ["active-batches"],
     queryFn: getActiveBatches,
     staleTime: Infinity
+  });
+};
+
+
+
+export const useGetModuleRightDetail = (roleId) => {
+  return useQuery({
+    queryKey: ["moduleRights", roleId],
+    queryFn: () => getModuleRights(roleId),
+    staleTime: Infinity,
+    enabled: !!roleId
+  });
+};
+
+
+
+export const useGetActiveModuleRightDetail = (roleId) => {
+  return useQuery({
+    queryKey: ["active-moduleRights", roleId],
+    queryFn: () => getActiveModuleRights(roleId),
+    staleTime: Infinity,
+    enabled: !!roleId
   });
 };

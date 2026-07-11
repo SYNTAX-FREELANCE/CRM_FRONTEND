@@ -1,6 +1,5 @@
 import { axioslogin } from "../Axios/axios";
-import { infoNotify, warningNotify, errorNotify } from "../constant/Constant";
-
+import { infoNotify } from "../constant/Constant";
 
 export const FetchRolemaster = async () => {
   try {
@@ -303,6 +302,22 @@ export const getRecentActivity = async () => {
   }
 };
 
+
+export const getEmployeeAssignDetails = async () => {
+  try {
+    const response = await axioslogin.get(`/lead/employee/assigndtl`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    if (success === 2) {
+      infoNotify(message)
+      return []
+    }
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 export const FetchInsuranceCompanyMaster = async () => {
   try {
     const response = await axioslogin.get("/insurancecompany/getall");
@@ -314,21 +329,6 @@ export const FetchInsuranceCompanyMaster = async () => {
     throw new Error(
       error?.response?.data?.message || "Failed to fetch insurance companies",
     );
-  }
-};
-
-export const FetchUserInfoEmployees = async () => {
-  try {
-    const response = await axioslogin.get("/userinfo/employees");
-    if (response.data && response.data.success === 1) {
-      return response.data.data || [];
-    }
-    warningNotify(response.data?.message || "No employees found");
-    return [];
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-    errorNotify("Failed to load employee list");
-    return [];
   }
 };
 
@@ -405,5 +405,30 @@ export const getActiveBatchDetails = async (empid) => {
     return [];
   } catch (error) {
     console.error("getAttendanceByDate error:", error);
+  }
+};
+
+
+export const getModuleRights = async (roleId) => {
+  if (!roleId) return [];
+  try {
+    const response = await axioslogin.get(`/moduleright/${roleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Get Module Rights Error:", error);
+  }
+};
+
+export const getActiveModuleRights = async (roleId) => {
+  if (!roleId) return [];
+  try {
+    const response = await axioslogin.get(`/moduleright/active/${roleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Get Active Module Rights Error:", error);
   }
 };
