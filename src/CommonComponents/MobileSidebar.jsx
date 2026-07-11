@@ -289,7 +289,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             bgcolor: "#ffffff",
                         }}
                     >
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
+                        <Box  sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
                             <Avatar
                                 src={user?.avatar}
                                 onClick={handleAvatarClick}

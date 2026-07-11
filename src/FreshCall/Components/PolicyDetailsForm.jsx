@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
     Box,
     Grid,
@@ -220,4 +220,4 @@ const PolicyDetailsForm = ({
     );
 };
 
-export default PolicyDetailsForm;
+export default memo(PolicyDetailsForm);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import {
     Autocomplete,
     Box,
@@ -29,8 +29,13 @@ import SecurityIcon from "@mui/icons-material/Security";
 import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useInsuranceCompanyMaster } from "../../CommonCode/useQuery";
-import PolicyDetailsForm from "./PolicyDetailsForm";
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import OutcomeCard from "./OutcomeCard";
+import OutcomeCardSkeleton from "../../SkeletonComponent/OutcomeCardSkeleton";
+import PolicyDetailsFormSkeleton from "../../SkeletonComponent/PolicyDetailsFormSkeleton";
 
 const glassCard = {
     bgcolor: "#ffffff",
@@ -38,6 +43,9 @@ const glassCard = {
     boxShadow: "0 12px 35px rgba(15,23,42,.08)",
     borderRadius: 4,
 };
+
+
+const PolicyDetailsForm = lazy(() => import('./PolicyDetailsForm'))
 
 
 export const OUTCOMES = [
@@ -147,21 +155,70 @@ export const OUTCOMES = [
 
 const FollowUpForm = ({
     statusName,
-    followUpDate,
-    setFollowUpDate,
-    followUpRemarks,
-    setFollowUpRemarks,
-    outcome,
-    setOutcome,
-    onCancel,
-    onSave,
-    policyData,
-    setPolicyData
+    // followUpDate,
+    // setFollowUpDate,
+    // followUpRemarks,
+    // setFollowUpRemarks,
+    // outcome,
+    // setOutcome,
+    // policyData,
+    // setPolicyData
+      onCancel,
+    onSave
 }) => {
     const isMobile = useMediaQuery("(max-width:600px)");
     const needsDate = statusName?.requires_followup === 1;
     const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
-    
+
+
+    const [followUpDate, setFollowUpDate] = useState("");
+    const [followUpRemarks, setFollowUpRemarks] = useState("");
+    const [followUpOutcome, setFollowUpOutcome] = useState("");
+
+    const [policyData, setPolicyData] = useState({
+        insurance_company_id: "",
+        policy_number: "",
+        renewal_cycle: "Annual",
+        start_date: "",
+        expiry_date: "",
+        premium_amount: "",
+        insured_declared_value: "",
+        reminder_days: 30,
+        renewal_year: new Date().getFullYear(),
+        remarks: "",
+    });
+
+
+    const resetForm = () => {
+        setFollowUpRemarks("");
+        setFollowUpDate("");
+        setFollowUpOutcome("");
+        setPolicyData({
+            insurance_company_id: "",
+            policy_number: "",
+            renewal_cycle: "Annual",
+            start_date: "",
+            expiry_date: "",
+            premium_amount: "",
+            insured_declared_value: "",
+            reminder_days: 30,
+            renewal_year: new Date().getFullYear(),
+            remarks: "",
+        });
+    };
+
+    const handleSave = async () => {
+        const success = await onSave({
+            remarks: followUpRemarks,
+            followUpDate,
+            followUpOutcome,
+            policyData,
+        });
+
+        if (success) {
+            resetForm();
+        }
+    };
 
     return (
         <Box sx={{ mt: 3, p: { xs: 2, md: 3 }, borderRadius: 4, ...glassCard }}>
@@ -184,49 +241,16 @@ const FollowUpForm = ({
                             }}
                         >
                             {OUTCOMES?.map((item) => {
-                                const active = outcome === item.key;
+                                const active = followUpOutcome === item.key;
                                 return (
                                     <Grid item xs={12} sm={6} md={3} key={item.key}>
-                                        <Box
-                                            onClick={() => setOutcome(item.key)}
-                                            sx={{
-                                                cursor: "pointer",
-                                                p: 1.25,
-                                                borderRadius: 3,
-                                                border: active ? "1.5px solid #ff811a" : "1px solid #e2e8f0",
-                                                bgcolor: active ? "rgba(37,99,235,.06)" : "#fff",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: 1,
-                                                transition: "all .2s ease",
-                                                "&:hover": {
-                                                    borderColor: "#ff811a",
-                                                    transform: "translateY(-1px)",
-                                                    boxShadow: "0 8px 20px rgba(37,99,235,.08)",
-                                                },
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    width: 30,
-                                                    height: 30,
-                                                    borderRadius: "10px",
-                                                    display: "grid",
-                                                    placeItems: "center",
-                                                    bgcolor: active ? "#ff811a" : "rgba(37,99,235,.08)",
-                                                    color: active ? "#fff" : "#2563eb",
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                {item.icon}
-                                            </Box>
-
-                                            <Box sx={{ minWidth: 0 }}>
-                                                <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: 8 }}>
-                                                    {item.label}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
+                                        <Suspense fallback={<OutcomeCardSkeleton />}>
+                                            <OutcomeCard
+                                                item={item}
+                                                active={active}
+                                                onClick={() => setFollowUpOutcome(item.key)}
+                                            />
+                                        </Suspense>
                                     </Grid>
                                 );
                             })}
@@ -239,32 +263,38 @@ const FollowUpForm = ({
                         <Typography sx={{ mb: 1, fontWeight: 800, color: "#334155" }}>
                             Next Follow-up Date
                         </Typography>
-                        <TextField
-                            fullWidth
-                            type="datetime-local"
-                            value={followUpDate}
-                            onChange={(e) => setFollowUpDate(e.target.value)}
-                            inputProps={{
-                                min: new Date().toISOString().slice(0, 16),
-                            }}
-                            sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    borderRadius: 3,
-                                    bgcolor: "#fff",
-                                },
-                            }}
-                        />
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                value={followUpDate ? dayjs(followUpDate) : null}
+                                onChange={(newValue) => setFollowUpDate(newValue)}
+                                minDateTime={dayjs()}
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        sx: {
+                                            "& .MuiOutlinedInput-root": {
+                                                borderRadius: 3,
+                                                bgcolor: "#fff",
+                                            },
+                                        },
+                                    },
+                                }}
+                            />
+                        </LocalizationProvider>
                     </Box>
                 )}
 
                 <Box>
                     {
                         statusName?.status_name === "SOLD" && (
-                            <PolicyDetailsForm
-                                policyData={policyData}
-                                setPolicyData={setPolicyData}
-                                insuranceCompanies={InsuranceCompanyMasterDetail}
-                            />
+                            <Suspense fallback={<PolicyDetailsFormSkeleton />}>
+                                <PolicyDetailsForm
+                                    policyData={policyData}
+                                    setPolicyData={setPolicyData}
+                                    insuranceCompanies={InsuranceCompanyMasterDetail}
+                                />
+                            </Suspense>
                         )
                     }
 
@@ -322,7 +352,7 @@ const FollowUpForm = ({
 
                         <Button
                             variant="contained"
-                            onClick={onSave}
+                            onClick={handleSave}
                             sx={{
                                 borderRadius: 3,
                                 px: 4,

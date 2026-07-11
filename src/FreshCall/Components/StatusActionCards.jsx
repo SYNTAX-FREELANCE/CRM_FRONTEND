@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useMemo } from "react";
 import {
     Box,
     Stack,
@@ -13,6 +13,7 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
+import { useLeadMaster } from "../../CommonCode/useQuery";
 
 const statusConfig = {
     CALLBACK: {
@@ -48,12 +49,25 @@ const statusConfig = {
 };
 
 const StatusActionCards = ({
-    statuses = [],
     selectedStatus = {},
     onStatusClick,
     onReset,
     title = "Choose Next Action",
 }) => {
+
+
+    const { data: LeadMasterDetail = [] } = useLeadMaster();
+
+    const statuses = useMemo(() => {
+        return Array.isArray(LeadMasterDetail)
+            ? LeadMasterDetail.filter(
+                stat => stat.is_active === 1 && stat.status_id !== 1
+            )
+            : [];
+    }, [LeadMasterDetail]);
+
+
+
     const displayStatuses = selectedStatus
         ? statuses.filter((s) => s.status_id === selectedStatus?.status_id)
         : statuses;
@@ -221,4 +235,4 @@ const StatusActionCards = ({
     );
 };
 
-export default StatusActionCards;
+export default memo(StatusActionCards);

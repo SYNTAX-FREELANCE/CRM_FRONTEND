@@ -48,11 +48,15 @@ const ReusableSidebar = ({
   }, [open]);
 
   const authUser = getAuthUser();
+
   const {
     emp_name,
     id,
     role
   } = authUser ?? {};
+
+  
+
 
   const handleMenuClick = (item) => {
     if (!item.nested) {
@@ -96,7 +100,6 @@ const ReusableSidebar = ({
   };
 
   const handleLogout = () => setLogoutModal(true);
-
 
   const menuRowStyle = (isActive, isHovered) => ({
     display: "flex",
@@ -347,6 +350,7 @@ const ReusableSidebar = ({
         <Divider sx={{ opacity: 0.6, borderColor: "#e7e5e4" }} />
 
         <Box
+
           sx={{
             p: 1.4,
             minHeight: 38,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { lazy, Suspense, useMemo, useState } from "react";
 import {
     Box,
     Card,
@@ -23,7 +23,11 @@ import { useQuery } from "@tanstack/react-query";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
-import EmployeeCard from "./Components/EmployeeCard";
+import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
+
+
+
+const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
 
 
 const UserInfo = () => {
@@ -153,9 +157,11 @@ const UserInfo = () => {
                             gap: 1,
                             width: "100%",
                         }}>
-                        {filteredEmployees.map((emp) => (
+                        {filteredEmployees?.map((emp) => (
                             <Grid key={emp.employee_id || emp.user_id}>
-                                <EmployeeCard emp={emp} onClick={handleViewDetails} />
+                                <Suspense fallback={<EmployeeCardSkeleton />}>
+                                    <EmployeeCard emp={emp} onClick={handleViewDetails} />
+                                </Suspense>
                             </Grid>
                         ))}
                     </Box>
