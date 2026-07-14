@@ -50,6 +50,7 @@ const EmployeeDetails = () => {
 
     // console.log("employee:", employee);
 
+
     // console.log("performanceData", performanceData);
 
     // console.log("TotalCount:", TotalCount);
@@ -135,6 +136,7 @@ const EmployeeDetails = () => {
 
 
     // console.log("summaryItems:", summaryItems);
+
 
 
     const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);

@@ -24,6 +24,7 @@ import {
 } from "../constant/Constant";
 import { format } from "date-fns";
 import { axioslogin } from "../Axios/axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 const months = [
     { label: "January", value: 1 },
@@ -43,6 +44,7 @@ const months = [
 const CustomerAllocation = () => {
     const authUser = getAuthUser();
     const LogedEmpId = authUser?.id;
+    const queryClient = useQueryClient();
 
     const [month, setMonth] = useState(0);
     const [selectedCustomers, setSelectedCustomers] = useState({});
@@ -144,6 +146,9 @@ const CustomerAllocation = () => {
             }
 
             successNotify(data.message);
+            await queryClient.invalidateQueries({
+                queryKey: ["new-customer", month],
+            });
 
             setSelectedCustomers({});
             setSelectedEmployee(null);

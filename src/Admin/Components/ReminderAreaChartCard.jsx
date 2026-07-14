@@ -121,23 +121,23 @@ const ReminderAreaChartCard = ({ reminders }) => {
                 boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
                 border: "1px solid rgba(255,255,255,0.85)",
                 overflow: "hidden",
-                height:'100%'
+                height: '100%'
             }}
         >
             <CardContent sx={{ p: { xs: 2, md: 3 } }}>
                 <Stack
-                    direction={{ xs: "column", sm: "row" }}
+                    direction={{ xs: "column", md: "row" }}
                     justifyContent="space-between"
-                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    alignItems={{ xs: "flex-start", m: "center" }}
                     sx={{ mb: 2 }}
                     gap={1.5}
                 >
                     <Box>
-                        <Typography fontSize={{ xs: 18, md: 22 }} fontWeight={900} sx={{ color: "#0f172a" }}>
-                            Reminder Area Chart
+                        <Typography fontSize={{ xs: 18, md: 20 }} fontWeight={900} sx={{ color: "#0f172a" }}>
+                            Reminder Chart.
                         </Typography>
-                        <Typography fontSize={{ xs: 12, md: 13 }} color="text.secondary">
-                            Blue and orange chart for reminder summary
+                        <Typography fontSize={{ xs: 10, md: 11 }} color="text.secondary">
+                            Chart show the Rate of Reminders.
                         </Typography>
                     </Box>
 
@@ -148,16 +148,17 @@ const ReminderAreaChartCard = ({ reminders }) => {
                             bgcolor: "rgba(37,99,235,0.08)",
                             color: "#2563eb",
                             fontWeight: 800,
+                            fontSize: { xs: 10, md: 11 }
                         }}
                     />
                 </Stack>
 
-                <Box sx={{ width: "100%" }}>
+                <Box sx={{ width: "100%",  height: '100%' }}>
                     <ReactApexChart
                         options={options}
                         series={series}
                         type="area"
-                        height={'90%'}
+                        height={400}
                         width="100%"
                     />
                 </Box>
