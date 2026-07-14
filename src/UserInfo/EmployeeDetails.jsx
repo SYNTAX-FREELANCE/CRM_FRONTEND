@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
     Avatar,
     Box,
@@ -48,8 +48,127 @@ const EmployeeDetails = () => {
     const { data: remindersData = [] } = useFetchDashBoardReminders(employee?.user_id);
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
 
+    // console.log("employee:", employee);
+
+
+    // console.log("performanceData", performanceData);
+
+    // console.log("TotalCount:", TotalCount);
+
+
+
+    // ******************************
+
+    // const summary = remindersData?.summary || {};
+    // const overdueList = remindersData?.overdue || [];
+    // const todayList = remindersData?.today || [];
+    // const tomorrowList = remindersData?.tomorrow || [];
+    // const upcomingList = remindersData?.upcoming || [];
+
+    // const [activeStatus, setActiveStatus] = useState("overdue");
+    // const [statusMeta, setStatusMeta] = useState([]);
+
+    // const summaryItems = [
+    //     {
+    //         key: "overdue",
+    //         title: "Overdue",
+    //         count: Number(summary.overdue || overdueList.length || 0),
+    //         ...statusMeta.overdue,
+    //     },
+    //     {
+    //         key: "today",
+    //         title: "Today",
+    //         count: Number(summary.today || todayList.length || 0),
+    //         ...statusMeta.today,
+    //     },
+    //     {
+    //         key: "tomorrow",
+    //         title: "Tomorrow",
+    //         count: Number(summary.tomorrow || tomorrowList.length || 0),
+    //         ...statusMeta.tomorrow,
+    //     },
+    //     {
+    //         key: "upcoming",
+    //         title: "Upcoming",
+    //         count: Number(summary.next7days || upcomingList.length || 0),
+    //         ...statusMeta.upcoming,
+    //     },
+    // ];
+
+    // const listMap = {
+    //     overdue: overdueList.map((item) => ({ ...item, status: "overdue" })),
+    //     today: todayList.map((item) => ({ ...item, status: "today" })),
+    //     tomorrow: tomorrowList.map((item) => ({ ...item, status: "tomorrow" })),
+    //     upcoming: upcomingList.map((item) => ({ ...item, status: "upcoming" })),
+    // };
+
+    // const activeItems = listMap[activeStatus] || [];
+    // const total = summaryItems.reduce((sum, item) => sum + item.count, 0);
+
+
+    console.log("remindersData::", remindersData);
+
+    const allReminders = useMemo(() => {
+        const overdue = remindersData?.overdue || [];
+        const today = remindersData?.today || [];
+        const tomorrow = remindersData?.tomorrow || [];
+        const upcoming = remindersData?.upcoming || [];
+
+        const mappedOverdue = overdue.map(item => ({ ...item, status: "overdue", label: "Overdue", lineBg: "#dc2626" }));
+        const mappedToday = today.map(item => ({ ...item, status: "today", label: "Today", lineBg: "#2563eb" }));
+        const mappedTomorrow = tomorrow.map(item => ({ ...item, status: "tomorrow", label: "Tomorrow", lineBg: "#7c3aed" }));
+        const mappedUpcoming = upcoming.map(item => ({ ...item, status: "upcoming", label: "Upcoming", lineBg: "#059669" }));
+
+        const combined = [...mappedOverdue, ...mappedToday, ...mappedTomorrow, ...mappedUpcoming];
+
+        const seen = new Set();
+        return combined.filter(item => {
+            if (!item.followup_id) return true;
+            if (seen.has(item.followup_id)) return false;
+            seen.add(item.followup_id);
+            return true;
+        });
+    }, [remindersData]);
+
+
+
+
+
+
+    // console.log("summaryItems:", summaryItems);
+
+
 
     const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
+
+    const [documents, setDocuments] = useState({
+        bankDetails: null,
+        resume: null,
+        aadhar: null,
+        otherUploads: null,
+    });
+
+    const handleFileUpload = (docType, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setDocuments(prev => ({
+            ...prev,
+            [docType]: {
+                name: file.name,
+                size: (file.size / 1024).toFixed(1) + " KB",
+                url: URL.createObjectURL(file)
+            }
+        }));
+        successNotify(`${docType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} uploaded successfully!`);
+    };
+
+    const handleFileDelete = (docType) => {
+        setDocuments(prev => ({
+            ...prev,
+            [docType]: null
+        }));
+        successNotify(`${docType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} removed.`);
+    };
 
     // Dynamic Interactive Calendar state (Defaulting to current local date)
     const [calendarDate, setCalendarDate] = useState(new Date());
@@ -90,37 +209,31 @@ const EmployeeDetails = () => {
     // Calendar & Tasks Database dynamically relative to the calendar date's month
     const getActiveEvents = (date) => {
         const dateKey = formatDateKey(date);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
 
-        const monthEvents = {
-            [`${year}-${month}-05`]: [
-                { time: "10:00 AM", title: "Daily target sync", desc: "Target alignment", lineBg: "#10b981" }
-            ],
-            [`${year}-${month}-12`]: [
-                { time: "12:00 PM", title: "Weekly Tech Meeting", desc: "Product roadmap update", lineBg: "#7c3aed" }
-            ],
-            [`${year}-${month}-19`]: [
-                { time: "01:30 PM", title: "Leads distribution audit", desc: "Performance check", lineBg: "#ea580c" }
-            ],
-            [`${year}-${month}-26`]: [
-                { time: "11:00 AM", title: "Call Center Session review", desc: "Callbacks calibration", lineBg: "#2563eb" }
-            ]
-        };
+        return allReminders.filter(item => {
+            if (!item.next_followup_date) return false;
+            const followupDate = new Date(item.next_followup_date);
+            return formatDateKey(followupDate) === dateKey;
+        }).map(item => {
+            const timeStr = item.next_followup_date
+                ? new Date(item.next_followup_date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+                : "N/A";
 
-        if (monthEvents[dateKey]) return monthEvents[dateKey];
-
-        // Dynamic event for current day
-        const todayStr = formatDateKey(new Date());
-        if (dateKey === todayStr) {
-            return [
-                { time: "09:30 AM", title: "Morning Target Sync", desc: "Campaign target briefing", lineBg: "#7c3aed" },
-                { time: "11:00 AM", title: "Warm Callbacks session", desc: "Focus leads distribution", lineBg: "#2563eb" },
-                { time: "02:00 PM", title: "Performance calibrations", desc: "KPI rating feedback", lineBg: "#ea580c" },
-                { time: "04:30 PM", title: "Sales report validation", desc: "Wrap-up daily session", lineBg: "#10b981" }
-            ];
-        }
-        return [];
+            return {
+                time: timeStr,
+                title: item.customer_name || "Unknown Customer",
+                desc: `Model: ${item.model || "N/A"} • Reg: ${item.registration_number || "N/A"}${item.remarks ? ` • ${item.remarks}` : ""}`,
+                lineBg: item.lineBg || "#7c3aed",
+                customer_name: item.customer_name,
+                model: item.model,
+                registration_number: item.registration_number,
+                remarks: item.remarks,
+                mobile_number_1: item.mobile_number_1,
+                mobile_number_2: item.mobile_number_2,
+                status: item.status,
+                label: item.label
+            };
+        });
     };
 
     const activeEvents = getActiveEvents(selectedDate);
@@ -370,7 +483,7 @@ const EmployeeDetails = () => {
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    background: "linear-gradient(135deg, #6366f1 0%, #7c3aed 50%, #c084fc 100%)",
+                                    background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)",
                                     position: "relative"
                                 }}
                             >
@@ -677,16 +790,28 @@ const EmployeeDetails = () => {
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
-                                                    background: isSelected ? "linear-gradient(135deg, #7c3aed, #6366f1)" : "transparent",
-                                                    color: isSelected ? "white" : "#1e1b4b",
+                                                    background: isSelected
+                                                        ? "linear-gradient(135deg, #7c3aed, #6366f1)"
+                                                        : hasEvents
+                                                            ? (dayEvents[0].lineBg ? `${dayEvents[0].lineBg}1f` : "rgba(124, 58, 237, 0.12)")
+                                                            : "transparent",
+                                                    color: isSelected
+                                                        ? "white"
+                                                        : hasEvents
+                                                            ? (dayEvents[0].lineBg || "#7c3aed")
+                                                            : "#1e1b4b",
                                                     border: isToday && !isSelected ? "2px solid #7c3aed" : "2px solid transparent",
-                                                    fontWeight: isSelected || isToday ? 900 : 600,
+                                                    fontWeight: isSelected || isToday || hasEvents ? 900 : 600,
                                                     fontSize: "12px",
                                                     cursor: "pointer",
                                                     transition: "all 0.2s ease",
                                                     boxShadow: isSelected ? "0 4px 12px rgba(124, 58, 237, 0.25)" : "none",
                                                     "&:hover": {
-                                                        background: isSelected ? "linear-gradient(135deg, #7c3aed, #6366f1)" : "rgba(124, 58, 237, 0.06)",
+                                                        background: isSelected
+                                                            ? "linear-gradient(135deg, #7c3aed, #6366f1)"
+                                                            : hasEvents
+                                                                ? `${dayEvents[0].lineBg || "#7c3aed"}33`
+                                                                : "rgba(124, 58, 237, 0.06)",
                                                         transform: "scale(1.05)"
                                                     }
                                                 }}
@@ -829,87 +954,118 @@ const EmployeeDetails = () => {
                         </Typography>
 
                         {activeEvents.length > 0 ? (
-                            <Box
-                                sx={{
-                                    position: "relative",
-                                    pl: 1,
-                                    "&::before": {
-                                        content: '""',
-                                        position: "absolute",
-                                        left: "81px",
-                                        top: "8px",
-                                        bottom: "8px",
-                                        width: "2px",
-                                        bgcolor: "rgba(0, 0, 0, 0.04)"
-                                    }
-                                }}
-                            >
-                                <Stack spacing={2.5}>
-                                    {activeEvents.map((evt, idx) => (
-                                        <Box
-                                            key={idx}
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
-                                                p: 1.5,
-                                                borderRadius: "16px",
-                                                transition: "all 0.2s ease",
-                                                "&:hover": {
-                                                    bgcolor: "#f8fafc",
-                                                    transform: "translateY(-2px)"
-                                                }
-                                            }}
-                                        >
-                                            <Stack direction="row" spacing={2.5} alignItems="center" sx={{ minWidth: 0 }}>
-                                                {/* Left margin time */}
-                                                <Typography level="body-xs" sx={{ fontWeight: 900, color: "neutral.600", width: "55px", fontFamily: "monospace" }}>
-                                                    {evt.time}
-                                                </Typography>
-
-                                                {/* Circular guideline indicator */}
-                                                <Box
-                                                    sx={{
-                                                        width: "10px",
-                                                        height: "10px",
-                                                        borderRadius: "50%",
-                                                        bgcolor: evt.lineBg,
-                                                        border: "2px solid #ffffff",
-                                                        boxShadow: `0 0 0 2px ${evt.lineBg}`,
-                                                        zIndex: 2
-                                                    }}
-                                                />
-
-                                                {/* Title and subtitle */}
-                                                <Box sx={{ minWidth: 0 }}>
-                                                    <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b" }} noWrap>
-                                                        {evt.title}
-                                                    </Typography>
-                                                    <Typography level="body-xs" sx={{ color: "neutral.400", fontWeight: 800, mt: 0.15 }} noWrap>
-                                                        {evt.desc}
-                                                    </Typography>
-                                                </Box>
-                                            </Stack>
-
-                                            {/* Meet Conferencing Icon */}
+                            <Stack spacing={2}>
+                                {activeEvents.map((evt, idx) => (
+                                    <Box
+                                        key={idx}
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: { xs: "column", sm: "row" },
+                                            alignItems: { xs: "flex-start", sm: "center" },
+                                            justifyContent: "space-between",
+                                            p: { xs: 2, sm: 2.5 },
+                                            borderRadius: "20px",
+                                            bgcolor: "#ffffff",
+                                            border: "1px solid rgba(0,0,0,0.05)",
+                                            borderLeft: `6px solid ${evt.lineBg}`,
+                                            boxShadow: "0 4px 15px rgba(15, 23, 42, 0.01)",
+                                            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                                            gap: 2,
+                                            position: "relative",
+                                            "&:hover": {
+                                                transform: "translateY(-3px)",
+                                                boxShadow: "0 12px 30px rgba(15, 23, 42, 0.05)",
+                                                borderColor: "rgba(0,0,0,0.08)",
+                                                background: `linear-gradient(90deg, #ffffff 0%, ${evt.lineBg}04 100%)`
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1, minWidth: 0, pr: { xs: 10, sm: 0 } }}>
                                             <Avatar
-                                                size="sm"
+                                                variant="soft"
                                                 sx={{
-                                                    width: 24,
-                                                    height: 24,
-                                                    bgcolor: idx % 2 === 0 ? "rgba(16, 185, 129, 0.08)" : "rgba(99, 102, 241, 0.08)",
-                                                    color: idx % 2 === 0 ? "#10b981" : "#6366f1"
+                                                    width: { xs: 40, sm: 48 },
+                                                    height: { xs: 40, sm: 48 },
+                                                    bgcolor: `${evt.lineBg}1a`,
+                                                    color: evt.lineBg,
+                                                    fontWeight: 800,
+                                                    fontSize: { xs: "15px", sm: "18px" },
+                                                    borderRadius: "14px"
                                                 }}
                                             >
-                                                <VideoCallIcon style={{ fontSize: 13 }} />
+                                                {evt.title.charAt(0)}
                                             </Avatar>
+
+                                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+                                                    <Typography level="title-sm" sx={{ fontWeight: 800, color: "#1e1b4b", fontSize: { xs: "13px", sm: "14px" } }}>
+                                                        {evt.title}
+                                                    </Typography>
+                                                    <Chip
+                                                        size="sm"
+                                                        variant="soft"
+                                                        sx={{
+                                                            bgcolor: `${evt.lineBg}1f`,
+                                                            color: evt.lineBg,
+                                                            fontWeight: 800,
+                                                            fontSize: { xs: "9px", sm: "11px" },
+                                                            borderRadius: "8px"
+                                                        }}
+                                                    >
+                                                        {evt.label}
+                                                    </Chip>
+                                                </Box>
+
+                                                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1, flexWrap: "wrap" }}>
+                                                    <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, fontSize: { xs: "11px", sm: "12px" } }}>
+                                                        <strong>Model:</strong> {evt.model || "N/A"}
+                                                    </Typography>
+                                                    <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, fontSize: { xs: "11px", sm: "12px" } }}>
+                                                        <strong>Reg:</strong> {evt.registration_number || "N/A"}
+                                                    </Typography>
+                                                </Box>
+
+                                                {evt.remarks && (
+                                                    <Box
+                                                        sx={{
+                                                            mt: 1.5,
+                                                            p: 1.25,
+                                                            bgcolor: "#f8fafc",
+                                                            borderRadius: "10px",
+                                                            borderLeft: `3px solid ${evt.lineBg}`,
+                                                            maxWidth: "100%"
+                                                        }}
+                                                    >
+                                                        <Typography level="body-xs" sx={{ color: "neutral.600", fontStyle: "italic", fontWeight: 650, fontSize: { xs: "11px", sm: "12px" } }}>
+                                                            "{evt.remarks}"
+                                                        </Typography>
+                                                    </Box>
+                                                )}
+                                            </Box>
                                         </Box>
-                                    ))}
-                                </Stack>
-                            </Box>
+
+                                        <Box
+                                            sx={{
+                                                position: { xs: "absolute", sm: "static" },
+                                                top: { xs: 16, sm: "auto" },
+                                                right: { xs: 16, sm: "auto" },
+                                                display: "flex",
+                                                alignItems: "center"
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, bgcolor: "#f1f5f9", px: { xs: 1, sm: 1.5 }, py: 0.5, borderRadius: "8px" }}>
+                                                <AccessTimeIcon style={{ fontSize: 13, color: "#64748b" }} />
+                                                <Typography level="body-xs" sx={{ fontWeight: 800, color: "#475569", fontFamily: "monospace", fontSize: { xs: "10px", sm: "12px" } }}>
+                                                    {evt.time}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </Stack>
                         ) : (
-                            <Box sx={{ py: 4, textAlign: "center" }}>
-                                <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700 }}>
+                            <Box sx={{ py: 6, textAlign: "center", bgcolor: "#f8fafc", borderRadius: "20px", border: "1px dashed rgba(0,0,0,0.08)" }}>
+                                <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>
                                     No tasks or events scheduled for this day
                                 </Typography>
                             </Box>
@@ -934,9 +1090,7 @@ const EmployeeDetails = () => {
                         <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b" }}>
                             Personal & Company Information Details
                         </Typography>
-                        <Chip size="sm" variant="soft" color="primary" sx={{ fontWeight: 800, bgcolor: "rgba(99, 102, 241, 0.08)", color: "#4f46e5" }}>
-                            Database View
-                        </Chip>
+
                     </Box>
                     <Button
                         variant="soft"
@@ -950,6 +1104,7 @@ const EmployeeDetails = () => {
                             color: "neutral.700",
                             px: 2.2,
                             py: 1,
+                            width: { xs: "100%", sm: "auto" },
                             transition: "0.2s",
                             "&:hover": { bgcolor: "rgba(0,0,0,0.06)" }
                         }}
@@ -959,15 +1114,15 @@ const EmployeeDetails = () => {
                 </Stack>
 
                 {detailsPanelOpen && (
-                    <Grid container spacing={4} sx={{ mt: 1, pt: 1 }}>
+                    <Grid container spacing={{ xs: 2.5, sm: 3, md: 4 }} sx={{ mt: 0, pt: 1 }}>
                         {/* Personal Information */}
-                        <Grid xs={12} md={6}>
-                            <Box sx={{ p: 2, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
+                        <Grid xs={12} sm={6} md={4}>
+                            <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
                                 <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
                                     <Person sx={{ color: "#4f46e5", fontSize: 20 }} />
                                     Personal Information
                                 </Typography>
-                                <Divider sx={{ mb: 2, opacity: 0.6 }} />
+                                <Divider sx={{ mb: 1, opacity: 0.6 }} />
                                 <Box
                                     sx={{
                                         display: "grid",
@@ -986,8 +1141,8 @@ const EmployeeDetails = () => {
                         </Grid>
 
                         {/* Company Information */}
-                        <Grid xs={12} md={6}>
-                            <Box sx={{ p: 2, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
+                        <Grid xs={12} sm={6} md={4}>
+                            <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
                                 <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
                                     <Business sx={{ color: "#ea580c", fontSize: 20 }} />
                                     Company Information
@@ -1004,6 +1159,113 @@ const EmployeeDetails = () => {
                                     <InfoRow icon={<Work />} label="Designation" value={displayEmployee.role} color="teal" />
                                     <InfoRow icon={<CalendarMonth />} label="Joining Date" value={displayEmployee.joining} color="blue" />
                                 </Box>
+                            </Box>
+                        </Grid>
+
+                        {/* Document Uploads */}
+                        <Grid xs={12} sm={12} md={4}>
+                            <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)", height: "100%", display: "flex", flexDirection: "column" }}>
+                                <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
+                                    <CloudUploadIcon sx={{ color: "#2563eb", fontSize: 20 }} />
+                                    Document Uploads
+                                </Typography>
+                                <Divider sx={{ mb: 2, opacity: 0.6 }} />
+
+                                <Stack spacing={2} sx={{ flex: 1 }}>
+                                    {["bankDetails", "resume", "aadhar", "otherUploads"].map((docType) => {
+                                        const doc = documents[docType];
+                                        const labelMap = {
+                                            bankDetails: { label: "Bank Details", icon: <AccountBalanceIcon sx={{ color: "#3b82f6" }} /> },
+                                            resume: { label: "Resume", icon: <ResumeIcon sx={{ color: "#a855f7" }} /> },
+                                            aadhar: { label: "Aadhar Card", icon: <AadharIcon sx={{ color: "#10b981" }} /> },
+                                            otherUploads: { label: "Other Uploads", icon: <CloudUploadIcon sx={{ color: "#f97316" }} /> }
+                                        };
+                                        const { label, icon } = labelMap[docType];
+
+                                        return (
+                                            <Box
+                                                key={docType}
+                                                sx={{
+                                                    p: 1.5,
+                                                    borderRadius: "14px",
+                                                    bgcolor: doc ? "rgba(16, 185, 129, 0.03)" : "rgba(248, 250, 252, 0.8)",
+                                                    border: doc ? "1px solid rgba(16, 185, 129, 0.2)" : "1px dashed rgba(0, 0, 0, 0.08)",
+                                                    transition: "all 0.25s ease",
+                                                    "&:hover": {
+                                                        borderColor: doc ? "rgba(16, 185, 129, 0.4)" : "#3b82f6",
+                                                        bgcolor: doc ? "rgba(16, 185, 129, 0.05)" : "#ffffff",
+                                                        boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
+                                                    }
+                                                }}
+                                            >
+                                                <Box sx={{ display: "flex", alignItems: "center", justifyItems: "space-between", gap: 1.5 }}>
+                                                    <Avatar variant="soft" sx={{ width: 32, height: 32, bgcolor: "rgba(0,0,0,0.03)", borderRadius: "8px" }}>
+                                                        {icon}
+                                                    </Avatar>
+                                                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                                                        <Typography level="body-xs" sx={{ fontWeight: 800, color: "#1e1b4b", fontSize: "11.5px" }}>
+                                                            {label}
+                                                        </Typography>
+                                                        {doc ? (
+                                                            <Typography level="body-xs" noWrap sx={{ color: "success.700", fontWeight: 700, mt: 0.25, fontSize: "10.5px" }}>
+                                                                ✓ {doc.name} ({doc.size})
+                                                            </Typography>
+                                                        ) : (
+                                                            <Typography level="body-xs" sx={{ color: "neutral.400", fontWeight: 650, mt: 0.25, fontSize: "10.5px" }}>
+                                                                No document uploaded
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+
+                                                    {doc ? (
+                                                        <Stack direction="row" spacing={0.5}>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="plain"
+                                                                color="primary"
+                                                                onClick={() => window.open(doc.url, "_blank")}
+                                                                sx={{ minWidth: 0, px: 1, height: 28, borderRadius: "6px", fontSize: "11px", fontWeight: 800 }}
+                                                            >
+                                                                View
+                                                            </Button>
+                                                            <IconButton
+                                                                size="sm"
+                                                                variant="plain"
+                                                                color="danger"
+                                                                onClick={() => handleFileDelete(docType)}
+                                                                sx={{ width: 28, height: 28, borderRadius: "6px" }}
+                                                            >
+                                                                <DeleteOutlineIcon style={{ fontSize: 15 }} />
+                                                            </IconButton>
+                                                        </Stack>
+                                                    ) : (
+                                                        <Button
+                                                            component="label"
+                                                            size="sm"
+                                                            variant="soft"
+                                                            color="primary"
+                                                            startDecorator={<CloudUploadIcon style={{ fontSize: 13 }} />}
+                                                            sx={{
+                                                                borderRadius: "8px",
+                                                                fontWeight: 800,
+                                                                fontSize: "11px",
+                                                                px: 1.5,
+                                                                height: 28
+                                                            }}
+                                                        >
+                                                            Upload
+                                                            <input
+                                                                type="file"
+                                                                hidden
+                                                                onChange={(e) => handleFileUpload(docType, e)}
+                                                            />
+                                                        </Button>
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        );
+                                    })}
+                                </Stack>
                             </Box>
                         </Grid>
                     </Grid>
@@ -1335,6 +1597,48 @@ const StarIcon = (props) => (
 const StarHalfIcon = (props) => (
     <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88.99 4.28L12 15.4z" />
+    </svg>
+);
+
+const AccessTimeIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+    </svg>
+);
+
+const CloudUploadIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+    </svg>
+);
+
+const FilePresentIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+    </svg>
+);
+
+const DeleteOutlineIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" />
+    </svg>
+);
+
+const AccountBalanceIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm18-9h3v7h-3zM12 2L2 7v2h20V7z" />
+    </svg>
+);
+
+const ResumeIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2zm2-5H5c-1.11 0-2 .09-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+    </svg>
+);
+
+const AadharIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
     </svg>
 );
 

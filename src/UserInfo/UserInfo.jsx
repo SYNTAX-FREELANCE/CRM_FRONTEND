@@ -1,30 +1,32 @@
 import React, { lazy, Suspense, useMemo, useState } from "react";
 import {
     Box,
-    Card,
+    // Card,
     Typography,
     Input,
-    Button,
-    Avatar,
+    // Button,
+    // Avatar,
     Grid,
     CircularProgress,
     Divider,
-    Chip,
+    // Chip,
 } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
-import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
+// import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+// import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
+// import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Axios/axios";
 import { errorNotify, warningNotify } from "../constant/Constant";
 import { useQuery } from "@tanstack/react-query";
-
+// import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
+// import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+// import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
+import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
-
 
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
@@ -33,7 +35,7 @@ const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
 const UserInfo = () => {
     const navigate = useNavigate();
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [viewMode, setViewMode] = useState("card");
+    // const [viewMode, setViewMode] = useState("card");
 
     const { data: employeeListData, isLoading: loading } = useQuery({
         queryKey: ["userInfoEmployees"],
