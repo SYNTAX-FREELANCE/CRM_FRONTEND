@@ -22,9 +22,11 @@ import { useQuery } from "@tanstack/react-query";
 // import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 // import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 // import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
+import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
+
 
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
