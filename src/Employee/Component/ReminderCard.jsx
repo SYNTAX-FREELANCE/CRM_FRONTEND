@@ -48,7 +48,7 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
         >
           {title}
         </Typography>
-        <Typography
+        {/* <Typography
           sx={{
             fontSize: { xs: 8, md: 10 },
             color: "text.secondary",
@@ -56,7 +56,7 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
           }}
         >
           Tap to view reminders
-        </Typography>
+        </Typography> */}
       </Box>
 
       <Chip

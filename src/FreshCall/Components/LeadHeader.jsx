@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, Suspense, useCallback, useState } from "react";
 import {
     Avatar,
     Box,
@@ -158,7 +158,16 @@ const LeadHeader = ({
                 </Stack>
             </Stack>
 
-            <VehicleDetailsModal open={openmodal} onClose={() => setOpenModal(false)}  />
+            <Suspense fallback={"Loading...."}>
+                {
+                    openmodal &&
+                    <VehicleDetailsModal
+                        lead={lead}
+                        open={openmodal}
+                        onClose={() => setOpenModal(false)}
+                    />
+                }
+            </Suspense>
 
             <CallPopover
                 anchorEl={callAnchorEl}

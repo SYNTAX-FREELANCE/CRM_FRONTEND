@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Paper,
@@ -19,6 +19,7 @@ import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } fr
 import { TastkColumns } from "./callcolumn";
 import { axioslogin } from "../Axios/axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const LeadDetailsDrawer = lazy(() =>
@@ -26,13 +27,25 @@ const LeadDetailsDrawer = lazy(() =>
 );
 
 export default function FreshCallsWorkspace() {
+
+
+  const navigate = useNavigate()
+
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(1);
   const [drawerLoaded, setDrawerLoaded] = useState(false);
 
   const authUser = getAuthUser();
+
+  const { state } = useLocation();
+  const Status = state?.status
+  const LeadId = state?.leadId
+  const openedRef = useRef(false);
+
+
   const { id } = authUser ?? {};
+
   const queryClient = useQueryClient();
 
   const { data: LeadMasterDetail } = useLeadMaster();
@@ -44,6 +57,7 @@ export default function FreshCallsWorkspace() {
     setDetailOpen(true);
     setDrawerLoaded(true);
   }, []);
+
 
   const getFreshCalls = useCallback(async () => {
     if (!id) return warningNotify("Employee Id is missing Please Login Again");
@@ -61,6 +75,7 @@ export default function FreshCallsWorkspace() {
   }, [id, FreshCalls, statusFilter, queryClient, statusFilter]);
 
   const isMobile = useMediaQuery("(max-width:600px)");
+
   const columns = useMemo(() => TastkColumns(openLead, isMobile), [openLead, isMobile]);
 
   const ActiveStatus = useMemo(() => {
@@ -73,6 +88,32 @@ export default function FreshCallsWorkspace() {
     if (statusFilter === 1) return FreshCalls;
     return FreshCalls.filter((lead) => lead.status_id === statusFilter);
   }, [FreshCalls, statusFilter]);
+
+  useEffect(() => {
+    if (Status) setStatusFilter(Status);
+    if (openedRef.current) return;
+    if (!filteredRows?.length) return;
+
+    if (!LeadId) {
+
+      openedRef.current = true;
+      navigate(".", { replace: true, state: null });
+      return
+    };
+
+
+
+    const lead = filteredRows.find((item) => item.lead_id === LeadId);
+
+    if (lead) {
+      setSelectedLead(lead);
+      setDetailOpen(true);
+      setDrawerLoaded(true);
+      openedRef.current = true;
+
+      navigate(".", { replace: true, state: null });
+    }
+  }, [LeadId, Status, filteredRows, navigate]);
 
 
   return (

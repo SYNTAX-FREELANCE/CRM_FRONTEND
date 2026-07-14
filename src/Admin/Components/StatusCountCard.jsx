@@ -1,20 +1,29 @@
 import React from "react";
 import { Card, CardContent, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const StatusCountCard = ({
     title,
+    statusId,
     count,
     color = "#2563eb",
     borderColor = "#fc8f1a8d",
 }) => {
+    const navigate = useNavigate();
+
     return (
         <Card
+            onClick={() => navigate('/home/freshcalls', {
+                state: { status: statusId }
+            })}
+            
             elevation={0}
             sx={{
                 minWidth: 0,
                 borderRadius: 4,
                 border: "1px solid rgba(226,232,240,.8)",
                 borderLeft: `4px solid ${borderColor}`,
+                cursor: 'pointer',
 
                 background: `
                     radial-gradient(circle at 15% 20%, rgba(37,99,235,0.14) 0%, transparent 30%),
