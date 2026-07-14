@@ -28,8 +28,7 @@ const colors = {
 
 const TopSalesExecutives = ({ data = [] }) => {
     const top3 = [...data]
-        .sort((a, b) => (b.sold || 0) - (a.sold || 0))
-        .slice(0, 3);
+        .sort((a, b) => (a.rank_no || 0) - (b.rank_no || 0))
 
     return (
         <Box
@@ -63,12 +62,12 @@ const TopSalesExecutives = ({ data = [] }) => {
             }}>
                 {top3.map((item, idx) => (
                     <ExecutiveCard
-                        key={item.id || item.name || idx}
-                        rank={idx + 1}
+                        key={item.employee_id || item.user_id || idx}
+                        rank={item.rank_no}
                         name={item.name}
                         avatar={item.avatar}
-                        calls={item.calls}
-                        sold={item.sold}
+                        calls={item.total_calls}
+                        sold={item.total_sold}
                         highlight={idx === 0}
                     />
                 ))}

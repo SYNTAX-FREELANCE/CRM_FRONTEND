@@ -30,6 +30,7 @@ import {
   getActiveBatchDetails,
   getModuleRights,
   getActiveModuleRights,
+  getTopEmployees,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -295,5 +296,15 @@ export const useGetActiveModuleRightDetail = (roleId) => {
     queryFn: () => getActiveModuleRights(roleId),
     staleTime: Infinity,
     enabled: !!roleId
+  });
+};
+
+
+
+export const useTopEmployess = () => {
+  return useQuery({
+    queryKey: ["top-emp",],
+    queryFn: getTopEmployees,
+    staleTime: Infinity
   });
 };

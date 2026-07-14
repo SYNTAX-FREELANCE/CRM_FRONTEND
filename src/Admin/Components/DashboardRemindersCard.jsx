@@ -124,7 +124,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         top: 0,
                         zIndex: 100,
                         bgcolor: "background.paper",
-                        p:2
+                        p:1
                     }}
                 >
                     <Box
