@@ -28,7 +28,8 @@ import CategoryIcon from "@mui/icons-material/Category";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatReclineNormal";
 import { axioslogin } from "../../Axios/axios";
-import { successNotify, warningNotify } from "../../constant/Constant";
+import { getAuthUser, successNotify, warningNotify } from "../../constant/Constant";
+import { format } from "date-fns";
 
 const compactInput = {
     "& .MuiOutlinedInput-root": {
@@ -59,10 +60,14 @@ const initialVehicleData = {
     seat_capacity: "",
 };
 
-const VehicleDetailsModal = ({ open, onClose }) => {
+const VehicleDetailsModal = ({ open, onClose, lead }) => {
     const [vehicleData, setVehicleData] = useState(initialVehicleData);
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const authUser = getAuthUser();
+    const { id } = authUser ?? {}
+
+
 
     const handleChange = (field) => (event) => {
         const value = event.target.value;
@@ -86,17 +91,17 @@ const VehicleDetailsModal = ({ open, onClose }) => {
     const validate = () => {
         const newErrors = {};
 
-        const regNo = vehicleData.registration_number.trim();
-        const maker = vehicleData.vehicle_maker.trim();
-        const model = vehicleData.model.trim();
-        const engineNo = vehicleData.engine_number.trim();
-        const chassisNo = vehicleData.chassis_number.trim();
-        const regDate = vehicleData.registration_date;
-        const rto = vehicleData.rto.trim();
-        const vehicleClass = vehicleData.vehicle_class;
-        const vehicleCategory = vehicleData.vehicle_category;
-        const fuelType = vehicleData.fuel_type;
-        const seatCapacity = vehicleData.seat_capacity;
+        const regNo = vehicleData?.registration_number?.trim();
+        const maker = vehicleData?.vehicle_maker?.trim();
+        const model = vehicleData?.model?.trim();
+        const engineNo = vehicleData?.engine_number?.trim();
+        const chassisNo = vehicleData?.chassis_number?.trim();
+        const regDate = vehicleData?.registration_date;
+        const rto = vehicleData?.rto?.trim();
+        const vehicleClass = vehicleData?.vehicle_class;
+        const vehicleCategory = vehicleData?.vehicle_category;
+        const fuelType = vehicleData?.fuel_type;
+        const seatCapacity = vehicleData?.seat_capacity;
 
         if (!regNo) newErrors.registration_number = "Registration number is required.";
         else if (regNo.length < 4) newErrors.registration_number = "Enter a valid registration number.";
@@ -142,37 +147,44 @@ const VehicleDetailsModal = ({ open, onClose }) => {
 
         setLoading(true);
 
+        const payload = {
+            customer_id: lead?.customer_id,
+            registration_number: vehicleData?.registration_number.trim().toUpperCase(),
+            rto: vehicleData?.rto.trim() || null,
+            registration_date: vehicleData?.registration_date || null,
+            model: vehicleData?.model.trim() || null,
+            vehicle_maker: vehicleData?.vehicle_maker.trim() || null,
+            engine_number: vehicleData.engine_number.trim() || null,
+            chassis_number: vehicleData.chassis_number.trim() || null,
+            vehicle_class: vehicleData.vehicle_class.trim() || null,
+            vehicle_category: vehicleData.vehicle_category.trim() || null,
+            fuel_type: vehicleData.fuel_type || null,
+            seat_capacity: vehicleData.seat_capacity || null,
+            created_by: id
+        };
+
         try {
-            const vehicleData = {
-                customer_id: vehicleData.customerId,
-                registration_number: vehicleData.registrationNumber.trim().toUpperCase(),
-                rto: vehicleData.rto.trim() || null,
-                registration_date: vehicleData.registrationData || null,
-                model: vehicleData.model.trim() || null,
-                vehicleData_maker: vehicleData.vehicleDataMaker.trim() || null,
-                engine_number: vehicleData.engineNumber.trim() || null,
-                chassis_number: vehicleData.chassisNumber.trim() || null,
-                vehicleData_class: vehicleData.vehicleDataClass.trim() || null,
-                vehicleData_category: vehicleData.vehicleDataCategory.trim() || null,
-                fuel_type: vehicleData.fuelType || null,
-                seat_capacity: vehicleData.seatCapacity || null,
-            };
+
 
             const response = await axioslogin.post(
                 "/customer/create-vehicle",
-                vehicleData
+                payload
             );
 
             const { success, message } = response.data;
 
             if (success === 1) {
+                
                 successNotify("Vehicle created successfully!");
-                // FetchVehicleMaster();
-                // handleReset();
+                handleClose();
+
             } else {
                 warningNotify(message || "Failed to create vehicle");
             }
         } catch (error) {
+
+            console.log({ error });
+
             warningNotify(
                 error?.response?.data?.message || "Error creating vehicle"
             );
@@ -483,6 +495,9 @@ const VehicleDetailsModal = ({ open, onClose }) => {
                                     onChange={handleChange("registration_date")}
                                     sx={compactInput}
                                     {...fieldProps("registration_date")}
+                                    inputProps={{
+                                        max: format(new Date(), "yyyy-MM-dd"),
+                                    }}
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">

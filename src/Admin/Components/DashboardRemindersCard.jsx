@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, Suspense, useMemo, useState } from "react";
 import {
     Card,
     CardContent,
@@ -21,6 +21,8 @@ import {
 } from "@mui/icons-material";
 import ReminderItem from "../../Employee/Component/ReminderItem";
 import ReminderCard from "../../Employee/Component/ReminderCard";
+import ReminderItemSkeleton from "../../SkeletonComponent/ReminderItemSkeleton";
+import ReminderCardSkeleton from "../../SkeletonComponent/ReminderCardSkeleton";
 
 
 const statusMeta = {
@@ -52,7 +54,7 @@ const statusMeta = {
 
 
 const DashboardRemindersCard = ({ remindersData }) => {
-    
+
     const summary = remindersData?.summary || {};
     const overdueList = remindersData?.overdue || [];
     const todayList = remindersData?.today || [];
@@ -98,6 +100,8 @@ const DashboardRemindersCard = ({ remindersData }) => {
     const activeItems = listMap[activeStatus] || [];
     const total = summaryItems.reduce((sum, item) => sum + item.count, 0);
 
+
+
     return (
         <Card
             sx={{
@@ -117,14 +121,14 @@ const DashboardRemindersCard = ({ remindersData }) => {
 
             }}
         >
-            <CardContent sx={{ px:2 }}>
+            <CardContent sx={{ px: 2 }}>
                 <Box
                     sx={{
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
                         bgcolor: "background.paper",
-                        p:1
+                        p: 1
                     }}
                 >
                     <Box
@@ -170,15 +174,22 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             width: "100%",
                         }}
                     >
-                        {summaryItems?.map((item) => (
-                            <Grid item xs={6} sm={6} md={3} key={item.key}>
-                                <ReminderCard
-                                    {...item}
-                                    active={activeStatus === item.key}
-                                    onClick={() => setActiveStatus(item.key)}
-                                />
-                            </Grid>
-                        ))}
+
+                        {summaryItems?.map((item) => {
+                            const { key, ...rest } = item;
+
+                            return (
+                                <Grid item xs={6} sm={6} md={3} key={key}>
+                                    <Suspense fallback={<ReminderCardSkeleton />}>
+                                        <ReminderCard
+                                            {...rest}
+                                            active={activeStatus === key}
+                                            onClick={() => setActiveStatus(key)}
+                                        />
+                                    </Suspense>
+                                </Grid>
+                            );
+                        })}
                     </Box>
                 </Box>
                 <Divider sx={{ my: 2 }} />
@@ -195,7 +206,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         {statusMeta[activeStatus].label} Reminders
                     </Typography>
                     <Chip
-                        label={activeItems.length}
+                        label={activeItems?.length}
                         size="small"
                         sx={{
                             bgcolor: statusMeta[activeStatus].bg,
@@ -206,9 +217,11 @@ const DashboardRemindersCard = ({ remindersData }) => {
                 </Box>
 
                 <Stack spacing={1.2}>
-                    {activeItems.length ? (
+                    {activeItems?.length ? (
                         activeItems?.map((item) => (
-                            <ReminderItem key={item.followup_id} item={item} />
+                            <Suspense key={item?.lead_id} fallback={<ReminderItemSkeleton />}>
+                                <ReminderItem item={item} />
+                            </Suspense>
                         ))
                     ) : (
                         <Box
