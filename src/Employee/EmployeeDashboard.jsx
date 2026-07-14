@@ -32,7 +32,7 @@ import {
 } from "@mui/icons-material";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { getAuthUser } from "../constant/Constant";
-import { useFetchDashBoardCounts, useFetchDashBoardReminders } from "../CommonCode/useQuery";
+import { useFetchDashBoardCounts, useFetchDashBoardReminders, useTopEmployess } from "../CommonCode/useQuery";
 import StatusCountCard from "../Admin/Components/StatusCountCard";
 import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
 import DashboardRemindersCard from "../Admin/Components/DashboardRemindersCard";
@@ -117,6 +117,13 @@ const EmployeeDashboard = () => {
         },
     ];
 
+    const { data: ToSaleEmployees } = useTopEmployess();
+
+    console.log({
+        ToSaleEmployees
+    });
+
+
 
     return (
         <Box
@@ -186,61 +193,82 @@ const EmployeeDashboard = () => {
                     </Grid>
                 </Grid>
             </Card>
+            <Box sx={{
+                mt: 2.5,
+                display: "flex",
+                gap: 2.5,
+                flexDirection: { xs: "column",sm:'column', md: "row" },
+                alignItems: "stretch",
+            }}>
+                <Box sx={{
+                    flex: 3,
+                    minWidth: 0,
+                }}>
+                    <Box  >
+                        <Box
+                            sx={{
+                                display: "grid",
+                                gridTemplateColumns: {
+                                    xs: "repeat(2, minmax(0, 1fr))",
+                                    sm: "repeat(3, minmax(0, 1fr))",
+                                    md: "repeat(6, minmax(0, 1fr))",
+                                    lg: "repeat(6, minmax(0, 1fr))",
+                                },
+                                gap: 2,
+                              width:'100%',
+                            }}
+                        >
+                            {TotalCount?.map((item) => (
+                                <StatusCountCard
+                                    key={item.status_id}
+                                    title={item.status_name}
+                                    count={item.total_count}
+                                    color={item.color}
+                                />
+                            ))}
 
-            <Box sx={{ pt: 3, pb: 1, flex: "0 0 auto" }}>
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                            xs: "repeat(2, minmax(0, 1fr))",
-                            sm: "repeat(3, minmax(0, 1fr))",
-                            md: "repeat(6, minmax(0, 1fr))",
-                            lg: "repeat(6, minmax(0, 1fr))",
-                        },
-                        gap: 2,
-                        width: "100%",
-                    }}
-                >
-                    {TotalCount?.map((item) => (
-                        <StatusCountCard
-                            key={item.status_id}
-                            title={item.status_name}
-                            count={item.total_count}
-                            color={item.color}
-                        />
-                    ))}
+                        </Box>
+                    </Box>
+                    <Box
+                        sx={{
+                            mt: 2.5,
+                            display: "flex",
+                            gap: 2.5,
+                            flexDirection: { xs: "column", lg: "row" },
+                            alignItems: "stretch",
+                        }} >
+                        <Box
+                            sx={{
+                                flex: 1,
+                                minWidth: 0
+                            }}>
+                            <ReminderAreaChartCard reminders={remindersData} />
+                        </Box>
+                        <Box
+                            sx={{
+                                flex: 2, // ~33%
+                                minWidth: 0,
+                            }}>
+                            <DashboardRemindersCard remindersData={remindersData} />
+                        </Box>
+                    </Box>
+                </Box>
+                <Box sx={{
+                    flex: 1,
+                    minWidth: 0,
+                }}>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            minWidth: 0,
+                            height:'100%'
+                        }}>
+                        <TopSalesExecutives data={ToSaleEmployees} />
+                    </Box>
                 </Box>
             </Box>
-            <Box
-                sx={{
-                    mt: 2.5,
-                    display: "flex",
-                    gap: 2.5,
-                    flexDirection: { xs: "column", lg: "row" },
-                    alignItems: "stretch",
-                }} >
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: 0
-                    }}>
-                    <ReminderAreaChartCard reminders={remindersData} />
-                </Box>
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: 0,
-                    }}>
-                    <TopSalesExecutives data={salesData} />
-                </Box>
-                <Box
-                    sx={{
-                        flex: 2, // ~33%
-                        minWidth: 0,
-                    }}>
-                    <DashboardRemindersCard remindersData={remindersData} />
-                </Box>
-            </Box>
+
+
         </Box>
     );
 };

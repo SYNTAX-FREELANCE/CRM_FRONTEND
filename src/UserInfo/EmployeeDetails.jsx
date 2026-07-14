@@ -49,15 +49,6 @@ const EmployeeDetails = () => {
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
 
 
-    console.log("employee:", employee);
-
-    console.log("performanceData", performanceData);
-
-    console.log("TotalCount:", TotalCount);
-
-    console.log("remindersData:", remindersData);
-
-
     const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
 
     // Dynamic Interactive Calendar state (Defaulting to current local date)

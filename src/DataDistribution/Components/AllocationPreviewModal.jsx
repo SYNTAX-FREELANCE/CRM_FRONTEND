@@ -153,14 +153,14 @@ const AllocationPreviewModal = ({
                     Allocate
                 </Button>
 
-                <Button
+                {/* <Button
                     onClick={() => onAllocateAndAssign("IN_PROGRESS", 1, remarks)}
                     variant="contained"
                     color="success"
                     sx={{ textTransform: "none", fontWeight: 700, fontSize: { xs: 8, sm: 13 }, }}
                 >
                     Allocate & Assign
-                </Button>
+                </Button> */}
             </DialogActions>
         </Dialog>
     );

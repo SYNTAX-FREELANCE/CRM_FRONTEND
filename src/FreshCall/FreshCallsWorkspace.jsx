@@ -37,7 +37,7 @@ export default function FreshCallsWorkspace() {
 
   const { data: LeadMasterDetail } = useLeadMaster();
 
-  const { data: FreshCalls = [], isLoading: LoadingTableData } = useGetMyActiveCalls(id, statusFilter);
+  const { data: FreshCalls = [], isLoading: LoadingTableData, refetch } = useGetMyActiveCalls(id, statusFilter);
 
   const openLead = useCallback((lead) => {
     setSelectedLead(lead);
@@ -52,14 +52,13 @@ export default function FreshCallsWorkspace() {
       const response = await axioslogin.get(`/lead/get-fresh-lead/${id}`);
       const { success, data, message } = response.data;
       if (success === 0) return infoNotify(message);
-      if (success !== 0) return successNotify(message || "Next Batch Fetched Successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["mycalls", id],
-      });
+      queryClient.invalidateQueries({ queryKey: ["mycalls", id, statusFilter], });
+      await refetch()
+      successNotify(message || "Next Batch Fetched Successfully");
     } catch (error) {
       errorNotify("Error in Fetching Next Queue..!", error);
     }
-  }, [id, FreshCalls, statusFilter, queryClient]);
+  }, [id, FreshCalls, statusFilter, queryClient, statusFilter]);
 
   const isMobile = useMediaQuery("(max-width:600px)");
   const columns = useMemo(() => TastkColumns(openLead, isMobile), [openLead, isMobile]);

@@ -432,3 +432,16 @@ export const getActiveModuleRights = async (roleId) => {
     console.error("Get Active Module Rights Error:", error);
   }
 };
+
+export const getTopEmployees = async () => {
+
+  try {
+    const response = await axioslogin.get(`/lead/top-employee`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Get Active Module Rights Error:", error);
+  }
+};
+
