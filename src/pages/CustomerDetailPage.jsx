@@ -171,8 +171,6 @@ const CustomerDetailPanel = ({ customer, loading }) => {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
                 <Section title="Customer Information" icon={<PersonIcon sx={{ fontSize: 16 }} />} accent="blue" defaultExpanded>
                     <Stack spacing={0.5}>
-                        <Row icon={<PhoneIcon sx={{ fontSize: 14 }} />} label="Primary Phone" value={customerInfo.mobile_number_1} accent="blue" />
-                        <Row icon={<PhoneIcon sx={{ fontSize: 14 }} />} label="Secondary Phone" value={customerInfo.mobile_number_2} accent="blue" />
                         <Row icon={<EmailIcon sx={{ fontSize: 14 }} />} label="Email" value={customerInfo.email} accent="blue" />
                         <Row icon={<LocationOnIcon sx={{ fontSize: 14 }} />} label="Address" value={customerInfo.address} accent="blue" />
                         <Row icon={<LocationOnIcon sx={{ fontSize: 14 }} />} label="City" value={customerInfo.city} accent="blue" />
@@ -215,6 +213,7 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                                                         bgcolor: v.is_active ? "rgba(34,197,94,0.10)" : "rgba(148,163,184,0.12)",
                                                         color: v.is_active ? "#16a34a" : "#475569",
                                                         fontWeight: 800,
+                                                        fontSize:{xs:10,sm:14}
                                                     }}
                                                 />
                                             }

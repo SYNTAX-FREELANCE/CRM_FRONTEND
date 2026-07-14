@@ -40,6 +40,7 @@ const Row = ({ label, value, icon, accent = "blue" }) => (
           textTransform: "uppercase",
           letterSpacing: 0.6,
           whiteSpace: "nowrap",
+            fontSize: { xs: 11, sm: 14 }
         }}
       >
         {label}

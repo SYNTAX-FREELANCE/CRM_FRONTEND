@@ -1,6 +1,12 @@
-import React from "react";
+import React, { memo } from "react";
 import { Box, Avatar, Typography, Chip } from "@mui/material";
 import { Today, EventAvailable, Schedule, ErrorOutline } from "@mui/icons-material";
+import AgricultureIcon from '@mui/icons-material/Agriculture';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CommentIcon from '@mui/icons-material/Comment';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import { format, parseISO } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const statusMeta = {
     overdue: {
@@ -32,23 +38,35 @@ const statusMeta = {
 const ReminderItem = ({ item }) => {
     const meta = statusMeta[item?.status];
 
+    const navigate = useNavigate();
 
     return (
         <Box
+            onClick={() =>
+                navigate("/home/freshcalls", {
+                    state: {
+                        status: item?.status_id,
+                        leadId: item?.lead_id
+                    },
+
+                })
+            }
+
             sx={{
                 p: { xs: 1.25, md: 1.5 },
                 borderRadius: 3,
                 bgcolor: "#fff",
                 border: "1px solid rgba(226,232,240,0.9)",
                 boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
+                cursor: 'pointer'
             }}
         >
             <Box
                 sx={{
                     display: "flex",
                     gap: 1.5,
-                    alignItems:'center',
-                    justifyContent:'center'
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
             >
                 <Avatar
@@ -67,15 +85,12 @@ const ReminderItem = ({ item }) => {
                     <Box
                         sx={{
                             display: "flex",
-                            alignItems:'center',
-                    justifyContent:'center',
+                            alignItems: "center",
+                            justifyContent: "center",
                             gap: 1,
                         }}
                     >
-                        <Box sx={{
-                            width: "80%",
-                           
-                        }}>
+                        <Box sx={{ width: "80%" }}>
                             <Typography
                                 sx={{
                                     fontWeight: 800,
@@ -86,21 +101,103 @@ const ReminderItem = ({ item }) => {
                             >
                                 {item?.customer_name}
                             </Typography>
+
+
                             <Typography
                                 sx={{
-                                    fontSize: { xs: 8, sm: 8, md: 12 },
+                                    fontSize: 10,
+                                    fontWeight: 800,
                                     color: "text.secondary",
                                     mt: 0.3,
-                                }} >
-                                Reg: {item?.registration_number} • Model: {item?.model}
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                    minWidth: 0,
+                                }}
+                            >
+                                <AgricultureIcon sx={{ color: meta?.color, fontSize: 14, flexShrink: 0 }} />
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block",
+                                    }}
+                                    title={item?.registration_number}
+                                >
+                                    {item?.registration_number}
+                                </Box>
+
+                                <CalendarMonthIcon sx={{ color: meta?.color, fontSize: 14, flexShrink: 0 }} />
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block",
+                                    }}
+                                    title={item?.next_followup_date}
+                                >
+                                    {item?.next_followup_date
+                                        ? format(parseISO(item.next_followup_date), "dd MMM yyyy a")
+                                        : "-"}
+
+                                </Box>
+                            </Typography>
+
+                            <Typography
+                                sx={{
+                                    fontSize: 11,
+                                    fontWeight: 800,
+                                    color: "text.secondary",
+                                    mt: 0.3,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                    minWidth: 0,
+                                }}
+                            >
+                                <CommentIcon sx={{ color: meta?.color, fontSize: 14, flexShrink: 0 }} />
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block",
+                                    }}
+                                    title={item?.remarks}
+                                >
+                                    {item?.remarks}
+                                </Box>
+
+                                <MilitaryTechIcon sx={{ color: meta?.color, fontSize: 14, flexShrink: 0 }} />
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block",
+                                    }}
+                                    title={item?.status_name}
+                                >
+                                    {item?.status_name}
+                                </Box>
                             </Typography>
                         </Box>
-                        <Box sx={{
-                            width: "20%",
-                           
-                        }}>
 
-
+                        <Box sx={{ width: "20%" }}>
                             <Chip
                                 label={meta?.label || "Reminder"}
                                 size="small"
@@ -119,4 +216,4 @@ const ReminderItem = ({ item }) => {
     );
 };
 
-export default ReminderItem;
+export default memo(ReminderItem);

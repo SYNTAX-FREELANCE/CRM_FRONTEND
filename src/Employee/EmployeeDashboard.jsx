@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import {
     Box,
     Typography,
@@ -40,6 +40,9 @@ import DashboardRemindersCard from "../Admin/Components/DashboardRemindersCard";
 import ReminderBarChartCard from "../Admin/Components/ReminderBarChartCard";
 import ReminderAreaChartCard from "../Admin/Components/ReminderAreaChartCard";
 import TopSalesExecutives from "../Admin/Components/TopSalesExecutives";
+import StatusCountCardSkeleton from "../SkeletonComponent/StatusCountCardSkeleton";
+import DashboardRemindersCardSkeleton from "../SkeletonComponent/DashboardRemindersCardSkeleton";
+import TopSalesExecutivesSkeleton from "../SkeletonComponent/TopSalesExecutivesSkeleton";
 
 const summaryData = [
     { label: "New Calls", value: 24, color: "#2563eb" },
@@ -77,11 +80,10 @@ const reminders = [
     },
 ];
 
-
-
-
 const EmployeeDashboard = () => {
+
     const authUser = getAuthUser();
+
     const theme = useTheme();
 
     const [dateFilter, setDateFilter] = useState("7days");
@@ -90,40 +92,11 @@ const EmployeeDashboard = () => {
 
     const { id } = authUser ?? {}
 
+    const { data: TotalCount = [], isLoading: LoadingTotalCount } = useFetchDashBoardCounts(id);
 
-    const { data: TotalCount = [] } = useFetchDashBoardCounts(id);
+    const { data: remindersData = [], isLoading: LoadingReminderData } = useFetchDashBoardReminders(id);
 
-    const { data: remindersData = [] } = useFetchDashBoardReminders(id);
-
-
-    const salesData = [
-        {
-            id: 1,
-            name: "Anil Kumar",
-            calls: 182,
-            sold: 74,
-        },
-        {
-            id: 2,
-            name: "Ravi Menon",
-            calls: 165,
-            sold: 68,
-        },
-        {
-            id: 3,
-            name: "Sajith S",
-            calls: 149,
-            sold: 61,
-        },
-    ];
-
-    const { data: ToSaleEmployees } = useTopEmployess();
-
-    console.log({
-        ToSaleEmployees
-    });
-
-
+    const { data: ToSaleEmployees = [], isLoading: LoadingTopEmployees } = useTopEmployess();
 
     return (
         <Box
@@ -197,7 +170,7 @@ const EmployeeDashboard = () => {
                 mt: 2.5,
                 display: "flex",
                 gap: 2.5,
-                flexDirection: { xs: "column",sm:'column', md: "row" },
+                flexDirection: { xs: "column", sm: 'column', md: "row" },
                 alignItems: "stretch",
             }}>
                 <Box sx={{
@@ -215,17 +188,28 @@ const EmployeeDashboard = () => {
                                     lg: "repeat(6, minmax(0, 1fr))",
                                 },
                                 gap: 2,
-                              width:'100%',
+                                width: '100%',
                             }}
                         >
-                            {TotalCount?.map((item) => (
-                                <StatusCountCard
-                                    key={item.status_id}
-                                    title={item.status_name}
-                                    count={item.total_count}
-                                    color={item.color}
-                                />
-                            ))}
+                            {
+                                LoadingTotalCount ? (
+                                    Array.from({ length: 6 }).map((_, index) => (
+                                        <StatusCountCardSkeleton key={index} />
+                                    ))
+                                ) : (
+                                    TotalCount?.map((item) => (
+                                        <Suspense fallback={<StatusCountCardSkeleton />}>
+                                            <StatusCountCard
+                                                key={item.status_id}
+                                                statusId={item.status_id}
+                                                title={item.status_name}
+                                                count={item.total_count}
+                                                color={item.color}
+                                            />
+                                        </Suspense>
+                                    ))
+                                )
+                            }
 
                         </Box>
                     </Box>
@@ -249,7 +233,13 @@ const EmployeeDashboard = () => {
                                 flex: 2, // ~33%
                                 minWidth: 0,
                             }}>
-                            <DashboardRemindersCard remindersData={remindersData} />
+
+                            {LoadingReminderData ? (
+                                <DashboardRemindersCardSkeleton />
+                            ) : (
+                                <DashboardRemindersCard remindersData={remindersData} />
+                            )}
+
                         </Box>
                     </Box>
                 </Box>
@@ -261,9 +251,13 @@ const EmployeeDashboard = () => {
                         sx={{
                             flex: 1,
                             minWidth: 0,
-                            height:'100%'
+                            height: '100%'
                         }}>
-                        <TopSalesExecutives data={ToSaleEmployees} />
+                        {LoadingTopEmployees ? (
+                            <TopSalesExecutivesSkeleton />
+                        ) : (
+                            <TopSalesExecutives data={ToSaleEmployees} />
+                        )}
                     </Box>
                 </Box>
             </Box>
