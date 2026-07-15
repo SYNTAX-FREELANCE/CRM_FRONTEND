@@ -40,7 +40,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { errorNotify, successNotify } from "../constant/Constant";
-import { useEmployeeProfile, useEmployeePerformance, useFetchDashBoardCounts, useFetchDashBoardReminders, useGetAttendanceByDate } from "../CommonCode/useQuery";
+import { useEmployeeProfile, useEmployeePerformance, useFetchDashBoardCounts, useFetchDashBoardReminders, useGetAttendanceByDate, useProfilePhoto, useCallCenterPerformance } from "../CommonCode/useQuery";
 import { axioslogin } from "../Axios/axios";
 
 const EmployeeDetails = () => {
@@ -48,9 +48,13 @@ const EmployeeDetails = () => {
     const { employeeId } = useParams();
 
     const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
+    // Mixed Chart Date selectors state
+    const [startDate, setStartDate] = useState("2026-06-01");
+    const [endDate, setEndDate] = useState("2026-06-30");
 
     const { data: employee, isLoading: loadingEmp } = useEmployeeProfile(employeeId);
-    const { data: performanceData, } = useEmployeePerformance(employee ? employeeId : null);
+    const { data: employeePerformance } = useEmployeePerformance(employee ? employeeId : null);
+    const { data: performanceData } = useCallCenterPerformance(employee?.user_id, startDate, endDate);
     const { data: TotalCount = [] } = useFetchDashBoardCounts(employee?.user_id);
     const { data: remindersData = [] } = useFetchDashBoardReminders(employee?.user_id);
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
@@ -58,7 +62,7 @@ const EmployeeDetails = () => {
     // console.log("employee:", employee);
 
 
-    // console.log("performanceData", performanceData);
+    console.log("performanceData", performanceData);
 
     // console.log("TotalCount:", TotalCount);
 
@@ -112,9 +116,6 @@ const EmployeeDetails = () => {
     // const activeItems = listMap[activeStatus] || [];
     // const total = summaryItems.reduce((sum, item) => sum + item.count, 0);
 
-
-    console.log("remindersData::", remindersData);
-
     const allReminders = useMemo(() => {
         const overdue = remindersData?.overdue || [];
         const today = remindersData?.today || [];
@@ -136,13 +137,6 @@ const EmployeeDetails = () => {
             return true;
         });
     }, [remindersData]);
-
-
-
-
-
-
-    // console.log("summaryItems:", summaryItems);
 
 
 
@@ -194,7 +188,43 @@ const EmployeeDetails = () => {
         enabled: !!employee?.user_id,
     });
 
-    console.log("documents:", documents);
+    const { data: profilePhotoUrl = "", refetch: refetchProfilePhoto } = useProfilePhoto(employee?.user_id);
+
+    const handleProfilePhotoChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Maximum size check (5 MB)
+        if (file.size > 5 * 1024 * 1024) {
+            errorNotify("Profile photo exceeds the maximum size limit of 5 MB.");
+            e.target.value = null;
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("photo", file);
+        formData.append("userId", employee.user_id);
+
+        try {
+            const response = await axioslogin.post("/employee/upload-profile-photo", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            if (response.data && response.data.success === 1) {
+                successNotify("Profile photo uploaded successfully!");
+                refetchProfilePhoto();
+            } else {
+                errorNotify(response.data.message || "Failed to upload profile photo");
+            }
+        } catch (error) {
+            console.error("Upload photo error:", error);
+            errorNotify(error.response?.data?.message || "Failed to upload profile photo");
+        } finally {
+            e.target.value = null;
+        }
+    };
 
     // Modal states for insert and delete confirmation
     const [uploadConfirmOpen, setUploadConfirmOpen] = useState(false);
@@ -324,9 +354,7 @@ const EmployeeDetails = () => {
     const [calendarDate, setCalendarDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // Mixed Chart Date selectors state
-    const [startDate, setStartDate] = useState("2026-06-01");
-    const [endDate, setEndDate] = useState("2026-06-30");
+
 
     // Month Names mapping
     const monthNames = [
@@ -391,16 +419,17 @@ const EmployeeDetails = () => {
 
     // Calculate sum of metrics
     const getSummaryMetrics = () => {
-        if (!performanceData || !performanceData.chartData) {
-            return { calls: 0, appointments: 0, callbacks: 0 };
+        if (!Array.isArray(performanceData)) {
+            return { leads: 0, appointments: 0, callbacks: 0, sold: 0 };
         }
-        return performanceData.chartData.reduce(
+        return performanceData.reduce(
             (acc, item) => ({
-                calls: acc.calls + (item.calls || 0),
+                leads: acc.leads + (item.leads || 0),
                 appointments: acc.appointments + (item.appointments || 0),
                 callbacks: acc.callbacks + (item.callbacks || 0),
+                sold: acc.sold + (item.sold || 0)
             }),
-            { calls: 0, appointments: 0, callbacks: 0 }
+            { leads: 0, appointments: 0, callbacks: 0, sold: 0 }
         );
     };
 
@@ -432,8 +461,6 @@ const EmployeeDetails = () => {
 
     const metricsSummary = getSummaryMetrics();
 
-    const perfRecord = performanceData && performanceData.length > 0 ? performanceData[0] : null;
-
     // Map DB values to template attributes with Call Center profession fallbacks
     const displayEmployee = employee ? {
         employee_id: employee.employee_id,
@@ -442,15 +469,15 @@ const EmployeeDetails = () => {
         company: employee.company_name || "-",
         mobile: employee.mobile_number_1 || "-",
         email: employee.email || "-",
-        gender: (perfRecord && perfRecord.gender) || "-",
-        dob: (perfRecord && perfRecord.age ? `${perfRecord.age} years old` : null) || "-",
+        gender: employee.gender || "-",
+        dob: employee.age ? `${employee.age} years old` : "-",
         address: "-",
         joining: formatDate(employee.date_of_join),
-        calls: metricsSummary.calls || 0,
+        leads: metricsSummary.leads || 0,
         appointments: metricsSummary.appointments || 0,
+        callbacks: metricsSummary.callbacks || 0,
+        sold: metricsSummary.sold || 0,
         attendance: "-",
-        leads: metricsSummary.callbacks || 0,
-        sold: 0,
     } : null
 
     // role_name,company_name
@@ -663,7 +690,7 @@ const EmployeeDetails = () => {
                             </Box>
 
                             {/* Overlapping Avatar with white frame ring */}
-                            <Avatar
+                            {/* <Avatar
                                 sx={{
                                     width: 90,
                                     height: 90,
@@ -679,9 +706,67 @@ const EmployeeDetails = () => {
                                     fontWeight: 800
                                 }}
                             >
-                                fjkhgjk
-                                {/* {displayEmployee.name.charAt(0)} */}
+                                {displayEmployee.name.charAt(0)}
+                            </Avatar> */}
+                            <input
+                                type="file"
+                                id="profile-photo-input"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleProfilePhotoChange}
+                            />
+                            <Avatar
+                                src={profilePhotoUrl || undefined}
+                                onClick={() => {
+                                    const el = document.getElementById("profile-photo-input");
+                                    if (el) el.click();
+                                }}
+                                sx={{
+                                    width: 90,
+                                    height: 90,
+                                    border: "4px solid #ffffff",
+                                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
+                                    position: "absolute",
+                                    bottom: "-45px",
+                                    left: "24px",
+                                    zIndex: 2,
+                                    bgcolor: "#e0e7ff",
+                                    color: "#4f46e5",
+                                    fontSize: profilePhotoUrl ? "32px" : "11px",
+                                    fontWeight: 800,
+                                    cursor: "pointer",
+                                    textAlign: "center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    lineHeight: "1.2",
+                                    "&:hover": {
+                                        opacity: 0.85
+                                    }
+                                }}
+                            >
+                                {!profilePhotoUrl && "upload photo here"}
                             </Avatar>
+
+                            {/* <Avatar
+                                sx={{
+                                    width: 90,
+                                    height: 90,
+                                    border: "4px solid #ffffff",
+                                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
+                                    position: "absolute",
+                                    bottom: "-45px",
+                                    left: "24px",
+                                    zIndex: 2,
+                                    bgcolor: "#e0e7ff",
+                                    color: "#4f46e5",
+                                    fontSize: "32px",
+                                    fontWeight: 800
+                                }}
+                            >
+                                {displayEmployee.name.charAt(0)}
+                            </Avatar> */}
+
                         </Box>
 
                         {/* Info Section with padding-top layout offset for Avatar overlap */}
@@ -1528,7 +1613,7 @@ const EmployeeDetails = () => {
                 <Box sx={{ width: "100%", overflowX: "auto" }}>
                     <Box sx={{ minWidth: "600px", height: "300px", position: "relative" }}>
                         {(() => {
-                            // Generate deterministic date-range chart details dynamically
+                            // Generate date-range chart details dynamically from backend performanceData
                             const callCenterPerformance = [];
                             const start = new Date(startDate);
                             const end = new Date(endDate);
@@ -1544,26 +1629,34 @@ const EmployeeDetails = () => {
                                 else if (diffDays > 14) step = 2;
                                 else step = 1;
 
+                                const performanceMap = {};
+                                if (Array.isArray(performanceData)) {
+                                    performanceData.forEach(item => {
+                                        try {
+                                            const dStr = new Date(item.date).toISOString().split('T')[0];
+                                            performanceMap[dStr] = {
+                                                leads: item.leads || 0,
+                                                appointments: item.appointments || 0,
+                                                callbacks: item.callbacks || 0,
+                                                sold: item.sold || 0
+                                            };
+                                        } catch (e) {
+                                            console.error("Date format error:", e);
+                                        }
+                                    });
+                                }
+
                                 let currentDate = new Date(start);
                                 while (currentDate <= end) {
                                     const dateStr = currentDate.toISOString().split('T')[0];
-                                    const dayVal = currentDate.getDate();
-
-                                    // Deterministic values seeded by the date + employeeId
-                                    const seed = dayVal + currentDate.getMonth() + currentDate.getFullYear();
-                                    const hash = (seed + Number(displayEmployee.employee_id || 1)) % 10;
-
-                                    const leads = Math.round(14 + hash * 1.8);
-                                    const appointments = Math.round(4 + (hash % 4) * 2.2);
-                                    const callbacks = Math.round(6 + (hash % 5) * 1.6);
-                                    const sold = Math.round(1 + (hash % 3) * 1.4);
+                                    const dbData = performanceMap[dateStr] || { leads: 0, appointments: 0, callbacks: 0, sold: 0 };
 
                                     callCenterPerformance.push({
                                         date: dateStr,
-                                        leads,
-                                        appointments,
-                                        callbacks,
-                                        sold
+                                        leads: dbData.leads,
+                                        appointments: dbData.appointments,
+                                        callbacks: dbData.callbacks,
+                                        sold: dbData.sold
                                     });
 
                                     currentDate.setDate(currentDate.getDate() + step);
