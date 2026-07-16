@@ -171,7 +171,7 @@ const RoleCreation = () => {
                 );
             }
 
-        } catch (error) {            
+        } catch (error) {
             warningNotify(
                 error.response?.data?.message ||
                 (mode === "edit"
@@ -191,7 +191,7 @@ const RoleCreation = () => {
                 title: "Role Master",
                 type: 'role',
                 idField: 'role_id',
-                editRoute: "/rolemaster",
+                editRoute: "rolemaster",
                 columns: [
                     {
                         field: "role_name",

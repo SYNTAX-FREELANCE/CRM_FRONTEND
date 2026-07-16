@@ -31,19 +31,38 @@ const CommonDataGrid = ({
 
     const formattedColumns = [
         actionColumn,
-        ...columns.map((column) => ({
-            ...column,
-            flex: column.flex || 1,
-            ...(column.width && !column.minWidth ? { minWidth: column.width } : {}),
-            ...(column.minWidth ? { minWidth: column.minWidth } : {}),
-            renderCell:
-                column.type === "status"
-                    ? (params) =>
-                        params.value === 1
-                            ? "Active"
-                            : "Inactive"
-                    : undefined
-        }))
+        ...columns.map((column) => {
+            const { type, ...rest } = column;
+            return {
+                ...rest,
+                flex: column.flex || 1,
+                ...(column.width && !column.minWidth ? { minWidth: column.width } : {}),
+                ...(column.minWidth ? { minWidth: column.minWidth } : {}),
+                renderCell:
+                    type === "status"
+                        ? (params) =>
+                            params.value === 1
+                                ? "Active"
+                                : "Inactive"
+                        : type === "date"
+                            ? (params) => {
+                                if (!params.value) return "-";
+                                try {
+                                    if (params.value instanceof Date) {
+                                        return params.value.toISOString().split("T")[0];
+                                    }
+                                    if (typeof params.value === "string") {
+                                        return params.value.split("T")[0];
+                                    }
+                                    return String(params.value);
+                                } catch (e) {
+                                    console.error(e);
+                                    return "-";
+                                }
+                            }
+                            : undefined
+            };
+        })
     ];
 
     const formattedRows = rows?.map((row, index) => ({

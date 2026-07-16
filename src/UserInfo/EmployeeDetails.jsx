@@ -242,6 +242,16 @@ const EmployeeDetails = () => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
+        // Check file extensions (allowed: jpg, jpeg, png, pdf)
+        const allowedExtensions = ["jpg", "jpeg", "png", "pdf"];
+        for (const file of files) {
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(fileExtension)) {
+                errorNotify(`File "${file.name}" is not supported. Only JPG, PNG, and PDF files are allowed.`);
+                return;
+            }
+        }
+
         // Check file sizes (25MB limit = 25 * 1024 * 1024 bytes)
         const MAX_SIZE = 25 * 1024 * 1024;
         for (const file of files) {
@@ -461,6 +471,87 @@ const EmployeeDetails = () => {
 
     const metricsSummary = getSummaryMetrics();
 
+    // Calculate dynamic overall stats from TotalCount status totals
+    const getOverallStats = () => {
+        let newCount = 0;
+        let callbackCount = 0;
+        let quoteCount = 0;
+        let appointmentCount = 0;
+        let soldCount = 0;
+        let lostCount = 0;
+
+        if (Array.isArray(TotalCount)) {
+            TotalCount.forEach(item => {
+                const name = (item.status_name || "").toUpperCase();
+                const count = Number(item.total_count || 0);
+                if (name.includes("NEW")) newCount += count;
+                else if (name.includes("CALLBACK")) callbackCount += count;
+                else if (name.includes("QUOTE")) quoteCount += count;
+                else if (name.includes("APPOINMENT") || name.includes("APPOINTMENT")) appointmentCount += count;
+                else if (name.includes("SOLD")) soldCount += count;
+                else if (name.includes("LOST")) lostCount += count;
+            });
+        }
+
+        const total = newCount + callbackCount + quoteCount + appointmentCount + soldCount + lostCount;
+        return {
+            newCount,
+            callbackCount,
+            quoteCount,
+            appointmentCount,
+            soldCount,
+            lostCount,
+            total
+        };
+    };
+
+    const overallStats = getOverallStats();
+
+    // Calculate dynamic overall performance score based on actual totals
+    const calculateOverallScore = () => {
+        const { total, appointmentCount, callbackCount, quoteCount, soldCount } = overallStats;
+        if (total === 0) return 0.0;
+        const conversionRatio = soldCount / total;
+        const appointmentRatio = appointmentCount / total;
+        const interestRatio = (callbackCount + quoteCount) / total;
+
+        // Normalise performance indicators compared to high performer benchmarks:
+        // Conversion target = 15%, Appointment target = 25%, Callback/Quote target = 30%
+        const scoreConversion = Math.min((conversionRatio / 0.15) * 5, 5);
+        const scoreAppointment = Math.min((appointmentRatio / 0.25) * 5, 5);
+        const scoreInterest = Math.min((interestRatio / 0.30) * 5, 5);
+
+        // Weighted score: 50% Conversion, 30% Appointment booking, 20% Callback/Quote interest
+        const finalScore = (scoreConversion * 0.5) + (scoreAppointment * 0.3) + (scoreInterest * 0.2);
+        return Number(finalScore.toFixed(1));
+    };
+
+    const overallScore = calculateOverallScore();
+
+    const renderStars = (score) => {
+        const stars = [];
+        const fullStars = Math.floor(score);
+        const hasHalfStar = score % 1 >= 0.3 && score % 1 <= 0.7;
+        const halfStarCount = hasHalfStar ? 1 : 0;
+        const emptyStars = Math.max(0, 5 - fullStars - halfStarCount);
+
+        for (let i = 0; i < fullStars; i++) {
+            stars.push(<StarIcon key={`full-${i}`} style={{ color: "#eab308", fontSize: 15 }} />);
+        }
+        if (hasHalfStar) {
+            stars.push(<StarHalfIcon key="half" style={{ color: "#eab308", fontSize: 15 }} />);
+        }
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(<StarOutlineIcon key={`empty-${i}`} style={{ color: "#cbd5e1", fontSize: 15 }} />);
+        }
+        return stars;
+    };
+
+    const conversionRate = overallStats.total > 0 ? (overallStats.soldCount / overallStats.total) * 100 : 0;
+    const appointmentRate = overallStats.total > 0 ? (overallStats.appointmentCount / overallStats.total) * 100 : 0;
+    const lostRate = overallStats.total > 0 ? (overallStats.lostCount / overallStats.total) * 100 : 0;
+    const callbackQuoteRate = overallStats.total > 0 ? ((overallStats.callbackCount + overallStats.quoteCount) / overallStats.total) * 100 : 0;
+
     // Map DB values to template attributes with Call Center profession fallbacks
     const displayEmployee = employee ? {
         employee_id: employee.employee_id,
@@ -478,6 +569,9 @@ const EmployeeDetails = () => {
         callbacks: metricsSummary.callbacks || 0,
         sold: metricsSummary.sold || 0,
         attendance: "-",
+        dob: employee?.dob,
+        email: employee?.email,
+        address: employee?.address,
     } : null
 
     // role_name,company_name
@@ -879,22 +973,19 @@ const EmployeeDetails = () => {
                                 </Avatar>
                             </Box>
 
-                            <Stack spacing={2}>
+                            <Stack spacing={1.5}>
                                 {/* Rating Star Panel */}
                                 <Box>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
                                         <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", fontSize: "9px" }}>
-                                            Call Quality Score
+                                            Overall Rating Score
                                         </Typography>
                                         <Typography level="body-xs" sx={{ color: "#7c3aed", fontWeight: 900 }}>
-                                            4.8 / 5.0
+                                            {overallScore > 0 ? `${overallScore} / 5.0` : "0.0 / 5.0"}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: "flex", gap: "3px" }}>
-                                        {[1, 2, 3, 4].map((i) => (
-                                            <StarIcon key={i} style={{ color: "#eab308", fontSize: 15 }} />
-                                        ))}
-                                        <StarHalfIcon style={{ color: "#eab308", fontSize: 15 }} />
+                                        {renderStars(overallScore)}
                                     </Box>
                                 </Box>
 
@@ -902,44 +993,59 @@ const EmployeeDetails = () => {
                                 <Box>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                                         <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", fontSize: "9px" }}>
-                                            Lead Conversion Rate
+                                            Lead Conversion Rate (SOLD)
                                         </Typography>
                                         <Typography level="body-xs" sx={{ color: "#10b981", fontWeight: 900 }}>
-                                            17.5%
+                                            {conversionRate.toFixed(1)}% ({overallStats.soldCount} / {overallStats.total})
                                         </Typography>
                                     </Box>
                                     <Box sx={{ width: "100%", height: "6px", bgcolor: "#f1f5f9", borderRadius: "3px", overflow: "hidden" }}>
-                                        <Box sx={{ width: "85%", height: "100%", bgcolor: "#10b981", borderRadius: "3px" }} />
+                                        <Box sx={{ width: `${Math.min(conversionRate, 100)}%`, height: "100%", bgcolor: "#10b981", borderRadius: "3px" }} />
                                     </Box>
                                 </Box>
 
-                                {/* Sales Target Achieved */}
+                                {/* Appointment Booking Rate */}
                                 <Box>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                                         <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", fontSize: "9px" }}>
-                                            Monthly Sales Target
+                                            Appointment Booking Rate
                                         </Typography>
                                         <Typography level="body-xs" sx={{ color: "#3b82f6", fontWeight: 900 }}>
-                                            92.5% (37 / 40)
+                                            {appointmentRate.toFixed(1)}% ({overallStats.appointmentCount} / {overallStats.total})
                                         </Typography>
                                     </Box>
                                     <Box sx={{ width: "100%", height: "6px", bgcolor: "#f1f5f9", borderRadius: "3px", overflow: "hidden" }}>
-                                        <Box sx={{ width: "92.5%", height: "100%", bgcolor: "#3b82f6", borderRadius: "3px" }} />
+                                        <Box sx={{ width: `${Math.min(appointmentRate, 100)}%`, height: "100%", bgcolor: "#3b82f6", borderRadius: "3px" }} />
                                     </Box>
                                 </Box>
 
-                                {/* Attendance Rate */}
+                                {/* Callback & Quote Rate */}
                                 <Box>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                                         <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", fontSize: "9px" }}>
-                                            Attendance Consistency
+                                            Interest & Follow-up Rate
                                         </Typography>
-                                        <Typography level="body-xs" sx={{ color: "#ea580c", fontWeight: 900 }}>
-                                            {displayEmployee.attendance}
+                                        <Typography level="body-xs" sx={{ color: "#7c3aed", fontWeight: 900 }}>
+                                            {callbackQuoteRate.toFixed(1)}% ({overallStats.callbackCount + overallStats.quoteCount} / {overallStats.total})
                                         </Typography>
                                     </Box>
                                     <Box sx={{ width: "100%", height: "6px", bgcolor: "#f1f5f9", borderRadius: "3px", overflow: "hidden" }}>
-                                        <Box sx={{ width: "96%", height: "100%", bgcolor: "#ea580c", borderRadius: "3px" }} />
+                                        <Box sx={{ width: `${Math.min(callbackQuoteRate, 100)}%`, height: "100%", bgcolor: "#7c3aed", borderRadius: "3px" }} />
+                                    </Box>
+                                </Box>
+
+                                {/* Lost Rate progress */}
+                                <Box>
+                                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                                        <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", fontSize: "9px" }}>
+                                            Lost Lead Rate
+                                        </Typography>
+                                        <Typography level="body-xs" sx={{ color: "#ef4444", fontWeight: 900 }}>
+                                            {lostRate.toFixed(1)}% ({overallStats.lostCount} / {overallStats.total})
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ width: "100%", height: "6px", bgcolor: "#f1f5f9", borderRadius: "3px", overflow: "hidden" }}>
+                                        <Box sx={{ width: `${Math.min(lostRate, 100)}%`, height: "100%", bgcolor: "#ef4444", borderRadius: "3px" }} />
                                     </Box>
                                 </Box>
                             </Stack>
@@ -1370,7 +1476,7 @@ const EmployeeDetails = () => {
                                     <InfoRow icon={<Person />} label="Gender" value={displayEmployee.gender} color="indigo" />
                                     <InfoRow icon={<PhoneAndroid />} label="Mobile" value={displayEmployee.mobile} color="teal" copyable={true} />
                                     <InfoRow icon={<Email />} label="Email" value={displayEmployee.email} color="blue" copyable={true} />
-                                    <InfoRow icon={<CalendarMonth />} label="Age" value={displayEmployee.dob} color="orange" />
+                                    <InfoRow icon={<CalendarMonth />} label="DOB" value={displayEmployee.dob} color="orange" />
                                     <InfoRow icon={<LocationOn />} label="Address" value={displayEmployee.address} color="amber" />
                                 </Box>
                             </Box>
@@ -1469,6 +1575,7 @@ const EmployeeDetails = () => {
                                                             type="file"
                                                             multiple
                                                             hidden
+                                                            accept=".jpg,.jpeg,.png,.pdf"
                                                             onChange={(e) => handleFileUpload(docType, e)}
                                                         />
                                                     </Button>
@@ -2085,6 +2192,12 @@ const StarIcon = (props) => (
 const StarHalfIcon = (props) => (
     <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88.99 4.28L12 15.4z" />
+    </svg>
+);
+
+const StarOutlineIcon = (props) => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88.99 4.28L12 15.4z" />
     </svg>
 );
 
