@@ -368,6 +368,24 @@ export const FetchEmployeePerformance = async (employeeId) => {
   }
 };
 
+export const FetchCallCenterPerformance = async (employeeId, startDate, endDate) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get(
+      `/userinfo/callcenter-performance/${employeeId}?startDate=${startDate || ""}&endDate=${endDate || ""}`,
+    );
+    if (response.data && response.data.success === 1) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchCallCenterPerformance error:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch call center performance",
+    );
+  }
+};
+
 export const getAttendanceByDate = async (userId, date) => {
   if (!userId || !date) return null;
   try {
@@ -442,6 +460,20 @@ export const getTopEmployees = async () => {
     return [];
   } catch (error) {
     console.error("Get Active Module Rights Error:", error);
+  }
+};
+
+export const getProfilePhoto = async (userId) => {
+  if (!userId) return "";
+  try {
+    const response = await axioslogin.get(`/employee/profile-photo/${userId}`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.log("No profile photo found or error fetching it.");
+    return "";
   }
 };
 

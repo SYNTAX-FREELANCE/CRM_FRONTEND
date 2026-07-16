@@ -31,6 +31,8 @@ import {
   getModuleRights,
   getActiveModuleRights,
   getTopEmployees,
+  getProfilePhoto,
+  FetchCallCenterPerformance,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -253,6 +255,14 @@ export const useEmployeePerformance = (employeeId) => {
   });
 };
 
+export const useCallCenterPerformance = (employeeId, startDate, endDate) => {
+  return useQuery({
+    queryKey: ["callCenterPerformance", employeeId, startDate, endDate],
+    queryFn: () => FetchCallCenterPerformance(employeeId, startDate, endDate),
+    enabled: !!employeeId,
+  });
+};
+
 export const useGetAttendanceByDate = (userId, date) => {
   return useQuery({
     queryKey: ["userAttendance", userId, date],
@@ -306,5 +316,13 @@ export const useTopEmployess = () => {
     queryKey: ["top-emp",],
     queryFn: getTopEmployees,
     staleTime: Infinity
+  });
+};
+
+export const useProfilePhoto = (userId) => {
+  return useQuery({
+    queryKey: ["profilePhoto", userId],
+    queryFn: () => getProfilePhoto(userId),
+    enabled: !!userId,
   });
 };
