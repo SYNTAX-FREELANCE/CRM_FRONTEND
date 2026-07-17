@@ -33,6 +33,7 @@ import {
   getTopEmployees,
   getProfilePhoto,
   FetchCallCenterPerformance,
+  getEmployeeRecentActivity,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -207,6 +208,16 @@ export const useAllEmployeeRecentActivity = () => {
     staleTime: Infinity,
   });
 };
+
+export const useEmployeeRecentActivity = (empid) => {
+  return useQuery({
+    queryKey: ["emp-recent-activity", empid],
+    queryFn: () => getEmployeeRecentActivity(empid),
+    staleTime: Infinity,
+    enabled: !!empid
+  });
+};
+
 
 
 export const useEmployeeAssignDetails = () => {

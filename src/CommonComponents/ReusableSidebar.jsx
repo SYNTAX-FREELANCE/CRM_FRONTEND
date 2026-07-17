@@ -1,6 +1,6 @@
-import React, { useState, memo, useEffect } from "react";
+import React, { useState, memo, useEffect, useMemo, useCallback } from "react";
 import { Box, Typography, Modal, Button, Avatar, Divider, Menu, MenuItem } from "@mui/joy";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -11,6 +11,9 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutModal from "./LogoutModal";
 import ChangePasswordModal from "./ChangePasswordModal";
 import LockResetIcon from "@mui/icons-material/LockReset";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useProfilePhoto } from "../CommonCode/useQuery";
+import { Skeleton } from "@mui/material";
 
 const ReusableSidebar = ({
   menuItems = [],
@@ -21,10 +24,11 @@ const ReusableSidebar = ({
   },
   onLogout
 }) => {
+
+  const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
-  const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [logoutModal, setLogoutModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [hoveredSub, setHoveredSub] = useState(null);
@@ -32,12 +36,37 @@ const ReusableSidebar = ({
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
 
-  const handleAvatarClick = (event) => {
+
+  const authUser = getAuthUser();
+  const { emp_name, id, role } = authUser ?? {};
+  const { data: profilePhotoUrl = "", isLoading: LoadingProfilePicture } = useProfilePhoto(id);
+
+  const handleAvatarClick = useCallback((event) => {
     event.stopPropagation();
     if (open) {
       setAvatarAnchorEl(event.currentTarget);
     }
-  };
+  }, [open]);
+
+
+  const activeMenu = useMemo(() => {
+    const path = location.pathname;
+    for (const item of menuItems) {
+      // Main menu
+      if (item.path === path) {
+        return item.label;
+      }
+      // Nested menu
+      if (item.nested) {
+        const sub = item.nested.find((s) => path === s.path);
+        if (sub) return sub.label;
+      }
+    }
+
+    return "";
+  }, [location.pathname, menuItems]);
+
+
 
   const handleCloseAvatarMenu = () => {
     setAvatarAnchorEl(null);
@@ -47,33 +76,22 @@ const ReusableSidebar = ({
     setAvatarAnchorEl(null);
   }, [open]);
 
-  const authUser = getAuthUser();
-
-  const {
-    emp_name,
-    id,
-    role
-  } = authUser ?? {};
-
-  
 
 
-  const handleMenuClick = (item) => {
+  const handleMenuClick = useCallback((item) => {
     if (!item.nested) {
-      setActiveMenu(item.label);
       navigate(item.path);
       setOpenMenu(null);
       return;
     }
-
     if (!open) {
       setOpen(true);
       setOpenMenu(item.label);
       return;
     }
-
     setOpenMenu((prev) => (prev === item.label ? null : item.label));
-  };
+  }, [navigate]);
+
 
   useEffect(() => {
     if (logoutCountdown !== null && logoutCountdown > 0) {
@@ -89,15 +107,14 @@ const ReusableSidebar = ({
     }
   }, [logoutCountdown, onLogout]);
 
-  const cancelLogout = () => {
+  const cancelLogout = useCallback(() => {
     setLogoutModal(false);
     setLogoutCountdown(null);
-  };
+  }, []);
 
-  const handleSubMenuClick = (sub) => {
-    setActiveMenu(sub.label);
+  const handleSubMenuClick = useCallback((sub) => {
     navigate(sub.path);
-  };
+  }, []);
 
   const handleLogout = () => setLogoutModal(true);
 
@@ -259,7 +276,6 @@ const ReusableSidebar = ({
           {menuItems?.map((item) => (
             <Box key={item.label} sx={{ mb: item.groupLabel ? 1.5 : 0 }}>
 
-
               <Box
                 role="button"
                 tabIndex={0}
@@ -362,12 +378,24 @@ const ReusableSidebar = ({
         >
           {open ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
-              <Avatar
-                src={user.avatar}
-                size="sm"
-                onClick={handleAvatarClick}
-                sx={{ cursor: "pointer" }}
-              />
+              {
+                LoadingProfilePicture ? (
+                  <Skeleton
+                    variant="circular"
+                    width={40}
+                    height={40}
+                    sx={{ cursor: "pointer" }}
+                  />
+                ) : (
+                  <Avatar
+                    src={profilePhotoUrl ?? user.avatar}
+                    size="sm"
+                    onClick={handleAvatarClick}
+                    sx={{ cursor: "pointer" }}
+                  />
+                )
+              }
+
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography level="body-sm" fontWeight={600} noWrap sx={{ color: "#111827" }}>
                   {emp_name}
@@ -399,12 +427,22 @@ const ReusableSidebar = ({
               </Box>
             </Box>
           ) : (
-            <Avatar
-              src={user.avatar}
-              size="sm"
-              onClick={handleAvatarClick}
-              sx={{ cursor: "pointer" }}
-            />
+            LoadingProfilePicture ? (
+              <Skeleton
+                variant="circular"
+                width={40}
+                height={40}
+                sx={{ cursor: "pointer" }}
+              />
+            ) : (
+              <Avatar
+                src={profilePhotoUrl ?? user.avatar}
+                size="sm"
+                onClick={handleAvatarClick}
+                sx={{ cursor: "pointer" }}
+              />
+            )
+
           )}
         </Box>
 
@@ -413,40 +451,6 @@ const ReusableSidebar = ({
           onClose={() => setLogoutModal(false)}
           onStartLogout={onLogout}
         />
-
-        {/* <Menu
-          anchorEl={avatarAnchorEl}
-          open={Boolean(avatarAnchorEl)}
-          onClose={handleCloseAvatarMenu}
-          placement="top-start"
-          sx={{
-            minWidth: 160,
-            borderRadius: 12,
-            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-            "--ListItem-radius": "8px",
-            p: 0.6,
-            zIndex: 1400,
-          }}
-        >
-          <MenuItem
-            onClick={() => {
-              handleCloseAvatarMenu();
-              setPasswordModalOpen(true);
-            }}
-            sx={{
-              fontWeight: 500,
-              fontSize: "14px",
-              color: "#374151",
-              "&:hover": {
-                bgcolor: "rgba(249,115,22,0.08)",
-                color: "#ea580c",
-              },
-            }}
-          >
-            Change Password
-          </MenuItem>
-        </Menu> */}
-
 
         <Menu
           anchorEl={avatarAnchorEl}
@@ -479,10 +483,90 @@ const ReusableSidebar = ({
           }}
         >
           <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: '1px dashed rgba(231, 229, 228, 0.8)' }}>
-            <Typography fontSize={{ xs: "10px", sm: "11px" }} fontWeight={800} color="#ea580c" textTransform="uppercase" letterSpacing="0.8px">
-              Security Settings
+            <Typography
+              fontSize={{ xs: "10px", sm: "11px" }}
+              fontWeight={800}
+              color="#ea580c"
+              textTransform="uppercase"
+              letterSpacing="0.8px">
+              Settings
             </Typography>
           </Box>
+          <MenuItem
+            onClick={() => {
+              setOpen(false);
+              navigate(`/home/my-profile`)
+            }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: { xs: 1.5, sm: 2 },
+              color: "#374151",
+              fontWeight: 600,
+              fontSize: { xs: "13px", sm: "14px" },
+              zIndex: 1,
+              "&:hover": {
+                bgcolor: "transparent",
+                color: "#ea580c",
+                transform: "translateX(4px)",
+                "& .icon-container": {
+                  transform: "rotate(10deg) scale(1.15)",
+                  background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                  color: "#ffffff",
+                  boxShadow: "0 4px 12px rgba(234, 88, 12, 0.3)",
+                },
+              },
+              "&::before": {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, rgba(234, 88, 12, 0.08) 0%, rgba(249, 115, 22, 0) 100%)',
+                opacity: 0,
+                zIndex: -1,
+                transition: 'opacity 0.3s ease',
+              },
+              "&:hover::before": {
+                opacity: 1,
+              }
+            }}
+          >
+            <Box
+              className="icon-container"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: { xs: 32, sm: 36 },
+                height: { xs: 32, sm: 36 },
+                borderRadius: '10px',
+                background: 'rgba(243, 244, 246, 0.8)',
+                color: '#6b7280',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              <AccountCircleIcon
+                sx={{
+                  fontSize: { xs: '18px', sm: '20px' },
+                  animation: "spinPulse 3s ease-in-out infinite",
+                  "@keyframes spinPulse": {
+                    "0%, 100%": { transform: "scale(1) rotate(0deg)" },
+                    "50%": { transform: "scale(1.15) rotate(10deg)" }
+                  }
+                }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography sx={{ fontWeight: 600, fontSize: { xs: "13px", sm: "14px" }, lineHeight: 1.2, color: 'inherit' }}>
+                My Profile
+              </Typography>
+              <Typography sx={{ fontSize: { xs: "10px", sm: "11px" }, color: "#9ca3af", mt: 0.3, fontWeight: 500, transition: 'color 0.3s', '.MuiMenuItem-root:hover &': { color: '#fb923c' } }}>
+                View Details
+              </Typography>
+            </Box>
+          </MenuItem>
 
           <MenuItem
             onClick={() => {
@@ -550,6 +634,8 @@ const ReusableSidebar = ({
               </Typography>
             </Box>
           </MenuItem>
+
+
         </Menu>
 
         <ChangePasswordModal

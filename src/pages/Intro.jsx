@@ -4,43 +4,29 @@ import "../Style/Intro.css";
 
 function Intro() {
   const navigate = useNavigate();
-  const text = "CRM";
   const [exit, setExit] = useState(false);
 
-  const stagger = 0.5; // seconds per letter
-  const letterDuration = 0.8; // duration of each letter animation
-
-  const taglineDelay = text.length * stagger + letterDuration; // last letter finish
-  const stayDelay = 1.0; // extra time to stay visible before fading
-
   useEffect(() => {
-    // Fade out after letters + tagline + stayDelay
-    const exitTimer = setTimeout(() => setExit(true), (taglineDelay + stayDelay) * 1000);
-
-    // Navigate a bit after fade-out for smooth transition
-    const navTimer = setTimeout(() => navigate("/home"), (taglineDelay + stayDelay + 0.5) * 1000);
+    const timer1 = setTimeout(() => setExit(true), 2500);
+    const timer2 = setTimeout(() => navigate("/home"), 3000);
 
     return () => {
-      clearTimeout(exitTimer);
-      clearTimeout(navTimer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
-  }, [navigate, taglineDelay, stayDelay]);
+  }, [navigate]);
 
   return (
     <div className={`intro-container ${exit ? "exit" : ""}`}>
-      <div className="logo">
-        {text.split("").map((char, index) => (
-          <span
-            key={index}
-            style={{ animationDelay: `${index * stagger}s`, animationDuration: `${letterDuration}s` }}
-          >
-            {char}
-          </span>
-        ))}
+      <div className="logo-wrapper">
+        <div className="aura"></div>
+
+        <img
+          src="/mainlogo.ico"
+          alt="Roadi Logo"
+          className="intro-logo"
+        />
       </div>
-      <p className="tagline" style={{ animationDelay: `${taglineDelay}s` }}>
-        Customer Relationship Management
-      </p>
     </div>
   );
 }

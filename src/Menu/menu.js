@@ -8,7 +8,7 @@ import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
 
-const MENU = [
+export const MENU = [
   {
     module_id: 1,
     label: "Dashboard",
@@ -21,12 +21,6 @@ const MENU = [
     icon: LocalPhoneIcon,
     path: "/home/freshcalls",
   },
-  // {
-  //   module_id: 2,
-  //   label: "Employee",
-  //   icon: GridViewIcon,
-  //   path: "/home/employee",
-  // },
   {
     module_id: 4,
     label: "Allocate",
