@@ -50,6 +50,11 @@ const HomePage = lazy(
   () => import("./pages/HomePage"),
 );
 
+const ReportSetting = lazy(
+  () => import("./Reports/ReportSetting"),
+);
+
+
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -153,6 +158,10 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: withSuspense(CustomerSearchPage),
+      },
+      {
+        path: "reports",
+        element: withSuspense(ReportSetting),
       },
       {
         path: "setting/menumaster",
