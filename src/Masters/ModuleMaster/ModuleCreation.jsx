@@ -10,7 +10,7 @@ import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import { useModuleMaster } from "../../CommonCode/useQuery";
 
 const ModuleCreation = () => {

@@ -7,7 +7,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import { useAuth } from "../../Context/AuthContext";
 import ReusableSidebar from "../../CommonComponents/ReusableSidebar";
 import ReusableTopBar from "../../CommonComponents/ReusableTopBar";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 
 // Material UI Icons for dynamically generated sidebar
 import DashboardIcon from "@mui/icons-material/Dashboard";

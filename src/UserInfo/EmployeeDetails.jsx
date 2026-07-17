@@ -41,7 +41,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { errorNotify, successNotify } from "../constant/Constant";
 import { useEmployeeProfile, useEmployeePerformance, useFetchDashBoardCounts, useFetchDashBoardReminders, useGetAttendanceByDate, useProfilePhoto, useCallCenterPerformance } from "../CommonCode/useQuery";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 
 const EmployeeDetails = () => {
     const navigate = useNavigate();

@@ -13,7 +13,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { debounce } from "@mui/material/utils";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 
 const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     const [inputValue, setInputValue] = useState("");
