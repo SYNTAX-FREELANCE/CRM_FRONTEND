@@ -17,7 +17,7 @@ import { summaryData } from "../CommonCode/Reusable";
 import { useFectchFreshCalls, useGetMyActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 

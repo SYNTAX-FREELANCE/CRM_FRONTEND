@@ -5,7 +5,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { color } from "@mui/system";
-import { axiosApi } from "../Axios/axios";
+import { axiosApi } from "../Connection/axios";
 import { getAuthUser } from "../constant/Constant";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutModal from "./LogoutModal";
@@ -379,7 +379,7 @@ const ReusableSidebar = ({
           {open ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
               {
-                LoadingProfilePicture ? (
+               LoadingProfilePicture  ? (
                   <Skeleton
                     variant="circular"
                     width={40}

@@ -12,7 +12,7 @@ import EmployeeAssignedDrawer from "./Components/EmployeeAssignedDrawer";
 import EmployeeSelect from "../CommonComponents/EmployeeSelect";
 
 import { errorNotify, getAuthUser, successNotify, warningNofity } from "../constant/Constant";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import GlobalLoader from "../CommonComponents/GlobalLoader";
 
 

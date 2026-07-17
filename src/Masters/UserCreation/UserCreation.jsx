@@ -14,7 +14,7 @@ import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import {
     GENDER_OTPION
 } from '../../CommonCode/Reusable';

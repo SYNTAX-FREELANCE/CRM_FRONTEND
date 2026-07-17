@@ -32,7 +32,7 @@ import Row from "./Components/Row";
 import { useFollowUpDetail, useGetLeadHistory } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
 import axios from "axios";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { statusReasonMap } from "../CommonCode/Reusable";
 import { useQueryClient } from "@tanstack/react-query";
 import LeadHistoryTimelineItem from "./Components/LeadHistoryTimelineItem";

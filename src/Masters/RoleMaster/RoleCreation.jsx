@@ -11,7 +11,7 @@ import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import { useRoleMaster } from "../../CommonCode/useQuery";
 import { useLocation, useNavigate } from "react-router-dom";
 

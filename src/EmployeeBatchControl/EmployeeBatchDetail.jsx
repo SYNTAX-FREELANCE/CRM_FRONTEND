@@ -20,7 +20,7 @@ import UnlockNextBatchAction from './Components/UnlockNextBatchAction';
 import UnlockNextBatchPanel from './Components/UnlockNextBatchPanel';
 import FloatingBackButton from '../CommonComponents/FloatingBackButton';
 import LeadCard from './Components/LeadCard';
-import { axioslogin } from '../Axios/axios';
+import { axioslogin } from '../Connection/axios';
 import { errorNotify, getAuthUser, successNotify, warningNofity } from '../constant/Constant';
 import { useQueryClient } from '@tanstack/react-query';
 

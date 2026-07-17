@@ -20,7 +20,7 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import logo from "../assets/loginimages/companylogo.png";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { useNavigate } from "react-router-dom";
 import { warningNotify } from "../constant/Constant";
 import { useAuth } from "../Context/AuthContext";
