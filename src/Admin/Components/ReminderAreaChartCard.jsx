@@ -1,9 +1,12 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { Card, CardContent, Typography, Box, Stack, Chip } from "@mui/material";
+import { Card, CardContent, Typography, Box, Stack, Chip, useTheme } from "@mui/material";
 import { TrendingUp } from "@mui/icons-material";
 
 const ReminderAreaChartCard = ({ reminders }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
     const overdue = Number(reminders?.summary?.overdue || reminders?.overdue?.length || 0);
     const today = Number(reminders?.summary?.today || reminders?.today?.length || 0);
     const tomorrow = Number(reminders?.summary?.tomorrow || reminders?.tomorrow?.length || 0);
@@ -21,12 +24,16 @@ const ReminderAreaChartCard = ({ reminders }) => {
     ];
 
     const options = {
+        theme: {
+            mode: isDark ? 'dark' : 'light'
+        },
         chart: {
             type: "area",
             height: 350,
             zoom: { enabled: false },
             toolbar: { show: false },
             fontFamily: "inherit",
+            background: "transparent",
         },
         dataLabels: { enabled: false },
         stroke: { curve: "straight", width: 3 },
@@ -75,7 +82,7 @@ const ReminderAreaChartCard = ({ reminders }) => {
             },
         },
         tooltip: {
-            theme: "light",
+            theme: isDark ? "dark" : "light",
         },
         responsive: [
             {
@@ -118,10 +125,11 @@ const ReminderAreaChartCard = ({ reminders }) => {
         <Card
             sx={{
                 borderRadius: 5,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-                border: "1px solid rgba(255,255,255,0.85)",
+                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                 overflow: "hidden",
-                height: '100%'
+                height: '100%',
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
             }}
         >
             <CardContent sx={{ p: { xs: 2, md: 3 } }}>
@@ -133,10 +141,10 @@ const ReminderAreaChartCard = ({ reminders }) => {
                     gap={1.5}
                 >
                     <Box>
-                        <Typography fontSize={{ xs: 18, md: 20 }} fontWeight={900} sx={{ color: "#0f172a" }}>
+                        <Typography fontSize={{ xs: 18, md: 20 }} fontWeight={900} sx={{ color: isDark ? "#f8fafc" : "#0f172a" }}>
                             Reminder Chart.
                         </Typography>
-                        <Typography fontSize={{ xs: 10, md: 11 }} color="text.secondary">
+                        <Typography fontSize={{ xs: 10, md: 11 }} color={isDark ? "#94a3b8" : "text.secondary"}>
                             Chart show the Rate of Reminders.
                         </Typography>
                     </Box>

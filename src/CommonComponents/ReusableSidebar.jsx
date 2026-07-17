@@ -14,6 +14,9 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useProfilePhoto } from "../CommonCode/useQuery";
 import { Skeleton } from "@mui/material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { useThemeMode } from "../Context/ThemeContext";
 
 const ReusableSidebar = ({
   menuItems = [],
@@ -40,6 +43,30 @@ const ReusableSidebar = ({
   const authUser = getAuthUser();
   const { emp_name, id, role } = authUser ?? {};
   const { data: profilePhotoUrl = "", isLoading: LoadingProfilePicture } = useProfilePhoto(id);
+  const { mode, toggleTheme } = useThemeMode();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (avatarAnchorEl) {
+        // Don't close if clicking inside the menu or on the avatar button itself
+        if (
+          event.target.closest('.MuiMenu-root') ||
+          event.target.closest('[role="menu"]') ||
+          avatarAnchorEl.contains(event.target)
+        ) {
+          return;
+        }
+        setAvatarAnchorEl(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [avatarAnchorEl]);
 
   const handleAvatarClick = useCallback((event) => {
     event.stopPropagation();
@@ -129,7 +156,7 @@ const ReusableSidebar = ({
     borderRadius: 14,
     cursor: "pointer",
     userSelect: "none",
-    color: isActive || isHovered ? "#ea580c" : "#374151",
+    color: isActive || isHovered ? "#ea580c" : (mode === 'dark' ? '#94a3b8' : '#374151'),
     background: isActive ? "rgba(249,115,22,0.10)" : "transparent",
     boxShadow: isActive ? "0 0 0 1px rgba(249,115,22,0.12) inset" : "none",
     transform: isHovered ? "translateX(2px)" : "translateX(0px)",
@@ -144,16 +171,16 @@ const ReusableSidebar = ({
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
-          bgcolor: "rgba(255, 255, 255, 0.95)",
+          bgcolor: mode === 'dark' ? '#0f172a' : "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(12px)",
-          color: "#1f2937",
+          color: mode === 'dark' ? '#f8fafc' : "#1f2937",
           display: "flex",
           flexDirection: "column",
           transition: "all 0.25s ease",
           overflow: "hidden",
           borderRadius: 20,
-          boxShadow: "0 20px 60px rgba(86, 137, 255, 0.15), 0 0 0 1px rgba(255, 209, 153, 0.5) inset",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
+          boxShadow: mode === 'dark' ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset" : "0 20px 60px rgba(86, 137, 255, 0.15), 0 0 0 1px rgba(255, 209, 153, 0.5) inset",
+          border: mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.6)",
         }}
       >
         <Box
@@ -164,8 +191,8 @@ const ReusableSidebar = ({
             justifyContent: open ? "flex-start" : "center",
             gap: open ? 1.2 : 0,
             minHeight: 70,
-            borderBottom: "1px solid rgba(231, 229, 228, 0.4)",
-            background: "rgba(255, 255, 255, 0.4)",
+            borderBottom: mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(231, 229, 228, 0.4)",
+            background: mode === 'dark' ? "rgba(15, 23, 42, 0.8)" : "rgba(255, 255, 255, 0.4)",
             borderRadius: open ? "16px 16px 0 0" : 0,
           }}
         >
@@ -291,7 +318,7 @@ const ReusableSidebar = ({
                       alignItems: "center",
                       justifyContent: "center",
                       minWidth: 18,
-                      color: activeMenu === item.label || hoveredItem === item.label ? "#ea580c" : "#0a0f17",
+                      color: activeMenu === item.label || hoveredItem === item.label ? "#ea580c" : (mode === 'dark' ? '#cbd5e1' : '#0a0f17'),
                     }}
                   >
                     <item.icon sx={{ fontSize: 18 }} />
@@ -308,7 +335,7 @@ const ReusableSidebar = ({
                   <ExpandMoreIcon
                     sx={{
                       fontSize: 18,
-                      color: hoveredItem === item.label ? "#ea580c" : "#0e0f11",
+                      color: hoveredItem === item.label ? "#ea580c" : (mode === 'dark' ? '#cbd5e1' : '#0e0f11'),
                       transform: openMenu === item.label ? "rotate(180deg)" : "rotate(0deg)",
                       transition: "0.2s",
                     }}
@@ -339,7 +366,7 @@ const ReusableSidebar = ({
                           borderRadius: 12,
                           cursor: "pointer",
                           userSelect: "none",
-                          color: isSubActive || isSubHover ? "#ea580c" : "#151619",
+                          color: isSubActive || isSubHover ? "#ea580c" : (mode === 'dark' ? '#94a3b8' : '#151619'),
                           background: isSubActive ? "rgba(249,115,22,0.08)" : "transparent",
                           transform: isSubHover ? "translateX(2px)" : "translateX(0px)",
                           transition: "all 0.18s ease",
@@ -348,7 +375,7 @@ const ReusableSidebar = ({
                         <AdjustIcon
                           sx={{
                             fontSize: 11,
-                            color: isSubActive || isSubHover ? "#ea580c" : "#9ca3af",
+                            color: isSubActive || isSubHover ? "#ea580c" : (mode === 'dark' ? '#64748b' : '#9ca3af'),
                           }}
                         />
                         <Typography level="body-sm" sx={{ color: "inherit", fontWeight: 600 }}>
@@ -363,23 +390,22 @@ const ReusableSidebar = ({
           ))}
         </Box>
 
-        <Divider sx={{ opacity: 0.6, borderColor: "#e7e5e4" }} />
+        <Divider sx={{ opacity: 0.6, borderColor: mode === 'dark' ? "rgba(255,255,255,0.1)" : "#e7e5e4" }} />
 
         <Box
-
           sx={{
             p: 1.4,
             minHeight: 38,
             display: "flex",
             alignItems: "center",
             justifyContent: open ? "space-between" : "center",
-            bgcolor: "#ffffff",
+            bgcolor: mode === 'dark' ? '#1e293b' : "#ffffff",
           }}
         >
           {open ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
               {
-               LoadingProfilePicture  ? (
+                LoadingProfilePicture ? (
                   <Skeleton
                     variant="circular"
                     width={40}
@@ -397,52 +423,98 @@ const ReusableSidebar = ({
               }
 
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography level="body-sm" fontWeight={600} noWrap sx={{ color: "#111827" }}>
+                <Typography level="body-sm" fontWeight={600} noWrap sx={{ color: mode === 'dark' ? '#f8fafc' : "#111827" }}>
                   {emp_name}
                 </Typography>
-                <Typography level="body-xs" sx={{ color: "#6b7280" }} noWrap>
+                <Typography level="body-xs" sx={{ color: mode === 'dark' ? '#94a3b8' : "#6b7280" }} noWrap>
                   {role}
                 </Typography>
               </Box>
+              
+              <Box sx={{ display: "flex", gap: 0.5 }}>
+                <Box
+                  onClick={toggleTheme}
+                  role="button"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 32,
+                    height: 32,
+                    borderRadius: 10,
+                    cursor: "pointer",
+                    color: mode === 'dark' ? '#94a3b8' : "#6b7280",
+                    "&:hover": {
+                      bgcolor: mode === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                      color: mode === 'dark' ? '#f8fafc' : "#111827",
+                    },
+                  }}
+                >
+                  {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+                </Box>
+                <Box
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleLogout}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 32,
+                    height: 32,
+                    borderRadius: 10,
+                    cursor: "pointer",
+                    color: mode === 'dark' ? '#94a3b8' : "#6b7280",
+                    "&:hover": {
+                      bgcolor: "rgba(249,115,22,0.12)",
+                      color: "#ea580c",
+                    },
+                  }}
+                >
+                  <LogoutIcon fontSize="small" />
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+              {
+                LoadingProfilePicture ? (
+                  <Skeleton
+                    variant="circular"
+                    width={40}
+                    height={40}
+                    sx={{ cursor: "pointer" }}
+                  />
+                ) : (
+                  <Avatar
+                    src={profilePhotoUrl ?? user.avatar}
+                    size="sm"
+                    onClick={handleAvatarClick}
+                    sx={{ cursor: "pointer" }}
+                  />
+                )
+              }
               <Box
+                onClick={toggleTheme}
                 role="button"
-                tabIndex={0}
-                onClick={handleLogout}
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 36,
-                  height: 36,
-                  borderRadius: 12,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 10,
                   cursor: "pointer",
-                  color: "#6b7280",
+                  color: mode === 'dark' ? '#94a3b8' : "#6b7280",
                   "&:hover": {
-                    bgcolor: "rgba(249,115,22,0.12)",
-                    color: "#ea580c",
+                    bgcolor: mode === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                    color: mode === 'dark' ? '#ea580c' : "#ea580c",
                   },
                 }}
               >
-                <LogoutIcon fontSize="small" />
+                {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
               </Box>
             </Box>
-          ) : (
-            LoadingProfilePicture ? (
-              <Skeleton
-                variant="circular"
-                width={40}
-                height={40}
-                sx={{ cursor: "pointer" }}
-              />
-            ) : (
-              <Avatar
-                src={profilePhotoUrl ?? user.avatar}
-                size="sm"
-                onClick={handleAvatarClick}
-                sx={{ cursor: "pointer" }}
-              />
-            )
-
           )}
         </Box>
 
@@ -465,10 +537,10 @@ const ReusableSidebar = ({
             ml: { xs: 1, sm: 2 },
             borderRadius: { xs: '16px', sm: '20px' },
             minWidth: { xs: 200, sm: 240 },
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+            background: mode === 'dark' ? 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.95) 100%)' : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
             backdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255, 255, 255, 1)',
-            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.5)',
+            border: mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 1)',
+            boxShadow: mode === 'dark' ? 'inset 0 0 0 1px rgba(255,255,255,0.1)' : 'inset 0 0 0 1px rgba(255,255,255,0.5)',
             padding: { xs: '6px 0', sm: '8px 0' },
             '--ListItem-radius': { xs: '12px', sm: '14px' },
             '& .JoyMenuItem-root': {
@@ -482,7 +554,7 @@ const ReusableSidebar = ({
             },
           }}
         >
-          <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: '1px dashed rgba(231, 229, 228, 0.8)' }}>
+          <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: mode === 'dark' ? '1px dashed rgba(255, 255, 255, 0.2)' : '1px dashed rgba(231, 229, 228, 0.8)' }}>
             <Typography
               fontSize={{ xs: "10px", sm: "11px" }}
               fontWeight={800}
@@ -501,7 +573,7 @@ const ReusableSidebar = ({
               display: 'flex',
               alignItems: 'center',
               gap: { xs: 1.5, sm: 2 },
-              color: "#374151",
+              color: mode === 'dark' ? "#cbd5e1" : "#374151",
               fontWeight: 600,
               fontSize: { xs: "13px", sm: "14px" },
               zIndex: 1,
@@ -542,8 +614,8 @@ const ReusableSidebar = ({
                 width: { xs: 32, sm: 36 },
                 height: { xs: 32, sm: 36 },
                 borderRadius: '10px',
-                background: 'rgba(243, 244, 246, 0.8)',
-                color: '#6b7280',
+                background: mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(243, 244, 246, 0.8)',
+                color: mode === 'dark' ? '#94a3b8' : '#6b7280',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
@@ -577,7 +649,7 @@ const ReusableSidebar = ({
               display: 'flex',
               alignItems: 'center',
               gap: { xs: 1.5, sm: 2 },
-              color: "#374151",
+              color: mode === 'dark' ? "#cbd5e1" : "#374151",
               fontWeight: 600,
               fontSize: { xs: "13px", sm: "14px" },
               zIndex: 1,

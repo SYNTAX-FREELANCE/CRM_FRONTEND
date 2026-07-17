@@ -12,8 +12,10 @@ const AnalyticsCard = ({ title, value, color, data }) => {
                 p: 2,
                 borderRadius: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                background: `linear-gradient(135deg, rgba(255,255,255,0.98) 0%, ${color}10 100%)`,
-                boxShadow: "0 10px 28px rgba(15, 23, 42, 0.06)",
+                background: theme.palette.mode === 'dark' 
+                    ? `linear-gradient(135deg, rgba(30,41,59,0.98) 0%, ${color}20 100%)` 
+                    : `linear-gradient(135deg, rgba(255,255,255,0.98) 0%, ${color}10 100%)`,
+                boxShadow: theme.palette.mode === 'dark' ? "0 10px 28px rgba(0,0,0,0.5)" : "0 10px 28px rgba(15, 23, 42, 0.06)",
                 overflow: "hidden",
             })}
         >

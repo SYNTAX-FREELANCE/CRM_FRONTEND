@@ -6,21 +6,25 @@ import {
   CardContent,
   Chip,
   Typography,
+  useTheme,
 } from "@mui/material";
 
 const DashboardStatCard = ({ item, DashboardCount }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   return (
     <Card
       sx={{
         borderRadius: 5,
         height: "100%",
         transition: "0.3s",
-        border: "1px solid rgba(255,255,255,0.8)",
-        boxShadow: "0 25px 10px rgba(189, 208, 249, 0.3)",
+        border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.8)",
+        boxShadow: isDark ? "0 25px 10px rgba(0, 0, 0, 0.3)" : "0 25px 10px rgba(189, 208, 249, 0.3)",
+        bgcolor: isDark ? "rgba(30,41,59,0.8)" : "#fff",
         width: "100%",
         "&:hover": {
           transform: "translateY(-8px)",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.1)",
+          boxShadow: isDark ? "0 12px 40px rgba(0,0,0,0.5)" : "0 12px 40px rgba(0,0,0,0.1)",
         },
       }}
     >
@@ -28,8 +32,8 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
         <Box display="flex" justifyContent="space-between" alignItems="start">
           <Box sx={{ flex: 1 }}>
             <Typography
-              color="text.secondary"
               sx={{
+                color: isDark ? "#f8fafc" : "text.secondary",
                 mb: 0.5,
                 fontSize: { xs: 9, sm: 10, md: 12 },
                 fontWeight: 900,
@@ -43,9 +47,11 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
               fontSize={{ xs: 32, sm: 36, md: 42 }}
               sx={{
                 mb: 0.5,
-                color: "#1e293b",
+                color: isDark ? "#ffffff" : "#1e293b",
                 letterSpacing: 1,
-                textShadow: `
+                textShadow: isDark 
+                  ? "0px 4px 12px rgba(0,0,0,0.6)"
+                  : `
                   1px 1px 0px #fff,
                   2px 2px 0px #d1d5db,
                   3px 3px 0px #cbd5e1,
@@ -58,8 +64,8 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
 
             {item.key !== "totalUploaded" && (
               <Typography
-                color="text.secondary"
                 sx={{
+                  color: isDark ? "#94a3b8" : "text.secondary",
                   mb: 1,
                   fontSize: { xs: 9, sm: 10, md: 12 },
                   fontWeight: 900,
