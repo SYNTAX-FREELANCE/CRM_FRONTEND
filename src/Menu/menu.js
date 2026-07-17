@@ -7,6 +7,7 @@ import SavedSearchIcon from "@mui/icons-material/SavedSearch";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export const MENU = [
   {
@@ -62,6 +63,12 @@ export const MENU = [
     icon: PersonIcon,
     path: "/home/userinfo",
   },
+  {
+    module_id: 11,
+    label: "Reports",
+    icon: AssessmentIcon,
+    path: "/home/reports",
+  }
 ];
 
 export const getMenu = (RoleRights = []) => {

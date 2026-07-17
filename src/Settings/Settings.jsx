@@ -21,6 +21,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
+
 const Settings = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null); // Default to no expanded section
@@ -58,6 +59,7 @@ const Settings = () => {
         { label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
       ],
     },
+
   ];
 
   const handleExpand = (index) => {
