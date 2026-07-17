@@ -24,14 +24,14 @@ const RouteLayout = () => {
     const { isAuthenticated, loading, user, logout } = useAuth();
     const authUser = getAuthUser();
     const isMobile = useMediaQuery("(max-width: 768px)");
-    const { role_id } = authUser ?? {};
+    const { role_id, id: userId, role } = authUser ?? {};
     const { data: RoleRights = [] } = useGetActiveModuleRightDetail(role_id);
     console.log({
         role_id,
         RoleRights
     });
     
-    const Menu = getMenu(RoleRights);
+    const Menu = getMenu(RoleRights, userId, role);
 
     if (loading) {
         return (

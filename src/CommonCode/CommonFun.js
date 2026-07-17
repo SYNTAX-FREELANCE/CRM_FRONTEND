@@ -477,3 +477,56 @@ export const getProfilePhoto = async (userId) => {
   }
 };
 
+export const getEmployeeFiles = async (userId) => {
+  if (!userId) return { bankDetails: [], resume: [], aadhar: [], otherUploads: [] };
+  try {
+    const response = await axioslogin.get(`/employee/get-files/${userId}`);
+    if (response.data && response.data.success === 1) {
+      const filesList = response.data.data || [];
+      const docsMap = {
+        bankDetails: [],
+        resume: [],
+        aadhar: [],
+        otherUploads: [],
+      };
+
+      filesList.forEach((file) => {
+        let key = null;
+        if (file.file_type === "bank" || file.file_type === "bankDetails") {
+          key = "bankDetails";
+        } else if (file.file_type === "resume") {
+          key = "resume";
+        } else if (file.file_type === "aadhar") {
+          key = "aadhar";
+        } else if (file.file_type === "others" || file.file_type === "otherUploads") {
+          key = "otherUploads";
+        }
+
+        if (key) {
+          docsMap[key].push({
+            file_id: file.file_id,
+            name: file.file_name,
+            size: (file.file_size / 1024).toFixed(1) + " KB"
+          });
+        }
+      });
+      return docsMap;
+    }
+    return {
+      bankDetails: [],
+      resume: [],
+      aadhar: [],
+      otherUploads: [],
+    };
+  } catch (error) {
+    console.error("getEmployeeFiles error:", error);
+    return {
+      bankDetails: [],
+      resume: [],
+      aadhar: [],
+      otherUploads: [],
+    };
+  }
+};
+
+

@@ -33,6 +33,7 @@ import {
   getTopEmployees,
   getProfilePhoto,
   FetchCallCenterPerformance,
+  getEmployeeFiles,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -326,3 +327,12 @@ export const useProfilePhoto = (userId) => {
     enabled: !!userId,
   });
 };
+
+export const useEmployeeFiles = (userId) => {
+  return useQuery({
+    queryKey: ["employeeFiles", userId],
+    queryFn: () => getEmployeeFiles(userId),
+    enabled: !!userId,
+  });
+};
+

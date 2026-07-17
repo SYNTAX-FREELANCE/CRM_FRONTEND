@@ -68,13 +68,28 @@ const MENU = [
     icon: PersonIcon,
     path: "/home/userinfo",
   },
+  {
+    module_id: 12,
+    label: "Employee Info",
+    icon: PersonIcon,
+    path: "/home/userinfo/:employeeId",
+    alwaysShow: true,
+  },
 ];
 
-export const getMenu = (RoleRights = []) => {
+export const getMenu = (RoleRights = [], userId, role) => {
   const allowed = new Set(RoleRights?.map((item) => item.module_id));
+  const isAdmin = role?.toLowerCase() === "admin";
 
   return MENU
     .filter((item) => {
+      // Userinfo (module_id: 8) only for admin
+      if (item.module_id === 8 && !isAdmin) return false;
+
+      // Employee Info (module_id: 8.5) only for employee (non-admin)
+      if (item.module_id === 12 && isAdmin) return false;
+
+      if (item.alwaysShow) return true;
       if (!item.nested) return allowed.has(item.module_id);
 
       const nested = item.nested
@@ -84,10 +99,17 @@ export const getMenu = (RoleRights = []) => {
       return allowed.has(item.module_id) && nested.length > 0;
     })
     .map((item) => {
-      if (!item.nested) return item;
+      let resolvedItem = item;
+      if (item.path && item.path.includes(":employeeId")) {
+        resolvedItem = {
+          ...item,
+          path: userId ? item.path.replace(":employeeId", userId) : item.path,
+        };
+      }
+      if (!resolvedItem.nested) return resolvedItem;
       return {
-        ...item,
-        nested: item.nested
+        ...resolvedItem,
+        nested: resolvedItem.nested
           .filter((sub) => allowed.has(sub.module_id))
           .sort((a, b) => a.module_id - b.module_id),
       };

@@ -26,6 +26,7 @@ import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
+import { useAuth } from "../Context/AuthContext";
 
 
 
@@ -36,6 +37,14 @@ const UserInfo = () => {
     const navigate = useNavigate();
     const [searchKeyword, setSearchKeyword] = useState("");
     // const [viewMode, setViewMode] = useState("card");
+    const { user } = useAuth();
+    const isAdmin = user?.role?.toLowerCase() === "admin";
+
+    React.useEffect(() => {
+        if (user && !isAdmin) {
+            navigate(`/home/userinfo/${user.id}`, { replace: true });
+        }
+    }, [user, isAdmin, navigate]);
 
     const { data: employeeListData, isLoading: loading } = useQuery({
         queryKey: ["userInfoEmployees"],
@@ -51,9 +60,11 @@ const UserInfo = () => {
                 return [];
             }
         },
+        enabled: isAdmin,
     });
 
     const employees = employeeListData || [];
+
 
     const filteredEmployees = useMemo(() => {
         const term = searchKeyword.trim().toLowerCase();
@@ -75,6 +86,10 @@ const UserInfo = () => {
     const handleViewDetails = (emp) => {
         navigate(`/home/userinfo/${emp.user_id}`);
     };
+
+    if (!isAdmin) {
+        return null;
+    }
 
 
     return (
