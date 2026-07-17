@@ -37,20 +37,20 @@ const TopSalesExecutives = ({ data = [] }) => {
                 borderRadius: 4,
                 bgcolor: "#fff",
                 border: `1px solid ${colors.border}`,
-                height:'100%'
+                height: '100%'
             }}
         >
             <Stack
                 direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
                 alignItems={{ xs: "flex-start", sm: "center" }}
-                sx={{ mb: 2,p:2.25 }}
+                sx={{ mb: 2, p: 2.25 }}
             >
                 <Box>
-                    <Typography sx={{ fontSize: 20, fontWeight: 900, color: colors.ink }}>
+                    <Typography sx={{ fontSize: { xs: 20, sm: 20, md: 18 }, fontWeight: 900, color: colors.ink }}>
                         Top Sales Executives
                     </Typography>
-                    <Typography sx={{ fontSize: 13, color: colors.muted }}>
+                    <Typography sx={{ fontSize: {xs:13,sm:10}, color: colors.muted }}>
                         Top 3 by completed calls and sold performance
                     </Typography>
                 </Box>
@@ -58,7 +58,7 @@ const TopSalesExecutives = ({ data = [] }) => {
             </Stack>
 
             <Stack direction="column" spacing={2} sx={{
-                p:2.25 
+                p: 1.25
             }}>
                 {top3.map((item, idx) => (
                     <ExecutiveCard

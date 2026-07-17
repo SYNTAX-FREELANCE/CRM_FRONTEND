@@ -1,5 +1,8 @@
+
 import { axioslogin } from "../Axios/axios";
-import { infoNotify } from "../constant/Constant";
+import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
+
+
 
 export const FetchRolemaster = async () => {
   try {
@@ -303,6 +306,18 @@ export const getRecentActivity = async () => {
 };
 
 
+export const getEmployeeRecentActivity = async (empid) => {
+  if (!empid) return []
+  try {
+    const response = await axioslogin.get(`/lead/employee-recent-activity/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
 export const getEmployeeAssignDetails = async () => {
   try {
     const response = await axioslogin.get(`/lead/employee/assigndtl`);
@@ -477,3 +492,40 @@ export const getProfilePhoto = async (userId) => {
   }
 };
 
+
+
+
+export const handleProfilePhotoChange = async (e, empId, queryClient) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Maximum size check (5 MB)
+  if (file.size > 5 * 1024 * 1024) {
+    errorNotify("Profile photo exceeds the maximum size limit of 5 MB.");
+    e.target.value = null;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("photo", file);
+  formData.append("userId", empId);
+
+  try {
+    const response = await axioslogin.post("/employee/upload-profile-photo", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    if (response.data && response.data.success === 1) {
+      successNotify("Profile photo uploaded successfully!");
+      await queryClient.invalidateQueries({
+        queryKey: ["profilePhoto", empId],
+      });
+    } else {
+      errorNotify(response.data.message || "Failed to upload profile photo");
+    }
+  } catch (error) {
+    errorNotify(error.response?.data?.message || "Failed to upload profile photo");
+  }
+};

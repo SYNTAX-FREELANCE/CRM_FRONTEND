@@ -49,9 +49,6 @@ const UserModuleRightMaster = () => {
     const { data: RoleRights, refetch } = useGetModuleRightDetail(selectedRole)
 
 
-    console.log({
-        RoleRights
-    });
 
     const [loading, setLoading] = useState(false);
     const [hasExisting, setHasExisting] = useState(false);

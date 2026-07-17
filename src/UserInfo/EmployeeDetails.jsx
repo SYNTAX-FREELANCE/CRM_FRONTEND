@@ -688,26 +688,6 @@ const EmployeeDetails = () => {
                                     }}
                                 />
                             </Box>
-
-                            {/* Overlapping Avatar with white frame ring */}
-                            {/* <Avatar
-                                sx={{
-                                    width: 90,
-                                    height: 90,
-                                    border: "4px solid #ffffff",
-                                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
-                                    position: "absolute",
-                                    bottom: "-45px",
-                                    left: "24px",
-                                    zIndex: 2,
-                                    bgcolor: "#e0e7ff",
-                                    color: "#4f46e5",
-                                    fontSize: "32px",
-                                    fontWeight: 800
-                                }}
-                            >
-                                {displayEmployee.name.charAt(0)}
-                            </Avatar> */}
                             <input
                                 type="file"
                                 id="profile-photo-input"

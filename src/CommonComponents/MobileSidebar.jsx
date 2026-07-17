@@ -1,5 +1,5 @@
 // MobileSidebar.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Drawer,
     Box,
@@ -9,6 +9,7 @@ import {
     Collapse,
     Menu,
     MenuItem,
+    Skeleton,
 } from "@mui/material";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -16,20 +17,49 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ChangePasswordModal from "./ChangePasswordModal";
 import LogoutModal from "./LogoutModal";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { getAuthUser } from "../constant/Constant";
+import { useCallback } from "react";
+import { useProfilePhoto } from "../CommonCode/useQuery";
 
 const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
+
     const navigate = useNavigate();
+    const location = useLocation();
+    const authUser = getAuthUser();
+    const { id } = authUser ?? {}
+
 
     const [open, setOpen] = useState(false);
     const [expanded, setExpanded] = useState(null);
-    const [activeMenu, setActiveMenu] = useState("Dashboard");
     const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
     const [logoutModal, setLogoutModal] = useState(false);
     const [logoutCountdown, setLogoutCountdown] = useState(null);
+
+
+    const { data: profilePhotoUrl = "", isLoading: LoadingProfilePicture } = useProfilePhoto(id);
+
+    const activeMenu = useMemo(() => {
+        const path = location.pathname;
+        for (const item of menuItems) {
+            // Main menu
+            if (item.path === path) {
+                return item.label;
+            }
+            // Nested menu
+            if (item.nested) {
+                const sub = item.nested.find((s) => path === s.path);
+                if (sub) return sub.label;
+            }
+        }
+
+        return "";
+    }, [location.pathname, menuItems]);
+
 
     useEffect(() => {
         if (logoutCountdown !== null && logoutCountdown > 0) {
@@ -46,10 +76,10 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
 
     const handleLogout = () => setLogoutModal(true);
 
-    const handleAvatarClick = (event) => {
+    const handleAvatarClick = useCallback((event) => {
         event.stopPropagation();
         setAvatarAnchorEl(event.currentTarget);
-    };
+    }, []);
 
     const handleCloseAvatarMenu = () => {
         setAvatarAnchorEl(null);
@@ -59,21 +89,19 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
         setAvatarAnchorEl(null);
     }, [open]);
 
-    const handleNavigate = (item) => {
+    const handleNavigate = useCallback((item) => {
         if (item.path) {
-            setActiveMenu(item.label);
             navigate(item.path);
             setOpen(false);
         } else {
             setExpanded(expanded === item.label ? null : item.label);
         }
-    };
+    }, [expanded, navigate]);
 
-    const handleSub = (sub) => {
-        setActiveMenu(sub.label);
+    const handleSub = useCallback((sub) => {
         navigate(sub.path);
         setOpen(false);
-    };
+    }, []);
 
     return (
         <>
@@ -289,12 +317,24 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             bgcolor: "#ffffff",
                         }}
                     >
-                        <Box  sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
-                            <Avatar
-                                src={user?.avatar}
-                                onClick={handleAvatarClick}
-                                sx={{ cursor: "pointer", width: 32, height: 32 }}
-                            />
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
+                            {
+                                LoadingProfilePicture ? (
+                                    <Skeleton
+                                        variant="circular"
+                                        width={40}
+                                        height={40}
+                                        sx={{ cursor: "pointer" }}
+                                    />
+                                ) : (
+                                    <Avatar
+                                        src={profilePhotoUrl ?? user?.avatar}
+                                        onClick={handleAvatarClick}
+                                        sx={{ cursor: "pointer", width: 32, height: 32 ,boxShadow:'md',border:'2px solid #ff9f1a'}}
+                                    />
+                                )
+                            }
+
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <Typography fontWeight={600} fontSize={14} noWrap sx={{ color: "#111827" }}>
                                     {user?.name}
@@ -370,9 +410,86 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
             >
                 <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: '1px dashed rgba(231, 229, 228, 0.8)' }}>
                     <Typography fontSize={{ xs: "10px", sm: "11px" }} fontWeight={800} color="#ea580c" textTransform="uppercase" letterSpacing="0.8px">
-                        Security Settings
+                        Settings
                     </Typography>
                 </Box>
+
+
+                <MenuItem
+                    onClick={() => {
+                        setOpen(false);
+                        navigate(`/home/my-profile`)
+                    }}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: { xs: 1.5, sm: 2 },
+                        color: "#374151",
+                        fontWeight: 600,
+                        fontSize: { xs: "13px", sm: "14px" },
+                        zIndex: 1,
+                        "&:hover": {
+                            bgcolor: "transparent",
+                            color: "#ea580c",
+                            transform: "translateX(4px)",
+                            "& .icon-container": {
+                                transform: "rotate(10deg) scale(1.15)",
+                                background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                                color: "#ffffff",
+                                boxShadow: "0 4px 12px rgba(234, 88, 12, 0.3)",
+                            },
+                        },
+                        "&::before": {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(90deg, rgba(234, 88, 12, 0.08) 0%, rgba(249, 115, 22, 0) 100%)',
+                            opacity: 0,
+                            zIndex: -1,
+                            transition: 'opacity 0.3s ease',
+                        },
+                        "&:hover::before": {
+                            opacity: 1,
+                        }
+                    }}
+                >
+                    <Box
+                        className="icon-container"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: { xs: 32, sm: 36 },
+                            height: { xs: 32, sm: 36 },
+                            borderRadius: '10px',
+                            background: 'rgba(243, 244, 246, 0.8)',
+                            color: '#6b7280',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                    >
+                        <AccountCircleIcon
+                            sx={{
+                                fontSize: { xs: '18px', sm: '20px' },
+                                animation: "spinPulse 3s ease-in-out infinite",
+                                "@keyframes spinPulse": {
+                                    "0%, 100%": { transform: "scale(1) rotate(0deg)" },
+                                    "50%": { transform: "scale(1.15) rotate(10deg)" }
+                                }
+                            }}
+                        />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography sx={{ fontWeight: 600, fontSize: { xs: "13px", sm: "14px" }, lineHeight: 1.2, color: 'inherit' }}>
+                            My Profile
+                        </Typography>
+                        <Typography sx={{ fontSize: { xs: "10px", sm: "11px" }, color: "#9ca3af", mt: 0.3, fontWeight: 500, transition: 'color 0.3s', '.MuiMenuItem-root:hover &': { color: '#fb923c' } }}>
+                            View Details
+                        </Typography>
+                    </Box>
+                </MenuItem>
 
                 <MenuItem
                     onClick={() => {
@@ -429,15 +546,15 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         }}
                     >
-                        <LockResetIcon 
-                            sx={{ 
+                        <LockResetIcon
+                            sx={{
                                 fontSize: { xs: '18px', sm: '20px' },
                                 animation: "spinPulse 3s ease-in-out infinite",
                                 "@keyframes spinPulse": {
                                     "0%, 100%": { transform: "scale(1) rotate(0deg)" },
                                     "50%": { transform: "scale(1.15) rotate(10deg)" }
                                 }
-                            }} 
+                            }}
                         />
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -449,6 +566,8 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                         </Typography>
                     </Box>
                 </MenuItem>
+
+
             </Menu>
 
             <ChangePasswordModal

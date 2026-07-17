@@ -24,8 +24,14 @@ import {
 import { getAuthUser } from "../constant/Constant";
 import DashboardDateFilter from "./Components/DashboardDateFilter";
 import { format, subDays } from "date-fns";
-import { useAdminDashBoardCounts, useAllEmployeeRecentActivity } from "../CommonCode/useQuery";
+import { useAdminDashBoardCounts, useAllEmployeeRecentActivity, useTopEmployess } from "../CommonCode/useQuery";
 import { getActivityDetails } from "../CommonCode/Reusable";
+import TopSalesExecutivesSkeleton from "../SkeletonComponent/TopSalesExecutivesSkeleton";
+import TopSalesExecutives from "./Components/TopSalesExecutives";
+import DashboardStatCard from "./Components/DashboardStatCard";
+import DashboardStatCardSkeleton from "../SkeletonComponent/DashboardStatCardSkeleton";
+import ActivityCard from "./Components/ActivityCard";
+import ActivityCardSkeleton from "../SkeletonComponent/ActivityCardSkeleton";
 
 const stats = [
   {
@@ -84,9 +90,7 @@ const stats = [
 const AdminDashboard = () => {
 
   const authUser = getAuthUser();
-
   const today = new Date();
-
   const [dateFilter, setDateFilter] = useState("7days");
 
   const [fromDate, setFromDate] = useState(
@@ -97,10 +101,9 @@ const AdminDashboard = () => {
     format(today, "yyyy-MM-dd")
   );
 
-  const { data: DashboardCount } = useAdminDashBoardCounts(fromDate, toDate)
-  const { data: RecentActivities } = useAllEmployeeRecentActivity()
-
-
+  const { data: DashboardCount, isLoading: LoadingDashboardCount } = useAdminDashBoardCounts(fromDate, toDate)
+  const { data: RecentActivities, isLoading: LoadingRecentActivities } = useAllEmployeeRecentActivity()
+  const { data: ToSaleEmployees = [], isLoading: LoadingTopEmployees } = useTopEmployess();
 
 
 
@@ -108,13 +111,14 @@ const AdminDashboard = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        height: "100vh",
         overflow: "auto",
         scrollbarWidth: "none",
         msOverflowStyle: "none",
         "&::-webkit-scrollbar": {
           display: "none",
         },
+        pb: 2
       }}
     >
       {/* Header Section */}
@@ -125,7 +129,6 @@ const AdminDashboard = () => {
           py: 2,
           mb: 4,
           background: "linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #f97316 100%)",
-          // boxShadow: "0 25px 60px rgba(37, 99, 235, 0.3)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -176,8 +179,6 @@ const AdminDashboard = () => {
           </Grid>
         </Grid>
       </Card>
-
-      {/* Stat Cards */}
       <Box
         sx={{
           display: "grid",
@@ -185,189 +186,133 @@ const AdminDashboard = () => {
             xs: "repeat(2, minmax(0, 1fr))",
             sm: "repeat(4, minmax(0, 1fr))",
             md: "repeat(4, minmax(0, 1fr))",
-            lg: "repeat(7, minmax(0, 1fr))",
+            lg: "repeat(5, minmax(0, 1fr))",
+            xl: "repeat(7, minmax(0, 1fr))",
           },
           gap: 1,
           width: "100%",
         }}
       >
-        {stats?.map((item, index) => (
-          <Box key={index}>
-            <Card
+        {
+          LoadingDashboardCount
+            ? Array.from({ length: stats.length }).map((_, index) => (
+              <DashboardStatCardSkeleton key={index} />
+            ))
+            : stats?.map((item, index) => (
+              <Box key={index}>
+                <DashboardStatCard
+                  item={item}
+                  DashboardCount={DashboardCount}
+                />
+              </Box>
+            ))}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", lg: "row" },
+          gap: 2,
+          mt: 2,
+          height: {
+            xs: "auto",
+            lg: "60vh",
+          },
+        }}>
+        <Box
+          sx={{
+            flex: 3,
+            minWidth: 0,
+            minHeight: {
+              xs: 450,
+              lg: 0,
+            },
+            height: {
+              lg: "100%",
+            },
+          }}
+        >
+          <Card
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 5,
+              boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+              border: "1px solid rgba(255,255,255,0.8)",
+            }}
+          >
+            {/* Header */}
+            <Box
               sx={{
-                borderRadius: 5,
-                height: "100%",
-                transition: "0.3s",
-                border: "1px solid rgba(255,255,255,0.8)",
-                boxShadow: "0 25px 10px rgba(189, 208, 249, 0.3)",
-                width: "100%",
-                "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: "0 12px 40px rgba(0,0,0,0.1)",
+                p: 3,
+                borderBottom: "1px solid #E5E7EB",
+                bgcolor: "#fff",
+                flexShrink: 0,
+              }}
+            >
+              <Typography fontSize={22} fontWeight={700}>
+                Recent Activities
+              </Typography>
+            </Box>
+
+            {/* Scroll only on Desktop */}
+            <Box
+              sx={{
+                flex: 1,
+                p: 2,
+                overflowY: {
+                  xs: "visible",
+                  lg: "auto",
+                },
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": {
+                  display: "none",
                 },
               }}
             >
-              <CardContent sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="start">
-                  <Box sx={{ flex: 1 }}>
-                    <Typography
-                      color="text.secondary"
-                      sx={{ mb: 0.5, fontSize: { xs: 9, sm: 10, md: 12, fontWeight: 900 } }}
-                    >
-                      {item?.title?.toUpperCase()}
-                    </Typography>
+              {
+                LoadingRecentActivities
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                    <ActivityCardSkeleton key={index} />
+                  ))
+                  : RecentActivities?.map((activity, index) => {
+                    const { icon, color, bgcolor } = getActivityDetails(activity);
+                    return (
+                      <ActivityCard
+                        key={activity.activity_id || activity.changed_at}
+                        activity={activity}
+                        icon={icon}
+                        color={color}
+                        bgcolor={bgcolor}
+                      />
+                    );
+                  })}
+            </Box>
+          </Card>
+        </Box>
 
-                    <Typography
-                      fontWeight={900}
-                      fontSize={{ xs: 32, sm: 36, md: 42 }}
-                      sx={{
-                        mb: 0.5,
-                        color: "#1e293b",
-                        letterSpacing: 1,
-                        textShadow: `
-      1px 1px 0px #fff,
-      2px 2px 0px #d1d5db,
-      3px 3px 0px #cbd5e1,
-      4px 4px 6px rgba(0,0,0,0.25)
-    `,
-                      }}
-                    >
-                      {DashboardCount?.[item.key] ?? 0}
-                    </Typography>
-
-                    {item.key !== "totalUploaded" && (
-                      <Typography
-                        fontSize={12}
-                        color="text.secondary"
-                        sx={{ mb: 1, fontSize: { xs: 9, sm: 10, md: 12, fontWeight: 900 } }}
-                      >
-                        of {DashboardCount?.totalUploaded ?? 0}
-                      </Typography>
-                    )}
-
-                    <Chip
-                      label={
-                        item.key === "totalUploaded"
-                          ? "Overall Leads"
-                          : `${(
-                            ((Number(DashboardCount?.[item.key] || 0) /
-                              Number(DashboardCount?.totalUploaded || 1)) *
-                              100) || 0
-                          ).toFixed(0)}%`
-                      }
-                      sx={{
-                        bgcolor: item.bgColor,
-                        color: item.color,
-                        fontWeight: 700,
-                        fontSize: 12,
-                        height: 28,
-
-                      }}
-                    />
-                  </Box>
-
-                  <Avatar
-                    sx={{
-                      bgcolor: item.color,
-                      width: 56,
-                      height: 56,
-                      ml: 2
-                    }}
-                  >
-                    {item.icon}
-                  </Avatar>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: {
+              xs: 320,
+              sm: 320,
+              md: 350,
+              lg: 0,
+            },
+            height: {
+              lg: "100%",
+            },
+          }}
+        >
+          {LoadingTopEmployees ? (
+            <TopSalesExecutivesSkeleton />
+          ) : (
+            <TopSalesExecutives data={ToSaleEmployees} />
+          )}
+        </Box>
       </Box>
-
-      {/* Activity Section */}
-      <Card
-        sx={{
-          mt: 3,
-          borderRadius: 5,
-          boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-          border: "1px solid rgba(255,255,255,0.8)",
-
-        }}
-      >
-        <CardContent sx={{ p: 3, boxShadow: "0 46px 30px rgba(0,0,0,0.06)", bgcolor: '#fff' }}>
-          <Typography fontSize={22} fontWeight={700} sx={{ mb: 3 }}>
-            Recent Activities
-          </Typography>
-
-          {RecentActivities?.map((activity, index) => {
-            const { icon, color, bgcolor } = getActivityDetails(activity);
-            return (
-              <Box
-                key={index}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mb: 2,
-                  p: 2,
-                  borderRadius: 16,
-                  bgcolor: "#fff",
-                  border: "1px solid rgba(229,231,235,0.5)",
-                  cursor: 'pointer',
-                  transition: "0.2s",
-                  "&:hover": {
-                    bgcolor: "#f8fafc",
-                    transform: "translateX(4px)",
-                    boxShadow: "0 25px 10px rgba(37, 99, 235, 0.3)",
-                  },
-                }}>
-                <Avatar
-                  sx={{
-                    bgcolor: color,
-                    width: 44,
-                    height: 44,
-                    mr: 2,
-                    borderRadius: 12,
-                  }}>
-                  {icon}
-                </Avatar>
-
-                <Box sx={{ flex: 1 }}>
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                  }}>
-                    <Typography fontSize={14} fontWeight={600}>
-                      {activity.name}
-                    </Typography>
-                    <Box sx={{
-                      color: color,
-                      textAlign: 'center',
-                      px: 2,
-                      borderRadius: 2,
-                      alignItems: "center", justifyContent: 'center',
-                      bgcolor: bgcolor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }} >
-                      <Typography fontSize={8} fontWeight={900}>
-                        {activity.status_name}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Typography fontSize={12} fontWeight={600}>
-                    {activity.remarks}
-                  </Typography>
-
-                  <Typography fontSize={12} color="text.secondary" sx={{ mt: 0.5 }}>
-                    {format(new Date(activity.changed_at), "dd MMM yyyy, hh:mm a")}
-                  </Typography>
-                </Box>
-              </Box>
-            )
-          })}
-        </CardContent>
-      </Card>
     </Box>
   );
 };
