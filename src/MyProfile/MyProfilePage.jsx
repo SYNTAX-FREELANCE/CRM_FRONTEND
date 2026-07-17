@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Box, Divider, Stack, Typography, Paper, Chip, Grid, Card, IconButton } from "@mui/material";
+import { Box, Divider, Stack, Typography, Paper, Chip, Grid, Card, IconButton, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 
 import EmailIcon from "@mui/icons-material/Email";
@@ -29,6 +29,8 @@ import FloatingBackButton from "../CommonComponents/FloatingBackButton";
 
 const MyProfilePage = () => {
 
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const authUser = getAuthUser();
     const queryClient = useQueryClient();
@@ -99,9 +101,9 @@ const MyProfilePage = () => {
                     gap: 2,
                     backdropFilter: "blur(12px)",
                     borderRadius: 4,
-                    border: "1px solid rgba(255,255,255,0.6)",
+                    border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.6)",
                     flexDirection: { xs: "column", lg: "row" },
-                    boxShadow: "0 20px 60px rgba(15, 23, 42, 0.08)",
+                    boxShadow: isDark ? "0 20px 60px rgba(0,0,0,0.5)" : "0 20px 60px rgba(15, 23, 42, 0.08)",
                     // px: 1,
                 }}
             >
@@ -111,7 +113,7 @@ const MyProfilePage = () => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        bgcolor: "rgba(255,255,255,0.75)",
+                        bgcolor: isDark ? "rgba(30,41,59,0.7)" : "rgba(255,255,255,0.75)",
                         // p: 2.5,
                         // borderRight: { xs: "none", md: "1px solid rgba(0,0,0,0.06)" },
 
@@ -135,7 +137,7 @@ const MyProfilePage = () => {
                                     height: "100%",
                                     borderRadius: "50%",
                                     overflow: "hidden",
-                                    bgcolor: "#e8e8e8",
+                                    bgcolor: isDark ? "#1e293b" : "#e8e8e8",
                                 }}
                             >
                                 <img
@@ -223,7 +225,7 @@ const MyProfilePage = () => {
                     sx={{
                         width: { xs: "100%", lg: "50%" },
                         py: { xs: 2, md: 3 },
-                        bgcolor: "rgb(255, 255, 255)"
+                        bgcolor: isDark ? "rgba(15,23,42,0.8)" : "rgb(255, 255, 255)"
                     }}
                 >
                     <motion.div
@@ -271,8 +273,8 @@ const MyProfilePage = () => {
                                 sx={{
                                     p: 2.5,
                                     borderRadius: 3,
-                                    border: "1px solid rgba(0,0,0,0.06)",
-                                    background: "#fff",
+                                    border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.06)",
+                                    background: isDark ? "rgba(30,41,59,0.6)" : "#fff",
                                 }}
                             >
                                 <Box sx={{
@@ -336,8 +338,8 @@ const MyProfilePage = () => {
                                 sx={{
                                     p: 2.5,
                                     borderRadius: 3,
-                                    border: "1px solid rgba(0,0,0,0.06)",
-                                    background: "#fff",
+                                    border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.06)",
+                                    background: isDark ? "rgba(30,41,59,0.6)" : "#fff",
                                 }}
                             >
                                 <Typography sx={{ fontSize: { xs: 16, sm: 18 }, fontWeight: 800, mb: 2 }}>
@@ -408,16 +410,17 @@ const MyProfilePage = () => {
                                 display: "flex",
                                 flexDirection: "column",
                                 // borderRadius: 5,
-                                boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-                                border: "1px solid rgba(255,255,255,0.8)",
+                                boxShadow: isDark ? "0 8px 30px rgba(0,0,0,0.5)" : "0 8px 30px rgba(0,0,0,0.06)",
+                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.8)",
+                                bgcolor: isDark ? "rgba(15,23,42,0.8)" : "#fff",
                             }}
                         >
                             {/* Header */}
                             <Box
                                 sx={{
                                     p: 3,
-                                    borderBottom: "1px solid #E5E7EB",
-                                    bgcolor: "#fff",
+                                    borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #E5E7EB",
+                                    bgcolor: isDark ? "rgba(30,41,59,0.6)" : "#fff",
                                     flexShrink: 0,
                                 }}
                             >

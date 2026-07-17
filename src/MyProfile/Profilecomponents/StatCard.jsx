@@ -11,8 +11,10 @@ const StatCard = ({ title, value, color, icon }) => {
                 p: 2.2,
                 borderRadius: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                background: `linear-gradient(135deg, rgba(255,255,255,0.98) 0%, ${color}12 100%)`,
-                boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
+                background: theme.palette.mode === 'dark' 
+                    ? `linear-gradient(135deg, rgba(30,41,59,0.98) 0%, ${color}20 100%)` 
+                    : `linear-gradient(135deg, rgba(255,255,255,0.98) 0%, ${color}12 100%)`,
+                boxShadow: theme.palette.mode === 'dark' ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(15, 23, 42, 0.06)",
                 minHeight: { xs: 40, sm: 60 },
                 transition: "all 0.25s ease",
                 "&:hover": {
@@ -54,13 +56,13 @@ const StatCard = ({ title, value, color, icon }) => {
                     </Typography>
 
                     <Typography
-                        sx={{
+                        sx={(theme) => ({
                             mt: 1,
                             fontSize: { xs: 18, md: 30 },
                             fontWeight: 900,
                             lineHeight: 1,
-                            color: "#0f172a",
-                        }}
+                            color: theme.palette.mode === 'dark' ? "#f8fafc" : "#0f172a",
+                        })}
                     >
                         {value}
                     </Typography>

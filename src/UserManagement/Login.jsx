@@ -22,13 +22,28 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import logo from "../assets/loginimages/companylogo.png";
 import { axioslogin } from "../Connection/axios";
 import { useNavigate } from "react-router-dom";
-import { warningNotify } from "../constant/Constant";
+import { warningNotify, successNotify } from "../constant/Constant";
 import { useAuth } from "../Context/AuthContext";
+import { useTheme, Modal, Backdrop, Fade, CircularProgress } from "@mui/material";
 
 const Login = () => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+
+    // Forgot Password States
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
+    const [forgotPasswordStep, setForgotPasswordStep] = useState(1);
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotData, setForgotData] = useState({
+        employee_id: "",
+        email: "",
+        otp: "",
+        newPassword: "",
+        confirmPassword: ""
+    });
 
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -49,6 +64,96 @@ const Login = () => {
             }
         } catch (error) {
             console.error("Storage error:", error);
+        }
+    };
+
+    const handleForgotChange = (e) => {
+        const { name, value } = e.target;
+        setForgotData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSendOtp = async () => {
+        if (!forgotData.employee_id || !forgotData.email) {
+            warningNotify("Employee ID and Email are required");
+            return;
+        }
+        setForgotLoading(true);
+        try {
+            const response = await axioslogin.post("/user/forgot-password", {
+                employee_id: forgotData.employee_id,
+                email: forgotData.email,
+            });
+            if (response.data.success === 1) {
+                successNotify(response.data.message);
+                setForgotPasswordStep(2);
+            } else {
+                warningNotify(response.data.message);
+            }
+        } catch (error) {
+            warningNotify(error.response?.data?.message || "Failed to send OTP");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        if (!forgotData.otp) {
+            warningNotify("OTP is required");
+            return;
+        }
+        setForgotLoading(true);
+        try {
+            const response = await axioslogin.post("/user/verify-otp", {
+                employee_id: forgotData.employee_id,
+                otp: forgotData.otp,
+            });
+            if (response.data.success === 1) {
+                successNotify(response.data.message);
+                setForgotPasswordStep(3);
+            } else {
+                warningNotify(response.data.message);
+            }
+        } catch (error) {
+            warningNotify(error.response?.data?.message || "Failed to verify OTP");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    const handleResetPassword = async () => {
+        if (!forgotData.newPassword || !forgotData.confirmPassword) {
+            warningNotify("Both password fields are required");
+            return;
+        }
+        if (forgotData.newPassword !== forgotData.confirmPassword) {
+            warningNotify("Passwords do not match");
+            return;
+        }
+        setForgotLoading(true);
+        try {
+            const response = await axioslogin.post("/user/reset-password", {
+                employee_id: forgotData.employee_id,
+                newPassword: forgotData.newPassword,
+                confirmPassword: forgotData.confirmPassword,
+            });
+            if (response.data.success === 1) {
+                successNotify(response.data.message);
+                setForgotPasswordModalOpen(false);
+                setForgotPasswordStep(1);
+                setForgotData({
+                    employee_id: "",
+                    email: "",
+                    otp: "",
+                    newPassword: "",
+                    confirmPassword: ""
+                });
+            } else {
+                warningNotify(response.data.message);
+            }
+        } catch (error) {
+            warningNotify(error.response?.data?.message || "Failed to reset password");
+        } finally {
+            setForgotLoading(false);
         }
     };
 
@@ -82,7 +187,7 @@ const Login = () => {
                 display: "flex",
                 overflow: "hidden",
                 position: "relative",
-                background: "linear-gradient(#eef7ff, #fff5ec)",
+                background: isDark ? "linear-gradient(#0f172a, #1e293b)" : "linear-gradient(#eef7ff, #fff5ec)",
             }}
         >
             {/* Left Side - CRM & Nexus Info (visible on ALL screens) */}
@@ -181,7 +286,7 @@ const Login = () => {
                         sx={{
                             fontWeight: 800,
                             fontSize: { xs: "24px", sm: "28px", md: "32px", lg: "38px", xl: "42px" },
-                            color: "#1f2937",
+                            color: isDark ? "#f8fafc" : "#1f2937",
                             mb: 2,
                             lineHeight: 1.2,
                         }}
@@ -215,9 +320,9 @@ const Login = () => {
                                 gap: 1.5,
                                 p: 1.5,
                                 borderRadius: 12,
-                                background: "rgba(255, 255, 255, 0.7)",
-                                border: "1px solid rgba(255,255,255,0.6)",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                                background: isDark ? "rgba(30,41,59,0.7)" : "rgba(255, 255, 255, 0.7)",
+                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.5)" : "0 4px 12px rgba(0,0,0,0.04)",
                             }}
                         >
                             <Box
@@ -233,7 +338,7 @@ const Login = () => {
                             >
                                 <GroupOutlinedIcon sx={{ fontSize: 18, color: "#ffffff" }} />
                             </Box>
-                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                            <Typography sx={{ fontWeight: 600, color: isDark ? "#f8fafc" : "#1f2937", fontSize: "13px" }}>
                                 Customer Management
                             </Typography>
                         </Box>
@@ -246,9 +351,9 @@ const Login = () => {
                                 gap: 1.5,
                                 p: 1.5,
                                 borderRadius: 12,
-                                background: "rgba(255, 255, 255, 0.7)",
-                                border: "1px solid rgba(255,255,255,0.6)",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                                background: isDark ? "rgba(30,41,59,0.7)" : "rgba(255, 255, 255, 0.7)",
+                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.5)" : "0 4px 12px rgba(0,0,0,0.04)",
                             }}
                         >
                             <Box
@@ -264,7 +369,7 @@ const Login = () => {
                             >
                                 <TrendingUpIcon sx={{ fontSize: 18, color: "#ffffff" }} />
                             </Box>
-                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                            <Typography sx={{ fontWeight: 600, color: isDark ? "#f8fafc" : "#1f2937", fontSize: "13px" }}>
                                 Sales Analytics & Insights
                             </Typography>
                         </Box>
@@ -277,9 +382,9 @@ const Login = () => {
                                 gap: 1.5,
                                 p: 1.5,
                                 borderRadius: 12,
-                                background: "rgba(255, 255, 255, 0.7)",
-                                border: "1px solid rgba(255,255,255,0.6)",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                                background: isDark ? "rgba(30,41,59,0.7)" : "rgba(255, 255, 255, 0.7)",
+                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.5)" : "0 4px 12px rgba(0,0,0,0.04)",
                             }}
                         >
                             <Box
@@ -295,7 +400,7 @@ const Login = () => {
                             >
                                 <PhoneAndroidIcon sx={{ fontSize: 18, color: "#ffffff" }} />
                             </Box>
-                            <Typography sx={{ fontWeight: 600, color: "#1f2937", fontSize: "13px" }}>
+                            <Typography sx={{ fontWeight: 600, color: isDark ? "#f8fafc" : "#1f2937", fontSize: "13px" }}>
                                 Automated Workflows
                             </Typography>
                         </Box>
@@ -324,7 +429,7 @@ const Login = () => {
                             <Typography
                                 sx={{
                                     fontSize: "11px",
-                                    color: "#6b7280",
+                                    color: isDark ? "#94a3b8" : "#6b7280",
                                     fontWeight: 600,
                                 }}
                             >
@@ -344,7 +449,7 @@ const Login = () => {
                             <Typography
                                 sx={{
                                     fontSize: "11px",
-                                    color: "#6b7280",
+                                    color: isDark ? "#94a3b8" : "#6b7280",
                                     fontWeight: 600,
                                 }}
                             >
@@ -364,7 +469,7 @@ const Login = () => {
                             <Typography
                                 sx={{
                                     fontSize: "11px",
-                                    color: "#6b7280",
+                                    color: isDark ? "#94a3b8" : "#6b7280",
                                     fontWeight: 600,
                                 }}
                             >
@@ -394,15 +499,15 @@ const Login = () => {
                         maxWidth: 420,
                         p: { xs: 2.2, sm: 3, md: 4.5 },
                         borderRadius: { xs: 4, md: 5 },
-                        bgcolor: "rgba(255,255,255,0.95)",
-                        boxShadow: "0 18px 50px rgba(15,23,42,0.10)",
+                        bgcolor: isDark ? "rgba(30,41,59,0.95)" : "rgba(255,255,255,0.95)",
+                        boxShadow: isDark ? "0 18px 50px rgba(0,0,0,0.5)" : "0 18px 50px rgba(15,23,42,0.10)",
                         backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(255,255,255,0.75)",
+                        border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.75)",
                     }}
                 >
                     <Typography
                         fontWeight={800}
-                        color="#2c2d2e"
+                        color={isDark ? "#f8fafc" : "#2c2d2e"}
                         sx={{
                             mb: 1,
                             fontSize: {
@@ -450,7 +555,7 @@ const Login = () => {
                         sx={{
                             "& .MuiOutlinedInput-root": {
                                 borderRadius: 3,
-                                backgroundColor: "#fff",
+                                backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
                                 height: { xs: 48, md: 46 },
                             },
                             "& .MuiInputBase-input": {
@@ -509,7 +614,7 @@ const Login = () => {
                         sx={{
                             "& .MuiOutlinedInput-root": {
                                 borderRadius: 3,
-                                backgroundColor: "#fff",
+                                backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
                                 height: { xs: 46, md: 46 },
                             },
                             "& .MuiInputBase-input": {
@@ -530,6 +635,7 @@ const Login = () => {
                         }}
                     >
                         <Typography
+                            onClick={() => setForgotPasswordModalOpen(true)}
                             sx={{
                                 cursor: "pointer",
                                 color: "#2563eb",
@@ -568,6 +674,203 @@ const Login = () => {
                     </Button>
                 </Paper>
             </Box>
+
+            {/* Forgot Password Modal */}
+            <Modal
+                open={forgotPasswordModalOpen}
+                onClose={() => {
+                    if (!forgotLoading) {
+                        setForgotPasswordModalOpen(false);
+                        setForgotPasswordStep(1);
+                        setForgotData({ employee_id: "", email: "", otp: "", newPassword: "", confirmPassword: "" });
+                    }
+                }}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                    backdrop: {
+                        timeout: 500,
+                        sx: { backgroundColor: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(4px)" },
+                    },
+                }}
+            >
+                <Fade in={forgotPasswordModalOpen}>
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: { xs: "90%", sm: 400 },
+                            bgcolor: isDark ? "rgba(30,41,59,0.95)" : "rgba(255,255,255,0.95)",
+                            borderRadius: 4,
+                            boxShadow: 24,
+                            p: 4,
+                            border: isDark ? "1px solid rgba(255,255,255,0.1)" : "none",
+                            backdropFilter: "blur(12px)",
+                        }}
+                    >
+                        <Typography variant="h5" fontWeight={800} color={isDark ? "#f8fafc" : "#1f2937"} mb={2}>
+                            {forgotPasswordStep === 1 && "Forgot Password"}
+                            {forgotPasswordStep === 2 && "Verify OTP"}
+                            {forgotPasswordStep === 3 && "Reset Password"}
+                        </Typography>
+                        
+                        <Typography color="text.secondary" mb={3} fontSize="0.9rem">
+                            {forgotPasswordStep === 1 && "Enter your Employee ID and Email to receive a verification code."}
+                            {forgotPasswordStep === 2 && "Enter the 6-digit verification code sent to your email."}
+                            {forgotPasswordStep === 3 && "Enter your new password."}
+                        </Typography>
+
+                        {forgotPasswordStep === 1 && (
+                            <Stack spacing={2}>
+                                <TextField
+                                    fullWidth
+                                    label="Employee ID"
+                                    name="employee_id"
+                                    variant="outlined"
+                                    size="small"
+                                    value={forgotData.employee_id}
+                                    onChange={handleForgotChange}
+                                    InputProps={{
+                                        sx: {
+                                            bgcolor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                            borderRadius: 2,
+                                        }
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Email Address"
+                                    name="email"
+                                    type="email"
+                                    variant="outlined"
+                                    size="small"
+                                    value={forgotData.email}
+                                    onChange={handleForgotChange}
+                                    InputProps={{
+                                        sx: {
+                                            bgcolor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                            borderRadius: 2,
+                                        }
+                                    }}
+                                />
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    onClick={handleSendOtp}
+                                    disabled={forgotLoading}
+                                    sx={{
+                                        mt: 2,
+                                        py: 1,
+                                        borderRadius: 2,
+                                        textTransform: "none",
+                                        fontWeight: 700,
+                                        background: "linear-gradient(90deg, #2563eb 0%, #ff8f1f 100%)",
+                                        "&:hover": { background: "linear-gradient(90deg, #1d4ed8 0%, #f97316 100%)" },
+                                    }}
+                                >
+                                    {forgotLoading ? <CircularProgress size={24} color="inherit" /> : "Send OTP"}
+                                </Button>
+                            </Stack>
+                        )}
+
+                        {forgotPasswordStep === 2 && (
+                            <Stack spacing={2}>
+                                <TextField
+                                    fullWidth
+                                    label="6-Digit OTP"
+                                    name="otp"
+                                    variant="outlined"
+                                    size="small"
+                                    value={forgotData.otp}
+                                    onChange={handleForgotChange}
+                                    InputProps={{
+                                        sx: {
+                                            bgcolor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                            borderRadius: 2,
+                                            letterSpacing: 4,
+                                            textAlign: "center"
+                                        }
+                                    }}
+                                    inputProps={{ maxLength: 6 }}
+                                />
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    onClick={handleVerifyOtp}
+                                    disabled={forgotLoading}
+                                    sx={{
+                                        mt: 2,
+                                        py: 1,
+                                        borderRadius: 2,
+                                        textTransform: "none",
+                                        fontWeight: 700,
+                                        background: "linear-gradient(90deg, #2563eb 0%, #ff8f1f 100%)",
+                                        "&:hover": { background: "linear-gradient(90deg, #1d4ed8 0%, #f97316 100%)" },
+                                    }}
+                                >
+                                    {forgotLoading ? <CircularProgress size={24} color="inherit" /> : "Verify OTP"}
+                                </Button>
+                            </Stack>
+                        )}
+
+                        {forgotPasswordStep === 3 && (
+                            <Stack spacing={2}>
+                                <TextField
+                                    fullWidth
+                                    label="New Password"
+                                    name="newPassword"
+                                    type="password"
+                                    variant="outlined"
+                                    size="small"
+                                    value={forgotData.newPassword}
+                                    onChange={handleForgotChange}
+                                    InputProps={{
+                                        sx: {
+                                            bgcolor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                            borderRadius: 2,
+                                        }
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Confirm Password"
+                                    name="confirmPassword"
+                                    type="password"
+                                    variant="outlined"
+                                    size="small"
+                                    value={forgotData.confirmPassword}
+                                    onChange={handleForgotChange}
+                                    InputProps={{
+                                        sx: {
+                                            bgcolor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                            borderRadius: 2,
+                                        }
+                                    }}
+                                />
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    onClick={handleResetPassword}
+                                    disabled={forgotLoading}
+                                    sx={{
+                                        mt: 2,
+                                        py: 1,
+                                        borderRadius: 2,
+                                        textTransform: "none",
+                                        fontWeight: 700,
+                                        background: "linear-gradient(90deg, #10b981 0%, #059669 100%)",
+                                        "&:hover": { background: "linear-gradient(90deg, #059669 0%, #047857 100%)" },
+                                    }}
+                                >
+                                    {forgotLoading ? <CircularProgress size={24} color="inherit" /> : "Update Password"}
+                                </Button>
+                            </Stack>
+                        )}
+                    </Box>
+                </Fade>
+            </Modal>
         </Box>
     );
 };

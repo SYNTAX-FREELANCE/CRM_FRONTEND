@@ -1,6 +1,7 @@
 import React, { memo, Suspense, useMemo, useState } from "react";
 import {
     Card,
+    useTheme,
     CardContent,
     Typography,
     Box,
@@ -100,14 +101,15 @@ const DashboardRemindersCard = ({ remindersData }) => {
     const activeItems = listMap[activeStatus] || [];
     const total = summaryItems.reduce((sum, item) => sum + item.count, 0);
 
-
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     return (
         <Card
             sx={{
                 borderRadius: 5,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-                border: "1px solid rgba(255,255,255,0.85)",
+                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                 height: "100%",
                 overflow: "hidden",
                 height: '60vh',
@@ -142,10 +144,10 @@ const DashboardRemindersCard = ({ remindersData }) => {
 
                         }} >
                         <Box>
-                            <Typography sx={{ fontSize: { xs: 18, md: 22 }, fontWeight: 900, color: "#0f172a" }}>
+                            <Typography sx={{ fontSize: { xs: 18, md: 22 }, fontWeight: 900, color: isDark ? "#f8fafc" : "#0f172a" }}>
                                 Today’s Reminders
                             </Typography>
-                            <Typography sx={{ fontSize: { xs: 12, md: 13 }, color: "text.secondary", mt: 0.3 }}>
+                            <Typography sx={{ fontSize: { xs: 12, md: 13 }, color: isDark ? "#94a3b8" : "text.secondary", mt: 0.3 }}>
                                 Tap a header to show the matching reminders below
                             </Typography>
                         </Box>
@@ -202,7 +204,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         mb: 1.5,
                     }}
                 >
-                    <Typography sx={{ fontWeight: 800, color: "#0f172a" }}>
+                    <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a" }}>
                         {statusMeta[activeStatus].label} Reminders
                     </Typography>
                     <Chip
@@ -229,14 +231,14 @@ const DashboardRemindersCard = ({ remindersData }) => {
                                 p: 3,
                                 textAlign: "center",
                                 borderRadius: 3,
-                                bgcolor: "rgba(248,250,252,0.9)",
+                                bgcolor: isDark ? "rgba(30,41,59,0.9)" : "rgba(248,250,252,0.9)",
                                 border: "1px dashed rgba(148,163,184,0.5)",
                             }}
                         >
-                            <Typography sx={{ fontWeight: 700, color: "#334155" }}>
+                            <Typography sx={{ fontWeight: 700, color: isDark ? "#cbd5e1" : "#334155" }}>
                                 No {statusMeta[activeStatus].label.toLowerCase()} reminders found
                             </Typography>
-                            <Typography sx={{ fontSize: 12, color: "text.secondary", mt: 0.5 }}>
+                            <Typography sx={{ fontSize: 12, color: isDark ? "#94a3b8" : "text.secondary", mt: 0.5 }}>
                                 You are all caught up for this section.
                             </Typography>
                         </Box>
