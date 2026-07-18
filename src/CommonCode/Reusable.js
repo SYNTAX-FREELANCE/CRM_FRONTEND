@@ -8,6 +8,7 @@ import {
   Person,
 } from "@mui/icons-material";
 import { bgcolor } from "@mui/system";
+import { useMemo } from "react";
 
 export const isValidEmail = (email) => {
   if (!email) return false;
@@ -164,49 +165,87 @@ export const getActivityDetails = (activity) => {
       return {
         icon: <FiberNew />,
         color: "#2563eb",
-        bgcolor:'#bdcff6e2'
+        bgcolor: '#bdcff6e2'
       };
 
     case "CALLBACK":
       return {
         icon: <Phone />,
         color: "#8b5cf6",
-         bgcolor:'rgb(233, 223, 255)'
+        bgcolor: 'rgb(233, 223, 255)'
       };
 
     case "QUOTE":
       return {
         icon: <Description />,
         color: "#06b6d4",
-         bgcolor:'#ddfaff'
+        bgcolor: '#ddfaff'
       };
 
     case "APPOINMENT":
       return {
         icon: <EventAvailable />,
         color: "#f97316",
-         bgcolor:'#ffede0'
+        bgcolor: '#ffede0'
       };
 
     case "SOLD":
       return {
         icon: <TrendingUp />,
         color: "#16a34a",
-         bgcolor:'#d8ffe6'
+        bgcolor: '#d8ffe6'
       };
 
     case "LOST":
       return {
         icon: <Cancel />,
         color: "#dc2626",
-         bgcolor:'#f6e1e1'
+        bgcolor: '#f6e1e1'
       };
 
     default:
       return {
         icon: <Person />,
         color: "#64748b",
-         bgcolor:'rgba(219, 230, 255, 0.89)'
+        bgcolor: 'rgba(219, 230, 255, 0.89)'
       };
   }
+};
+
+
+// utils/groupLeadData.js
+
+export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
+  const groups = {};
+
+  activeStatus.forEach((status) => {
+    groups[status.status_id] = [];
+  });
+
+  groups[-1] = []; // Pending
+  groups[-2] = []; // Reminder
+
+  for (const lead of allCallDetails) {
+    // NEW tab -> only opened leads
+    if (lead?.status_id === 1) {
+      if (lead?.work_status === "IN_PROGRESS") {
+        groups[1].push(lead);
+      }
+    } else {
+      // All other statuses
+      groups[lead.status_id]?.push(lead);
+    }
+
+    // Pending
+    if (lead?.work_status === "NOT_STARTED") {
+      groups[-1].push(lead);
+    }
+
+    // Reminder
+    if (lead?.next_followup_date != null) {
+      groups[-2].push(lead);
+    }
+  }
+
+  return groups;
 };

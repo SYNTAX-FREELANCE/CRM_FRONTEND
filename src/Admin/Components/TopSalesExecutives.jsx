@@ -72,6 +72,7 @@ const TopSalesExecutives = ({ data = [] }) => {
                         avatar={item.avatar}
                         calls={item.total_calls}
                         sold={item.total_sold}
+                        empid={item.user_id}
                         highlight={idx === 0}
                     />
                 ))}
