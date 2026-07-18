@@ -43,6 +43,11 @@ const MyProfilePage = () => {
     const { data: RecentActivities, isLoading: LoadingRecentActivities } = useEmployeeRecentActivity(id)
     const { data: profilePhotoUrl = "" } = useProfilePhoto(id);
 
+    console.log({
+        profilePhotoUrl
+    });
+    
+
 
     const fileInputRef = useRef(null);
     const formatHours = (hours) => {
@@ -185,7 +190,7 @@ const MyProfilePage = () => {
                             textAlign: "center",
                         }}
                     >
-                        Rohith Krishna R
+                        {employee?.name}
                     </Typography>
 
                     <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap", justifyContent: "center" }}>

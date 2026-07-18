@@ -13,6 +13,7 @@ import SellIcon from "@mui/icons-material/Sell";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { SparkLineChart } from "@mui/x-charts";
 import StatPill from "./StatPill";
+import { axioslogin } from "../../Connection/axios";
 
 const buildSparkSeries = (calls, sold) => {
     const callValue = Number(calls || 0);
@@ -36,6 +37,7 @@ const ExecutiveCard = ({
     avatar,
     calls,
     sold,
+    empid,
     highlight = false,
 }) => {
     const colors = {
@@ -96,10 +98,16 @@ const ExecutiveCard = ({
                             width: 36,
                             height: 36,
                             bgcolor: highlight ? colors.orange : colors.blue,
-                            fontSize:12,
-                            fontWeight:600
+                            fontSize: 12,
+                            fontWeight: 600
                         }}
-                        src={avatar}
+                        
+                        src={`${axioslogin.defaults.baseURL}/employee/profile-photo/${empid}`}
+                        imgProps={{
+                            onError: (e) => {
+                                e.target.style.display = "none";
+                            },
+                        }}
                     >
                         {name
                             .split(" ")
@@ -115,11 +123,11 @@ const ExecutiveCard = ({
 
                         <Stack direction="row" spacing={1} sx={{ mt: 0.6, alignItems: "center", flexWrap: "wrap" }}>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: colors.muted }}>
-                                <PhoneInTalkIcon sx={{ fontSize: 15,color:"#1f2eff" }} />
+                                <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} />
                                 <Typography sx={{ fontSize: 12.5 }}>{calls} calls</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: colors.muted }}>
-                                <SellIcon sx={{ fontSize: 15,color:'#f0a308' }} />
+                                <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
                                 <Typography sx={{ fontSize: 12.5 }}>{sold} sold</Typography>
                             </Box>
                         </Stack>

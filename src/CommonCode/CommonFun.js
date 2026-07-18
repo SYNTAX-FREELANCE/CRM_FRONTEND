@@ -1,6 +1,6 @@
 
 import { axioslogin } from "../Connection/axios";
-import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
+import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
 
 
 
@@ -248,10 +248,7 @@ export const getMyActiveCalls = async (empid, filter) => {
 };
 
 export const getAdminDashboardCount = async (from, to) => {
-  console.log({
-    from,
-    to,
-  });
+ 
 
   if (!from || !to) return [];
   try {
@@ -491,8 +488,6 @@ export const getProfilePhoto = async (userId) => {
     return "";
   }
 };
-
-
 
 
 export const handleProfilePhotoChange = async (e, empId, queryClient) => {

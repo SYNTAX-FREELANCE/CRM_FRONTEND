@@ -83,11 +83,15 @@ export default function FreshCallsWorkspace() {
     return LeadMasterDetail.filter(stat => stat.is_active === 1);
   }, [LeadMasterDetail]);
 
+  console.log({ActiveStatus});
+  
+
   const filteredRows = useMemo(() => {
     if (!Array.isArray(FreshCalls)) return [];
     if (statusFilter === 1) return FreshCalls;
     return FreshCalls.filter((lead) => lead.status_id === statusFilter);
   }, [FreshCalls, statusFilter]);
+
 
   useEffect(() => {
     if (Status) setStatusFilter(Status);
