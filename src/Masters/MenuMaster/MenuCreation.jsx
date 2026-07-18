@@ -12,7 +12,7 @@ import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import { useMenuMaster } from "../../CommonCode/useQuery";
 
 const MenuCreation = () => {

@@ -19,7 +19,7 @@ import InputLg from "../../Settings/CommonMasterComponent/InputLg";
 import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import { useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
 const formatDate = (dateStr) => {
   if (!dateStr) return "";

@@ -1,6 +1,6 @@
 // src/context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { infoNotify } from "../constant/Constant";
 
 export const AuthContext = createContext();

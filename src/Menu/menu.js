@@ -7,8 +7,9 @@ import SavedSearchIcon from "@mui/icons-material/SavedSearch";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
-const MENU = [
+export const MENU = [
   {
     module_id: 1,
     label: "Dashboard",
@@ -21,12 +22,6 @@ const MENU = [
     icon: LocalPhoneIcon,
     path: "/home/freshcalls",
   },
-  // {
-  //   module_id: 2,
-  //   label: "Employee",
-  //   icon: GridViewIcon,
-  //   path: "/home/employee",
-  // },
   {
     module_id: 4,
     label: "Allocate",
@@ -69,12 +64,19 @@ const MENU = [
     path: "/home/userinfo",
   },
   {
+
     module_id: 12,
     label: "Employee Info",
     icon: PersonIcon,
     path: "/home/userinfo/:employeeId",
     alwaysShow: true,
-  },
+  }, {
+    module_id: 11,
+    label: "Reports",
+    icon: AssessmentIcon,
+    path: "/home/reports",
+  }
+
 ];
 
 export const getMenu = (RoleRights = [], userId, role) => {

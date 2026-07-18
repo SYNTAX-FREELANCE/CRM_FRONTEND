@@ -11,7 +11,7 @@ import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 
 const UserRightCreation = () => {
     const [roles, setRoles] = useState([]);

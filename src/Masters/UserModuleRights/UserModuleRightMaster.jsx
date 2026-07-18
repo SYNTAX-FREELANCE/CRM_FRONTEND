@@ -11,7 +11,7 @@ import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../../constant/Constant";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
 import { useGetModuleRightDetail, useModuleMaster, useRoleMaster } from "../../CommonCode/useQuery";
 
 const UserModuleRightMaster = () => {
@@ -49,9 +49,6 @@ const UserModuleRightMaster = () => {
     const { data: RoleRights, refetch } = useGetModuleRightDetail(selectedRole)
 
 
-    console.log({
-        RoleRights
-    });
 
     const [loading, setLoading] = useState(false);
     const [hasExisting, setHasExisting] = useState(false);

@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Box, Avatar, Typography, Chip } from "@mui/material";
+import { Box, Avatar, Typography, Chip, useTheme } from "@mui/material";
 import { Today, EventAvailable, Schedule, ErrorOutline } from "@mui/icons-material";
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -39,6 +39,8 @@ const ReminderItem = ({ item }) => {
     const meta = statusMeta[item?.status];
 
     const navigate = useNavigate();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     return (
         <Box
@@ -55,9 +57,9 @@ const ReminderItem = ({ item }) => {
             sx={{
                 p: { xs: 1.25, md: 1.5 },
                 borderRadius: 3,
-                bgcolor: "#fff",
-                border: "1px solid rgba(226,232,240,0.9)",
-                boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.9)",
+                boxShadow: isDark ? "none" : "0 6px 18px rgba(15,23,42,0.04)",
                 cursor: 'pointer'
             }}
         >
@@ -94,7 +96,7 @@ const ReminderItem = ({ item }) => {
                             <Typography
                                 sx={{
                                     fontWeight: 800,
-                                    color: "#0f172a",
+                                    color: isDark ? "#f8fafc" : "#0f172a",
                                     fontSize: { xs: 10, sm: 12, md: 14 },
                                     lineHeight: 1.3,
                                 }}
@@ -107,7 +109,7 @@ const ReminderItem = ({ item }) => {
                                 sx={{
                                     fontSize: 10,
                                     fontWeight: 800,
-                                    color: "text.secondary",
+                                    color: isDark ? "#94a3b8" : "text.secondary",
                                     mt: 0.3,
                                     display: "flex",
                                     alignItems: "center",
@@ -155,7 +157,7 @@ const ReminderItem = ({ item }) => {
                                 sx={{
                                     fontSize: 11,
                                     fontWeight: 800,
-                                    color: "text.secondary",
+                                    color: isDark ? "#94a3b8" : "text.secondary",
                                     mt: 0.3,
                                     display: "flex",
                                     alignItems: "center",

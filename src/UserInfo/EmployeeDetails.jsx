@@ -21,7 +21,8 @@ import {
     useFetchDashBoardReminders,
     useGetAttendanceByDate,
     useProfilePhoto,
-    useCallCenterPerformance
+    useCallCenterPerformance,
+    useEmployeePerformance
 } from "../CommonCode/useQuery";
 import { axioslogin } from "../Axios/axios";
 // import { useAuth } from "../Context/AuthContext";
@@ -36,6 +37,7 @@ import RemindersPanel from "./Components/RemindersPanel";
 import PersonalCompanyInfo from "./Components/PersonalCompanyInfo";
 import DocumentUploads from "./Components/DocumentUploads";
 import PerformanceChart from "./Components/PerformanceChart";
+import { useQuery } from "@tanstack/react-query";
 
 const EmployeeDetails = () => {
     const navigate = useNavigate();
@@ -363,6 +365,7 @@ const EmployeeDetails = () => {
             <Grid container spacing={3.5} sx={{ mb: 3.5 }}>
                 {/* Profile Widget Card with overlay banner */}
                 <Grid xs={12} md={3.5}>
+
                     <ProfileWidget
                         displayEmployee={displayEmployee}
                         profilePhotoUrl={profilePhotoUrl}
@@ -371,6 +374,197 @@ const EmployeeDetails = () => {
                         successNotify={successNotify}
                         errorNotify={errorNotify}
                     />
+
+                    <Card
+                        sx={{
+                            p: 0,
+                            borderRadius: "24px",
+                            overflow: "hidden",
+                            border: "1px solid rgba(0,0,0,0.02)",
+                            boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                            height: "100%"
+                        }}
+                    >
+                        <Box sx={{ position: "relative", width: "100%" }}>
+                            {/* Creative visual gradient header banner */}
+                            <Box
+                                sx={{
+                                    height: "170px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)",
+                                    position: "relative"
+                                }}
+                            >
+                                {/* Low opacity abstract sphere watermark */}
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        width: 140,
+                                        height: 140,
+                                        borderRadius: "50%",
+                                        background: "rgba(255, 255, 255, 0.08)",
+                                        top: -20,
+                                        right: -20
+                                    }}
+                                />
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        width: 80,
+                                        height: 80,
+                                        borderRadius: "50%",
+                                        background: "rgba(255, 255, 255, 0.04)",
+                                        bottom: 10,
+                                        left: 20
+                                    }}
+                                />
+                            </Box>
+                            <input
+                                type="file"
+                                id="profile-photo-input"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleProfilePhotoChange}
+                            />
+                            <Avatar
+                                src={profilePhotoUrl || undefined}
+                                onClick={() => {
+                                    const el = document.getElementById("profile-photo-input");
+                                    if (el) el.click();
+                                }}
+                                sx={{
+                                    width: 90,
+                                    height: 90,
+                                    border: "4px solid #ffffff",
+                                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
+                                    position: "absolute",
+                                    bottom: "-45px",
+                                    left: "24px",
+                                    zIndex: 2,
+                                    bgcolor: "#e0e7ff",
+                                    color: "#4f46e5",
+                                    fontSize: profilePhotoUrl ? "32px" : "11px",
+                                    fontWeight: 800,
+                                    cursor: "pointer",
+                                    textAlign: "center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    lineHeight: "1.2",
+                                    "&:hover": {
+                                        opacity: 0.85
+                                    }
+                                }}
+                            >
+                                {!profilePhotoUrl && "upload photo here"}
+                            </Avatar>
+
+                            {/* <Avatar
+                                sx={{
+                                    width: 90,
+                                    height: 90,
+                                    border: "4px solid #ffffff",
+                                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
+                                    position: "absolute",
+                                    bottom: "-45px",
+                                    left: "24px",
+                                    zIndex: 2,
+                                    bgcolor: "#e0e7ff",
+                                    color: "#4f46e5",
+                                    fontSize: "32px",
+                                    fontWeight: 800
+                                }}
+                            >
+                                {displayEmployee.name.charAt(0)}
+                            </Avatar> */}
+
+                        </Box>
+
+                        {/* Info Section with padding-top layout offset for Avatar overlap */}
+                        <Box sx={{ pt: 7.5, px: 3, pb: 3.5 }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+                                <Box sx={{ minWidth: 0, pr: 2 }}>
+                                    <Typography level="title-lg" sx={{ fontWeight: 900, color: "#1e1b4b" }} noWrap>
+                                        {displayEmployee.name}
+                                    </Typography>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+                                        {/* <Typography level="body-xs" sx={{ color: "#7c3aed", fontWeight: 800 }} noWrap>
+                                            {displayEmployee.role}
+                                        </Typography> */}
+                                        <Chip
+                                            size="sm"
+                                            variant="soft"
+                                            sx={{
+                                                fontSize: "10px",
+                                                fontWeight: 800,
+                                                bgcolor: "rgba(124, 58, 237, 0.08)",
+                                                color: "#7c3aed",
+                                                px: 1,
+                                                py: 0.25,
+                                                borderRadius: "6px"
+                                            }}
+                                        >
+                                            #{displayEmployee.employee_id}
+                                        </Chip>
+                                    </Box>
+                                </Box>
+
+                                {/* Action Buttons Capsule */}
+                                <Stack direction="row" spacing={1.2}>
+                                    <IconButton
+                                        size="sm"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            window.open(`mailto:${displayEmployee.email}`);
+                                            successNotify("Opening email client...");
+                                        }}
+                                        sx={{
+                                            borderRadius: "50%",
+                                            width: "36px",
+                                            height: "36px",
+                                            borderColor: "rgba(99, 102, 241, 0.15)",
+                                            color: "#4f46e5",
+                                            bgcolor: "rgba(99, 102, 241, 0.02)",
+                                            transition: "0.2s",
+                                            "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
+                                        }}
+                                    >
+                                        <Email sx={{ fontSize: 15 }} />
+                                    </IconButton>
+                                    <IconButton
+                                        size="sm"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            window.open(`tel:${displayEmployee.mobile}`);
+                                            successNotify("Calling mobile number...");
+                                        }}
+                                        sx={{
+                                            borderRadius: "50%",
+                                            width: "36px",
+                                            height: "36px",
+                                            borderColor: "rgba(99, 102, 241, 0.15)",
+                                            color: "#4f46e5",
+                                            bgcolor: "rgba(99, 102, 241, 0.02)",
+                                            transition: "0.2s",
+                                            "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
+                                        }}
+                                    >
+                                        <Call sx={{ fontSize: 15 }} />
+                                    </IconButton>
+                                </Stack>
+                            </Box>
+                            <Divider sx={{ mb: 2, opacity: 0.6 }} />
+                            <Stack spacing={1.5}>
+
+                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>Worksite Location</Typography>
+                                    <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.company}</Typography>
+                                </Box>
+                            </Stack>
+                        </Box>
+                    </Card>
                 </Grid>
 
 
