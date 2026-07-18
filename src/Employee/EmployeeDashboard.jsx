@@ -221,13 +221,13 @@ const EmployeeDashboard = () => {
                             flexDirection: { xs: "column", lg: "row" },
                             alignItems: "stretch",
                         }} >
-                        <Box
+                        {/* <Box
                             sx={{
                                 flex: 1,
                                 minWidth: 0
                             }}>
                             <ReminderAreaChartCard reminders={remindersData} />
-                        </Box>
+                        </Box> */}
                         <Box
                             sx={{
                                 flex: 2, // ~33%

@@ -34,6 +34,7 @@ import {
   getProfilePhoto,
   FetchCallCenterPerformance,
   getEmployeeRecentActivity,
+  getEmployeeActiveCalls,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -188,6 +189,19 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
     refetchOnWindowFocus: false,
   });
 };
+
+
+
+export const useGetMyEmployeeActiveCalls = (empid) => {
+  return useQuery({
+    queryKey: ["emp-mycalls", empid],
+    queryFn: () => getEmployeeActiveCalls(empid),
+    staleTime: 0,
+    enabled: !!empid,
+    refetchOnWindowFocus: false,
+  });
+};
+
 
 export const useAdminDashBoardCounts = (from, to) => {
   return useQuery({

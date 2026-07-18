@@ -2,7 +2,6 @@ import React, { memo, useState } from "react";
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   Avatar,
@@ -10,6 +9,7 @@ import {
   LinearProgress,
   Chip,
   useTheme,
+  Grid,
 } from "@mui/material";
 import {
   People,

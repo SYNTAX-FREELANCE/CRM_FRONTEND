@@ -191,7 +191,6 @@ const ReusableSidebar = ({
             justifyContent: open ? "flex-start" : "center",
             gap: open ? 1.2 : 0,
             minHeight: 70,
-            borderBottom: mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(231, 229, 228, 0.4)",
             background: mode === 'dark' ? "rgba(15, 23, 42, 0.8)" : "rgba(255, 255, 255, 0.4)",
             borderRadius: open ? "16px 16px 0 0" : 0,
           }}

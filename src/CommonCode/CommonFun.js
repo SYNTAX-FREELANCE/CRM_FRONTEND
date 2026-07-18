@@ -1,6 +1,6 @@
 
 import { axioslogin } from "../Connection/axios";
-import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
+import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
 
 
 
@@ -241,17 +241,27 @@ export const getMyActiveCalls = async (empid, filter) => {
     return [];
   } catch (error) {
     console.error("getMyActiveCalls error:", error);
-    throw new Error(
-      error?.response?.data?.message || "Failed to fetch vehicles",
-    );
   }
 };
 
+
+export const getEmployeeActiveCalls = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-active-batch/${empid}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 export const getAdminDashboardCount = async (from, to) => {
-  console.log({
-    from,
-    to,
-  });
+
 
   if (!from || !to) return [];
   try {
@@ -491,8 +501,6 @@ export const getProfilePhoto = async (userId) => {
     return "";
   }
 };
-
-
 
 
 export const handleProfilePhotoChange = async (e, empId, queryClient) => {
