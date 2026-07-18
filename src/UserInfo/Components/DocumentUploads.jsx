@@ -10,13 +10,12 @@ import {
     AadharIcon
 } from "./Icons";
 import { axioslogin } from "../../Connection/axios";
+import { errorNotify, infoNotify } from "../../constant/Constant";
 
 const DocumentUploads = ({
     userId,
     employeeId,
     successNotify,
-    errorNotify,
-    infoNotify
 }) => {
     // Fetch and load existing files from database using useQuery hook from common useQuery file
     const { data: documents = { bankDetails: [], resume: [], aadhar: [], otherUploads: [] }, refetch: refetchDocuments } = useEmployeeFiles(userId);
@@ -42,21 +41,21 @@ const DocumentUploads = ({
 
         // Check file extensions (allowed: jpg, jpeg, png, pdf)
         const allowedExtensions = ["jpg", "jpeg", "png", "pdf"];
-        for (const file of files) {
+        const invalidFile = files.find(file => {
             const fileExtension = file.name.split('.').pop().toLowerCase();
-            if (!allowedExtensions.includes(fileExtension)) {
-                infoNotify(`File "${file.name}" is not supported. Only JPG, PNG, and PDF files are allowed.`);
-                return;
-            }
+            return !allowedExtensions.includes(fileExtension);
+        });
+        if (invalidFile) {
+            infoNotify(`File "${invalidFile.name}" is not supported. Only JPG, PNG, and PDF files are allowed.`);
+            return;
         }
 
         // Check file sizes (25MB limit)
         const MAX_SIZE = 25 * 1024 * 1024;
-        for (const file of files) {
-            if (file.size > MAX_SIZE) {
-                infoNotify(`File "${file.name}" exceeds 25 MB limit`);
-                return;
-            }
+        const oversizedFile = files.find(file => file.size > MAX_SIZE);
+        if (oversizedFile) {
+            infoNotify(`File "${oversizedFile.name}" exceeds 25 MB limit`);
+            return;
         }
 
         setPendingUpload({ docType, files });
@@ -161,13 +160,24 @@ const DocumentUploads = ({
 
     return (
         <Grid xs={12} sm={12} md={4}>
-            <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)", height: "100%", display: "flex", flexDirection: "column" }}>
+            <Box
+                sx={{
+                    p: { xs: 1.5, md: 2.5 },
+                    borderRadius: "18px",
+                    bgcolor: "#f8fafc",
+                    border: "1px solid rgba(0,0,0,0.01)",
+                    height: { xs: "auto", md: "450px" },
+                    display: "flex",
+                    flexDirection: "column",
+                    boxSizing: "border-box"
+                }}
+            >
                 <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
                     <CloudUploadIcon sx={{ color: "#2563eb", fontSize: 20 }} />
                     Document Uploads
                 </Typography>
                 <Divider sx={{ mb: 2, opacity: 0.6 }} />
-                <Stack spacing={2} sx={{ flex: 1 }}>
+                <Stack spacing={2} sx={{ flex: 1, overflowY: "auto", pr: 0.5 }}>
                     {["bankDetails", "resume", "aadhar", "otherUploads"].map((docType) => {
                         const docsList = documents[docType] || [];
                         const labelMap = {
@@ -195,7 +205,7 @@ const DocumentUploads = ({
                                 }}
                             >
                                 {/* Header Info and Persistent Upload Button */}
-                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5, flexWrap: "wrap" }}>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: 1 }}>
                                         <Avatar variant="soft" sx={{ width: 32, height: 32, bgcolor: "rgba(0,0,0,0.03)", borderRadius: "8px" }}>
                                             {icon}
@@ -250,7 +260,8 @@ const DocumentUploads = ({
                                                     p: 1,
                                                     borderRadius: "8px",
                                                     bgcolor: "white",
-                                                    border: "1px solid rgba(0,0,0,0.05)"
+                                                    border: "1px solid rgba(0,0,0,0.05)",
+                                                    minWidth: 0
                                                 }}
                                             >
                                                 <Typography level="body-xs" noWrap sx={{ flex: 1, mr: 1, color: "success.700", fontWeight: 700, fontSize: "10.5px" }}>
@@ -290,6 +301,7 @@ const DocumentUploads = ({
                     <ModalDialog
                         variant="outlined"
                         sx={{
+                            width: { xs: "calc(100vw - 32px)", sm: "420px" },
                             maxWidth: "420px",
                             borderRadius: "20px",
                             boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
@@ -352,6 +364,7 @@ const DocumentUploads = ({
                     <ModalDialog
                         variant="outlined"
                         sx={{
+                            width: { xs: "calc(100vw - 32px)", sm: "420px" },
                             maxWidth: "420px",
                             borderRadius: "20px",
                             boxShadow: "0 20px 40px rgba(0,0,0,0.12)",

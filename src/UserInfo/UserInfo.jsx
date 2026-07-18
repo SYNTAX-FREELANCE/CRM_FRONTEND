@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
     Box,
     Typography,
@@ -24,7 +24,7 @@ const UserInfo = () => {
     const { user } = useAuth();
     const isAdmin = user?.role?.toLowerCase() === "admin";
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (user && !isAdmin) {
             navigate(`/home/userinfo/${user.id}`, { replace: true });
         }

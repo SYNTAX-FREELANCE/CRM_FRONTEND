@@ -11,7 +11,7 @@ const PerformanceChart = ({
     return (
         <Card
             sx={{
-                p: 3.5,
+                p: { xs: 2.5, sm: 3, md: 3.5 },
                 borderRadius: "24px",
                 bgcolor: "white",
                 border: "1px solid rgba(0,0,0,0.02)",
@@ -19,7 +19,7 @@ const PerformanceChart = ({
                 mt: 3.5
             }}
         >
-            <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ md: "center" }} spacing={2.5} mb={3.5}>
+            <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} spacing={2.5} mb={3.5}>
                 <Box>
                     <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b" }}>
                         Call Center Performance Analytics
@@ -30,8 +30,28 @@ const PerformanceChart = ({
                 </Box>
 
                 {/* Date Picker inputs */}
-                <Stack direction="row" spacing={2} alignItems="center" useFlexGap flexWrap="wrap">
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#f8fafc", px: 1.5, py: 0.75, borderRadius: "10px", border: "1px solid rgba(0,0,0,0.03)" }}>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    useFlexGap
+                    flexWrap="wrap"
+                    sx={{ width: { xs: "100%", sm: "auto" } }}
+                >
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 1,
+                            bgcolor: "#f8fafc",
+                            px: 1.5,
+                            py: 0.75,
+                            borderRadius: "10px",
+                            border: "1px solid rgba(0,0,0,0.03)",
+                            flex: { xs: 1, sm: "initial" }
+                        }}
+                    >
                         <Typography level="body-xs" sx={{ fontWeight: 800, color: "neutral.600" }}>From:</Typography>
                         <input
                             type="date"
@@ -45,11 +65,25 @@ const PerformanceChart = ({
                                 color: "#1e1b4b",
                                 fontFamily: "inherit",
                                 outline: "none",
-                                cursor: "pointer"
+                                cursor: "pointer",
+                                width: "100%"
                             }}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#f8fafc", px: 1.5, py: 0.75, borderRadius: "10px", border: "1px solid rgba(0,0,0,0.03)" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 1,
+                            bgcolor: "#f8fafc",
+                            px: 1.5,
+                            py: 0.75,
+                            borderRadius: "10px",
+                            border: "1px solid rgba(0,0,0,0.03)",
+                            flex: { xs: 1, sm: "initial" }
+                        }}
+                    >
                         <Typography level="body-xs" sx={{ fontWeight: 800, color: "neutral.600" }}>To:</Typography>
                         <input
                             type="date"
@@ -63,7 +97,8 @@ const PerformanceChart = ({
                                 color: "#1e1b4b",
                                 fontFamily: "inherit",
                                 outline: "none",
-                                cursor: "pointer"
+                                cursor: "pointer",
+                                width: "100%"
                             }}
                         />
                     </Box>

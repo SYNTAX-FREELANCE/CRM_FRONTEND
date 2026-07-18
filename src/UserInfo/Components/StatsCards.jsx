@@ -21,7 +21,7 @@ const StatsCards = ({ TotalCount = [] }) => {
                     <Grid key={idx} xs={6} sm={4} md={2}>
                         <Card
                             sx={{
-                                p: 2.5,
+                                p: { xs: 1.5, sm: 2, md: 2.5 },
                                 borderRadius: "20px",
                                 bgcolor: "white",
                                 border: "1px solid rgba(0,0,0,0.02)",
@@ -36,15 +36,42 @@ const StatsCards = ({ TotalCount = [] }) => {
                                 }
                             }}
                         >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                                <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 0.5 }}>
+                                <Typography
+                                    level="body-xs"
+                                    sx={{
+                                        color: "neutral.550",
+                                        fontWeight: 800,
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.5px",
+                                        fontSize: { xs: "9px", sm: "10px", md: "11px" }
+                                    }}
+                                >
                                     {item.status_name}
                                 </Typography>
-                                <Avatar size="sm" sx={{ bgcolor: style.bg, color: style.color, width: 24, height: 24 }}>
-                                    <NorthEast sx={{ fontSize: 11 }} />
+                                <Avatar
+                                    size="sm"
+                                    sx={{
+                                        bgcolor: style.bg,
+                                        color: style.color,
+                                        width: { xs: 20, md: 24 },
+                                        height: { xs: 20, md: 24 },
+                                        flexShrink: 0
+                                    }}
+                                >
+                                    <NorthEast sx={{ fontSize: { xs: 9, md: 11 } }} />
                                 </Avatar>
                             </Box>
-                            <Typography level="h2" sx={{ fontWeight: 950, color: "#1e1b4b", mt: 1.5, fontSize: "26px", fontFamily: "monospace" }}>
+                            <Typography
+                                level="h2"
+                                sx={{
+                                    fontWeight: 950,
+                                    color: "#1e1b4b",
+                                    mt: 1.5,
+                                    fontSize: { xs: "20px", sm: "22px", md: "26px" },
+                                    fontFamily: "monospace"
+                                }}
+                            >
                                 {item.total_count}
                             </Typography>
                         </Card>

@@ -2,18 +2,15 @@ import React from "react";
 import { Card, Box, Avatar, CircularProgress, Typography, Chip, Stack, IconButton, Divider } from "@mui/joy";
 import { CameraAlt, Email, Call } from "@mui/icons-material";
 import { useAuth } from "../../Context/AuthContext";
+import { successNotify } from "../../constant/Constant";
 
 const ProfileWidget = ({
     displayEmployee,
     profilePhotoUrl,
     isProfilePhotoUploading,
     handleProfilePhotoChange,
-    successNotify,
-    errorNotify,
-    isAdmin: propIsAdmin,
+    isAdmin
 }) => {
-    const { user } = useAuth();
-    const isAdmin = propIsAdmin !== undefined ? propIsAdmin : user?.role?.toLowerCase() === "admin";
 
     return (
         <Card
@@ -23,7 +20,7 @@ const ProfileWidget = ({
                 overflow: "hidden",
                 border: "1px solid rgba(0,0,0,0.02)",
                 boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
-                height: "100%"
+                height: { xs: "auto", md: "390px" }
             }}
         >
             <Box sx={{ position: "relative", width: "100%" }}>
@@ -77,7 +74,8 @@ const ProfileWidget = ({
                         boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
                         position: "absolute",
                         bottom: "-45px",
-                        left: "24px",
+                        left: { xs: "50%", sm: "24px" },
+                        transform: { xs: "translateX(-50%)", sm: "none" },
                         zIndex: 2,
                         bgcolor: "#e0e7ff",
                         color: "#4f46e5",
@@ -113,13 +111,23 @@ const ProfileWidget = ({
             </Box>
 
             {/* Info Section with padding-top layout offset for Avatar overlap */}
-            <Box sx={{ pt: 7.5, px: 3, pb: 3.5 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-                    <Box sx={{ minWidth: 0, pr: 2 }}>
+            <Box sx={{ pt: { xs: 8, sm: 7.5 }, px: { xs: 2.5, sm: 3 }, pb: 3.5 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        alignItems: { xs: "center", sm: "flex-start" },
+                        justifyContent: "space-between",
+                        textAlign: { xs: "center", sm: "left" },
+                        mb: 2,
+                        gap: { xs: 2, sm: 0 }
+                    }}
+                >
+                    <Box sx={{ minWidth: 0, pr: { xs: 0, sm: 2 } }}>
                         <Typography level="title-lg" sx={{ fontWeight: 900, color: "#1e1b4b" }} noWrap>
                             {displayEmployee.name}
                         </Typography>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: { xs: "center", sm: "flex-start" }, alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
                             <Chip
                                 size="sm"
                                 variant="soft"
@@ -134,6 +142,20 @@ const ProfileWidget = ({
                                 }}
                             >
                                 #{displayEmployee.employee_id}
+                            </Chip>
+                            <Chip
+                                size="sm"
+                                variant="soft"
+                                color="primary"
+                                sx={{
+                                    fontSize: "10px",
+                                    fontWeight: 800,
+                                    px: 1,
+                                    py: 0.25,
+                                    borderRadius: "6px"
+                                }}
+                            >
+                                {displayEmployee.role}
                             </Chip>
                         </Box>
                     </Box>
@@ -184,7 +206,7 @@ const ProfileWidget = ({
                 </Box>
                 <Divider sx={{ mb: 2, opacity: 0.6 }} />
                 <Stack spacing={1.5}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "center", sm: "center" }, gap: { xs: 0.5, sm: 0 } }}>
                         <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>Worksite Location</Typography>
                         <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.company}</Typography>
                     </Box>

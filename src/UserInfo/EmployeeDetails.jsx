@@ -14,14 +14,14 @@ import {
     KeyboardArrowUp
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
+import { errorNotify, getAuthUser, infoNotify, successNotify } from "../constant/Constant";
 import {
     useEmployeeProfile,
     useFetchDashBoardCounts,
     useFetchDashBoardReminders,
     useGetAttendanceByDate,
     useProfilePhoto,
-    useCallCenterPerformance,
+    // useCallCenterPerformance,
 } from "../CommonCode/useQuery";
 
 // Modular Subcomponents
@@ -33,21 +33,27 @@ import AttendanceLogs from "./Components/AttendanceLogs";
 import RemindersPanel from "./Components/RemindersPanel";
 import PersonalCompanyInfo from "./Components/PersonalCompanyInfo";
 import DocumentUploads from "./Components/DocumentUploads";
-import PerformanceChart from "./Components/PerformanceChart";
+// import PerformanceChart from "./Components/PerformanceChart";
 import { axioslogin } from "../Connection/axios";
 
 const EmployeeDetails = () => {
     const navigate = useNavigate();
     const { employeeId } = useParams();
+
+    const authUser = getAuthUser();
+
+    const { role } = authUser ?? {}
+
+    const isAdmin = role?.toLowerCase() === "admin";
     // const { user } = useAuth();
 
     const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
     // Mixed Chart Date selectors state
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    // const [startDate, setStartDate] = useState(new Date());
+    // const [endDate, setEndDate] = useState(new Date());
 
     const { data: employee, isLoading: loadingEmp } = useEmployeeProfile(employeeId);
-    const { data: performanceData } = useCallCenterPerformance(employee?.user_id, startDate, endDate);
+    // const { data: performanceData } = useCallCenterPerformance(employee?.user_id, startDate, endDate);
     const { data: TotalCount = [] } = useFetchDashBoardCounts(employee?.user_id);
     const { data: remindersData = [] } = useFetchDashBoardReminders(employee?.user_id);
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
@@ -74,7 +80,7 @@ const EmployeeDetails = () => {
         });
     }, [remindersData]);
 
-    const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
+    // const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
     const [isProfilePhotoUploading, setIsProfilePhotoUploading] = useState(false);
 
     const { data: profilePhotoUrl = "", refetch: refetchProfilePhoto } = useProfilePhoto(employee?.user_id);
@@ -179,20 +185,20 @@ const EmployeeDetails = () => {
     const activeEvents = getActiveEvents(selectedDate);
 
     // Calculate sum of metrics
-    const getSummaryMetrics = () => {
-        if (!Array.isArray(performanceData)) {
-            return { leads: 0, appointments: 0, callbacks: 0, sold: 0 };
-        }
-        return performanceData.reduce(
-            (acc, item) => ({
-                leads: acc.leads + (item.leads || 0),
-                appointments: acc.appointments + (item.appointments || 0),
-                callbacks: acc.callbacks + (item.callbacks || 0),
-                sold: acc.sold + (item.sold || 0)
-            }),
-            { leads: 0, appointments: 0, callbacks: 0, sold: 0 }
-        );
-    };
+    // const getSummaryMetrics = () => {
+    //     if (!Array.isArray(performanceData)) {
+    //         return { leads: 0, appointments: 0, callbacks: 0, sold: 0 };
+    //     }
+    //     return performanceData.reduce(
+    //         (acc, item) => ({
+    //             leads: acc.leads + (item.leads || 0),
+    //             appointments: acc.appointments + (item.appointments || 0),
+    //             callbacks: acc.callbacks + (item.callbacks || 0),
+    //             sold: acc.sold + (item.sold || 0)
+    //         }),
+    //         { leads: 0, appointments: 0, callbacks: 0, sold: 0 }
+    //     );
+    // };
 
     // Format join date
     const formatDate = (dateStr) => {
@@ -210,7 +216,7 @@ const EmployeeDetails = () => {
         }
     };
 
-    const metricsSummary = getSummaryMetrics();
+    // const metricsSummary = getSummaryMetrics();
 
     // Calculate dynamic overall stats from TotalCount status totals
     const getOverallStats = () => {
@@ -288,10 +294,10 @@ const EmployeeDetails = () => {
         dob: employee?.dob,
         address: employee?.address,
         joining: formatDate(employee.date_of_join),
-        leads: metricsSummary.leads || 0,
-        appointments: metricsSummary.appointments || 0,
-        callbacks: metricsSummary.callbacks || 0,
-        sold: metricsSummary.sold || 0,
+        // leads: metricsSummary.leads || 0,
+        // appointments: metricsSummary.appointments || 0,
+        // callbacks: metricsSummary.callbacks || 0,
+        // sold: metricsSummary.sold || 0,
         attendance: "-"
     } : null;
 
@@ -324,10 +330,10 @@ const EmployeeDetails = () => {
         <Box
             sx={{
                 minHeight: "100vh",
-                p: { xs: 2.5, md: 4.5 },
+                p: { xs: 1.5, sm: 2.5, md: 4 },
                 display: "flex",
                 flexDirection: "column",
-                gap: 4,
+                gap: { xs: 3, md: 4 },
                 bgcolor: "#f8fafc",
                 fontFamily: "'Outfit', 'Inter', sans-serif",
                 overflowX: "hidden"
@@ -335,25 +341,29 @@ const EmployeeDetails = () => {
         >
             {/* Header Back Button */}
             {/* {user?.role?.toLowerCase() === "admin" && ( */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Button
-                    startDecorator={<ArrowBack />}
-                    variant="plain"
-                    color="neutral"
-                    sx={{
-                        borderRadius: "12px",
-                        fontWeight: 700,
-                        bgcolor: "#ffffff",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-                        border: "1px solid rgba(0,0,0,0.04)",
-                        "&:hover": { bgcolor: "neutral.50" }
-                    }}
-                    onClick={() => navigate(-1)}
-                >
-                    Back to Directory
-                </Button>
-            </Box>
-            {/* )} */}
+            {
+                isAdmin &&
+
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Button
+                        startDecorator={<ArrowBack />}
+                        variant="plain"
+                        color="neutral"
+                        sx={{
+                            borderRadius: "12px",
+                            fontWeight: 700,
+                            bgcolor: "#ffffff",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+                            border: "1px solid rgba(0,0,0,0.04)",
+                            "&:hover": { bgcolor: "neutral.50" }
+                        }}
+                        onClick={() => navigate(-1)}
+                    >
+                        Back to Directory
+                    </Button>
+                </Box>
+            }
+
 
             {/* Top Row: Dynamic Stats Cards */}
             <StatsCards TotalCount={TotalCount} />
@@ -361,21 +371,18 @@ const EmployeeDetails = () => {
             {/* Row 2: Profile Widget (Left) + Overall Performance (Middle) + Calendar Widget (Right) */}
             <Grid container spacing={3.5} sx={{ mb: 3.5 }}>
                 {/* Profile Widget Card with overlay banner */}
-                <Grid xs={12} md={3.5}>
-
+                <Grid xs={12} sm={6} md={3.5}>
                     <ProfileWidget
                         displayEmployee={displayEmployee}
                         profilePhotoUrl={profilePhotoUrl}
                         isProfilePhotoUploading={isProfilePhotoUploading}
                         handleProfilePhotoChange={handleProfilePhotoChange}
-                        successNotify={successNotify}
-                        errorNotify={errorNotify}
+                        isAdmin={isAdmin}
                     />
                 </Grid>
 
-
                 {/* Overall Performance Card Widget */}
-                <Grid xs={12} md={4.5}>
+                <Grid xs={12} sm={6} md={4.5}>
                     <OverallPerformance
                         overallScore={overallScore}
                         conversionRate={conversionRate}
@@ -387,7 +394,7 @@ const EmployeeDetails = () => {
                 </Grid>
 
                 {/* Calendar Widget Card */}
-                <Grid xs={12} md={4}>
+                <Grid xs={12} sm={12} md={4}>
                     <CalendarWidget
                         calendarDate={calendarDate}
                         selectedDate={selectedDate}
@@ -437,7 +444,7 @@ const EmployeeDetails = () => {
                             Personal & Company Information Details
                         </Typography>
                     </Box>
-                    <Button
+                    {/* <Button
                         variant="soft"
                         color="neutral"
                         onClick={() => setDetailsPanelOpen(!detailsPanelOpen)}
@@ -455,36 +462,34 @@ const EmployeeDetails = () => {
                         }}
                     >
                         {detailsPanelOpen ? "Hide Details" : "Show Details"}
-                    </Button>
+                    </Button> */}
                 </Stack>
 
-                {detailsPanelOpen && (
-                    <Grid container spacing={{ xs: 2.5, sm: 3, md: 4 }} sx={{ mt: 0, pt: 1 }}>
-                        <PersonalCompanyInfo
-                            displayEmployee={displayEmployee}
-                            handleCopyToClipboard={handleCopyToClipboard}
-                        />
+                {/* {detailsPanelOpen && ( */}
+                <Grid container spacing={{ xs: 2.5, sm: 3, md: 4 }} sx={{ mt: 0, pt: 1 }}>
+                    <PersonalCompanyInfo
+                        displayEmployee={displayEmployee}
+                        handleCopyToClipboard={handleCopyToClipboard}
+                    />
 
-                        {/* Document Uploads */}
-                        <DocumentUploads
-                            userId={employee?.user_id}
-                            employeeId={employee?.employee_id}
-                            successNotify={successNotify}
-                            errorNotify={errorNotify}
-                            infoNotify={infoNotify}
-                        />
-                    </Grid>
-                )}
+                    {/* Document Uploads */}
+                    <DocumentUploads
+                        userId={employee?.user_id}
+                        employeeId={employee?.employee_id}
+                        successNotify={successNotify}
+                    />
+                </Grid>
+                {/* )} */}
             </Card>
 
             {/* Call Center Performance mixed chart at the very bottom */}
-            <PerformanceChart
+            {/* <PerformanceChart
                 performanceData={performanceData}
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-            />
+            /> */}
         </Box>
     );
 };

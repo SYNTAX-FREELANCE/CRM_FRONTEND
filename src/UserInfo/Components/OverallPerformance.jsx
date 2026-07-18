@@ -32,12 +32,12 @@ const OverallPerformance = ({
     return (
         <Card
             sx={{
-                p: 3,
+                p: { xs: 2.5, sm: 3 },
                 borderRadius: "24px",
                 bgcolor: "white",
                 border: "1px solid rgba(0,0,0,0.02)",
                 boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
-                height: "100%",
+                height: { xs: "auto", md: "390px" },
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between"

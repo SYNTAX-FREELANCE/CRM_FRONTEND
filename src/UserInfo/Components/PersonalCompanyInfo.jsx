@@ -90,7 +90,17 @@ const PersonalCompanyInfo = ({
         <>
             {/* Personal Information */}
             <Grid xs={12} sm={6} md={4}>
-                <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
+                <Box
+                    sx={{
+                        p: { xs: 1.5, md: 2.5 },
+                        borderRadius: "18px",
+                        bgcolor: "#f8fafc",
+                        border: "1px solid rgba(0,0,0,0.01)",
+                        height: { xs: "auto", md: "450px" },
+                        overflowY: "auto",
+                        boxSizing: "border-box"
+                    }}
+                >
                     <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
                         <Person sx={{ color: "#4f46e5", fontSize: 20 }} />
                         Personal Information
@@ -99,7 +109,7 @@ const PersonalCompanyInfo = ({
                     <Box
                         sx={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                            gridTemplateColumns: { xs: "1fr", sm: "repeat(auto-fill, minmax(180px, 1fr))" },
                             gap: 2
                         }}
                     >
@@ -115,7 +125,17 @@ const PersonalCompanyInfo = ({
 
             {/* Company Information */}
             <Grid xs={12} sm={6} md={4}>
-                <Box sx={{ p: 1, borderRadius: "18px", bgcolor: "#f8fafc", border: "1px solid rgba(0,0,0,0.01)" }}>
+                <Box
+                    sx={{
+                        p: { xs: 1.5, md: 2.5 },
+                        borderRadius: "18px",
+                        bgcolor: "#f8fafc",
+                        border: "1px solid rgba(0,0,0,0.01)",
+                        height: { xs: "auto", md: "450px" },
+                        overflowY: "auto",
+                        boxSizing: "border-box"
+                    }}
+                >
                     <Typography level="title-sm" sx={{ fontWeight: 900, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 1.2, mb: 2 }}>
                         <Business sx={{ color: "#ea580c", fontSize: 20 }} />
                         Company Information
@@ -124,7 +144,7 @@ const PersonalCompanyInfo = ({
                     <Box
                         sx={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                            gridTemplateColumns: { xs: "1fr", sm: "repeat(auto-fill, minmax(180px, 1fr))" },
                             gap: 2
                         }}
                     >
