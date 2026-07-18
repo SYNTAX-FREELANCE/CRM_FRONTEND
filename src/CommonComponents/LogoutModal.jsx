@@ -2,8 +2,11 @@ import React from "react";
 import { Box, Typography, Modal, Button } from "@mui/joy";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CheckIcon from "@mui/icons-material/Check";
+import { useThemeMode } from "../Context/ThemeContext";
 
 const LogoutModal = ({ open, onClose, onStartLogout }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === 'dark';
     const [logoutCountdown, setLogoutCountdown] = React.useState(null);
 
     React.useEffect(() => {
@@ -36,14 +39,15 @@ const LogoutModal = ({ open, onClose, onStartLogout }) => {
         >
             <Box
                 sx={{
-                    width: { xs: 300, sm: 340 },
-                    maxWidth: "95vw",
-                    bgcolor: "#ffffff",
+                    width: { xs: '90%', sm: 340 },
+                    maxWidth: "400px",
+                    bgcolor: isDark ? "#1e293b" : "#ffffff",
                     borderRadius: { xs: 16, sm: 24 },
                     p: { xs: 2.5, sm: 4 },
                     textAlign: "center",
                     position: "relative",
                     overflow: "hidden",
+                    border: isDark ? "1px solid rgba(255,255,255,0.1)" : "none",
                 }}
             >
                 {/* Glowing Border Effect */}
@@ -84,7 +88,7 @@ const LogoutModal = ({ open, onClose, onStartLogout }) => {
                     fontWeight={700}
                     fontSize="22px"
                     sx={{
-                        color: "#030303",
+                        color: isDark ? "#f8fafc" : "#030303",
                         mb: 1.5,
                     }}
                 >
@@ -93,41 +97,31 @@ const LogoutModal = ({ open, onClose, onStartLogout }) => {
 
                 {/* Description */}
                 <Typography
-                    level="body-sm"
                     sx={{
-                        color: "#94a3b8",
+                        color: isDark ? "#94a3b8" : "#6b7280",
                         lineHeight: 1.7,
-                        fontSize: "14px",
-                        mb: 1,
+                        fontSize: "15px",
+                        mb: 3,
                     }}
                 >
-                    <Typography
-    sx={{
-        color: "#6b7280",
-        lineHeight: 1.7,
-        fontSize: "15px",
-        mb: 3,
-    }}
->
-    {logoutCountdown !== null ? (
-        <>
-            Session ends soon{" "}
-            <Typography
-                component="span"
-                sx={{
-                    color: "#ea580c",
-                    fontWeight: 800,
-                    fontSize: "18px",
-                    display: "inline",
-                }}>
-                {logoutCountdown}
-            </Typography>{" "}
-            sec
-        </>
-    ) : (
-        "Do you want to logout from your account?"
-    )}
-</Typography>
+                    {logoutCountdown !== null ? (
+                        <>
+                            Session ends soon{" "}
+                            <Typography
+                                component="span"
+                                sx={{
+                                    color: "#ea580c",
+                                    fontWeight: 800,
+                                    fontSize: "18px",
+                                    display: "inline",
+                                }}>
+                                {logoutCountdown}
+                            </Typography>{" "}
+                            sec
+                        </>
+                    ) : (
+                        "Do you want to logout from your account?"
+                    )}
                 </Typography>
 
                 {/* Countdown Display */}
@@ -145,11 +139,11 @@ const LogoutModal = ({ open, onClose, onStartLogout }) => {
                             fontWeight: 600,
                             fontSize: "14px",
                             border: "1px solid rgba(148, 163, 184, 0.3)",
-                            bgcolor: "rgba(148, 163, 184, 0.1)",
-                            color: "#94a3b8",
+                            bgcolor: isDark ? "rgba(148, 163, 184, 0.15)" : "rgba(148, 163, 184, 0.1)",
+                            color: isDark ? "#cbd5e1" : "#94a3b8",
                             boxShadow: "none",
                             "&:hover": {
-                                bgcolor: "rgba(148, 163, 184, 0.2)",
+                                bgcolor: isDark ? "rgba(148, 163, 184, 0.25)" : "rgba(148, 163, 184, 0.2)",
                                 border: "1px solid rgba(148, 163, 184, 0.5)",
                             },
                         }}

@@ -24,6 +24,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { getAuthUser } from "../constant/Constant";
 import { useCallback } from "react";
 import { useProfilePhoto } from "../CommonCode/useQuery";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { useThemeMode } from "../Context/ThemeContext";
 
 const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
 
@@ -42,6 +45,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
 
 
     const { data: profilePhotoUrl = "", isLoading: LoadingProfilePicture } = useProfilePhoto(id);
+    const { mode, toggleTheme } = useThemeMode();
 
     const activeMenu = useMemo(() => {
         const path = location.pathname;
@@ -75,6 +79,29 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
     }, [logoutCountdown, onLogout]);
 
     const handleLogout = () => setLogoutModal(true);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (avatarAnchorEl) {
+                // Don't close if clicking inside the menu or on the avatar button itself
+                if (
+                    event.target.closest('.MuiMenu-root') ||
+                    event.target.closest('[role="menu"]') ||
+                    avatarAnchorEl.contains(event.target)
+                ) {
+                    return;
+                }
+                setAvatarAnchorEl(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("touchstart", handleClickOutside);
+        };
+    }, [avatarAnchorEl]);
 
     const handleAvatarClick = useCallback((event) => {
         event.stopPropagation();
@@ -161,7 +188,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    bgcolor: "rgba(255, 255, 255, 0.95)",
+                    bgcolor: mode === 'dark' ? '#0f172a' : "rgba(255, 255, 255, 0.95)",
                 }}>
                     <Box
                         sx={{
@@ -170,8 +197,8 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             alignItems: "center",
                             gap: 1.2,
                             minHeight: 70,
-                            borderBottom: "1px solid rgba(231, 229, 228, 0.4)",
-                            background: "rgba(255, 255, 255, 0.4)",
+                            borderBottom: mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(231, 229, 228, 0.4)",
+                            background: mode === 'dark' ? "rgba(15, 23, 42, 0.8)" : "rgba(255, 255, 255, 0.4)",
                         }}
                     >
                         {/* Logo/Icon */}
@@ -256,7 +283,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                                             borderRadius: 2,
                                             cursor: "pointer",
                                             bgcolor: isActive ? "rgba(249,115,22,0.1)" : "transparent",
-                                            color: isActive ? "#ea580c" : "#111827",
+                                            color: isActive ? "#ea580c" : (mode === 'dark' ? '#f1f5f9' : '#111827'),
                                         }}
                                     >
                                         <Typography fontWeight={600}>
@@ -291,8 +318,8 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                                                             },
                                                         }}
                                                     >
-                                                        <AdjustIcon sx={{ fontSize: 12 }} />
-                                                        <Typography fontSize={14}>
+                                                        <AdjustIcon sx={{ fontSize: 12, color: mode === 'dark' ? '#94a3b8' : 'inherit' }} />
+                                                        <Typography fontSize={14} sx={{ color: mode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                                                             {sub.label}
                                                         </Typography>
                                                     </Box>
@@ -305,7 +332,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                         })}
                     </Box>
 
-                    <Divider sx={{ opacity: 0.6, borderColor: "#e7e5e4" }} />
+                    <Divider sx={{ opacity: 0.6, borderColor: mode === 'dark' ? "rgba(255,255,255,0.1)" : "#e7e5e4" }} />
 
                     <Box
                         sx={{
@@ -314,7 +341,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
-                            bgcolor: "#ffffff",
+                            bgcolor: mode === 'dark' ? '#1e293b' : "#ffffff",
                         }}
                     >
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: "100%" }}>
@@ -336,31 +363,53 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             }
 
                             <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <Typography fontWeight={600} fontSize={14} noWrap sx={{ color: "#111827" }}>
+                                <Typography fontWeight={600} fontSize={14} noWrap sx={{ color: mode === 'dark' ? '#f8fafc' : "#111827" }}>
                                     {user?.name}
                                 </Typography>
-                                <Typography fontSize={12} sx={{ color: "#6b7280" }} noWrap>
+                                <Typography fontSize={12} sx={{ color: mode === 'dark' ? '#94a3b8' : "#6b7280" }} noWrap>
                                     {user?.role}
                                 </Typography>
                             </Box>
-                            <Box
-                                onClick={handleLogout}
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    width: 36,
-                                    height: 36,
-                                    borderRadius: 3,
-                                    cursor: "pointer",
-                                    color: "#6b7280",
-                                    "&:hover": {
-                                        bgcolor: "rgba(249,115,22,0.12)",
-                                        color: "#ea580c",
-                                    },
-                                }}
-                            >
-                                <LogoutIcon fontSize="small" />
+                            
+                            <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                <Box
+                                    onClick={toggleTheme}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: 3,
+                                        cursor: "pointer",
+                                        color: mode === 'dark' ? '#94a3b8' : "#6b7280",
+                                        "&:hover": {
+                                            bgcolor: mode === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                                            color: mode === 'dark' ? '#f8fafc' : "#111827",
+                                        },
+                                    }}
+                                >
+                                    {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+                                </Box>
+                                <Box
+                                    onClick={handleLogout}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: 3,
+                                        cursor: "pointer",
+                                        color: mode === 'dark' ? '#94a3b8' : "#6b7280",
+                                        "&:hover": {
+                                            bgcolor: "rgba(249,115,22,0.12)",
+                                            color: "#ea580c",
+                                        },
+                                    }}
+                                >
+                                    <LogoutIcon fontSize="small" />
+                                </Box>
                             </Box>
                         </Box>
                     </Box>
@@ -389,10 +438,10 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                         ml: { xs: 1, sm: 2 },
                         borderRadius: { xs: '16px', sm: '20px' },
                         minWidth: { xs: 220, sm: 240 },
-                        background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                        background: mode === 'dark' ? 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.95) 100%)' : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
                         backdropFilter: 'blur(24px)',
-                        border: '1px solid rgba(255, 255, 255, 1)',
-                        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.5)',
+                        border: mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 1)',
+                        boxShadow: mode === 'dark' ? 'inset 0 0 0 1px rgba(255,255,255,0.1)' : 'inset 0 0 0 1px rgba(255,255,255,0.5)',
                         padding: { xs: '6px 0', sm: '8px 0' },
                         '& .MuiMenuItem-root': {
                             px: { xs: 1, sm: 1.5 },
@@ -408,7 +457,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                 }}
                 sx={{ zIndex: 1400 }}
             >
-                <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: '1px dashed rgba(231, 229, 228, 0.8)' }}>
+                <Box sx={{ px: { xs: 2, sm: 2.5 }, py: { xs: 1, sm: 1.5 }, mb: 1, borderBottom: mode === 'dark' ? '1px dashed rgba(255, 255, 255, 0.2)' : '1px dashed rgba(231, 229, 228, 0.8)' }}>
                     <Typography fontSize={{ xs: "10px", sm: "11px" }} fontWeight={800} color="#ea580c" textTransform="uppercase" letterSpacing="0.8px">
                         Settings
                     </Typography>
@@ -424,7 +473,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: { xs: 1.5, sm: 2 },
-                        color: "#374151",
+                        color: mode === 'dark' ? "#cbd5e1" : "#374151",
                         fontWeight: 600,
                         fontSize: { xs: "13px", sm: "14px" },
                         zIndex: 1,
@@ -465,8 +514,8 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             width: { xs: 32, sm: 36 },
                             height: { xs: 32, sm: 36 },
                             borderRadius: '10px',
-                            background: 'rgba(243, 244, 246, 0.8)',
-                            color: '#6b7280',
+                            background: mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(243, 244, 246, 0.8)',
+                            color: mode === 'dark' ? '#94a3b8' : '#6b7280',
                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         }}
                     >
@@ -541,8 +590,8 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                             width: { xs: 32, sm: 36 },
                             height: { xs: 32, sm: 36 },
                             borderRadius: '10px',
-                            background: 'rgba(243, 244, 246, 0.8)',
-                            color: '#6b7280',
+                            background: mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(243, 244, 246, 0.8)',
+                            color: mode === 'dark' ? '#94a3b8' : '#6b7280',
                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         }}
                     >

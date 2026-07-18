@@ -1,8 +1,11 @@
 import React, { memo } from "react";
-import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import { format } from "date-fns";
 
 const ActivityCard = ({ activity, icon, color, bgcolor }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Box
       sx={{
@@ -11,15 +14,15 @@ const ActivityCard = ({ activity, icon, color, bgcolor }) => {
         mb: 2,
         p: 2,
         borderRadius: 3,
-        bgcolor: "#fff",
-        border: "1px solid rgba(229,231,235,0.5)",
+        bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
+        border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(229,231,235,0.5)",
         transition: "0.2s",
         cursor: "pointer",
 
         "&:hover": {
-          bgcolor: "#f8fafc",
+          bgcolor: isDark ? "rgba(30,41,59,0.8)" : "#f8fafc",
           transform: "translateX(4px)",
-          boxShadow: "0 8px 20px rgba(37,99,235,.15)",
+          boxShadow: isDark ? "0 8px 20px rgba(0,0,0,0.5)" : "0 8px 20px rgba(37,99,235,.15)",
         },
       }}
     >
@@ -44,7 +47,7 @@ const ActivityCard = ({ activity, icon, color, bgcolor }) => {
             mb: 0.5,
           }}
         >
-          <Typography fontSize={14} fontWeight={700}>
+          <Typography fontSize={14} fontWeight={700} color={isDark ? "#f8fafc" : "inherit"}>
             {activity?.name}
           </Typography>
 
@@ -63,13 +66,13 @@ const ActivityCard = ({ activity, icon, color, bgcolor }) => {
           </Box>
         </Box>
 
-        <Typography fontSize={12} fontWeight={500}>
+        <Typography fontSize={12} fontWeight={500} color={isDark ? "#cbd5e1" : "inherit"}>
           {activity?.remarks}
         </Typography>
 
         <Typography
           fontSize={11}
-          color="text.secondary"
+          color={isDark ? "#94a3b8" : "text.secondary"}
           sx={{ mt: 0.5 }}
         >
           {format(new Date(activity.changed_at), "dd MMM yyyy, hh:mm a")}

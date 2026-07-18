@@ -9,6 +9,7 @@ import {
   Button,
   LinearProgress,
   Chip,
+  useTheme,
 } from "@mui/material";
 import {
   People,
@@ -88,6 +89,9 @@ const stats = [
 
 
 const AdminDashboard = () => {
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const authUser = getAuthUser();
   const today = new Date();
@@ -237,20 +241,21 @@ const AdminDashboard = () => {
               display: "flex",
               flexDirection: "column",
               borderRadius: 5,
-              boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-              border: "1px solid rgba(255,255,255,0.8)",
+              boxShadow: isDark ? "0 8px 30px rgba(0,0,0,0.5)" : "0 8px 30px rgba(0,0,0,0.06)",
+              border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.8)",
+              bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
             }}
           >
             {/* Header */}
             <Box
               sx={{
                 p: 3,
-                borderBottom: "1px solid #E5E7EB",
-                bgcolor: "#fff",
+                borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #E5E7EB",
+                bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
                 flexShrink: 0,
               }}
             >
-              <Typography fontSize={22} fontWeight={700}>
+              <Typography fontSize={22} fontWeight={700} color={isDark ? "#f8fafc" : "inherit"}>
                 Recent Activities
               </Typography>
             </Box>

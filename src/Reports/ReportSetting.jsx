@@ -109,7 +109,7 @@ const ReportSetting = () => {
                         borderRadius: { xs: "14px", md: "16px" },
                         overflow: "hidden",
                         px: 2,
-                       
+
                     }}
                 >
                     {items?.map((item, index) => {
@@ -135,7 +135,7 @@ const ReportSetting = () => {
                                     border: "1px solid #e2e8f0",
                                     boxShadow: "0 4px 14px rgba(15, 23, 42, 0.03)",
                                     borderBottom: isLast ? "none" : "1px solid #e5e7eb",
-                                     mb:1,
+                                    mb: 1,
                                     transition:
                                         "background-color 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease",
                                     "&:hover": {

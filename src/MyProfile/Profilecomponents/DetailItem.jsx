@@ -1,7 +1,9 @@
 import React, { memo } from "react";
-import { Box, Typography } from "@mui/joy";
+import { Box, Typography, useTheme } from "@mui/joy";
 
 const DetailItem = ({ icon, text, color }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     return (
         <Box
             sx={{
@@ -11,8 +13,8 @@ const DetailItem = ({ icon, text, color }) => {
                 px: 1.5,
                 py: 1.1,
                 borderRadius: 2,
-                bgcolor: "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(0,0,0,0.05)",
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "rgba(255,255,255,0.7)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.05)",
             }}
         >
             <Box sx={{ color }}>
@@ -24,6 +26,7 @@ const DetailItem = ({ icon, text, color }) => {
                     fontSize: { xs: 12, sm: 14 },
                     fontWeight: 800,
                     lineHeight: 1.2,
+                    color: isDark ? "#f8fafc" : "inherit",
                 }}
             >
                 {text}

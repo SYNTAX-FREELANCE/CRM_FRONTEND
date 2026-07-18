@@ -1,7 +1,10 @@
 import React from "react";
-import { Box, Avatar, Typography, Chip } from "@mui/material";
+import { Box, Avatar, Typography, Chip, useTheme } from "@mui/material";
 
 const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Box
       onClick={onClick}
@@ -11,13 +14,15 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
         gap: 1.5,
         p: { xs: 1.25, md: 1.5 },
         borderRadius: 3,
-        bgcolor: active ? "rgba(37,99,235,0.06)" : "#fff",
+        bgcolor: active 
+          ? (isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.06)")
+          : (isDark ? "rgba(30,41,59,0.7)" : "#fff"),
         border: active
           ? "1px solid rgba(37,99,235,0.35)"
-          : "1px solid rgba(226,232,240,0.9)",
+          : (isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.9)"),
         boxShadow: active
-          ? "0 10px 25px rgba(37,99,235,0.10)"
-          : "0 6px 18px rgba(15,23,42,0.04)",
+          ? (isDark ? "0 10px 25px rgba(0,0,0,0.5)" : "0 10px 25px rgba(37,99,235,0.10)")
+          : (isDark ? "none" : "0 6px 18px rgba(15,23,42,0.04)"),
         cursor: "pointer",
         transition: "0.2s",
         "&:hover": {
@@ -40,7 +45,7 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography
           sx={{
-            color: "#0f172a",
+            color: isDark ? "#f8fafc" : "#0f172a",
             fontWeight: 800,
             fontSize: { xs: 10, md: 12 },
             lineHeight: 1.2,
