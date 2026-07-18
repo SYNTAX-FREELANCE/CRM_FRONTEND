@@ -25,13 +25,20 @@ import { useNavigate } from "react-router-dom";
 import { warningNotify, successNotify } from "../constant/Constant";
 import { useAuth } from "../Context/AuthContext";
 import { useTheme, Modal, Backdrop, Fade, CircularProgress } from "@mui/material";
+import { useThemeMode } from "../Context/ThemeContext";
+import ThemeToggle from "../CommonComponents/ThemeToggle";
 
 const Login = () => {
+    
     const theme = useTheme();
+
     const isDark = theme.palette.mode === 'dark';
+
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+
+    const { mode, toggleTheme } = useThemeMode();
 
     // Forgot Password States
     const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
@@ -191,6 +198,13 @@ const Login = () => {
             }}
         >
             {/* Left Side - CRM & Nexus Info (visible on ALL screens) */}
+            <ThemeToggle
+                mode={mode}
+                onToggle={toggleTheme }
+                top={30}
+                right={30}
+                size={30}
+            />
             <Box
                 sx={{
                     // display: "flex",
@@ -715,7 +729,7 @@ const Login = () => {
                             {forgotPasswordStep === 2 && "Verify OTP"}
                             {forgotPasswordStep === 3 && "Reset Password"}
                         </Typography>
-                        
+
                         <Typography color="text.secondary" mb={3} fontSize="0.9rem">
                             {forgotPasswordStep === 1 && "Enter your Employee ID and Email to receive a verification code."}
                             {forgotPasswordStep === 2 && "Enter the 6-digit verification code sent to your email."}

@@ -1,7 +1,25 @@
-import React from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import React, { memo } from "react";
+import {
+  Box,
+  Stack,
+  Typography,
+  IconButton,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 
-const Row = ({ label, value, icon, accent = "blue" }) => (
+const Row = ({
+  label,
+  value,
+  icon,
+  accent = "blue",
+
+  editable = false,
+  isEditing = false,
+  onEdit,
+  onSave,
+  children,
+}) => (
   <Box
     sx={{
       display: "flex",
@@ -11,10 +29,18 @@ const Row = ({ label, value, icon, accent = "blue" }) => (
       py: 0.75,
       px: 0.25,
       borderBottom: "1px solid",
-      borderColor: accent === "orange" ? "rgba(249,115,22,.10)" : "rgba(37,99,235,.10)",
+      borderColor:
+        accent === "orange"
+          ? "rgba(249,115,22,.10)"
+          : "rgba(37,99,235,.10)",
     }}
   >
-    <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="center"
+      sx={{ minWidth: 0 }}
+    >
       {icon && (
         <Box
           sx={{
@@ -23,8 +49,14 @@ const Row = ({ label, value, icon, accent = "blue" }) => (
             borderRadius: "7px",
             display: "grid",
             placeItems: "center",
-            bgcolor: accent === "orange" ? "rgba(249,115,22,.12)" : "rgba(37,99,235,.12)",
-            color: accent === "orange" ? "warning.dark" : "primary.main",
+            bgcolor:
+              accent === "orange"
+                ? "rgba(249,115,22,.12)"
+                : "rgba(37,99,235,.12)",
+            color:
+              accent === "orange"
+                ? "warning.dark"
+                : "primary.main",
             flexShrink: 0,
           }}
         >
@@ -36,32 +68,71 @@ const Row = ({ label, value, icon, accent = "blue" }) => (
         variant="caption"
         sx={{
           fontWeight: 800,
-          color: accent === "orange" ? "warning.dark" : "primary.main",
+          color:
+            accent === "orange"
+              ? "warning.dark"
+              : "primary.main",
           textTransform: "uppercase",
           letterSpacing: 0.6,
           whiteSpace: "nowrap",
-            fontSize: { xs: 11, sm: 14 }
+          fontSize: { xs: 11, sm: 14 },
         }}
       >
         {label}
       </Typography>
     </Stack>
 
-    <Typography
-      variant="body2"
-      sx={{
-        fontSize: { xs: 10, sm: 14 },
-        fontWeight: 600,
-        color: "text.primary",
-        textAlign: "right",
-        wordBreak: "break-word",
-        ml: 1,
-        width: '80%'
-      }}
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="center"
+      justifyContent="flex-end"
+      sx={{ width: "80%" }}
     >
-      {value || "-"}
-    </Typography>
+      {isEditing ? (
+        children
+      ) : (
+        <Typography
+          component="div"
+          variant="body2"
+          sx={{
+            flex: 1,
+            fontSize: { xs: 10, sm: 14 },
+            fontWeight: { xs: 800, sm: 700 },
+            color: "text.primary",
+            textAlign: "right",
+            wordBreak: "break-word",
+          }}
+        >
+          {value || "-"}
+        </Typography>
+      )}
+
+      {editable && (
+        <IconButton
+          size="small"
+          color={isEditing ? "success" : "primary"}
+          onClick={isEditing ? onSave : onEdit}
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "#fff",
+            "&:hover": {
+              bgcolor: isEditing
+                ? "success.lighter"
+                : "primary.lighter",
+            },
+          }}
+        >
+          {isEditing ? (
+            <SaveIcon fontSize="small" />
+          ) : (
+            <EditIcon fontSize="small" />
+          )}
+        </IconButton>
+      )}
+    </Stack>
   </Box>
 );
 
-export default Row;
+export default memo(Row);

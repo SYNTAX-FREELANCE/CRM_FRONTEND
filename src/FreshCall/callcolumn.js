@@ -2,18 +2,39 @@ import { useMemo } from "react";
 import { Chip, Stack, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import { Box } from "@mui/joy";
+import { format, isValid } from "date-fns";
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import Tooltip from "@mui/material/Tooltip";
 
 export const TastkColumns = (openLead, isMobile = false) => {
   const mobileColumns = [
     {
       field: "customer_name",
       headerName: "Customer Name",
-      minWidth: 160,
+      minWidth: 180,
       flex: 1,
-      renderCell: (params) => (
-        <Typography sx={{ fontSize: 12 }} variant="body2" fontWeight={700} color="#0f172a">
-          {params.value || "-"}
-        </Typography>
+      renderCell: ({ row }) => (
+        <Stack direction="row" alignItems="center" spacing={0.7}>
+          <Typography
+            sx={{ fontSize: 12 }}
+            variant="body2"
+            fontWeight={900}
+            color="#0f172a"
+          >
+            {row.customer_name}
+          </Typography>
+
+          {row.is_previous_customer === 1 && (
+            <Tooltip title="Returning Customer">
+              <SupportAgentIcon
+                sx={{
+                  fontSize: 16,
+                  color: "#ff730e",
+                }}
+              />
+            </Tooltip>
+          )}
+        </Stack>
       ),
     },
     {
@@ -52,35 +73,65 @@ export const TastkColumns = (openLead, isMobile = false) => {
       headerName: "Customer Name",
       minWidth: 180,
       flex: 1,
-      renderCell: (params) => (
-        <Typography sx={{ fontSize: 12 }} variant="body2" fontWeight={600} color="#0f172a">
-          {params.value}
-        </Typography>
+      renderCell: ({ row }) => (
+        <Stack direction="row" alignItems="center" spacing={0.7}>
+          {row.is_previous_customer === 1 && (
+            <Tooltip placement="top" title="Returning Customer">
+              <SupportAgentIcon
+                sx={{
+                  fontSize: 18,
+                  color: "#ff730e",
+                }}
+              />
+            </Tooltip>
+          )}
+          <Typography
+            sx={{ fontSize: 12 }}
+            variant="body2"
+            fontWeight={900}
+            color="#0f172a"
+          >
+            {row.customer_name}
+          </Typography>
+
+        </Stack>
       ),
     },
     {
-      field: "district",
-      headerName: "Place",
+      field: "model",
+      headerName: "Model",
       minWidth: 140,
       flex: 1,
       renderCell: (params) => (
-        <Typography sx={{ fontSize: 12 }} variant="body2" color="#475569" fontWeight={600}>
+        <Typography sx={{ fontSize: 12 }} variant="body2" color="#475569" fontWeight={900}>
           {params.value}
         </Typography>
       ),
     },
     {
-      field: "city",
-      headerName: "City",
-      minWidth: 110,
+      field: "known_policy_expiry_date",
+      headerName: "Expiry Date",
+      minWidth: 140,
       flex: 0.8,
-      renderCell: (params) => (
-        <Stack direction="row" alignItems="center" gap={1}>
-          <Typography sx={{ fontSize: 12 }} variant="body2" fontWeight={600} color="#475569">
-            {params.value}
-          </Typography>
-        </Stack>
-      ),
+      renderCell: ({ value }) => {
+        const formattedDate =
+          value && isValid(new Date(value))
+            ? format(new Date(value), "MMMM d, yyyy")
+            : "-";
+
+        return (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: 12 }}
+              fontWeight={900}
+              color="#475569"
+            >
+              {formattedDate}
+            </Typography>
+          </Stack>
+        );
+      },
     },
     {
       field: "registration_number",
@@ -88,18 +139,14 @@ export const TastkColumns = (openLead, isMobile = false) => {
       minWidth: 150,
       flex: 1,
       renderCell: (params) => (
-        <Chip
-          label={params.value}
-          size="small"
-          sx={{
-            bgcolor: "rgba(255,255,255,.4)",
-            border: "1px solid rgba(255,255,255,.6)",
-            color: "#334155",
-            fontWeight: 800,
-            borderRadius: "6px",
-            fontSize: "11px",
-          }}
-        />
+        <Typography
+          variant="body2"
+          sx={{ fontSize: 12 }}
+          fontWeight={900}
+          color="#475569"
+        >
+          {params.value}
+        </Typography>
       ),
     },
     {

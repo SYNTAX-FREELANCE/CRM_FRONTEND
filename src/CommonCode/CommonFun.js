@@ -241,14 +241,27 @@ export const getMyActiveCalls = async (empid, filter) => {
     return [];
   } catch (error) {
     console.error("getMyActiveCalls error:", error);
-    throw new Error(
-      error?.response?.data?.message || "Failed to fetch vehicles",
-    );
   }
 };
 
+
+export const getEmployeeActiveCalls = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-active-batch/${empid}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 export const getAdminDashboardCount = async (from, to) => {
- 
+
 
   if (!from || !to) return [];
   try {
