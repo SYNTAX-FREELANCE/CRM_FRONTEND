@@ -32,7 +32,7 @@ const RouteLayout = () => {
     const Menu = getMenu(RoleRights, userId, role);
     const { mode } = useThemeMode();
 
-    const Menu = getMenu(RoleRights);
+    // const Menu = getMenu(RoleRights);
 
     if (loading) {
         return (

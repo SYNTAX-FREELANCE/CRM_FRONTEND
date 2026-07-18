@@ -1,37 +1,21 @@
 import React, { lazy, Suspense, useMemo, useState } from "react";
 import {
     Box,
-    // Card,
     Typography,
     Input,
-    // Button,
-    // Avatar,
     Grid,
     CircularProgress,
     Divider,
-    // Chip,
 } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
-// import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-// import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
-// import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import { useNavigate } from "react-router-dom";
-import { axioslogin } from "../Connection/axios";
 import { errorNotify, warningNotify } from "../constant/Constant";
 import { useQuery } from "@tanstack/react-query";
-// import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
-// import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-// import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
-import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
-import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import { useAuth } from "../Context/AuthContext";
-
-
+import { axioslogin } from "../Connection/axios";
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
-
 
 const UserInfo = () => {
     const navigate = useNavigate();

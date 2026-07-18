@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Grid, Box, Typography, Divider, Stack, Avatar, Button, IconButton, Modal, ModalDialog, DialogContent, DialogActions } from "@mui/joy";
-import { axioslogin } from "../../Axios/axios";
 import { useEmployeeFiles } from "../../CommonCode/useQuery";
 import {
     CloudUploadIcon,
@@ -10,6 +9,7 @@ import {
     ResumeIcon,
     AadharIcon
 } from "./Icons";
+import { axioslogin } from "../../Connection/axios";
 
 const DocumentUploads = ({
     userId,
