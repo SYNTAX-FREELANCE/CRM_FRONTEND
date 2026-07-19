@@ -164,7 +164,7 @@ const AdminDashboard = () => {
         <Grid container spacing={2} alignItems="center" justifyContent={'space-between'}>
           <Grid item xs={12} md={8}>
             <Typography fontSize={{ xs: 16, sm: 20, md: 26 }} fontWeight={900} color="#fff">
-              WELCOME BACK {authUser?.emp_name || "EMPLOYEE"}.
+              WELCOME BACK {authUser?.emp_name?.toUpperCase() || "EMPLOYEE"}.
             </Typography>
             <Typography fontSize={{ xs: 10, sm: 11, md: 13 }} color="rgba(255,255,255,0.88)">
               Track calls, follow-ups, appointments, renewals, and overall performance in one place.
