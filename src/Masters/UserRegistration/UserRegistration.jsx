@@ -17,7 +17,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { axioslogin, axiosLogin } from "../../Axios/axios";
+import { axioslogin, axiosLogin } from "../../Connection/axios";
 import { successNotify, warningNotify } from "../../constant/Constant";
 
 const UserRegistration = () => {

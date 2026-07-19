@@ -1,5 +1,8 @@
-import { axioslogin } from "../Axios/axios";
-import { infoNotify } from "../constant/Constant";
+
+import { axioslogin } from "../Connection/axios";
+import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
+
+
 
 export const FetchRolemaster = async () => {
   try {
@@ -238,17 +241,27 @@ export const getMyActiveCalls = async (empid, filter) => {
     return [];
   } catch (error) {
     console.error("getMyActiveCalls error:", error);
-    throw new Error(
-      error?.response?.data?.message || "Failed to fetch vehicles",
-    );
   }
 };
 
+
+export const getEmployeeActiveCalls = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-active-batch/${empid}`,
+    );
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
+
+
 export const getAdminDashboardCount = async (from, to) => {
-  console.log({
-    from,
-    to,
-  });
+
 
   if (!from || !to) return [];
   try {
@@ -302,6 +315,18 @@ export const getRecentActivity = async () => {
   }
 };
 
+
+export const getEmployeeRecentActivity = async (empid) => {
+  if (!empid) return []
+  try {
+    const response = await axioslogin.get(`/lead/employee-recent-activity/${empid}`);
+    const { success, data, message } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error("getMyActiveCalls error:", error);
+  }
+};
 
 export const getEmployeeAssignDetails = async () => {
   try {
@@ -364,6 +389,24 @@ export const FetchEmployeePerformance = async (employeeId) => {
     console.error("FetchEmployeePerformance error:", error);
     throw new Error(
       error?.response?.data?.message || "Failed to fetch employee performance",
+    );
+  }
+};
+
+export const FetchCallCenterPerformance = async (employeeId, startDate, endDate) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get(
+      `/userinfo/callcenter-performance/${employeeId}?startDate=${startDate || ""}&endDate=${endDate || ""}`,
+    );
+    if (response.data && response.data.success === 1) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("FetchCallCenterPerformance error:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch call center performance",
     );
   }
 };
@@ -445,3 +488,52 @@ export const getTopEmployees = async () => {
   }
 };
 
+export const getProfilePhoto = async (userId) => {
+  if (!userId) return "";
+  try {
+    const response = await axioslogin.get(`/employee/profile-photo/${userId}`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.log("No profile photo found or error fetching it.");
+    return "";
+  }
+};
+
+
+export const handleProfilePhotoChange = async (e, empId, queryClient) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Maximum size check (5 MB)
+  if (file.size > 5 * 1024 * 1024) {
+    errorNotify("Profile photo exceeds the maximum size limit of 5 MB.");
+    e.target.value = null;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("photo", file);
+  formData.append("userId", empId);
+
+  try {
+    const response = await axioslogin.post("/employee/upload-profile-photo", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    if (response.data && response.data.success === 1) {
+      successNotify("Profile photo uploaded successfully!");
+      await queryClient.invalidateQueries({
+        queryKey: ["profilePhoto", empId],
+      });
+    } else {
+      errorNotify(response.data.message || "Failed to upload profile photo");
+    }
+  } catch (error) {
+    errorNotify(error.response?.data?.message || "Failed to upload profile photo");
+  }
+};

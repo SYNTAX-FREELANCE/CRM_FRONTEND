@@ -3,6 +3,7 @@ import ReactApexChart from "react-apexcharts";
 import {
     Box,
     Card,
+    useTheme,
     CardContent,
     Avatar,
     Typography,
@@ -30,27 +31,30 @@ const TopSalesExecutives = ({ data = [] }) => {
     const top3 = [...data]
         .sort((a, b) => (a.rank_no || 0) - (b.rank_no || 0))
 
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
     return (
         <Box
             sx={{
                 // p: 2.25,
                 borderRadius: 4,
-                bgcolor: "#fff",
-                border: `1px solid ${colors.border}`,
-                height:'100%'
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : `1px solid ${colors.border}`,
+                height: '100%'
             }}
         >
             <Stack
                 direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
                 alignItems={{ xs: "flex-start", sm: "center" }}
-                sx={{ mb: 2,p:2.25 }}
+                sx={{ mb: 2, p: 2.25 }}
             >
                 <Box>
-                    <Typography sx={{ fontSize: 20, fontWeight: 900, color: colors.ink }}>
+                    <Typography sx={{ fontSize: { xs: 20, sm: 20, md: 18 }, fontWeight: 900, color: isDark ? "#f8fafc" : colors.ink }}>
                         Top Sales Executives
                     </Typography>
-                    <Typography sx={{ fontSize: 13, color: colors.muted }}>
+                    <Typography sx={{ fontSize: {xs:13,sm:10}, color: isDark ? "#94a3b8" : colors.muted }}>
                         Top 3 by completed calls and sold performance
                     </Typography>
                 </Box>
@@ -58,7 +62,7 @@ const TopSalesExecutives = ({ data = [] }) => {
             </Stack>
 
             <Stack direction="column" spacing={2} sx={{
-                p:2.25 
+                p: 1.25
             }}>
                 {top3.map((item, idx) => (
                     <ExecutiveCard
@@ -68,6 +72,7 @@ const TopSalesExecutives = ({ data = [] }) => {
                         avatar={item.avatar}
                         calls={item.total_calls}
                         sold={item.total_sold}
+                        empid={item.user_id}
                         highlight={idx === 0}
                     />
                 ))}

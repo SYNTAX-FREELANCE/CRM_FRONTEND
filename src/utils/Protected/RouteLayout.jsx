@@ -7,7 +7,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import { useAuth } from "../../Context/AuthContext";
 import ReusableSidebar from "../../CommonComponents/ReusableSidebar";
 import ReusableTopBar from "../../CommonComponents/ReusableTopBar";
-import { axioslogin } from "../../Axios/axios";
+import { axioslogin } from "../../Connection/axios";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 // Material UI Icons for dynamically generated sidebar
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -26,11 +27,8 @@ const RouteLayout = () => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { role_id } = authUser ?? {};
     const { data: RoleRights = [] } = useGetActiveModuleRightDetail(role_id);
-    console.log({
-        role_id,
-        RoleRights
-    });
-    
+    const { mode } = useThemeMode();
+
     const Menu = getMenu(RoleRights);
 
     if (loading) {
@@ -57,8 +55,9 @@ const RouteLayout = () => {
                 flexDirection: "row",
                 height: "100vh",
                 overflow: "hidden",
-                background:
-                    "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
+                background: mode === 'dark' 
+                    ? "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #020617 100%)"
+                    : "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
             }}
         >
             {/* MOBILE TOP SIDEBAR */}

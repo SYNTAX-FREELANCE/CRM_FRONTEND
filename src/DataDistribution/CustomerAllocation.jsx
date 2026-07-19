@@ -23,8 +23,12 @@ import {
     warningNofity,
 } from "../constant/Constant";
 import { format } from "date-fns";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const months = [
     { label: "January", value: 1 },
@@ -46,15 +50,18 @@ const CustomerAllocation = () => {
     const LogedEmpId = authUser?.id;
     const queryClient = useQueryClient();
 
-    const [month, setMonth] = useState(0);
+    const [month, setMonth] = useState(dayjs());
     const [selectedCustomers, setSelectedCustomers] = useState({});
     const [allocationMode, setAllocationMode] = useState("single");
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [loading, setLoading] = useState(false);
     const [availableEmployees, setAvailableEmployees] = useState([]);
 
+    const formattedDate = month?.format("YYYY-MM");
+
     const { data: Employee_master = [] } = useEmployeeMaster();
-    const { data: newCustomers = [] } = useNewCustomers(month);
+    const { data: newCustomers = [], refetch } = useNewCustomers(formattedDate);
+
 
     const customers = Array.isArray(newCustomers) ? newCustomers : newCustomers?.data ?? [];
     const employees = Array.isArray(Employee_master) ? Employee_master : Employee_master?.data ?? [];
@@ -124,11 +131,10 @@ const CustomerAllocation = () => {
             vehicle_id: item.vehicle_id,
             policy_id: null,
             status_id: 1,
-            lead_priority: "MEDIUM",
             assigned_to: item.employee_id,
             assigned_date: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
             is_assigned: 1,
-            lead_source: "WhatsApp",
+            work_status: 'PENDING',
             remarks: "",
             created_by: LogedEmpId,
         }));
@@ -147,7 +153,7 @@ const CustomerAllocation = () => {
 
             successNotify(data.message);
             await queryClient.invalidateQueries({
-                queryKey: ["new-customer", month],
+                queryKey: ["new-customer", formattedDate],
             });
 
             setSelectedCustomers({});
@@ -160,8 +166,7 @@ const CustomerAllocation = () => {
         }
     };
 
-    const selectedMonthLabel =
-        months.find((m) => m.value === month)?.label || "Select Month";
+
 
     return (
         <Box
@@ -205,24 +210,28 @@ const CustomerAllocation = () => {
                             <Typography level="title-sm" sx={{ mb: 0.8, color: "#284862" }}>
                                 Expiry Month
                             </Typography>
-                            <Select
-                                value={month}
-                                onChange={(_, value) => setMonth(value)}
-                                placeholder="Select month"
-                                sx={{
-                                    width: "100%",
-                                    "--Select-minHeight": "48px",
-                                    "--Select-radius": "14px",
-                                    background: "#fff",
-                                    boxShadow: "0 8px 18px rgba(15,23,42,0.05)",
-                                }}
-                            >
-                                {months.map((m) => (
-                                    <Option key={m.value} value={m.value}>
-                                        {m.label}
-                                    </Option>
-                                ))}
-                            </Select>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    views={["year", "month"]}
+                                    openTo="month"
+                                    value={month}
+                                    onChange={(newValue) => setMonth(newValue)}
+                                    format="MMM YYYY"
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            size: "small",
+                                            sx: {
+                                                "& .MuiOutlinedInput-root": {
+                                                    borderRadius: 2,
+                                                    height: 48,
+                                                    backgroundColor: "#fff",
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </LocalizationProvider>
                         </Box>
 
                         <Box>
@@ -352,9 +361,6 @@ const CustomerAllocation = () => {
                                 </Typography>
                             </Box>
 
-                            <Chip variant="soft" color="primary">
-                                {selectedMonthLabel}
-                            </Chip>
                         </Box>
 
                         <Divider />

@@ -31,6 +31,10 @@ import {
   getModuleRights,
   getActiveModuleRights,
   getTopEmployees,
+  getProfilePhoto,
+  FetchCallCenterPerformance,
+  getEmployeeRecentActivity,
+  getEmployeeActiveCalls,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -186,6 +190,19 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
   });
 };
 
+
+
+export const useGetMyEmployeeActiveCalls = (empid) => {
+  return useQuery({
+    queryKey: ["emp-mycalls", empid],
+    queryFn: () => getEmployeeActiveCalls(empid),
+    staleTime: 0,
+    enabled: !!empid,
+    refetchOnWindowFocus: false,
+  });
+};
+
+
 export const useAdminDashBoardCounts = (from, to) => {
   return useQuery({
     queryKey: ["admin-counts", from, to],
@@ -205,6 +222,16 @@ export const useAllEmployeeRecentActivity = () => {
     staleTime: Infinity,
   });
 };
+
+export const useEmployeeRecentActivity = (empid) => {
+  return useQuery({
+    queryKey: ["emp-recent-activity", empid],
+    queryFn: () => getEmployeeRecentActivity(empid),
+    staleTime: Infinity,
+    enabled: !!empid
+  });
+};
+
 
 
 export const useEmployeeAssignDetails = () => {
@@ -249,6 +276,14 @@ export const useEmployeePerformance = (employeeId) => {
   return useQuery({
     queryKey: ["employeePerformance", employeeId],
     queryFn: () => FetchEmployeePerformance(employeeId),
+    enabled: !!employeeId,
+  });
+};
+
+export const useCallCenterPerformance = (employeeId, startDate, endDate) => {
+  return useQuery({
+    queryKey: ["callCenterPerformance", employeeId, startDate, endDate],
+    queryFn: () => FetchCallCenterPerformance(employeeId, startDate, endDate),
     enabled: !!employeeId,
   });
 };
@@ -306,5 +341,13 @@ export const useTopEmployess = () => {
     queryKey: ["top-emp",],
     queryFn: getTopEmployees,
     staleTime: Infinity
+  });
+};
+
+export const useProfilePhoto = (userId) => {
+  return useQuery({
+    queryKey: ["profilePhoto", userId],
+    queryFn: () => getProfilePhoto(userId),
+    enabled: !!userId,
   });
 };

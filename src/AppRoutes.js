@@ -11,8 +11,8 @@ import PublicRoute from "./utils/Protected/PublicRoute";
 const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
 const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
+const NotFoundPage = lazy(() => import("./CommonComponents/NotFoundPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
-// const AdminDashboard = lazy(() => import("./Admin/AdminDashboard"));
 const Settings = lazy(() => import("./Settings/Settings"));
 const BankMaster = lazy(() => import("./Masters/BankMaster/BankMaster"));
 const UserReg = lazy(
@@ -41,9 +41,19 @@ const EmployeeBatchControl = lazy(
   () => import("./EmployeeBatchControl/EmployeeBatchControl"),
 );
 
+const MyProfilePage = lazy(
+  () => import("./MyProfile/MyProfilePage"),
+);
+
+
 const HomePage = lazy(
   () => import("./pages/HomePage"),
 );
+
+const ReportSetting = lazy(
+  () => import("./Reports/ReportSetting"),
+);
+
 
 
 // Masters imports
@@ -101,8 +111,8 @@ const withSuspense = (Component) => (
 const router = createBrowserRouter([
   {
     path: "/",
-    element: withSuspense(Intro),
-    errorElement: <h1 className="text-center mt-10">Page Not Found</h1>,
+    element: <Intro />,
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/login",
@@ -112,16 +122,12 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
-    errorElement: <h1 className="text-center mt-10">Page Not Found</h1>,
+    errorElement: <WorkingPage />,
     children: [
       {
         index: true,
         element: withSuspense(HomePage),
       },
-      // {
-      //   path: "employee",
-      //   element: withSuspense(EmployeeDashboard),
-      // },
       {
         path: "batchcontrol",
         element: withSuspense(EmployeeBatchControl),
@@ -145,10 +151,17 @@ const router = createBrowserRouter([
         path: "view-allocation",
         element: withSuspense(ViewAllocation),
       },
-
+      {
+        path: "my-profile",
+        element: withSuspense(MyProfilePage),
+      },
       {
         path: "search",
         element: withSuspense(CustomerSearchPage),
+      },
+      {
+        path: "reports",
+        element: withSuspense(ReportSetting),
       },
       {
         path: "setting/menumaster",
@@ -238,11 +251,16 @@ const router = createBrowserRouter([
         path: "setting/vehiclemaster",
         element: withSuspense(VehicleCreation),
       },
-      {
-        path: "*",
-        element: withSuspense(WorkingPage),
-      },
+      // {
+      //   path: "*",
+      //   element: withSuspense(NotFoundPage),
+      // },
     ],
+
+  },
+  {
+    path: "/notfound",
+    element: withSuspense(NotFoundPage),
   },
 ]);
 

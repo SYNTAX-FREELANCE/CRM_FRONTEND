@@ -21,6 +21,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
+
 const Settings = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null); // Default to no expanded section
@@ -58,6 +59,7 @@ const Settings = () => {
         { label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
       ],
     },
+
   ];
 
   const handleExpand = (index) => {
@@ -75,10 +77,8 @@ const Settings = () => {
         position: "relative",
         overflow: "hidden",
         minHeight: "calc(100vh - 40px)",
-      }}
-    >
-      {/* Dynamic Animated Background Blobs for Glass Effect */}
-      {/* Blob 1: Blue Glow (Top Left) */}
+      }}>
+      
       <Box
         sx={{
           position: "absolute",
@@ -99,7 +99,7 @@ const Settings = () => {
         }}
       />
 
-      {/* Blob 2: Orange Glow (Bottom Right) */}
+      
       <Box
         sx={{
           position: "absolute",
@@ -120,7 +120,6 @@ const Settings = () => {
         }}
       />
 
-      {/* Blob 3: White Central Glow */}
       <Box
         sx={{
           position: "absolute",
@@ -136,7 +135,7 @@ const Settings = () => {
         }}
       />
 
-      {/* Title Header with Modern Glass Touch */}
+     
       <Box
         sx={{
           display: "flex",

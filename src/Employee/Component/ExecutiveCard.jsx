@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import {
     Box,
     Card,
+    useTheme,
     CardContent,
     Avatar,
     Typography,
@@ -13,6 +14,7 @@ import SellIcon from "@mui/icons-material/Sell";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { SparkLineChart } from "@mui/x-charts";
 import StatPill from "./StatPill";
+import { axioslogin } from "../../Connection/axios";
 
 const buildSparkSeries = (calls, sold) => {
     const callValue = Number(calls || 0);
@@ -36,6 +38,7 @@ const ExecutiveCard = ({
     avatar,
     calls,
     sold,
+    empid,
     highlight = false,
 }) => {
     const colors = {
@@ -52,17 +55,20 @@ const ExecutiveCard = ({
     const sparkData = buildSparkSeries(calls, sold);
     const color = highlight ? colors.orange : colors.blue;
 
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
     return (
         <Card
             sx={{
                 position: "relative",
                 overflow: "visible",
                 borderRadius: 3.5,
-                border: `1px solid ${highlight ? colors.orange : colors.border}`,
+                border: `1px solid ${highlight ? colors.orange : (isDark ? "rgba(255,255,255,0.1)" : colors.border)}`,
                 boxShadow: highlight
                     ? "0 18px 40px rgba(249,115,22,0.12)"
-                    : "0 10px 26px rgba(15,23,42,0.06)",
-                background: colors.bg,
+                    : (isDark ? "none" : "0 10px 26px rgba(15,23,42,0.06)"),
+                background: isDark ? "rgba(15,23,42,0.6)" : colors.bg,
                 transition: "transform .18s ease, box-shadow .18s ease",
                 "&:hover": {
                     transform: "translateY(-4px)",
@@ -96,10 +102,16 @@ const ExecutiveCard = ({
                             width: 36,
                             height: 36,
                             bgcolor: highlight ? colors.orange : colors.blue,
-                            fontSize:12,
-                            fontWeight:600
+                            fontSize: 12,
+                            fontWeight: 600
                         }}
-                        src={avatar}
+                        
+                        src={`${axioslogin.defaults.baseURL}/employee/profile-photo/${empid}`}
+                        imgProps={{
+                            onError: (e) => {
+                                e.target.style.display = "none";
+                            },
+                        }}
                     >
                         {name
                             .split(" ")
@@ -109,26 +121,26 @@ const ExecutiveCard = ({
                     </Avatar>
 
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ fontSize: 13, fontWeight: 800, color: colors.ink }} noWrap>
+                        <Typography sx={{ fontSize: 13, fontWeight: 800, color: isDark ? "#f8fafc" : colors.ink }} noWrap>
                             {name}
                         </Typography>
 
                         <Stack direction="row" spacing={1} sx={{ mt: 0.6, alignItems: "center", flexWrap: "wrap" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: colors.muted }}>
+           
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <PhoneInTalkIcon sx={{ fontSize: 15,color:"#1f2eff" }} />
                                 <Typography sx={{ fontSize: 12.5 }}>{calls} calls</Typography>
                             </Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: colors.muted }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <SellIcon sx={{ fontSize: 15,color:'#f0a308' }} />
                                 <Typography sx={{ fontSize: 12.5 }}>{sold} sold</Typography>
                             </Box>
                         </Stack>
-                    </Box>
-
+</Box>
                     <EmojiEventsIcon sx={{ color: highlight ? colors.orange : colors.blue, fontSize: 24 }} />
                 </Stack>
 
-                <Divider sx={{ my: 1.75, borderColor: colors.border }} />
+                <Divider sx={{ my: 1.75, borderColor: isDark ? "rgba(255,255,255,0.1)" : colors.border }} />
 
                 <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1 }}>
                     <Box sx={{ flex: 1, minWidth: 0 }}>

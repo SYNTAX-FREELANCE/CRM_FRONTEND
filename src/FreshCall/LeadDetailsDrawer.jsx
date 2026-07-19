@@ -30,9 +30,9 @@ import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
 import Row from "./Components/Row";
 import { useFollowUpDetail, useGetLeadHistory } from "../CommonCode/useQuery";
-import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
+import { errorNotify, getAuthUser, successNotify, warningNofity, warningNotify } from "../constant/Constant";
 import axios from "axios";
-import { axioslogin } from "../Axios/axios";
+import { axioslogin } from "../Connection/axios";
 import { statusReasonMap } from "../CommonCode/Reusable";
 import { useQueryClient } from "@tanstack/react-query";
 import LeadHistoryTimelineItem from "./Components/LeadHistoryTimelineItem";
@@ -40,6 +40,8 @@ import LeadFollowUpCard from "./Components/LeadFollowUpCard";
 import { format } from "date-fns";
 import StatusActionCardsSkeleton from "../SkeletonComponent/StatusActionCardsSkeleton";
 import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
+import { DatePicker } from "@mui/x-date-pickers";
+import EditableDateField from "./Components/EditableDateField";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -58,25 +60,57 @@ const leadColor = "#2563eb";
 const LeadDetailsDrawer = ({
   open,
   onClose,
-  selectedLead
+  selectedLead,
+  setSelectedLead
 }) => {
 
-  const [callAnchorEl, setCallAnchorEl] = useState(null);
-  const [followUpAction, setFollowUpAction] = useState("");
-
-  const [selectedStatus, setSelectedStatus] = useState("");
-
   const authUser = getAuthUser();
+  const { id } = authUser ?? {};
 
   const lead = selectedLead || {};
 
   const leadId = lead?.lead_id;
   const statusId = lead?.status_id;
   const isCallAccess = lead?.is_call_required === 1;
+  const VehicleId = lead?.vehicle_id;
 
+  const [callAnchorEl, setCallAnchorEl] = useState(null);
+  const [followUpAction, setFollowUpAction] = useState("");
 
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [editingField, setEditingField] = useState(null);
 
-  const { id } = authUser ?? {};
+  const [expiryDate, setExpiryDate] = useState(
+    lead?.known_policy_expiry_date || null
+  );
+
+  const queryClient = useQueryClient();
+
+  const handleExpirySave = useCallback(async (date) => {
+    // Instant update only for opened lead
+    setSelectedLead((prev) => ({
+      ...prev,
+      known_policy_expiry_date: date,
+    }));
+
+    try {
+      const { data } = await axioslogin.post("/lead/update-expiry", {
+        vehicle_id: VehicleId,
+        edited_by: id,
+        known_policy_expiry_date: date
+          ? format(new Date(date), "yyyy-MM-dd")
+          : null,
+      });
+      if (data.success !== 1) {
+        warningNotify(data.message);
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["emp-mycalls", id], })
+      successNotify("Expiry date updated");
+    } catch (err) {
+      errorNotify("Error updating expiry date");
+    }
+  }, [VehicleId, id]);
 
 
   const shouldFetchHistory = open && !!leadId;
@@ -107,7 +141,6 @@ const LeadDetailsDrawer = ({
     () => LeadFollowUp?.length > 0,
     [LeadFollowUp]
   );
-
 
   const hasPolicy = useMemo(() => (
     lead.policy_id ||
@@ -205,7 +238,6 @@ const LeadDetailsDrawer = ({
     return true;
   };
 
-  const queryClient = useQueryClient();
   const handleCallClick = (event) => setCallAnchorEl(event.currentTarget);
   const handleCallClose = () => setCallAnchorEl(null);
 
@@ -250,7 +282,7 @@ const LeadDetailsDrawer = ({
 
     // Follow-up Validation
     if (selectedStatus?.requires_followup === 1) {
-      if (!followUpDate) {
+      if (!followUpDate && selectedStatus?.is_followup_date_required === 1) {
         warningNotify("Please select the next follow-up date.");
         return false;
       }
@@ -260,7 +292,7 @@ const LeadDetailsDrawer = ({
         return false;
       }
 
-      if (new Date(followUpDate) <= new Date()) {
+      if (followUpDate && new Date(followUpDate) <= new Date()) {
         warningNotify(
           "Follow-up date must be greater than the current date and time."
         );
@@ -288,7 +320,7 @@ const LeadDetailsDrawer = ({
       new_status_id: followUpAction,
       requires_followup: selectedStatus?.requires_followup,
       call_outcome: followUpOutcome,
-      remarks: followUpRemarks.trim(),
+      remarks: followUpRemarks ? followUpRemarks.trim() : "No Remarks",
       next_followup_date: followUpDate
         ? format(new Date(followUpDate), "yyyy-MM-dd HH:mm:ss")
         : null,
@@ -324,9 +356,7 @@ const LeadDetailsDrawer = ({
         return false;
       }
       successNotify(message);
-      await queryClient.invalidateQueries({
-        queryKey: ["mycalls", id],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["emp-mycalls", id] });
       resetFollowup()
       onClose();
       return true;
@@ -414,6 +444,18 @@ const LeadDetailsDrawer = ({
                 value={lead.registration_number || "-"}
                 icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
                 accent="orange"
+              />
+              <Row
+                label="Expiry Date"
+                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
+                accent="orange"
+                value={
+                  <EditableDateField
+                    value={lead?.known_policy_expiry_date}
+                    editable
+                    onSave={handleExpirySave}
+                  />
+                }
               />
               <Row
                 label="Model"
