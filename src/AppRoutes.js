@@ -100,7 +100,16 @@ const CustomerCreation = lazy(
 const VehicleCreation = lazy(
   () => import("./Masters/VehicleMaster/VehicleCreation"),
 );
+const PolicyReport = lazy(
+  () => import("./Reports/PolicyReport"),
+);
 
+const EmployeePerformanceReport = lazy(
+  () => import("./Reports/EmployeePreformanceReport"),
+);
+const EmployeeLoginReport = lazy(
+  () => import("./Reports/UserLogReports"),
+);
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -251,6 +260,20 @@ const router = createBrowserRouter([
         path: "setting/vehiclemaster",
         element: withSuspense(VehicleCreation),
       },
+      {
+        path: "reports/policyreport",
+        element: withSuspense(PolicyReport),
+      },
+      {
+        path: "reports/employeperformance",
+        element: withSuspense(EmployeePerformanceReport),
+      },
+      {
+        path: "reports/UserLogReports",
+        element: withSuspense(EmployeeLoginReport),
+      },
+
+
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),
