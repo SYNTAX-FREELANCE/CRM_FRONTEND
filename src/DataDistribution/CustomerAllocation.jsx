@@ -14,7 +14,7 @@ import {
     Chip,
     Sheet,
 } from "@mui/joy";
-import { useEmployeeMaster, useNewCustomers } from "../CommonCode/useQuery";
+import { useAllEmployeeDetails, useNewCustomers } from "../CommonCode/useQuery";
 import CustomerAllocationTable from "../Settings/CommonMasterComponent/CustomerAllocationTable";
 import {
     errorNotify,
@@ -59,12 +59,14 @@ const CustomerAllocation = () => {
 
     const formattedDate = month?.format("YYYY-MM");
 
-    const { data: Employee_master = [] } = useEmployeeMaster();
+    const { data: Employee_master = [], isLoading: EmployeeDetailloading } = useAllEmployeeDetails()
     const { data: newCustomers = [], refetch } = useNewCustomers(formattedDate);
 
 
     const customers = Array.isArray(newCustomers) ? newCustomers : newCustomers?.data ?? [];
     const employees = Array.isArray(Employee_master) ? Employee_master : Employee_master?.data ?? [];
+
+
 
     const selectedRows = useMemo(
         () => customers.filter((customer) => selectedCustomers[customer.customer_id]),
@@ -166,27 +168,36 @@ const CustomerAllocation = () => {
         }
     };
 
-
-
     return (
         <Box
             sx={{
-                minHeight: "100vh",
-                // background:
-                //     "linear-gradient(135deg, #f7faff 0%, #eef4ff 45%, #ffffff 100%)",
+                minHeight: "95vh",
+                width: "100%",
+                overflowY: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": {
+                    display: "none",
+                },
+                background: `
+          radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+          radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+          linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+        `,
             }}
         >
 
-            <Stack
-                direction={{ xs: "column", sm: 'column', md: 'row', lg: 'row', xl: "row" }}
-                spacing={2.2}
-                alignItems="stretch"
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 2,
+                    flexDirection: { xs: 'column', sm: 'column', md: 'column', lg: 'row' }
+                }}
             >
                 <Card
                     sx={{
                         width: { xs: "95%", xl: 340 },
-                        flexShrink: 0,
-                        borderRadius: "24px",
+                        borderRadius: "14px",
                         p: 2.2,
                         background:
                             "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,250,255,0.84) 100%)",
@@ -268,11 +279,25 @@ const CustomerAllocation = () => {
                                         "--Select-minHeight": "48px",
                                         "--Select-radius": "14px",
                                         background: "#fff",
+                                        fontSize: 14
                                     }}
                                 >
-                                    {Employee_master?.map((emp) => (
-                                        <Option key={emp.user_id} value={emp.user_id}>
-                                            {emp.name}
+                                    {employees?.map((emp) => (
+                                        <Option sx={{
+                                            fontSize: 14,
+                                            display: 'flex',
+                                            justifyContent: 'space-between'
+                                        }} key={emp?.user_id} value={emp?.user_id}>
+                                            {emp?.name?.toUpperCase()}
+
+                                            <Chip sx={{
+                                                fontSize: 8,
+                                                fontWeight: 800,
+                                                color: "#0c0c0c",
+                                                border: '2px solid #ff5f1f'
+                                            }}>
+                                                {emp?.status_name}
+                                            </Chip>
                                         </Option>
                                     ))}
                                 </Select>
@@ -285,7 +310,7 @@ const CustomerAllocation = () => {
                                     Available Employees
                                 </Typography>
                                 <Stack spacing={1}>
-                                    {Employee_master.map((emp) => (
+                                    {employees?.map((emp) => (
                                         <Box
                                             key={emp.user_id}
                                             sx={{
@@ -295,13 +320,26 @@ const CustomerAllocation = () => {
                                                     ? "rgba(37,99,235,0.08)"
                                                     : "#fff",
                                                 border: "1px solid rgba(148,163,184,0.16)",
+                                                display: 'flex',
+                                                justifyContent: 'space-between'
                                             }}
                                         >
                                             <Checkbox
-                                                label={emp.name}
+                                                sx={{
+                                                    fontSize: 14
+                                                }}
+                                                label={emp?.name?.toUpperCase()}
                                                 checked={availableEmployees.includes(emp.user_id)}
                                                 onChange={() => handleAvailableEmployee(emp.user_id)}
                                             />
+                                            <Chip sx={{
+                                                fontSize: 8,
+                                                fontWeight: 800,
+                                                color: "#0c0c0c",
+                                                border: '2px solid #ff5f1f'
+                                            }}>
+                                                {emp?.status_name}
+                                            </Chip>
                                         </Box>
                                     ))}
                                 </Stack>
@@ -381,7 +419,7 @@ const CustomerAllocation = () => {
                         </Sheet>
                     </Stack>
                 </Card>
-            </Stack>
+            </Box>
 
         </Box>
     );

@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/joy/Typography";
 
@@ -55,12 +55,6 @@ const UserModuleRightMaster = () => {
     const [toast, setToast] = useState("");
 
     const navigate = useNavigate();
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
-
 
 
     // Load menus and existing rights when selections change
@@ -122,15 +116,13 @@ const UserModuleRightMaster = () => {
     }, [RoleRights]);
 
 
-    const handleClose = () => {
-        navigate(-1);
-    };
-
+    const handleClose = useCallback(() => {
+           navigate('/home/settings');
+       }, [navigate]);
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
-
-            <Panel title="Module Right Master" onHelp={() => showToast("Help: Select Role , configure checkboxes")}>
+        
+            <Panel title="Module Right Master" >
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%' }}>
                     <Box sx={{ width: { xs: '100%', md: '70%' } }}>

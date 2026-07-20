@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -46,10 +46,6 @@ const QualificationCreation = () => {
             [field]: e.target.value
         }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const handleReset = () => {
         setQualification({
@@ -214,10 +210,9 @@ const QualificationCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+    },[]);
 
     const handleView = () => {
 
@@ -248,31 +243,13 @@ const QualificationCreation = () => {
 
     };
 
-    const handlePreview = () => {
-
-        if (!qualification.qualificationName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-
-        console.log(
-            "Previewing Current Data:",
-            qualification
-        );
-
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
-        navigate(-1);
-    };
+     const handleClose = useCallback(() => {
+            navigate('/home/settings');
+        }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
+         
 
             <Panel
                 title={
@@ -280,11 +257,7 @@ const QualificationCreation = () => {
                         ? "Edit Qualification"
                         : "Qualification Creation"
                 }
-                onHelp={() =>
-                    showToast(
-                        "Help: Fill all required fields marked with *"
-                    )
-                }
+                
             >
 
                 <Box
@@ -348,11 +321,6 @@ const QualificationCreation = () => {
                     <Button onClick={handleView}>
                         View
                     </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
-                    </Button>
-
                     <Button onClick={handleClose}>
                         Close
                     </Button>

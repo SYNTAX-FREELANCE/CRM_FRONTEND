@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -44,18 +44,13 @@ const StatusCreation = () => {
             [field]: e.target.value
         }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
-
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setStatus({
             statusName: "",
             alias: "",
             isActive: "Active",
         });
-    };
+    },[]);
 
     const validateStatus = () => {
 
@@ -203,7 +198,6 @@ const StatusCreation = () => {
 
     const handleCancel = () => {
         handleReset();
-        showToast("Form cleared");
     };
 
     const handleView = () => {
@@ -235,38 +229,19 @@ const StatusCreation = () => {
 
     };
 
-    const handlePreview = () => {
 
-        if (!status.statusName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-
-        console.log("Preview:", status);
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
-        navigate(-1);
-    };
-
+    const handleClose = useCallback(() => {
+           navigate('/home/settings');
+       }, [navigate]);
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
+            
 
             <Panel
                 title={
                     mode === "edit"
                         ? "Edit Status"
                         : "Status Creation"
-                }
-                onHelp={() =>
-                    showToast(
-                        "Help: Fill all required fields marked with *"
-                    )
                 }
             >
 
@@ -332,10 +307,7 @@ const StatusCreation = () => {
                         View
                     </Button>
 
-                    <Button onClick={handlePreview}>
-                        Preview
-                    </Button>
-
+                
                     <Button onClick={handleClose}>
                         Close
                     </Button>
