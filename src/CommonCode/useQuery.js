@@ -38,6 +38,9 @@ import {
   getEmployeeActiveCalls,
   getEmployeeDetails,
   getSingleEmployeeProfileDetails,
+  getUserRightMenus,
+  getExistingUserRights,
+  getEmployeeMenuRights,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -380,4 +383,30 @@ export const useSingleEmployeeProfile = (employeeId) => {
     staleTime: Infinity,
   });
 };
+
+export const useGetUserRightMenus = (moduleId) => {
+  return useQuery({
+    queryKey: ["user-right-menus", moduleId],
+    queryFn: () => getUserRightMenus(moduleId),
+    enabled: Boolean(moduleId),
+  });
+};
+
+export const useGetExistingUserRights = (roleId, moduleId) => {
+  return useQuery({
+    queryKey: ["existing-user-rights", roleId, moduleId],
+    queryFn: () => getExistingUserRights(roleId, moduleId),
+    enabled: Boolean(roleId && moduleId),
+  });
+};
+
+
+export const useGetEmployeeMenuRights = (roleId) => {
+  return useQuery({
+    queryKey: ["emp-menu-rights", roleId],
+    queryFn: () => getEmployeeMenuRights(roleId),
+    enabled: Boolean(roleId),
+  });
+};
+
 

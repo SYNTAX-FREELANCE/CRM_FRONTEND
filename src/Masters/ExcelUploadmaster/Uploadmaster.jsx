@@ -85,15 +85,13 @@ const Uploadmaster = () => {
       const fetchRecord = async () => {
         setLoading(true);
         try {
-          const url = type === "customer" 
+          const url = type === "customer"
             ? `/customer/getbyid/${id}`
             : `/customer/getbyid-vehicle/${id}`;
-            
-          console.log("Fetching edit record, URL:", url);
+
           const response = await axioslogin.get(url);
-          console.log("Fetch response data:", response.data);
           const { success, data, message } = response.data;
-          
+
           if (success === 1) {
             if (type === "customer") {
               setCustomer({
@@ -113,7 +111,7 @@ const Uploadmaster = () => {
                 customer_id: data.customer_id || "",
                 registration_number: data.registration_number || "",
                 rto: data.rto || "",
-                registration_data: formatDate(data.registration_date  ),
+                registration_data: formatDate(data.registration_date),
                 model: data.model || "",
                 vehicle_maker: data.vehicle_maker || "",
                 engine_number: data.engine_number || "",
@@ -134,7 +132,7 @@ const Uploadmaster = () => {
           setLoading(false);
         }
       };
-      
+
       fetchRecord();
     }
   }, [mode, id, type]);
@@ -153,7 +151,7 @@ const Uploadmaster = () => {
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0];
       validateAndSetFile(droppedFile);
@@ -169,7 +167,7 @@ const Uploadmaster = () => {
   const validateAndSetFile = (selectedFile) => {
     const ext = selectedFile.name.split(".").pop().toLowerCase();
     const allowed = ["xlsx", "xls"];
-    
+
     if (!allowed.includes(ext)) {
       errorNotify("Invalid file type. Only Excel (.xlsx, .xls) files are allowed.");
       return;
@@ -214,7 +212,7 @@ const Uploadmaster = () => {
           failedRows,
           insertedData
         });
-        
+
         // Refresh both customer and vehicle query caches
         fetchCustomerMaster();
         fetchVehicleMaster();
@@ -225,7 +223,7 @@ const Uploadmaster = () => {
       console.error("Upload error:", error);
       const errMsg = error.response?.data?.message || "An error occurred during file upload.";
       errorNotify(errMsg);
-      
+
       // If there are detailed stats / failed rows inside response error
       if (error.response?.data?.stats) {
         setUploadResult({
@@ -258,7 +256,7 @@ const Uploadmaster = () => {
         warningNotify("Mobile Number 2 must be numeric.");
         return;
       }
-      
+
       setLoading(true);
       try {
         const updateData = {
@@ -290,7 +288,7 @@ const Uploadmaster = () => {
         warningNotify("Please select a Customer.");
         return;
       }
-      
+
       setLoading(true);
       try {
         const response = await axioslogin.patch(`/customer/update-vehicle/${id}`, vehicle);
@@ -590,7 +588,7 @@ const Uploadmaster = () => {
 
   return (
     <Wrapper>
-  
+
       {mode === "edit" ? (
         <Panel
           title={type === "customer" ? "Edit Customer Details" : "Edit Vehicle Details"}
@@ -753,7 +751,7 @@ const Uploadmaster = () => {
           {uploadResult && (
             <Box sx={{ mt: 4, animation: "fadeIn 0.3s ease-in-out" }}>
               <Divider sx={{ mb: 3 }} />
-              
+
               {/* Excel Statistics Dashboard */}
               <Box>
                 <Typography level="title-md" sx={{ fontWeight: 700, mb: 2, color: "#1e3a8a" }}>
@@ -766,7 +764,7 @@ const Uploadmaster = () => {
                     <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>TOTAL ROWS PARSED</Typography>
                     <Typography level="h3" sx={{ fontWeight: 800, color: "#2563eb", mt: 0.5 }}>{uploadResult.stats.totalRows}</Typography>
                   </Box>
-                  
+
                   <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: "#f0fdf4", borderRadius: "12px", border: "1px solid #bbf7d0", textAlign: "center" }}>
                     <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>SUCCESSFULLY IMPORTED</Typography>
                     <Typography level="h3" sx={{ fontWeight: 800, color: "#16a34a", mt: 0.5 }}>{uploadResult.stats.insertedCount}</Typography>
@@ -790,7 +788,7 @@ const Uploadmaster = () => {
                     <Typography level="body-xs" textColor="neutral.600" sx={{ mb: 2 }}>
                       The following rows failed our data checks and were not imported. Please fix them in your spreadsheet and re-upload.
                     </Typography>
-                    
+
                     <Box sx={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #fecaca", borderRadius: "8px", bgcolor: "#fff" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px", textAlign: "left" }}>
                         <thead>

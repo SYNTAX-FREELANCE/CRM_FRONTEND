@@ -126,7 +126,6 @@ const UserCreation = () => {
                 address: data.address || ""
             });
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load employee details");
         }
     };
@@ -386,7 +385,6 @@ const UserCreation = () => {
                 );
             }
         } catch (error) {
-            console.log(error);
             warningNotify(
                 error.response?.data?.message ||
                 (mode === "edit"

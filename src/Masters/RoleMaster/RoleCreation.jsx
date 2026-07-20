@@ -52,7 +52,6 @@ const RoleCreation = () => {
             });
 
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load role details");
         }
     };

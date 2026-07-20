@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState ,useCallback} from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -181,7 +181,6 @@ const CustomerCreation = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load customer details");
         }
     };
@@ -283,7 +282,7 @@ const CustomerCreation = () => {
     };
 
 
- const handleClose = useCallback(() => {
+    const handleClose = useCallback(() => {
         navigate('/home/settings');
     }, [navigate]);
 

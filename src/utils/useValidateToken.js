@@ -34,7 +34,6 @@ const useValidateToken = () => {
                 if (axios.isCancel(e)) {
                     return; // Ignore cancellation errors
                 }
-                // console.log("Error validating token:", e);
                 warningNofity("Please Login to Continue..!");
                 localStorage.removeItem("app_auth"); // REMOVE THE AUTH VALUES
                 localStorage.removeItem("token");
