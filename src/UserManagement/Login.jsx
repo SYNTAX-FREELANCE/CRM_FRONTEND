@@ -649,7 +649,7 @@ const Login = () => {
                         }}
                     >
                         <Typography
-                            onClick={() => setForgotPasswordModalOpen(true)}
+                            onClick={() => navigate('/forget-password')}
                             sx={{
                                 cursor: "pointer",
                                 color: "#2563eb",
@@ -690,7 +690,7 @@ const Login = () => {
             </Box>
 
             {/* Forgot Password Modal */}
-            <Modal
+            {/* <Modal
                 open={forgotPasswordModalOpen}
                 onClose={() => {
                     if (!forgotLoading) {
@@ -884,7 +884,7 @@ const Login = () => {
                         )}
                     </Box>
                 </Fade>
-            </Modal>
+            </Modal> */}
         </Box>
     );
 };
