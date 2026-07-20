@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useMemo, useState } from "react";
+import React, { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import {
     Box,
     // Card,
@@ -12,46 +12,23 @@ import {
     // Chip,
 } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
-// import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-// import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
-// import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
 import { errorNotify, warningNotify } from "../constant/Constant";
 import { useQuery } from "@tanstack/react-query";
-// import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
-// import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-// import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
-
-
+import { useAllEmployeeDetails } from "../CommonCode/useQuery";
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
-
 
 const UserInfo = () => {
     const navigate = useNavigate();
     const [searchKeyword, setSearchKeyword] = useState("");
-    // const [viewMode, setViewMode] = useState("card");
 
-    const { data: employeeListData, isLoading: loading } = useQuery({
-        queryKey: ["userInfoEmployees"],
-        queryFn: async () => {
-            try {
-                const response = await axioslogin.get("/userinfo/employees");
-                if (response.data?.success === 1) return response.data.data || [];
-                warningNotify(response.data?.message || "No employees found");
-                return [];
-            } catch (error) {
-                console.error("Error fetching employees:", error);
-                errorNotify("Failed to load employee list");
-                return [];
-            }
-        },
-    });
+    const { data: employeeListData = [], isLoading: loading } = useAllEmployeeDetails()
 
     const employees = employeeListData || [];
 
@@ -59,7 +36,8 @@ const UserInfo = () => {
         const term = searchKeyword.trim().toLowerCase();
         if (!term) return employees;
 
-        return employees.filter((emp) =>
+
+        return employees?.filter((emp) =>
             [
                 emp.name,
                 emp.employee_id,
@@ -72,9 +50,9 @@ const UserInfo = () => {
         );
     }, [employees, searchKeyword]);
 
-    const handleViewDetails = (emp) => {
+    const handleViewDetails = useCallback((emp) => {
         navigate(`/home/userinfo/${emp.user_id}`);
-    };
+    }, [navigate]);
 
 
     return (

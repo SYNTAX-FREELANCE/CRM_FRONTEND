@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/joy/Typography";
 
@@ -27,11 +27,6 @@ const UserRightCreation = () => {
     const [toast, setToast] = useState("");
 
     const navigate = useNavigate();
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     // Load initial dropdowns
     const getDropdownData = async () => {
@@ -156,18 +151,15 @@ const UserRightCreation = () => {
         setMenus([]);
         setMenuSelections({});
         setHasExisting(false);
-        showToast("Form cleared");
     };
 
-    const handleClose = () => {
-        navigate(-1);
-    };
-
+    const handleClose = useCallback(() => {
+           navigate('/home/settings');
+       }, [navigate]);
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
-
-            <Panel title="User Right Creation" onHelp={() => showToast("Help: Select Role and Module, configure checkboxes, and Save")}>
+            <Panel title="User Right Creation" 
+            >
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%' }}>
                     <Box sx={{ width: { xs: '100%', md: '70%' } }}>

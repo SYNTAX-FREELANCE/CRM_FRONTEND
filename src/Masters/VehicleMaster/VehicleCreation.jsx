@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -59,10 +59,6 @@ const VehicleCreation = () => {
             [field]: e.target.value
         }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const handleReset = () => {
         setVehicle({
@@ -267,10 +263,10 @@ const VehicleCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+
+    }, []);
 
     const handleView = () => {
         navigate("/home/setting/commonview", {
@@ -291,38 +287,19 @@ const VehicleCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!vehicle.registrationNumber) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Vehicle Data:", vehicle);
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
-        navigate(-1);
-    };
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
 
             <Panel
                 title={
                     mode === "edit"
                         ? "Edit Vehicle Details"
                         : "Vehicle Detail Entry"
-                }
-                onHelp={() =>
-                    showToast(
-                        "Help: Select a customer and enter the vehicle's registration number"
-                    )
-                }
-            >
+                } >
                 <Box
                     sx={{
                         display: "flex",
@@ -477,10 +454,6 @@ const VehicleCreation = () => {
 
                     <Button onClick={handleView}>
                         View
-                    </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
                     </Button>
 
                     <Button onClick={handleClose}>

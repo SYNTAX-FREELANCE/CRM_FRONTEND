@@ -78,10 +78,6 @@ const Uploadmaster = () => {
   const [toast, setToast] = useState("");
   const [uploadResult, setUploadResult] = useState(null);
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(""), 3000);
-  };
 
   // Fetch record on mount if in edit mode
   useEffect(() => {
@@ -594,16 +590,10 @@ const Uploadmaster = () => {
 
   return (
     <Wrapper>
-      <Toast message={toast} onClose={() => setToast("")} />
-
+  
       {mode === "edit" ? (
         <Panel
           title={type === "customer" ? "Edit Customer Details" : "Edit Vehicle Details"}
-          onHelp={() => showToast(
-            type === "customer" 
-              ? "Modify customer field values and press Save to update changes." 
-              : "Modify vehicle field values and press Save to update changes."
-          )}
         >
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
@@ -628,9 +618,6 @@ const Uploadmaster = () => {
       ) : (
         <Panel
           title="Customer & Vehicle Data Upload Center"
-          onHelp={() => showToast(
-            "Upload a unified Excel file (.xlsx, .xls) containing both customer and vehicle columns to import and link them in the database."
-          )}
         >
           {/* Upper Description Block */}
           <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>

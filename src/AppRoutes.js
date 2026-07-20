@@ -122,7 +122,7 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
-    errorElement: <WorkingPage />,
+    errorElement: <div>Error ocured</div>,
     children: [
       {
         index: true,
