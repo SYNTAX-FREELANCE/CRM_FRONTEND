@@ -55,6 +55,11 @@ const ReportSetting = lazy(
 );
 
 
+const ForgetPassword = lazy(
+  () => import("./UserManagement/ForgetPassword"),
+);
+
+
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -128,6 +133,13 @@ const router = createBrowserRouter([
     //  Wrap Login with PublicRoute (blocks if authenticated)
     element: <PublicRoute>{withSuspense(Login)}</PublicRoute>,
   },
+
+  {
+    path: "/forget-password",
+    //  Wrap Login with PublicRoute (blocks if authenticated)
+    element: <PublicRoute>{withSuspense(ForgetPassword)}</PublicRoute>,
+  },
+
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
