@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -14,6 +14,7 @@ import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { axioslogin } from "../../Connection/axios";
 import {
     errorNotify,
+    infoNotify,
     successNotify,
     warningNotify
 } from "../../constant/Constant";
@@ -27,6 +28,7 @@ const CompanyCreation = () => {
         location: "",
         email: "",
         address: "",
+        employee_prefix: "",
         isActive: "Active",
     });
 
@@ -46,20 +48,17 @@ const CompanyCreation = () => {
             [field]: e.target.value
         }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setCompany({
             companyName: "",
             location: "",
             email: "",
             address: "",
+            employee_prefix: "",
             isActive: "Active",
         });
-    };
+    }, []);
 
     const validateCompany = () => {
 
@@ -93,6 +92,11 @@ const CompanyCreation = () => {
             return false;
         }
 
+        if (!/^[A-Za-z]{5}$/.test(company.employee_prefix.trim())) {
+            warningNotify("Prefix should contain exactly 5 letters (A-Z only)");
+            return false;
+        }
+
         if (
             company.address &&
             company.address.trim().length > 255
@@ -122,6 +126,7 @@ const CompanyCreation = () => {
                 location: data.location || "",
                 email: data.email || "",
                 address: data.address || "",
+                employee_prefix: data.employee_prefix || "",
                 isActive:
                     data.is_active === 1
                         ? "Active"
@@ -129,7 +134,6 @@ const CompanyCreation = () => {
             });
 
         } catch (error) {
-
             console.log(error);
             warningNotify("Failed to load company details");
 
@@ -156,6 +160,7 @@ const CompanyCreation = () => {
                 company_location: company.location.trim() || null,
                 company_email: company.email.trim(),
                 company_address: company.address.trim() || null,
+                employee_prefix: company.employee_prefix.trim(),
                 isActive:
                     company.isActive === "Active"
                         ? 1
@@ -222,10 +227,10 @@ const CompanyCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+        infoNotify("Cancelled")
+    }, []);
 
     const handleView = () => {
 
@@ -254,6 +259,10 @@ const CompanyCreation = () => {
                         headerName: "Address"
                     },
                     {
+                        field: "employee_prefix",
+                        headerName: "Employee Prefix"
+                    },
+                    {
                         field: "is_active",
                         headerName: "Status",
                         type: "status"
@@ -264,39 +273,20 @@ const CompanyCreation = () => {
 
     };
 
-    const handlePreview = () => {
 
-        if (!company.companyName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-
-        console.log("Preview:", company);
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         navigate('/home/settings');
-    };
+    }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
-
             <Panel
                 title={
                     mode === "edit"
                         ? "Edit Company"
                         : "Company Creation"
                 }
-                onHelp={() =>
-                    showToast(
-                        "Help: Fill all required fields marked with *"
-                    )
-                }
+                onBack={handleClose}
             >
 
                 <Box
@@ -345,6 +335,13 @@ const CompanyCreation = () => {
                                 placeholder="Full Address"
                             />
                         </FormRow>
+                        <FormRow required label="Prefix">
+                            <InputLg
+                                value={company.employee_prefix?.toUpperCase()}
+                                onChange={set("employee_prefix")}
+                                placeholder="eg: TJKOL - TJPLK"
+                            />
+                        </FormRow>
 
                         <FormRow label="Active Status">
                             <Checkbox
@@ -379,10 +376,6 @@ const CompanyCreation = () => {
 
                     <Button onClick={handleView}>
                         View
-                    </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
                     </Button>
 
                     <Button onClick={handleClose}>

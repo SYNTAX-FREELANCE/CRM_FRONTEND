@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -54,19 +54,14 @@ const InsuranceCompanyCreation = () => {
         }
     };
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
-
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setInsurance({
             companyName: "",
             contactNumber: "",
             email: "",
             isActive: "Active",
         });
-    };
+    },[]);
 
     const validateInsuranceCompany = () => {
         if (!insurance.companyName.trim()) {
@@ -224,7 +219,6 @@ const InsuranceCompanyCreation = () => {
 
     const handleCancel = () => {
         handleReset();
-        showToast("Form cleared");
     };
 
     const handleView = () => {
@@ -257,30 +251,15 @@ const InsuranceCompanyCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!insurance.companyName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
 
-        console.log("Preview:", insurance);
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
-        navigate(-1);
-    };
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
-
             <Panel
                 title={mode === "edit" ? "Edit Insurance Company" : "Insurance Company Creation"}
-                onHelp={() => showToast("Help: Fill all required fields marked with *")}
             >
                 <Box
                     sx={{
@@ -348,10 +327,6 @@ const InsuranceCompanyCreation = () => {
 
                     <Button onClick={handleView}>
                         View
-                    </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
                     </Button>
 
                     <Button onClick={handleClose}>

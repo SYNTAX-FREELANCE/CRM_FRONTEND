@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -28,11 +28,6 @@ const ModuleCreation = () => {
 
     const set = (field) => (e) =>
         setModule((prev) => ({ ...prev, [field]: e.target.value }));
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const { refetch: FetchModuleMaster } = useModuleMaster();
 
@@ -76,12 +71,12 @@ const ModuleCreation = () => {
         return true;
     };
 
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setModule({
             moduleName: "",
             isActive: "Active",
         });
-    };
+    }, []);
 
     const handleSave = async () => {
         if (!validateModule()) {
@@ -162,10 +157,9 @@ const ModuleCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+    }, []);
 
     const handleView = () => {
         navigate("/home/setting/commonview", {
@@ -189,38 +183,29 @@ const ModuleCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!module.moduleName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", module);
-        showToast("Previewing current form data");
-    };
 
     const handleClose = () => {
-        navigate(-1);
+        navigate('/home/settings');
     };
 
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
+       
+            <Panel title="Module Creation" >
 
-            <Panel title="Module Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
-                
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
                     <Box sx={{ width: '60%' }}>
                         <FormRow label="Module Name" required>
-                            <InputLg 
-                                value={module.moduleName} 
-                                onChange={set("moduleName")} 
-                                placeholder="Enter module name" 
+                            <InputLg
+                                value={module.moduleName}
+                                onChange={set("moduleName")}
+                                placeholder="Enter module name"
                             />
                         </FormRow>
-                         <FormRow label="Active Status">
-                            <Checkbox 
-                                value={module.isActive} 
-                                onChange={set("isActive")} 
+                        <FormRow label="Active Status">
+                            <Checkbox
+                                value={module.isActive}
+                                onChange={set("isActive")}
                             />
                         </FormRow>
                     </Box>
@@ -241,7 +226,6 @@ const ModuleCreation = () => {
                     <Button onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </div>
 

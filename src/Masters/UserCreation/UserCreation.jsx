@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputSm from "../../Settings/CommonMasterComponent/InputSm";
@@ -58,10 +58,6 @@ const UserCreation = () => {
     const set = (field) => (e) =>
         setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     // ==================== MASTER DATA ====================
     const { data: RoleMasterDetail } = useRoleMaster();
@@ -121,7 +117,7 @@ const UserCreation = () => {
                 company: data.company_id || "",
                 role: data.role_id || "",
                 userStatus: data.user_status,
-                isActive:data.is_active === 1 ? "Active" : "Inactive"
+                isActive: data.is_active === 1 ? "Active" : "Inactive"
             });
         } catch (error) {
             console.log(error);
@@ -288,10 +284,10 @@ const UserCreation = () => {
             company: "",
             role: "",
             userStatus: "",
-            isActive:'Active'
+            isActive: 'Active'
         });
         setSavedData(null);
-        showToast("Form cleared");
+
     };
 
     const handleSave = async () => {
@@ -314,7 +310,7 @@ const UserCreation = () => {
                 aadhar_number: employee.aadharNumber ? employee.aadharNumber.trim() : null,
                 company_id: employee.company || null,
                 role_id: employee.role || null,
-                user_status: employee.userStatus ,
+                user_status: employee.userStatus,
                 is_active: employee.isActive === "Active" ? 1 : 0
             };
 
@@ -455,25 +451,15 @@ const UserCreation = () => {
             }
         });
     };
-    const handlePreview = () => {
-        if (!employee.name) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", employee);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        showToast("Closing...");
-    };
+     const handleClose = useCallback(() => {
+            navigate('/home/settings');
+        }, [navigate]);
 
-    // ==================== RENDER ====================
+
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
-
-            <Panel title="User Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
+            <Panel title="User Creation" >
 
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', gap: '24px' }}>
                     <Box sx={{ width: { xs: '100%', md: '48%' } }}>
@@ -598,7 +584,6 @@ const UserCreation = () => {
                     <Button onClick={handleSave} disabled={loading}>Save</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
 

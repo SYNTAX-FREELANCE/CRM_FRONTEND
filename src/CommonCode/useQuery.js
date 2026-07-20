@@ -35,6 +35,8 @@ import {
   FetchCallCenterPerformance,
   getEmployeeRecentActivity,
   getEmployeeActiveCalls,
+  getEmployeeDetails,
+  getSingleEmployeeProfileDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -351,3 +353,23 @@ export const useProfilePhoto = (userId) => {
     enabled: !!userId,
   });
 };
+
+
+export const useAllEmployeeDetails = () => {
+  return useQuery({
+    queryKey: ["userInfoEmployees"],
+    queryFn: getEmployeeDetails,
+    staleTime: Infinity,
+  });
+};
+
+
+export const useSingleEmployeeProfile = (employeeId) => {
+  return useQuery({
+    queryKey: ["emp-single-profile", employeeId],
+    queryFn: () => getSingleEmployeeProfileDetails(employeeId),
+    enabled: !!employeeId,
+    staleTime: Infinity,
+  });
+};
+

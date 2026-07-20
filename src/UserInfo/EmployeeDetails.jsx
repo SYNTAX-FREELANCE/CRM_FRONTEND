@@ -66,8 +66,6 @@ const EmployeeDetails = () => {
 
     // console.log("TotalCount:", TotalCount);
 
-
-
     // ******************************
 
     // const summary = remindersData?.summary || {};

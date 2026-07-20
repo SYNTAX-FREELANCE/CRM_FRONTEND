@@ -14,7 +14,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import { DataGrid } from "@mui/x-data-grid";
 import DetailRow from "./DetailRow";
 import { groupedData, groupLeadData, summaryData } from "../CommonCode/Reusable";
-import { useFectchFreshCalls, useGetMyActiveCalls, useGetMyEmployeeActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
+import { useGetMyEmployeeActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
 import { axioslogin } from "../Connection/axios";

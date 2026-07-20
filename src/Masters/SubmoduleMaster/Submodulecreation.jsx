@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -32,11 +32,6 @@ const Submodulecreation = () => {
 
     const set = (field) => (e) =>
         setSubmodule((prev) => ({ ...prev, [field]: e.target.value }));
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const { refetch: FetchSubmoduleMaster } = useSubmoduleMaster();
 
@@ -173,10 +168,9 @@ const Submodulecreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+    },[]);
 
     const handleView = () => {
         navigate("/home/setting/commonview", {
@@ -204,24 +198,15 @@ const Submodulecreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!submodule.submoduleName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", submodule);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        navigate(-1);
-    };
+
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
-
-            <Panel title="Submodule Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
+            <Panel title="Submodule Creation">
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
                     <Box sx={{ width: '60%' }}>
@@ -258,7 +243,6 @@ const Submodulecreation = () => {
                     <Button onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
 
