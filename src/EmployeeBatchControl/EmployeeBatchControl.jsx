@@ -42,6 +42,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { EmployeeBatchColumns } from './Components/EmployeeBatchColumns';
 import { useNavigate } from 'react-router-dom';
 import { useGetActiveBatchs } from '../CommonCode/useQuery';
+import { useThemeMode } from "../Context/ThemeContext";
 
 
 
@@ -103,6 +104,8 @@ import { useGetActiveBatchs } from '../CommonCode/useQuery';
 // ];
 
 const EmployeeBatchControl = () => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
 
     const [requestPanelOpen, setRequestPanelOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -138,11 +141,17 @@ const EmployeeBatchControl = () => {
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 '&::-webkit-scrollbar': { display: 'none' },
-                background: `
-          radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-          radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-          linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-        `,
+                background: isDark
+                    ? `
+                      radial-gradient(circle at 15% 25%, rgba(30, 41, 59, 0.4) 0%, transparent 45%),
+                      radial-gradient(circle at 85% 75%, rgba(15, 23, 42, 0.6) 0%, transparent 45%),
+                      linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
+                    `
+                    : `
+                      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                      linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                    `,
             }}
         >
             <Paper
@@ -152,19 +161,20 @@ const EmployeeBatchControl = () => {
                     width: '100%',
                     borderRadius: 2,
                     overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.7)',
-                    background: 'rgba(255,255,255,0.62)',
+                    border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255,255,255,0.7)',
+                    background: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255,255,255,0.62)',
                     backdropFilter: 'blur(22px)',
-                    boxShadow: '0 18px 50px rgba(15, 23, 42, 0.08)',
+                    boxShadow: isDark ? '0 18px 50px rgba(0, 0, 0, 0.6)' : '0 18px 50px rgba(15, 23, 42, 0.08)',
                 }}
             >
                 <Box
                     sx={{
                         px: { xs: 2, md: 3 },
                         py: { xs: 2, md: 2.5 },
-                        borderBottom: '1px solid rgba(226,232,240,0.9)',
-                        background:
-                            'linear-gradient(90deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,0.85) 52%, rgba(249,115,22,0.08) 100%)',
+                        borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(226,232,240,0.9)',
+                        background: isDark
+                            ? 'linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(15, 23, 42, 0.85) 52%, rgba(249, 115, 22, 0.15) 100%)'
+                            : 'linear-gradient(90deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,0.85) 52%, rgba(249,115,22,0.08) 100%)',
                     }}
                 >
                     <Stack
@@ -182,9 +192,9 @@ const EmployeeBatchControl = () => {
                                         borderRadius: '50%',
                                         display: 'grid',
                                         placeItems: 'center',
-                                        bgcolor: 'rgba(37,99,235,0.12)',
-                                        color: '#2563eb',
-                                        boxShadow: 'inset 0 0 0 1px rgba(37,99,235,0.15)',
+                                        bgcolor: isDark ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.12)',
+                                        color: isDark ? '#60a5fa' : '#2563eb',
+                                        boxShadow: isDark ? 'inset 0 0 0 1px rgba(255, 255, 255, 0.15)' : 'inset 0 0 0 1px rgba(37,99,235,0.15)',
                                     }}
                                 >
                                     <QueueIcon sx={{ fontSize: { xs: 16, sm: 22 } }} />
@@ -196,7 +206,7 @@ const EmployeeBatchControl = () => {
                                             fontSize: { xs: 16, sm: 26 },
                                             fontWeight: 900,
                                             letterSpacing: '-0.6px',
-                                            color: '#0f172a',
+                                            color: isDark ? '#f8fafc' : '#0f172a',
                                             lineHeight: 1.1,
                                         }}
                                     >
@@ -205,7 +215,7 @@ const EmployeeBatchControl = () => {
                                     <Typography
                                         sx={{
                                             mt: 0.4,
-                                            color: '#475569',
+                                            color: isDark ? '#94a3b8' : '#475569',
                                             fontSize: { xs: 8, sm: 14 },
                                             fontWeight: 500,
                                         }}
@@ -252,10 +262,10 @@ const EmployeeBatchControl = () => {
                             width: "100%",
                             borderRadius: 4,
                             overflowX: "hidden",
-                            border: "1px solid rgba(255, 255, 255, 0.55)",
-                            background: "rgba(255, 255, 255, 0.25)",
+                            border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(255, 255, 255, 0.55)",
+                            background: isDark ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.25)",
                             backdropFilter: "blur(16px)",
-                            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.02)",
+                            boxShadow: isDark ? "0 10px 30px rgba(0, 0, 0, 0.3)" : "0 10px 30px rgba(15, 23, 42, 0.02)",
                         }}
                     >
                         <DataGrid
@@ -290,35 +300,43 @@ const EmployeeBatchControl = () => {
                                 border: "none",
                                 fontSize: "13px",
                                 background: "transparent",
+                                color: isDark ? "#cbd5e1" : "inherit",
 
                                 "& .MuiDataGrid-columnHeaders": {
-                                    background: "rgba(248,250,252,.55)",
-                                    borderBottom: "1px solid rgba(226,232,240,.6)",
+                                    background: isDark ? "#1e293b" : "rgba(248,250,252,.55)",
+                                    borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(226,232,240,.6)",
                                 },
 
                                 "& .MuiDataGrid-columnHeaderTitle": {
                                     fontWeight: 800,
-                                    color: "#475569",
+                                    color: isDark ? "#cbd5e1" : "#475569",
                                     fontSize: 12,
                                     textTransform: "uppercase",
                                     letterSpacing: ".5px",
                                 },
 
                                 "& .MuiDataGrid-cell": {
-                                    borderBottom: "1px solid rgba(226,232,240,.35)",
+                                    borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(226,232,240,.35)",
+                                    color: isDark ? "#cbd5e1" : "inherit",
                                 },
 
                                 "& .MuiDataGrid-row": {
                                     cursor: "pointer",
                                     transition: ".2s",
+                                    background: isDark ? "rgba(30, 41, 59, 0.4)" : "rgba(255, 255, 255, 0.15)",
                                     "&:hover": {
-                                        background: "rgba(37,99,235,.05)",
+                                        background: isDark ? "rgba(37,99,235,.12)" : "rgba(37,99,235,.05)",
                                     },
                                 },
 
                                 "& .MuiDataGrid-footerContainer": {
-                                    background: "rgba(248,250,252,.55)",
+                                    background: isDark ? "#1e293b" : "rgba(248,250,252,.55)",
+                                    borderTop: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
+                                    color: isDark ? "#cbd5e1" : "inherit",
                                 },
+                                "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-actions svg": {
+                                    color: isDark ? "#cbd5e1" : "inherit",
+                                }
                             }}
                         />
                     </Paper>
