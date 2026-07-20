@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputSm from "../../Settings/CommonMasterComponent/InputSm";
@@ -61,10 +61,6 @@ const UserCreation = () => {
     const set = (field) => (e) =>
         setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     // ==================== MASTER DATA ====================
     const { data: RoleMasterDetail } = useRoleMaster();
@@ -332,7 +328,7 @@ const UserCreation = () => {
             address: ""
         });
         setSavedData(null);
-        showToast("Form cleared");
+
     };
 
     const handleSave = async () => {
@@ -360,6 +356,7 @@ const UserCreation = () => {
                 dob: employee.dob || null,
                 email: employee.email ? employee.email.trim() : null,
                 address: employee.address ? employee.address.trim() : null
+
             };
 
             let response;
@@ -527,25 +524,15 @@ const UserCreation = () => {
             }
         });
     };
-    const handlePreview = () => {
-        if (!employee.name) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", employee);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        showToast("Closing...");
-    };
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
-    // ==================== RENDER ====================
+
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
-
-            <Panel title="User Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
+            <Panel title="User Creation" >
 
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', gap: '24px' }}>
                     <Box sx={{ width: { xs: '100%', md: '48%' } }}>
@@ -693,7 +680,6 @@ const UserCreation = () => {
                     <Button onClick={handleSave} disabled={loading}>Save</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
 

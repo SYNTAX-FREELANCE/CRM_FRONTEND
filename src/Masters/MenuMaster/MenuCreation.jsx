@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -33,10 +33,6 @@ const MenuCreation = () => {
     const set = (field) => (e) =>
         setMenu((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const { refetch: FetchMenuMaster } = useMenuMaster();
 
@@ -176,10 +172,10 @@ const MenuCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+  
+    },[]);
 
     const handleView = () => {
         navigate("/home/setting/commonview", {
@@ -207,24 +203,15 @@ const MenuCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!menu.menuName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", menu);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        navigate(-1);
-    };
+   const handleClose = useCallback(() => {
+          navigate('/home/settings');
+      }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
 
-            <Panel title="Menu Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
+            <Panel title="Menu Creation" >
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
                     <Box sx={{ width: '60%' }}>
@@ -262,7 +249,6 @@ const MenuCreation = () => {
                     <Button onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
 

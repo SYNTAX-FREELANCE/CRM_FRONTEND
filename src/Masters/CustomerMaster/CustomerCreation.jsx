@@ -1,12 +1,11 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useCallback} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputLg from "../../Settings/CommonMasterComponent/InputLg";
 import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 import Button from "../../Settings/CommonMasterComponent/Button";
-import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
@@ -61,11 +60,6 @@ const CustomerCreation = () => {
             ...prev,
             [field]: val
         }));
-    };
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
     };
 
     const handleReset = () => {
@@ -266,7 +260,6 @@ const CustomerCreation = () => {
 
     const handleCancel = () => {
         handleReset();
-        showToast("Form cleared");
     };
 
     const handleView = () => {
@@ -289,36 +282,18 @@ const CustomerCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!customer.customerName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Customer Data:", customer);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        navigate(-1);
-    };
+ const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
-
             <Panel
                 title={
                     mode === "edit"
                         ? "Edit Customer"
                         : "Customer Creation"
-                }
-                onHelp={() =>
-                    showToast(
-                        "Help: Fill all required fields marked with *"
-                    )
                 }
             >
                 <Box
@@ -444,15 +419,11 @@ const CustomerCreation = () => {
                     </Button>
 
                     <Button onClick={handleCancel}>
-                        Cancel
+                        Reset
                     </Button>
 
                     <Button onClick={handleView}>
                         View
-                    </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
                     </Button>
 
                     <Button onClick={handleClose}>

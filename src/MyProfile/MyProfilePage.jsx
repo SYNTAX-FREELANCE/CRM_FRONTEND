@@ -19,7 +19,7 @@ import StatCard from "./Profilecomponents/StatCard";
 import AnalyticsCard from "./Profilecomponents/AnalyticsCard";
 import InfoCard from "./Profilecomponents/InfoCard";
 import { getAuthUser } from "../constant/Constant";
-import { useEmployeeProfile, useEmployeeRecentActivity, useGetAttendanceByDate, useProfilePhoto } from "../CommonCode/useQuery";
+import { useEmployeeRecentActivity, useGetAttendanceByDate, useProfilePhoto, useSingleEmployeeProfile } from "../CommonCode/useQuery";
 import { format } from "date-fns";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { handleProfilePhotoChange } from "../CommonCode/CommonFun";
@@ -39,16 +39,16 @@ const MyProfilePage = () => {
 
     const TodayDate = format(new Date(), "yyyy-MM-dd");
 
-    const { data: employee, isLoading: loadingEmp } = useEmployeeProfile(id);
+    const { data: employee, isLoading: loadingEmp } = useSingleEmployeeProfile(id);
+
+    console.log({
+        employee
+    });
+
 
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(id, TodayDate);
     const { data: RecentActivities, isLoading: LoadingRecentActivities } = useEmployeeRecentActivity(id)
     const { data: profilePhotoUrl = "" } = useProfilePhoto(id);
-
-    console.log({
-        profilePhotoUrl
-    });
-    
 
 
     const fileInputRef = useRef(null);

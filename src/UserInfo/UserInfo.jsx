@@ -1,4 +1,5 @@
-import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
+
+import React, { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import {
     Box,
     Typography,
@@ -13,7 +14,7 @@ import { errorNotify, warningNotify } from "../constant/Constant";
 import { useQuery } from "@tanstack/react-query";
 import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
 import { useAuth } from "../Context/AuthContext";
-import { axioslogin } from "../Connection/axios";
+import { useAllEmployeeDetails } from "../CommonCode/useQuery";
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
 
@@ -24,28 +25,7 @@ const UserInfo = () => {
     const { user } = useAuth();
     const isAdmin = user?.role?.toLowerCase() === "admin";
 
-    useEffect(() => {
-        if (user && !isAdmin) {
-            navigate(`/home/userinfo/${user.id}`, { replace: true });
-        }
-    }, [user, isAdmin, navigate]);
-
-    const { data: employeeListData, isLoading: loading } = useQuery({
-        queryKey: ["userInfoEmployees"],
-        queryFn: async () => {
-            try {
-                const response = await axioslogin.get("/userinfo/employees");
-                if (response.data?.success === 1) return response.data.data || [];
-                warningNotify(response.data?.message || "No employees found");
-                return [];
-            } catch (error) {
-                console.error("Error fetching employees:", error);
-                errorNotify("Failed to load employee list");
-                return [];
-            }
-        },
-        enabled: isAdmin,
-    });
+    const { data: employeeListData = [], isLoading: loading } = useAllEmployeeDetails()
 
     const employees = employeeListData || [];
 
@@ -54,7 +34,8 @@ const UserInfo = () => {
         const term = searchKeyword.trim().toLowerCase();
         if (!term) return employees;
 
-        return employees.filter((emp) =>
+
+        return employees?.filter((emp) =>
             [
                 emp.name,
                 emp.employee_id,
@@ -67,9 +48,9 @@ const UserInfo = () => {
         );
     }, [employees, searchKeyword]);
 
-    const handleViewDetails = (emp) => {
+    const handleViewDetails = useCallback((emp) => {
         navigate(`/home/userinfo/${emp.user_id}`);
-    };
+    }, [navigate]);
 
     if (!isAdmin) {
         return null;

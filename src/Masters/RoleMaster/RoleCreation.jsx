@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputLg from "../../Settings/CommonMasterComponent/InputLg";
@@ -35,10 +35,7 @@ const RoleCreation = () => {
     const set = (field) => (e) =>
         setRole((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
+
 
     const { refetch: FetchRoleMaster } = useRoleMaster()
 
@@ -116,7 +113,6 @@ const RoleCreation = () => {
             isActive: "Active",
         });
         setSavedData(null);
-        showToast("Form cleared");
     };
 
 
@@ -215,27 +211,19 @@ const RoleCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!role.roleName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-        console.log("Previewing Current Data:", role);
-        showToast("Previewing current form data");
-    };
 
-    const handleClose = () => {
-        showToast("Closing...");
-    };
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
+
 
 
 
 
     return (
         <Wrapper>
-            <Toast message={toast} onClose={() => setToast("")} />
 
-            <Panel title="Role Creation" onHelp={() => showToast("Help: Fill all required fields marked with *")}>
+            <Panel title="Role Creation" >
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
                     <Box sx={{ width: '70%' }}>
@@ -282,7 +270,6 @@ const RoleCreation = () => {
                     <Button onClick={handleSave}>Save</Button>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
-                    <Button onClick={handlePreview}>Preview</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
 

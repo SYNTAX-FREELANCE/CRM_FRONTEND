@@ -594,3 +594,27 @@ export const handleProfilePhotoChange = async (e, empId, queryClient) => {
   }
 };
 
+export const getEmployeeDetails = async () => {
+  try {
+    const response = await axioslogin.get("/userinfo/employees");
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+};
+
+
+export const getSingleEmployeeProfileDetails = async (employeeId) => {
+  if (!employeeId) return null;
+  try {
+    const response = await axioslogin.get(`/userinfo/employees/${employeeId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data?.[0];
+    return {};
+  } catch (error) {
+    console.error("FetchEmployeeProfile error:", error);
+  }
+};

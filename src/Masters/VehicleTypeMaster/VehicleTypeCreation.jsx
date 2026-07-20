@@ -1,5 +1,5 @@
 import { Box } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
@@ -42,10 +42,6 @@ const VehicleTypeCreation = () => {
             [field]: e.target.value
         }));
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2500);
-    };
 
     const handleReset = () => {
         setVehicle({
@@ -175,10 +171,9 @@ const VehicleTypeCreation = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         handleReset();
-        showToast("Form cleared");
-    };
+    }, []);
 
     const handleView = () => {
         navigate("/home/setting/commonview", {
@@ -202,31 +197,13 @@ const VehicleTypeCreation = () => {
         });
     };
 
-    const handlePreview = () => {
-        if (!vehicle.vehicleTypeName) {
-            showToast("Fill the form first to preview.");
-            return;
-        }
-
-        console.log("Preview:", vehicle);
-        showToast("Previewing current form data");
-    };
-
-    const handleClose = () => {
-        navigate(-1);
-    };
-
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
     return (
         <Wrapper>
-            <Toast
-                message={toast}
-                onClose={() => setToast("")}
-            />
-
             <Panel
-                title={mode === "edit" ? "Edit Vehicle Type" : "Vehicle Type Creation"}
-                onHelp={() => showToast("Help: Fill all required fields marked with *")}
-            >
+                title={mode === "edit" ? "Edit Vehicle Type" : "Vehicle Type Creation"}>
                 <Box
                     sx={{
                         display: "flex",
@@ -276,10 +253,6 @@ const VehicleTypeCreation = () => {
 
                     <Button onClick={handleView}>
                         View
-                    </Button>
-
-                    <Button onClick={handlePreview}>
-                        Preview
                     </Button>
 
                     <Button onClick={handleClose}>

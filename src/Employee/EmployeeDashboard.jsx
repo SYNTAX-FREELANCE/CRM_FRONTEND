@@ -170,7 +170,7 @@ const EmployeeDashboard = () => {
                 mt: 2.5,
                 display: "flex",
                 gap: 2.5,
-                flexDirection: { xs: "column", sm: 'column', md: "row" },
+                flexDirection: { xs: "column", sm: 'column', lg: "row" },
                 alignItems: "stretch",
             }}>
                 <Box sx={{
@@ -247,12 +247,18 @@ const EmployeeDashboard = () => {
                     flex: 1,
                     minWidth: 0,
                 }}>
-                    <Box
+                    {/* <Box
                         sx={{
                             flex: 1,
                             minWidth: 0,
                             height: '100%'
-                        }}>
+                        }}> */}
+                         <Box
+                                  sx={{
+                                    flex: 1,
+                                    height:{xs:450,md:'45%',lg:'63%',xl:"63%"}
+                                  }}
+                                >
                         {LoadingTopEmployees ? (
                             <TopSalesExecutivesSkeleton />
                         ) : (
