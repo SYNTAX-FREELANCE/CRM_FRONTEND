@@ -3,7 +3,7 @@ import axios from "axios";
 import { BACKEND_API } from "../constant/Static";
 
 export const axioslogin = axios.create({
-    baseURL: BACKEND_API,
+    baseURL: BACKEND_API,  
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",

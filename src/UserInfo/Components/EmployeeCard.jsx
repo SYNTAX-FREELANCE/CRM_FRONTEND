@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState } from "react";
 import {
     Box,
     Typography,
@@ -10,6 +10,8 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
 import male from "../../assets/loginimages/male.png";
 import female from "../../assets/loginimages/female.png";
+import { axioslogin } from "../../Connection/axios";
+import { Skeleton } from "@mui/material";
 
 const InfoRow = ({ icon, children }) => (
     <Box
@@ -103,6 +105,7 @@ const StatCard = ({ label, value, color, data }) => (
 );
 
 const EmployeeCard = ({ emp, onClick }) => {
+    const [imageLoading, setImageLoading] = useState(true);
     const genderImage = emp?.gender === "F" ? female : male;
 
     const { soldData, lostData } = useMemo(() => {
@@ -152,19 +155,38 @@ const EmployeeCard = ({ emp, onClick }) => {
                     height: { xs: 56, sm: 64 },
                     borderRadius: "10px",
                     overflow: "hidden",
-                    bgcolor: "neutral.100",
+                    bgcolor: "#ff8a15",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                 }}
             >
+                {imageLoading && (
+                    <Skeleton
+                        variant="rectangular"
+                        width="100%"
+                        height="100%"
+                        animation="wave"
+                    />
+                )}
                 <img
-                    src={genderImage}
-                    alt={emp?.name || "Employee"}
+                    src={`${axioslogin.defaults.baseURL}/employee/profile-photo/${emp.user_id}`}
+                    onLoad={() => setImageLoading(false)}
+                    alt={emp?.name
+                        .split(" ")
+                        .map((s) => s[0])
+                        .slice(0, 2)
+                        .join("") || "Employee"}
+                    onError={(e) => {
+                        setImageLoading(false);
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = genderImage;
+                    }}
                     style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
+                        display: imageLoading ? "none" : "block",
                     }}
                 />
             </Box>
@@ -209,7 +231,7 @@ const EmployeeCard = ({ emp, onClick }) => {
                     width: { xs: 122, sm: 150 },
                     display: "flex",
                     gap: 0.75,
-                    
+
                 }}
             >
                 <StatCard
@@ -228,5 +250,6 @@ const EmployeeCard = ({ emp, onClick }) => {
         </Sheet>
     );
 };
+
 
 export default memo(EmployeeCard);
