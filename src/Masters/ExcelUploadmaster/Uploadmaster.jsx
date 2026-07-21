@@ -21,6 +21,7 @@ import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 import { errorNotify, successNotify, warningNotify } from "../../constant/Constant";
 import { axioslogin } from "../../Connection/axios";
 import { useCustomerMaster, useVehicleMaster } from "../../CommonCode/useQuery";
+import * as XLSX from "xlsx";
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   try {
@@ -54,7 +55,8 @@ const Uploadmaster = () => {
     district: "",
     state: "",
     pincode: "",
-    is_active: "Active"
+    is_active: "Active",
+    is_previous_customer: "no"
   });
 
   const [vehicle, setVehicle] = useState({
@@ -69,7 +71,8 @@ const Uploadmaster = () => {
     vehicle_class: "",
     vehicle_category: "",
     fuel_type: "",
-    seat_capacity: ""
+    seat_capacity: "",
+    known_policy_expiry_date: ""
   });
 
   const [file, setFile] = useState(null);
@@ -78,6 +81,10 @@ const Uploadmaster = () => {
   const [toast, setToast] = useState("");
   const [uploadResult, setUploadResult] = useState(null);
 
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3000);
+  };
 
   // Fetch record on mount if in edit mode
   useEffect(() => {
@@ -89,7 +96,9 @@ const Uploadmaster = () => {
             ? `/customer/getbyid/${id}`
             : `/customer/getbyid-vehicle/${id}`;
 
+          console.log("Fetching edit record, URL:", url);
           const response = await axioslogin.get(url);
+          console.log("Fetch response data:", response.data);
           const { success, data, message } = response.data;
 
           if (success === 1) {
@@ -104,7 +113,8 @@ const Uploadmaster = () => {
                 district: data.district || "",
                 state: data.state || "",
                 pincode: data.pincode || "",
-                is_active: data.is_active === 1 ? "Active" : "Inactive"
+                is_active: data.is_active === 1 ? "Active" : "Inactive",
+                is_previous_customer: data.is_previous_customer === 1 ? "yes" : "no"
               });
             } else {
               setVehicle({
@@ -119,7 +129,8 @@ const Uploadmaster = () => {
                 vehicle_class: data.vehicle_class || "",
                 vehicle_category: data.vehicle_category || "",
                 fuel_type: data.fuel_type || "",
-                seat_capacity: data.seat_capacity || ""
+                seat_capacity: data.seat_capacity || "",
+                known_policy_expiry_date: formatDate(data.known_policy_expiry_date)
               });
             }
           } else {
@@ -261,7 +272,8 @@ const Uploadmaster = () => {
       try {
         const updateData = {
           ...customer,
-          is_active: customer.is_active === "Active" ? 1 : 0
+          is_active: customer.is_active === "Active" ? 1 : 0,
+          is_previous_customer: customer.is_previous_customer === "yes" ? 1 : 0
         };
         const response = await axioslogin.patch(`/customer/update/${id}`, updateData);
         if (response.data.success === 1) {
@@ -360,6 +372,27 @@ const Uploadmaster = () => {
     }
   };
 
+  const handleDownloadDummyExcel = () => {
+    const dummyData = [
+      [
+        "customer_name", "mobile_number_1", "mobile_number_2", "email",
+        "address", "city", "district", "state", "pincode",
+        "is_previous_customer", "registration_number",
+        "model", "engine_number", "chassis_number", "rto", "registration_date",
+        "known_policy_expiry_date", "vehicle_maker", "vehicle_class", "vehicle_category",
+        "fuel_type", "seat_capacity"
+      ],
+      [
+
+      ]
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(dummyData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "DummyData");
+    XLSX.writeFile(workbook, "dummy_upload_format.xlsx");
+  };
+
   const renderEditForm = () => {
     if (type === "customer") {
       return (
@@ -451,6 +484,26 @@ const Uploadmaster = () => {
                 value={customer.is_active}
                 onChange={(e) => setCustomer(prev => ({ ...prev, is_active: e.target.value }))}
               />
+            </FormRow>
+          </Box>
+          <Box sx={{ flex: "1 1 45%", minWidth: "280px" }}>
+            <FormRow label="Previous Customer">
+              <select
+                value={customer.is_previous_customer}
+                onChange={(e) => setCustomer(prev => ({ ...prev, is_previous_customer: e.target.value }))}
+                style={{
+                  width: "100%",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  fontSize: "14px",
+                  outline: "none",
+                  background: "#fff",
+                }}
+              >
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
             </FormRow>
           </Box>
         </Box>
@@ -581,6 +634,15 @@ const Uploadmaster = () => {
               />
             </FormRow>
           </Box>
+          <Box sx={{ flex: "1 1 45%", minWidth: "280px" }}>
+            <FormRow label="Known Policy Expiry Date">
+              <InputLg
+                type="date"
+                value={vehicle.known_policy_expiry_date}
+                onChange={(e) => setVehicle(prev => ({ ...prev, known_policy_expiry_date: e.target.value }))}
+              />
+            </FormRow>
+          </Box>
         </Box>
       );
     }
@@ -588,10 +650,16 @@ const Uploadmaster = () => {
 
   return (
     <Wrapper>
+      <Toast message={toast} onClose={() => setToast("")} />
 
       {mode === "edit" ? (
         <Panel
           title={type === "customer" ? "Edit Customer Details" : "Edit Vehicle Details"}
+          onHelp={() => showToast(
+            type === "customer"
+              ? "Modify customer field values and press Save to update changes."
+              : "Modify vehicle field values and press Save to update changes."
+          )}
         >
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
@@ -616,6 +684,9 @@ const Uploadmaster = () => {
       ) : (
         <Panel
           title="Customer & Vehicle Data Upload Center"
+          onHelp={() => showToast(
+            "Upload a unified Excel file (.xlsx, .xls) containing both customer and vehicle columns to import and link them in the database."
+          )}
         >
           {/* Upper Description Block */}
           <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
@@ -628,6 +699,12 @@ const Uploadmaster = () => {
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1.5 }}>
+              <Button onClick={handleDownloadDummyExcel}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <DescriptionIcon sx={{ fontSize: 16 }} />
+                  Dummy Excel
+                </Box>
+              </Button>
               <Button onClick={() => handleView("customer")}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <StorageIcon sx={{ fontSize: 16 }} />
