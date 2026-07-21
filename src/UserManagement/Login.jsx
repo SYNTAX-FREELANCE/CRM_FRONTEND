@@ -14,22 +14,20 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import logo from "../assets/loginimages/companylogo.png";
 import { axioslogin } from "../Connection/axios";
 import { useNavigate } from "react-router-dom";
 import { warningNotify, successNotify } from "../constant/Constant";
 import { useAuth } from "../Context/AuthContext";
-import { useTheme, Modal, Backdrop, Fade, CircularProgress } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { useThemeMode } from "../Context/ThemeContext";
 import ThemeToggle from "../CommonComponents/ThemeToggle";
 
 const Login = () => {
-    
+
     const theme = useTheme();
 
     const isDark = theme.palette.mode === 'dark';
@@ -200,7 +198,7 @@ const Login = () => {
             {/* Left Side - CRM & Nexus Info (visible on ALL screens) */}
             <ThemeToggle
                 mode={mode}
-                onToggle={toggleTheme }
+                onToggle={toggleTheme}
                 top={30}
                 right={30}
                 size={30}
@@ -649,7 +647,7 @@ const Login = () => {
                         }}
                     >
                         <Typography
-                            onClick={() => setForgotPasswordModalOpen(true)}
+                            onClick={() => navigate('/forget-password')}
                             sx={{
                                 cursor: "pointer",
                                 color: "#2563eb",
@@ -690,7 +688,7 @@ const Login = () => {
             </Box>
 
             {/* Forgot Password Modal */}
-            <Modal
+            {/* <Modal
                 open={forgotPasswordModalOpen}
                 onClose={() => {
                     if (!forgotLoading) {
@@ -884,7 +882,7 @@ const Login = () => {
                         )}
                     </Box>
                 </Fade>
-            </Modal>
+            </Modal> */}
         </Box>
     );
 };

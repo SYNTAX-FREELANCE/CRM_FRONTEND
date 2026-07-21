@@ -112,8 +112,6 @@ const QualificationCreation = () => {
             });
 
         } catch (error) {
-
-            console.log(error);
             warningNotify(
                 "Failed to load qualification details"
             );
@@ -212,7 +210,7 @@ const QualificationCreation = () => {
 
     const handleCancel = useCallback(() => {
         handleReset();
-    },[]);
+    }, []);
 
     const handleView = () => {
 
@@ -243,13 +241,13 @@ const QualificationCreation = () => {
 
     };
 
-     const handleClose = useCallback(() => {
-            navigate('/home/settings');
-        }, [navigate]);
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
     return (
         <Wrapper>
-         
+
 
             <Panel
                 title={
@@ -257,7 +255,7 @@ const QualificationCreation = () => {
                         ? "Edit Qualification"
                         : "Qualification Creation"
                 }
-                
+
             >
 
                 <Box

@@ -184,7 +184,6 @@ const VehicleCreation = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load vehicle details");
         }
     };

@@ -3,14 +3,12 @@ import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GlobalLoader from "./CommonComponents/GlobalLoader";
 import ProtectedRoute from "./utils/Protected/ProtectedRoute";
-import { useAuth } from "./Context/AuthContext";
 import PublicRoute from "./utils/Protected/PublicRoute";
 
 
 // Lazy imports
 const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
-const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const NotFoundPage = lazy(() => import("./CommonComponents/NotFoundPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const Settings = lazy(() => import("./Settings/Settings"));
@@ -52,6 +50,11 @@ const HomePage = lazy(
 
 const ReportSetting = lazy(
   () => import("./Reports/ReportSetting"),
+);
+
+
+const ForgetPassword = lazy(
+  () => import("./UserManagement/ForgetPassword"),
 );
 
 
@@ -128,6 +131,13 @@ const router = createBrowserRouter([
     //  Wrap Login with PublicRoute (blocks if authenticated)
     element: <PublicRoute>{withSuspense(Login)}</PublicRoute>,
   },
+
+  {
+    path: "/forget-password",
+    //  Wrap Login with PublicRoute (blocks if authenticated)
+    element: <PublicRoute>{withSuspense(ForgetPassword)}</PublicRoute>,
+  },
+
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
