@@ -99,13 +99,13 @@ const ExecutiveCard = ({
                 <Stack direction="row" spacing={1.25} alignItems="center">
                     <Avatar
                         sx={{
-                            width: 36,
-                            height: 36,
+                            width: 56,
+                            height: 56,
                             bgcolor: highlight ? colors.orange : colors.blue,
                             fontSize: 12,
                             fontWeight: 600
                         }}
-                        
+
                         src={`${axioslogin.defaults.baseURL}/employee/profile-photo/${empid}`}
                         imgProps={{
                             onError: (e) => {
@@ -122,25 +122,25 @@ const ExecutiveCard = ({
 
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography sx={{ fontSize: 13, fontWeight: 800, color: isDark ? "#f8fafc" : colors.ink }} noWrap>
-                            {name}
+                            {name?.toUpperCase()}
                         </Typography>
 
                         <Stack direction="row" spacing={1} sx={{ mt: 0.6, alignItems: "center", flexWrap: "wrap" }}>
-           
+
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
-                                <PhoneInTalkIcon sx={{ fontSize: 15,color:"#1f2eff" }} />
-                                <Typography sx={{ fontSize: 12.5 }}>{calls} calls</Typography>
+                                <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} />
+                                <Typography sx={{ fontSize: 12.5, color: "#010101",fontWeight:800 }}> <strong style={{ fontSize: 16 }}>{calls}</strong> calls</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
-                                <SellIcon sx={{ fontSize: 15,color:'#f0a308' }} />
-                                <Typography sx={{ fontSize: 12.5 }}>{sold} sold</Typography>
+                                <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
+                                <Typography sx={{ fontSize: 12.5, color: "#010101",fontWeight:800 }}><strong style={{ fontSize: 16 }}>{sold}</strong> sold</Typography>
                             </Box>
                         </Stack>
-</Box>
+                    </Box>
                     <EmojiEventsIcon sx={{ color: highlight ? colors.orange : colors.blue, fontSize: 24 }} />
                 </Stack>
 
-                <Divider sx={{ my: 1.75, borderColor: isDark ? "rgba(255,255,255,0.1)" : colors.border }} />
+                {/* <Divider sx={{ my: 1.75, borderColor: isDark ? "rgba(255,255,255,0.1)" : colors.border }} />
 
                 <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1 }}>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -167,7 +167,7 @@ const ExecutiveCard = ({
                             />
                         </Box>
                     </Box>
-                </Box>
+                </Box> */}
             </CardContent>
         </Card>
     );

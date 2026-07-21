@@ -41,7 +41,11 @@ const TopSalesExecutives = ({ data = [] }) => {
                 borderRadius: 4,
                 bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                 border: isDark ? "1px solid rgba(255,255,255,0.1)" : `1px solid ${colors.border}`,
-                height: '100%'
+                height: '100%',
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+
             }}
         >
             <Stack
@@ -54,7 +58,7 @@ const TopSalesExecutives = ({ data = [] }) => {
                     <Typography sx={{ fontSize: { xs: 20, sm: 20, md: 18 }, fontWeight: 900, color: isDark ? "#f8fafc" : colors.ink }}>
                         Top Sales Executives
                     </Typography>
-                    <Typography sx={{ fontSize: {xs:13,sm:10}, color: isDark ? "#94a3b8" : colors.muted }}>
+                    <Typography sx={{ fontSize: { xs: 13, sm: 10 }, color: isDark ? "#94a3b8" : colors.muted }}>
                         Top 3 by completed calls and sold performance
                     </Typography>
                 </Box>
@@ -62,7 +66,15 @@ const TopSalesExecutives = ({ data = [] }) => {
             </Stack>
 
             <Stack direction="column" spacing={2} sx={{
-                p: 1.25
+                p: 1.25,
+                flex: 1,
+                overflowY: "auto",
+                minHeight: 0,
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": {
+                    display: "none",
+                },
             }}>
                 {top3.map((item, idx) => (
                     <ExecutiveCard
