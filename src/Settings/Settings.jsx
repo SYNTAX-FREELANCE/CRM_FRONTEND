@@ -20,11 +20,19 @@ import SecurityIcon from "@mui/icons-material/Security";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useGetEmployeeMenuRights } from "../CommonCode/useQuery";
+import { getAuthUser } from "../constant/Constant";
 
 
 const Settings = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null); // Default to no expanded section
+
+  const authUser = getAuthUser();
+
+  const { role_id } = authUser ?? {};
+
+  const { data: EmployeeMenuRights = [] } = useGetEmployeeMenuRights(role_id);
 
   const master = [
     {
@@ -33,17 +41,17 @@ const Settings = () => {
       icon: <ExtensionIcon sx={{ color: "#1e40af", fontSize: "1.5rem" }} />,
       bgGlow: "rgba(30, 64, 175, 0.08)",
       children: [
-        { label: "Menu Master", path: "/home/setting/menumaster", icon: <MenuIcon /> },
-        { label: "Module Master", path: "/home/setting/modulemaster", icon: <ExtensionIcon /> },
-        { label: "Submodule Master", path: "/home/setting/submodulemaster", icon: <LayersIcon /> },
-        { label: "Qualification Master", path: "/home/setting/qualificationmaster", icon: <SchoolIcon /> },
-        { label: "Company Master", path: "/home/setting/companymaster", icon: <BusinessIcon /> },
-        { label: "Status Master", path: "/home/setting/statusmaster", icon: <ToggleOnIcon /> },
-        { label: "Lead Master", path: "/home/setting/leadmaster", icon: <LeaderboardIcon /> },
-        { label: "Vehicle Type Master", path: "/home/setting/vehicletypemaster", icon: <DirectionsCarIcon /> },
-        { label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
-        { label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
-        { label: "Vehicle Master", path: "/home/setting/vehiclemaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 1, label: "Menu Master", path: "/home/setting/menumaster", icon: <MenuIcon /> },
+        { menuslno: 2, label: "Module Master", path: "/home/setting/modulemaster", icon: <ExtensionIcon /> },
+        { menuslno: 3, label: "Submodule Master", path: "/home/setting/submodulemaster", icon: <LayersIcon /> },
+        { menuslno: 4, label: "Qualification Master", path: "/home/setting/qualificationmaster", icon: <SchoolIcon /> },
+        { menuslno: 5, label: "Company Master", path: "/home/setting/companymaster", icon: <BusinessIcon /> },
+        { menuslno: 6, label: "Status Master", path: "/home/setting/statusmaster", icon: <ToggleOnIcon /> },
+        { menuslno: 7, label: "Lead Master", path: "/home/setting/leadmaster", icon: <LeaderboardIcon /> },
+        { menuslno: 8, label: "Vehicle Type Master", path: "/home/setting/vehicletypemaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
+        { menuslno: 10, label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
+        { menuslno: 11, label: "Vehicle Master", path: "/home/setting/vehiclemaster", icon: <DirectionsCarIcon /> },
       ],
     },
     {
@@ -52,15 +60,30 @@ const Settings = () => {
       icon: <PeopleIcon sx={{ color: "#ea580c", fontSize: "1.5rem" }} />,
       bgGlow: "rgba(234, 88, 12, 0.08)",
       children: [
-        { label: "Employee Master", path: "/home/setting/employeemaster", icon: <BadgeIcon /> },
-        { label: "Role Master", path: "/home/setting/rolemaster", icon: <SecurityIcon /> },
-        { label: "User Right Master", path: "/home/setting/userrightmaster", icon: <VpnKeyIcon /> },
-        { label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
-        { label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
+        { menuslno: 12, label: "Employee Master", path: "/home/setting/employeemaster", icon: <BadgeIcon /> },
+        { menuslno: 13, label: "Role Master", path: "/home/setting/rolemaster", icon: <SecurityIcon /> },
+        { menuslno: 14, label: "User Right Master", path: "/home/setting/userrightmaster", icon: <VpnKeyIcon /> },
+        { menuslno: 15, label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
+        { menuslno: 16, label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
       ],
     },
 
   ];
+
+  const allowedMenuIds = new Set(
+    Array.isArray(EmployeeMenuRights)
+      ? EmployeeMenuRights.map((item) => item.menu_id)
+      : []
+  );
+
+  const filteredMaster = master
+    .map((section) => ({
+      ...section,
+      children: section.children.filter((child) =>
+        allowedMenuIds.has(child.menuslno)
+      ),
+    }))
+    .filter((section) => section.children.length > 0);
 
   const handleExpand = (index) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
@@ -78,7 +101,8 @@ const Settings = () => {
         overflow: "hidden",
         minHeight: "calc(100vh - 40px)",
       }}>
-      
+
+      {/* Background Glow Blobs */}
       <Box
         sx={{
           position: "absolute",
@@ -99,7 +123,7 @@ const Settings = () => {
         }}
       />
 
-      
+
       <Box
         sx={{
           position: "absolute",
@@ -135,7 +159,7 @@ const Settings = () => {
         }}
       />
 
-     
+
       <Box
         sx={{
           display: "flex",
@@ -203,7 +227,7 @@ const Settings = () => {
           zIndex: 1,
         }}
       >
-        {master.map((section, index) => {
+        {filteredMaster.map((section, index) => {
           const isExpanded = expandedIndex === index;
           const themeColor = section.colorTheme === "blue" ? "#2563eb" : "#ea580c";
           const themeColorLight = section.bgGlow;

@@ -52,7 +52,6 @@ const RoleCreation = () => {
             });
 
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load role details");
         }
     };
@@ -187,7 +186,7 @@ const RoleCreation = () => {
                 title: "Role Master",
                 type: 'role',
                 idField: 'role_id',
-                editRoute: "/rolemaster",
+                editRoute: "rolemaster",
                 columns: [
                     {
                         field: "role_name",

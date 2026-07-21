@@ -42,7 +42,10 @@ const UserCreation = () => {
         company: "",
         role: "",
         userStatus: "",
-        isActive: 'Active'
+        isActive: 'Active',
+        dob: "",
+        email: "",
+        address: ""
     });
 
     const navigate = useNavigate();
@@ -117,10 +120,12 @@ const UserCreation = () => {
                 company: data.company_id || "",
                 role: data.role_id || "",
                 userStatus: data.user_status,
-                isActive: data.is_active === 1 ? "Active" : "Inactive"
+                isActive: data.is_active === 1 ? "Active" : "Inactive",
+                dob: data.dob ? data.dob.split("T")[0] : "",
+                email: data.email || "",
+                address: data.address || ""
             });
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load employee details");
         }
     };
@@ -250,6 +255,35 @@ const UserCreation = () => {
             return false;
         }
 
+        // Email validation (OPTIONAL)
+        if (employee.email && employee.email.trim() !== "") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(employee.email.trim())) {
+                warningNotify("Please enter a valid email address.");
+                return false;
+            }
+            if (employee.email.trim().length > 200) {
+                warningNotify("Email must not exceed 200 characters.");
+                return false;
+            }
+        }
+
+        // Date of Birth validation (OPTIONAL)
+        if (employee.dob && employee.dob !== "") {
+            const dobDate = new Date(employee.dob);
+            const today = new Date();
+            if (dobDate > today) {
+                warningNotify("Date of Birth cannot be in the future.");
+                return false;
+            }
+        }
+
+        // Address validation (OPTIONAL)
+        if (employee.address && employee.address.trim().length > 500) {
+            warningNotify("Address must not exceed 500 characters.");
+            return false;
+        }
+
         return true;
     };
     // ==================== HANDLERS ====================
@@ -267,6 +301,9 @@ const UserCreation = () => {
             company: "",
             role: "",
             userStatus: "Active",
+            dob: "",
+            email: "",
+            address: ""
         });
     };
 
@@ -284,7 +321,10 @@ const UserCreation = () => {
             company: "",
             role: "",
             userStatus: "",
-            isActive: 'Active'
+            isActive: 'Active',
+            dob: "",
+            email: "",
+            address: ""
         });
         setSavedData(null);
 
@@ -311,7 +351,11 @@ const UserCreation = () => {
                 company_id: employee.company || null,
                 role_id: employee.role || null,
                 user_status: employee.userStatus,
-                is_active: employee.isActive === "Active" ? 1 : 0
+                is_active: employee.isActive === "Active" ? 1 : 0,
+                dob: employee.dob || null,
+                email: employee.email ? employee.email.trim() : null,
+                address: employee.address ? employee.address.trim() : null
+
             };
 
             let response;
@@ -341,7 +385,6 @@ const UserCreation = () => {
                 );
             }
         } catch (error) {
-            console.log(error);
             warningNotify(
                 error.response?.data?.message ||
                 (mode === "edit"
@@ -354,12 +397,21 @@ const UserCreation = () => {
     };
 
     const handleView = () => {
+        // commonview
+        // navigate("/home/setting/commonview", {
+        //     state: {
+        //         title: "Employee Master",
+        //         type: 'employee',
+        //         idField: 'user_id',
+        //         editRoute: "/employeemaster",  // Update to your actual route
+        //         columns: [
+
         navigate("/home/setting/commonview", {
             state: {
                 title: "Employee Master",
                 type: 'employee',
                 idField: 'user_id',
-                editRoute: "/employeemaster",  // Update to your actual route
+                editRoute: "employeemaster",  // Update to your actual route
                 columns: [
                     {
                         field: "employee_id",
@@ -396,7 +448,7 @@ const UserCreation = () => {
                         headerName: "Date of Join",
                         width: 140,
                         flex: 0.6,
-                        type: "string"
+                        type: "date"
                     },
                     {
                         field: "experience",
@@ -421,6 +473,25 @@ const UserCreation = () => {
                         headerName: "Aadhaar Number",
                         width: 180,
                         flex: 0.9
+                    },
+                    {
+                        field: "dob",
+                        headerName: "Date of Birth",
+                        width: 130,
+                        flex: 0.6,
+                        type: "date"
+                    },
+                    {
+                        field: "email",
+                        headerName: "Email",
+                        width: 180,
+                        flex: 0.8
+                    },
+                    {
+                        field: "address",
+                        headerName: "Address",
+                        width: 200,
+                        flex: 1
                     },
                     {
                         field: "company_name",
@@ -452,9 +523,9 @@ const UserCreation = () => {
         });
     };
 
-     const handleClose = useCallback(() => {
-            navigate('/home/settings');
-        }, [navigate]);
+    const handleClose = useCallback(() => {
+        navigate('/home/settings');
+    }, [navigate]);
 
 
     return (
@@ -487,6 +558,21 @@ const UserCreation = () => {
                                 value={employee.gender}
                                 onChange={set("gender")}
                                 options={GENDER_OTPION}
+                            />
+                        </FormRow>
+
+                        <FormRow label="Date of Birth">
+                            <InputDate
+                                value={employee.dob}
+                                onChange={set("dob")}
+                            />
+                        </FormRow>
+
+                        <FormRow label="Email">
+                            <InputLg
+                                value={employee.email}
+                                onChange={set("email")}
+                                placeholder="Enter email address"
                             />
                         </FormRow>
 
@@ -539,6 +625,14 @@ const UserCreation = () => {
                                 value={employee.experience}
                                 onChange={set("experience")}
                                 placeholder="e.g. 2 Years 3 Months"
+                            />
+                        </FormRow>
+
+                        <FormRow label="Address">
+                            <InputLg
+                                value={employee.address}
+                                onChange={set("address")}
+                                placeholder="Enter residential address"
                             />
                         </FormRow>
 

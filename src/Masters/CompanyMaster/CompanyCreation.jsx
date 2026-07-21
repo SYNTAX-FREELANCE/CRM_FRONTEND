@@ -134,7 +134,6 @@ const CompanyCreation = () => {
             });
 
         } catch (error) {
-            console.log(error);
             warningNotify("Failed to load company details");
 
         }
