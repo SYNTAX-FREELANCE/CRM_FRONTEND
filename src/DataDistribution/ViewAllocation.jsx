@@ -4,6 +4,7 @@ import { Paper, Button, useMediaQuery } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 import {
+    useAllEmployeeDetails,
     useEmployeeAssignDetails,
     useEmployeeMaster,
 } from "../CommonCode/useQuery";
@@ -27,32 +28,38 @@ const ViewAllocation = () => {
     const [selectedAssignedLead, setSelectedAssignedLead] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState("");
     const [previewOpen, setPreviewOpen] = useState(false);
+    const [allocatedempid, setAllocateEmployeeId] = useState('')
 
     const authUser = getAuthUser();
+
     const { id } = authUser ?? {}
 
+    const { data: Employee_master = [] } = useAllEmployeeDetails()
 
 
-    const { data: Employee_master = [] } = useEmployeeMaster();
     const { data: AssignDetails = [], isLoading: LoadingTableData, refetch: FechtAllocationDetail } =
-        useEmployeeAssignDetails();
+        useEmployeeAssignDetails(allocatedempid);
 
     const isMobile = useMediaQuery("(max-width:600px)");
 
-    const employees = Array.isArray(Employee_master)
-        ? Employee_master.filter((emp) => emp.is_active === 1)
-        : [];
+    const employees = Array.isArray(Employee_master) ? Employee_master : [];
+
+
 
     const selectedRowDetails = useMemo(() => {
         return AssignDetails.filter((row) => selectedRows.includes(row.lead_id));
     }, [AssignDetails, selectedRows]);
 
+ 
+
     const selectedEmployeeName = useMemo(() => {
-        const emp = employees.find(
+        const emp = employees?.find(
             (item) => String(item.user_id) === String(selectedEmployee)
         );
         return emp?.name || emp?.employee_name || "";
     }, [employees, selectedEmployee]);
+
+
 
 
     const handleSelect = useCallback((row, checked) => {
@@ -107,6 +114,9 @@ const ViewAllocation = () => {
             assigned_by: id,
             leads: rowfullselect
         }
+
+    
+        
         try {
             const respose = await axioslogin.post('/lead/update-reallocation', payload);
             const { success, message } = respose?.data ?? {};
@@ -129,12 +139,41 @@ const ViewAllocation = () => {
     ]);
 
 
+    const handleSelectAll = useCallback(
+        (checked) => {
+            if (checked) {
+                if (!selectedEmployee?.trim()) {
+                    return warningNofity("Select Employee First");
+                }
+
+                const invalidRows = AssignDetails.filter(
+                    (row) => String(row.user_id) === String(selectedEmployee)
+                );
+
+                if (invalidRows.length > 0) {
+                    return warningNofity(
+                        "New employee and previous employee cannot be same."
+                    );
+                }
+
+                setSelectedRows(AssignDetails?.map((row) => row.lead_id));
+                setRowFullSelect(AssignDetails);
+            } else {
+                setSelectedRows([]);
+                setRowFullSelect([]);
+            }
+        },
+        [AssignDetails, selectedEmployee]
+    );
+
     const columns = AllocationColumns(
         openLead,
         isMobile,
         isReallocateMode,
         selectedRows,
-        handleSelect
+        handleSelect,
+        AssignDetails,
+        handleSelectAll
     );
 
     const isInvalidSelection = selectedRows?.some((leadId) => {
@@ -143,6 +182,7 @@ const ViewAllocation = () => {
     });
 
     const handleEmployeeChange = (value) => {
+
         const selectedRowsData = AssignDetails.filter((row) =>
             selectedRows.includes(row.lead_id)
         );
@@ -242,26 +282,42 @@ const ViewAllocation = () => {
                                 Reallocate ({selectedRows.length})
                             </Button>
                         )}
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: "column",
+                            gap: 1
+                        }}>
+                            <Button
+                                size="small"
+                                variant={isReallocateMode ? "outlined" : "contained"}
+                                onClick={() => {
+                                    setIsReallocateMode((prev) => !prev);
+                                    setSelectedRows([]);
+                                    setSelectedEmployee("");
+                                }}
+                                sx={{
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    fontSize: { xs: 10, sm: 16 },
+                                    width: "auto",
+                                    flexShrink: 0,
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                {isReallocateMode ? "Cancel" : "Reallocate"}
+                            </Button>
 
-                        <Button
-                            size="small"
-                            variant={isReallocateMode ? "outlined" : "contained"}
-                            onClick={() => {
-                                setIsReallocateMode((prev) => !prev);
-                                setSelectedRows([]);
-                                setSelectedEmployee("");
-                            }}
-                            sx={{
-                                textTransform: "none",
-                                fontWeight: 700,
-                                fontSize: { xs: 10, sm: 16 },
-                                width: "auto",
-                                flexShrink: 0,
-                                whiteSpace: "nowrap",
-                            }}
-                        >
-                            {isReallocateMode ? "Cancel" : "Reallocate"}
-                        </Button>
+                            {
+                                !isReallocateMode &&
+                                <Box sx={{ width: { xs: 150, sm: 220 }, flexShrink: 0 }}>
+                                    <EmployeeSelect
+                                        value={allocatedempid}
+                                        onChange={setAllocateEmployeeId}
+                                        employees={Employee_master}
+                                    />
+                                </Box>
+                            }
+                        </Box>
                     </Stack>
                 </Stack>
             </Box>

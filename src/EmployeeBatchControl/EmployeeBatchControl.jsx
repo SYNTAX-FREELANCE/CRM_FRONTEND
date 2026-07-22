@@ -291,7 +291,8 @@ const EmployeeBatchControl = () => {
                                 },
                             }}
                             onRowClick={(params) => {
-                                // openEmployeeDrawer(params.row)
+                                console.log(params.row);
+
                             }}
                             sx={{
                                 height: "100%",

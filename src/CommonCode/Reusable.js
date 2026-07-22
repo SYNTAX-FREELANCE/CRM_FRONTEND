@@ -8,6 +8,7 @@ import {
   Person,
 } from "@mui/icons-material";
 import { bgcolor } from "@mui/system";
+import { addMonths, endOfMonth, isWithinInterval, parseISO, startOfMonth } from "date-fns";
 import { useMemo } from "react";
 
 export const isValidEmail = (email) => {
@@ -224,6 +225,11 @@ export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
 
   groups[-1] = []; // Pending
   groups[-2] = []; // Reminder
+  groups[-3] = []; // Reminder
+
+
+  const start = startOfMonth(new Date());
+  const end = endOfMonth(addMonths(new Date(), 1));
 
   for (const lead of allCallDetails) {
     // NEW tab -> only opened leads
@@ -244,6 +250,18 @@ export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
     // Reminder
     if (lead?.next_followup_date != null) {
       groups[-2].push(lead);
+    }
+
+    if (lead?.known_policy_expiry_date) {
+      const expiryDate = parseISO(lead.known_policy_expiry_date);
+      if (
+        isWithinInterval(expiryDate, {
+          start,
+          end,
+        })
+      ) {
+        groups[-3].push(lead);
+      }
     }
   }
 

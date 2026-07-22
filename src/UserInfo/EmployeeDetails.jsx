@@ -58,6 +58,7 @@ const EmployeeDetails = () => {
     const { data: remindersData = [] } = useFetchDashBoardReminders(employee?.user_id);
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(employee?.user_id, attendanceDate);
 
+
     const allReminders = useMemo(() => {
         const overdue = remindersData?.overdue || [];
         const today = remindersData?.today || [];

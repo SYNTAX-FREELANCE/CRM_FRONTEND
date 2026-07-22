@@ -155,14 +155,6 @@ export const OUTCOMES = [
 
 const FollowUpForm = ({
     statusName,
-    // followUpDate,
-    // setFollowUpDate,
-    // followUpRemarks,
-    // setFollowUpRemarks,
-    // outcome,
-    // setOutcome,
-    // policyData,
-    // setPolicyData
       onCancel,
     onSave
 }) => {

@@ -9,6 +9,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
+import Groups3Icon from '@mui/icons-material/Groups3';
 
 const STATUS_CONFIG = {
     NEW: {
@@ -24,8 +26,8 @@ const STATUS_CONFIG = {
         icon: <RequestQuoteIcon fontSize="small" />,
     },
     APPOINTMENT: {
-        color: "#0c85ff",
-        icon: <EventAvailableIcon fontSize="small" />,
+        color: "#0b7d87",
+        icon: <Groups3Icon fontSize="small" />,
     },
     SOLD: {
         color: "#10B981",
@@ -43,6 +45,10 @@ const STATUS_CONFIG = {
         color: "#1e7209",
         icon: <NotificationsActiveIcon fontSize="small" />,
     },
+    RENEWAL: {
+        color: "#67084a",
+        icon: <ManageHistoryIcon fontSize="small" />,
+    }
 };
 
 const StatusFilterCard = ({
@@ -52,7 +58,7 @@ const StatusFilterCard = ({
     onClick,
 }) => {
     const config = STATUS_CONFIG[title] || STATUS_CONFIG.NEW;
-
+    const displayTitle = title === "SOLD" ? "CAPTURED" : title;
     return (
         <Box
             onClick={onClick}
@@ -96,7 +102,7 @@ const StatusFilterCard = ({
                     sx={{
                         fontWeight: 800,
                         fontSize: {
-                            xs: 11,
+                            xs: 9,
                             sm: 12,
                         },
                         color: "#292a2b",
@@ -104,7 +110,7 @@ const StatusFilterCard = ({
                         lineHeight: 1.2,
                     }}
                 >
-                    {title}
+                    {displayTitle}
                 </Typography>
                 <Badge
                     badgeContent={count}
