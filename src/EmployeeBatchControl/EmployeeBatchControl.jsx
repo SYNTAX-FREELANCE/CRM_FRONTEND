@@ -292,6 +292,7 @@ const EmployeeBatchControl = () => {
                             }}
                             onRowClick={(params) => {
                                 console.log(params.row);
+
                             }}
                             sx={{
                                 height: "100%",

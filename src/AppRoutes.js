@@ -3,14 +3,12 @@ import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GlobalLoader from "./CommonComponents/GlobalLoader";
 import ProtectedRoute from "./utils/Protected/ProtectedRoute";
-import { useAuth } from "./Context/AuthContext";
 import PublicRoute from "./utils/Protected/PublicRoute";
 
 
 // Lazy imports
 const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
-const WorkingPage = lazy(() => import("./CommonComponents/WorkingPage"));
 const NotFoundPage = lazy(() => import("./CommonComponents/NotFoundPage"));
 const RouteLayout = lazy(() => import("./utils/Protected/RouteLayout"));
 const Settings = lazy(() => import("./Settings/Settings"));
@@ -98,6 +96,9 @@ const UserRightCreation = lazy(
 );
 const Uploadmaster = lazy(
   () => import("./Masters/ExcelUploadmaster/Uploadmaster"),
+);
+const RenewalUploads = lazy(
+  () => import("./Masters/ExcelUploadmaster/RenewalUploads"),
 );
 const CustomerCreation = lazy(
   () => import("./Masters/CustomerMaster/CustomerCreation"),
@@ -259,6 +260,10 @@ const router = createBrowserRouter([
       {
         path: "setting/Uploadmaster",
         element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "setting/renewalupload",
+        element: withSuspense(RenewalUploads),
       },
       {
         path: "setting/uploadmaster",

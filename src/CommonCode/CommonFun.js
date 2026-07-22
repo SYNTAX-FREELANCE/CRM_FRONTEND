@@ -1,6 +1,6 @@
 
 import { axioslogin } from "../Connection/axios";
-import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
+import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
 
 
 
@@ -209,7 +209,7 @@ export const getDashboardCounts = async (empid) => {
   if (!empid) return [];
   try {
     const response = await axioslogin.get(`/lead/get-dashboard-count/${empid}`);
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 1) return [];
     return data ?? [];
   } catch (error) {
@@ -221,7 +221,7 @@ export const getDashboardReminders = async (empid) => {
   if (!empid) return [];
   try {
     const response = await axioslogin.get(`/lead/dashboard-reminders/${empid}`);
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 1) return [];
     return data ?? [];
   } catch (error) {
@@ -235,7 +235,7 @@ export const getMyActiveCalls = async (empid, filter) => {
     const response = await axioslogin.get(
       `/lead/get-active-batch/${empid}/${filter}`,
     );
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
 
     return [];
@@ -251,7 +251,7 @@ export const getEmployeeActiveCalls = async (empid) => {
     const response = await axioslogin.get(
       `/lead/get-active-batch/${empid}`,
     );
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -269,7 +269,7 @@ export const getAdminDashboardCount = async (from, to) => {
       from: from,
       to: to,
     });
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -283,7 +283,7 @@ export const getCallFollowUp = async (leadid, statusId) => {
     const response = await axioslogin.get(
       `/lead/get-call-followup/${leadid}/${statusId}`,
     );
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
 
     return [];
@@ -296,7 +296,7 @@ export const getLeadCallHistory = async (leadid) => {
   if (!leadid) return [];
   try {
     const response = await axioslogin.get(`/lead/get-lead-history/${leadid}`);
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -307,7 +307,7 @@ export const getLeadCallHistory = async (leadid) => {
 export const getRecentActivity = async () => {
   try {
     const response = await axioslogin.get(`/lead/employee-recent-activity`);
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -320,7 +320,7 @@ export const getEmployeeRecentActivity = async (empid) => {
   if (!empid) return []
   try {
     const response = await axioslogin.get(`/lead/employee-recent-activity/${empid}`);
-    const { success, data, message } = response.data;
+    const { success, data } = response.data;
     if (success !== 0) return data;
     return [];
   } catch (error) {
@@ -504,6 +504,62 @@ export const getProfilePhoto = async (userId) => {
 };
 
 
+export const getEmployeeFiles = async (userId) => {
+  if (!userId) return { bankDetails: [], resume: [], aadhar: [], otherUploads: [] };
+  try {
+    const response = await axioslogin.get(`/employee/get-files/${userId}`);
+    if (response.data && response.data.success === 1) {
+      const filesList = response.data.data || [];
+      const docsMap = {
+        bankDetails: [],
+        resume: [],
+        aadhar: [],
+        otherUploads: [],
+      };
+
+      filesList.forEach((file) => {
+        let key = null;
+        if (file.file_type === "bank" || file.file_type === "bankDetails") {
+          key = "bankDetails";
+        } else if (file.file_type === "resume") {
+          key = "resume";
+        } else if (file.file_type === "aadhar") {
+          key = "aadhar";
+        } else if (file.file_type === "others" || file.file_type === "otherUploads") {
+          key = "otherUploads";
+        }
+
+        if (key) {
+          docsMap[key].push({
+            file_id: file.file_id,
+            name: file.file_name,
+            size: (file.file_size / 1024).toFixed(1) + " KB"
+          });
+        }
+      });
+      return docsMap;
+    }
+    return {
+      bankDetails: [],
+      resume: [],
+      aadhar: [],
+      otherUploads: [],
+    };
+  } catch (error) {
+    console.error("getEmployeeFiles error:", error);
+    return {
+      bankDetails: [],
+      resume: [],
+      aadhar: [],
+      otherUploads: [],
+    };
+  }
+};
+
+
+
+
+
 export const handleProfilePhotoChange = async (e, empId, queryClient) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -539,7 +595,6 @@ export const handleProfilePhotoChange = async (e, empId, queryClient) => {
   }
 };
 
-
 export const getEmployeeDetails = async () => {
   try {
     const response = await axioslogin.get("/userinfo/employees");
@@ -564,3 +619,45 @@ export const getSingleEmployeeProfileDetails = async (employeeId) => {
     console.error("FetchEmployeeProfile error:", error);
   }
 };
+
+export const getUserRightMenus = async (moduleId) => {
+  if (!moduleId) return [];
+  try {
+    const response = await axioslogin.get(`/userrights/menus/${moduleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getUserRightMenus error:", error);
+    return [];
+  }
+};
+
+export const getExistingUserRights = async (roleId, moduleId) => {
+  if (!roleId || !moduleId) return [];
+  try {
+    const response = await axioslogin.get(`/userrights/existing/${roleId}/${moduleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getExistingUserRights error:", error);
+    return [];
+  }
+};
+
+
+export const getEmployeeMenuRights = async (roleId) => {
+  if (!roleId) return [];
+  try {
+    const response = await axioslogin.get(`/userrights/allowed/${roleId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getExistingUserRights error:", error);
+    return [];
+  }
+};
+
+

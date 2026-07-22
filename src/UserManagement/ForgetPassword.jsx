@@ -16,7 +16,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import illustariton from '../assets/loginimages/forget.png'
 import illustariton2 from '../assets/loginimages/forget2.png'
 import { useNavigate } from "react-router-dom";
 import GlobalLoader from "../CommonComponents/GlobalLoader";
@@ -47,7 +46,7 @@ const ForgetPassword = () => {
     };
 
     const navigate = useNavigate()
-    const otpArray = Array.from({ length: 6 }, (_, i) => data.otp[i] || "");
+    // const otpArray = Array.from({ length: 6 }, (_, i) => data.otp[i] || "");
 
     const handleSendOtp = async () => {
         if (!data.employee_id.trim() || !data.email.trim()) {

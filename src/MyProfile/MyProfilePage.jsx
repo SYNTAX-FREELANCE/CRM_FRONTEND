@@ -41,8 +41,6 @@ const MyProfilePage = () => {
 
     const { data: employee, isLoading: loadingEmp } = useSingleEmployeeProfile(id);
 
-
-
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(id, TodayDate);
     const { data: RecentActivities, isLoading: LoadingRecentActivities } = useEmployeeRecentActivity(id)
     const { data: profilePhotoUrl = "" } = useProfilePhoto(id);

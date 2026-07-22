@@ -36,7 +36,7 @@ const formatDate = (dateStr) => {
   }
 };
 
-const Uploadmaster = () => {
+const RenewalUploads = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: customerList, refetch: fetchCustomerMaster } = useCustomerMaster();
@@ -204,7 +204,7 @@ const Uploadmaster = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const uploadUrl = "/customer/upload";
+    const uploadUrl = "/customer/renewal-upload";
 
     try {
       const response = await axioslogin.post(uploadUrl, formData, {
@@ -683,7 +683,7 @@ const Uploadmaster = () => {
         </Panel>
       ) : (
         <Panel
-          title="Customer & Vehicle Data Upload Center"
+          title="Renewal Data Upload Center"
           onHelp={() => showToast(
             "Upload a unified Excel file (.xlsx, .xls) containing both customer and vehicle columns to import and link them in the database."
           )}
@@ -692,19 +692,13 @@ const Uploadmaster = () => {
           <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
             <Box>
               <Typography level="title-md" textColor="neutral.800" sx={{ fontWeight: 700 }}>
-                Bulk Customer & Vehicle Onboarding
+                Bulk Renewal Uploads
               </Typography>
               <Typography level="body-sm" textColor="neutral.500">
                 Easily import customers and their vehicles by uploading a unified spreadsheet. The system will automatically create/link records.
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1.5 }}>
-              <Button onClick={() => navigate("/home/setting/renewalupload")}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <CloudUploadIcon sx={{ fontSize: 16 }} />
-                  Renewal Uploads
-                </Box>
-              </Button>
               <Button onClick={handleDownloadDummyExcel}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <DescriptionIcon sx={{ fontSize: 16 }} />
@@ -943,4 +937,4 @@ const Uploadmaster = () => {
   );
 };
 
-export default Uploadmaster;
+export default RenewalUploads;
