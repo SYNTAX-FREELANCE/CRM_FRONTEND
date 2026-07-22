@@ -97,6 +97,9 @@ const UserRightCreation = lazy(
 const Uploadmaster = lazy(
   () => import("./Masters/ExcelUploadmaster/Uploadmaster"),
 );
+const RenewalUploads = lazy(
+  () => import("./Masters/ExcelUploadmaster/RenewalUploads"),
+);
 const CustomerCreation = lazy(
   () => import("./Masters/CustomerMaster/CustomerCreation"),
 );
@@ -257,6 +260,10 @@ const router = createBrowserRouter([
       {
         path: "setting/Uploadmaster",
         element: withSuspense(Uploadmaster),
+      },
+      {
+        path: "setting/renewalupload",
+        element: withSuspense(RenewalUploads),
       },
       {
         path: "setting/uploadmaster",
