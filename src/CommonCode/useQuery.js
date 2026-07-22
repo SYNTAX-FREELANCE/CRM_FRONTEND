@@ -236,11 +236,12 @@ export const useEmployeeRecentActivity = (empid) => {
 
 
 
-export const useEmployeeAssignDetails = () => {
+export const useEmployeeAssignDetails = (empid) => {
   return useQuery({
-    queryKey: ["assign-details"],
-    queryFn: getEmployeeAssignDetails,
-    staleTime: Infinity
+    queryKey: ["assign-details", empid],
+    queryFn: () => getEmployeeAssignDetails(empid),
+    staleTime: Infinity,
+    enabled: empid !== ''
   });
 };
 

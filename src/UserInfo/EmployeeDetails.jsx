@@ -62,8 +62,6 @@ const EmployeeDetails = () => {
     // console.log("employee:", employee);
 
 
-    console.log("performanceData", performanceData);
-
     // console.log("TotalCount:", TotalCount);
 
     // ******************************

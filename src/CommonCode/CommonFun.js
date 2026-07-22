@@ -328,18 +328,19 @@ export const getEmployeeRecentActivity = async (empid) => {
   }
 };
 
-export const getEmployeeAssignDetails = async () => {
+export const getEmployeeAssignDetails = async (empid) => {
   try {
-    const response = await axioslogin.get(`/lead/employee/assigndtl`);
+    const response = await axioslogin.get(`/lead/employee/assigndtl/${empid}`);
     const { success, data, message } = response.data;
-    if (success !== 0) return data;
-    if (success === 2) {
+    if (success === 1) return data;
+
+    if (success === 0) {
       infoNotify(message)
       return []
     }
     return [];
   } catch (error) {
-    console.error("getMyActiveCalls error:", error);
+    console.error("getEmployeeAssignDetails error:", error);
   }
 };
 
