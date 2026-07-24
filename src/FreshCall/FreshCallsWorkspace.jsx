@@ -111,14 +111,19 @@ export default function FreshCallsWorkspace() {
   const customStatuses = [
     {
       status_id: -1,
-      display_order: 2,
+      display_order: 3,
       status_name: "PENDING",
     },
     {
       status_id: -2,
-      display_order: 3,
+      display_order: 2,
       status_name: "REMINDER",
     },
+    {
+      status_id: -3,
+      display_order: 3,
+      status_name: "RENEWAL",
+    }
   ];
 
   const DisplayStatus = useMemo(() => {
@@ -264,10 +269,10 @@ export default function FreshCallsWorkspace() {
             sx={{
               display: "grid",
               gridTemplateColumns: {
-                xs: "repeat(2, minmax(0, 1fr))",
-                sm: "repeat(4, minmax(0, 1fr))",
-                md: "repeat(8, minmax(0, 1fr))",
-                lg: "repeat(8, minmax(0, 1fr))",
+                xs: "repeat(3, minmax(0, 1fr))",
+                sm: "repeat(3, minmax(0, 1fr))",
+                md: "repeat(5, minmax(0, 1fr))",
+                lg: "repeat(6, minmax(0, 1fr))",
                 xl: "repeat(10, minmax(0, 1fr))",
               },
               gap: 1,

@@ -33,10 +33,14 @@ import {
   getTopEmployees,
   getProfilePhoto,
   FetchCallCenterPerformance,
+  getEmployeeFiles,
   getEmployeeRecentActivity,
   getEmployeeActiveCalls,
   getEmployeeDetails,
   getSingleEmployeeProfileDetails,
+  getUserRightMenus,
+  getExistingUserRights,
+  getEmployeeMenuRights,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -236,11 +240,12 @@ export const useEmployeeRecentActivity = (empid) => {
 
 
 
-export const useEmployeeAssignDetails = () => {
+export const useEmployeeAssignDetails = (empid) => {
   return useQuery({
-    queryKey: ["assign-details"],
-    queryFn: getEmployeeAssignDetails,
-    staleTime: Infinity
+    queryKey: ["assign-details", empid],
+    queryFn: () => getEmployeeAssignDetails(empid),
+    staleTime: Infinity,
+    enabled: empid !== ''
   });
 };
 
@@ -354,6 +359,13 @@ export const useProfilePhoto = (userId) => {
   });
 };
 
+export const useEmployeeFiles = (userId) => {
+  return useQuery({
+    queryKey: ["employeeFiles", userId],
+    queryFn: () => getEmployeeFiles(userId),
+    enabled: !!userId,
+  });
+};
 
 export const useAllEmployeeDetails = () => {
   return useQuery({
@@ -372,4 +384,30 @@ export const useSingleEmployeeProfile = (employeeId) => {
     staleTime: Infinity,
   });
 };
+
+export const useGetUserRightMenus = (moduleId) => {
+  return useQuery({
+    queryKey: ["user-right-menus", moduleId],
+    queryFn: () => getUserRightMenus(moduleId),
+    enabled: Boolean(moduleId),
+  });
+};
+
+export const useGetExistingUserRights = (roleId, moduleId) => {
+  return useQuery({
+    queryKey: ["existing-user-rights", roleId, moduleId],
+    queryFn: () => getExistingUserRights(roleId, moduleId),
+    enabled: Boolean(roleId && moduleId),
+  });
+};
+
+
+export const useGetEmployeeMenuRights = (roleId) => {
+  return useQuery({
+    queryKey: ["emp-menu-rights", roleId],
+    queryFn: () => getEmployeeMenuRights(roleId),
+    enabled: Boolean(roleId),
+  });
+};
+
 

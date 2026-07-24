@@ -361,7 +361,6 @@ const LeadDetailsDrawer = ({
       onClose();
       return true;
     } catch (error) {
-      console.log(error);
       errorNotify("Error in Updating Status");
       return false;
     }

@@ -25,11 +25,14 @@ const RouteLayout = () => {
     const { isAuthenticated, loading, user, logout } = useAuth();
     const authUser = getAuthUser();
     const isMobile = useMediaQuery("(max-width: 768px)");
-    const { role_id } = authUser ?? {};
+    const { role_id, id: userId, role } = authUser ?? {};
     const { data: RoleRights = [] } = useGetActiveModuleRightDetail(role_id);
+
+
+    const Menu = getMenu(RoleRights, userId, role);
     const { mode } = useThemeMode();
 
-    const Menu = getMenu(RoleRights);
+    // const Menu = getMenu(RoleRights);
 
     if (loading) {
         return (
@@ -55,7 +58,7 @@ const RouteLayout = () => {
                 flexDirection: "row",
                 height: "100vh",
                 overflow: "hidden",
-                background: mode === 'dark' 
+                background: mode === 'dark'
                     ? "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #020617 100%)"
                     : "linear-gradient(135deg, #dbeafe 0%, #eff6ff 40%, #fff7ed 100%)",
             }}

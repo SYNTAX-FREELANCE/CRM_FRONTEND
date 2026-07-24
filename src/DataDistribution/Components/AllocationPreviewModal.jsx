@@ -34,6 +34,7 @@ const AllocationPreviewModal = ({
     onAllocate,
     onAllocateAndAssign
 }) => {
+   
     const firstRow = selectedRowDetails?.[0] || {};
 
     const [remarks, setRemarks] = useState("");

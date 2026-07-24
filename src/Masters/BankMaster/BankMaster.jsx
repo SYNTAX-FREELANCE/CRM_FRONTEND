@@ -44,7 +44,6 @@ const BankMaster = () => {
       return;
     }
 
-    console.log("Saved Data:", formData);
   };
 
   const handleReset = () => {
@@ -55,7 +54,6 @@ const BankMaster = () => {
   };
 
   const handleEdit = useCallback(() => {
-    console.log("ghjjjjjjjjjjjjjjjjj");
   }, []);
 
   const columnDefs = useMemo(
@@ -99,66 +97,66 @@ const BankMaster = () => {
   return (
     <MasterWrapper title="Bank Master">
       <Box
-           sx={{
-                    display: 'flex',
-                    gap: 3,
-                    alignItems: 'flex-start',
-                    width: '100%',
-                    height: '100%',
-                    p:2
-                }}
+        sx={{
+          display: 'flex',
+          gap: 3,
+          alignItems: 'flex-start',
+          width: '100%',
+          height: '100%',
+          p: 2
+        }}
       >
         {/* Left Side - Form */}
-                <Card sx={{ width: '30%' }}>
-            <CardContent>
-              <Typography level="h5" mb={2}>
-                Add Bank Name
-              </Typography>
+        <Card sx={{ width: '30%' }}>
+          <CardContent>
+            <Typography level="h5" mb={2}>
+              Add Bank Name
+            </Typography>
 
-              <Stack spacing={2}>
-                <FormControl required>
-                  <FormLabel>Bank Name</FormLabel>
-                  <Input
-                    name="bankName"
-                    placeholder="Enter Bank Name"
-                    value={formData.bankName}
-                    onChange={handleInputChange}
-                  />
-                </FormControl>
-
-                <Checkbox
-                  label="Active Status"
-                  checked={formData.status}
-                  onChange={handleStatusChange}
+            <Stack spacing={2}>
+              <FormControl required>
+                <FormLabel>Bank Name</FormLabel>
+                <Input
+                  name="bankName"
+                  placeholder="Enter Bank Name"
+                  value={formData.bankName}
+                  onChange={handleInputChange}
                 />
+              </FormControl>
 
-                <Stack direction="row" spacing={1}>
-                  <Button color="primary" onClick={handleSave}>
-                    Save
-                  </Button>
+              <Checkbox
+                label="Active Status"
+                checked={formData.status}
+                onChange={handleStatusChange}
+              />
 
-                  <Button
-                    variant="outlined"
-                    color="neutral"
-                    onClick={handleReset}
-                  >
-                    Reset
-                  </Button>
-                </Stack>
+              <Stack direction="row" spacing={1}>
+                <Button color="primary" onClick={handleSave}>
+                  Save
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  color="neutral"
+                  onClick={handleReset}
+                >
+                  Reset
+                </Button>
               </Stack>
-            </CardContent>
-          </Card>
+            </Stack>
+          </CardContent>
+        </Card>
 
-         {/* RIGHT - TABLE */}
-                <Card sx={{ width: '70%', minHeight: '50%' }}>
-                    <CardContent>
-                        <MasterTable
-                            columnDefs={columnDefs}
-                            rowData={[]}
-                        />
+        {/* RIGHT - TABLE */}
+        <Card sx={{ width: '70%', minHeight: '50%' }}>
+          <CardContent>
+            <MasterTable
+              columnDefs={columnDefs}
+              rowData={[]}
+            />
 
-                    </CardContent>
-                </Card>
+          </CardContent>
+        </Card>
       </Box>
     </MasterWrapper>
   );

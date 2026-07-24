@@ -101,12 +101,15 @@ const EmployeeDashboard = () => {
     return (
         <Box
             sx={{
-                minHeight: "90vh",
+                height: "100vh",
                 overflow: "auto",
-                p: { xs: 2, md: 3 },
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
-                "&::-webkit-scrollbar": { display: "none" },
+                "&::-webkit-scrollbar": {
+                    display: "none",
+                },
+                pb: 2,
+                position:'relative'
             }}
         >
             <Card
@@ -172,6 +175,7 @@ const EmployeeDashboard = () => {
                 gap: 2.5,
                 flexDirection: { xs: "column", sm: 'column', lg: "row" },
                 alignItems: "stretch",
+                height:'80vh'
             }}>
                 <Box sx={{
                     flex: 3,
@@ -246,19 +250,14 @@ const EmployeeDashboard = () => {
                 <Box sx={{
                     flex: 1,
                     minWidth: 0,
+                    height: '90%',
                 }}>
-                    {/* <Box
+                    <Box
                         sx={{
                             flex: 1,
-                            minWidth: 0,
                             height: '100%'
-                        }}> */}
-                         <Box
-                                  sx={{
-                                    flex: 1,
-                                    height:{xs:450,md:'45%',lg:'63%',xl:"63%"}
-                                  }}
-                                >
+                        }}
+                    >
                         {LoadingTopEmployees ? (
                             <TopSalesExecutivesSkeleton />
                         ) : (

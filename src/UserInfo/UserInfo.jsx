@@ -1,25 +1,19 @@
+
 import React, { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import {
     Box,
-    // Card,
     Typography,
     Input,
-    // Button,
-    // Avatar,
     Grid,
     CircularProgress,
     Divider,
-    // Chip,
 } from "@mui/joy";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
-import { axioslogin } from "../Connection/axios";
 import { errorNotify, warningNotify } from "../constant/Constant";
 import { useQuery } from "@tanstack/react-query";
 import EmployeeCardSkeleton from "./Components/EmployeeCardSkeleton";
-import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
-import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
+import { useAuth } from "../Context/AuthContext";
 import { useAllEmployeeDetails } from "../CommonCode/useQuery";
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
@@ -27,10 +21,14 @@ const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
 const UserInfo = () => {
     const navigate = useNavigate();
     const [searchKeyword, setSearchKeyword] = useState("");
+    // const [viewMode, setViewMode] = useState("card");
+    const { user } = useAuth();
+    const isAdmin = user?.role?.toLowerCase() === "admin";
 
     const { data: employeeListData = [], isLoading: loading } = useAllEmployeeDetails()
 
     const employees = employeeListData || [];
+
 
     const filteredEmployees = useMemo(() => {
         const term = searchKeyword.trim().toLowerCase();
@@ -53,6 +51,10 @@ const UserInfo = () => {
     const handleViewDetails = useCallback((emp) => {
         navigate(`/home/userinfo/${emp.user_id}`);
     }, [navigate]);
+
+    if (!isAdmin) {
+        return null;
+    }
 
 
     return (

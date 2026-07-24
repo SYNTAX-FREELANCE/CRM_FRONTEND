@@ -1,100 +1,76 @@
 import { Box } from "@mui/joy";
-import { useState, useEffect, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/joy/Typography";
-
 import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import SelectLg from "../../Settings/CommonMasterComponent/SelectLg";
 import Button from "../../Settings/CommonMasterComponent/Button";
-import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 import { successNotify, warningNotify } from "../../constant/Constant";
 import { axioslogin } from "../../Connection/axios";
+import {
+    useGetExistingUserRights,
+    useGetUserRightMenus,
+    useModuleMaster,
+    useRoleMaster
+} from "../../CommonCode/useQuery";
 
 const UserRightCreation = () => {
-    const [roles, setRoles] = useState([]);
-    const [modules, setModules] = useState([]);
-    const [menus, setMenus] = useState([]);
 
-    const [selectedRole, setSelectedRole] = useState("");
-    const [selectedModule, setSelectedModule] = useState("");
-    const [menuSelections, setMenuSelections] = useState({});
-
-    const [loading, setLoading] = useState(false);
-    const [hasExisting, setHasExisting] = useState(false);
-    const [toast, setToast] = useState("");
 
     const navigate = useNavigate();
 
-    // Load initial dropdowns
-    const getDropdownData = async () => {
-        try {
-            // Fetch roles
-            const roleResult = await axioslogin.get("/rolemast/getall");
-            if (roleResult.data.success === 1 && Array.isArray(roleResult.data.data)) {
-                setRoles(roleResult.data.data.map(r => ({ id: r.role_id, label: r.role_name })));
-            }
+    const [selectedRole, setSelectedRole] = useState("");
+    const [selectedModule, setSelectedModule] = useState("");
+    const [userEdits, setUserEdits] = useState({});
+    const [loading, setLoading] = useState(false);
+    const { data: RoleMasterDetil = [] } = useRoleMaster();
+    const { data: ModuleMasterDetail = [] } = useModuleMaster();
 
-            // Fetch active modules
-            const modResult = await axioslogin.get("/modulemast/get-active");
-            if (modResult.data.success === 1 && Array.isArray(modResult.data.data)) {
-                setModules(modResult.data.data.map(m => ({ id: m.module_id, label: m.module_name })));
-            }
-        } catch (error) {
-            console.error("getDropdownData error:", error);
-            // warningNotify("Failed to fetch dropdown options");
+    // React Query hooks for fetching menus and existing rights
+    const { data: menus = [] } = useGetUserRightMenus(selectedModule);
+    const { data: existingRights = [], refetch: refetchExistingRights } = useGetExistingUserRights(selectedRole, selectedModule);
+
+    const ActiveRoles = Array.isArray(RoleMasterDetil) ? RoleMasterDetil
+        ?.filter(item => item.is_active === 1)
+        ?.map(item => ({
+            id: item.role_id,
+            label: item.role_name?.toUpperCase()
+        })) : [];
+
+    const ActiveModules = Array.isArray(ModuleMasterDetail) ? ModuleMasterDetail
+        ?.filter(item => item.is_active === 1)
+        ?.map(item => ({
+            id: item.module_id,
+            label: item.module_name?.toUpperCase()
+        })) : [];
+
+
+    const hasExisting = Array.isArray(existingRights) && existingRights.length > 0;
+
+
+    // Helper to determine if a menu checkbox is checked (local override vs backend existing right)
+    const isMenuChecked = (menuId) => {
+        if (userEdits[menuId] !== undefined) {
+            return userEdits[menuId];
         }
+        return Array.isArray(existingRights) && existingRights.some(r => r.menu_slno === menuId && r.Active_status === 1);
     };
 
-    useEffect(() => {
-        getDropdownData();
-    }, []);
-
-    // Load menus and existing rights when selections change
-    const fetchRightsData = async (roleId, moduleId) => {
-        setLoading(true);
-        try {
-            const menuRes = await axioslogin.get(`/userrights/menus/${moduleId}`);
-            const rightsRes = await axioslogin.get(`/userrights/existing/${roleId}/${moduleId}`);
-
-            if (menuRes.data.success === 1 && rightsRes.data.success === 1) {
-                const fetchedMenus = menuRes.data.data || [];
-                const existingRights = rightsRes.data.data || [];
-
-                setMenus(fetchedMenus);
-
-                const selections = {};
-                fetchedMenus.forEach(m => {
-                    const right = existingRights.find(r => r.menu_slno === m.menu_id);
-                    selections[m.menu_id] = right ? (right.Active_status === 1) : false;
-                });
-                setMenuSelections(selections);
-                setHasExisting(existingRights.length > 0);
-            } else {
-                warningNotify("Failed to retrieve menu rights details");
-            }
-        } catch (error) {
-            console.error("fetchRightsData error:", error);
-            warningNotify("Error fetching user rights");
-        } finally {
-            setLoading(false);
-        }
+    const handleRoleChange = (e) => {
+        setSelectedRole(e.target.value);
+        setUserEdits({});
     };
 
-    useEffect(() => {
-        if (selectedRole && selectedModule) {
-            fetchRightsData(selectedRole, selectedModule);
-        } else {
-            setMenus([]);
-            setMenuSelections({});
-            setHasExisting(false);
-        }
-    }, [selectedRole, selectedModule]);
+    const handleModuleChange = (e) => {
+        setSelectedModule(e.target.value);
+        setUserEdits({});
+    };
 
     const handleCheckboxChange = (menuId, checked) => {
-        setMenuSelections(prev => ({
+        setUserEdits(prev => ({
             ...prev,
             [menuId]: checked
         }));
@@ -109,20 +85,22 @@ const UserRightCreation = () => {
             warningNotify("Please select a Module.");
             return;
         }
-        if (menus.length === 0) {
+        if (!Array.isArray(menus) || menus.length === 0) {
             warningNotify("No menus found for this module.");
             return;
         }
 
         setLoading(true);
 
+        const rights = menus
+            .filter(m => isMenuChecked(m.menu_id))
+            .map(m => ({
+                menu_slno: m.menu_id,
+                Active_status: 1
+            }));
+
         try {
-            const rights = menus
-                .filter(m => menuSelections[m.menu_id] === true)
-                .map(m => ({
-                    menu_slno: m.menu_id,
-                    Active_status: 1
-                }));
+
 
             const payload = {
                 role_slno: Number(selectedRole),
@@ -133,7 +111,8 @@ const UserRightCreation = () => {
             const response = await axioslogin.post("/userrights/save", payload);
             if (response.data.success === 1) {
                 successNotify(hasExisting ? "Rights updated successfully!" : "Rights added successfully!");
-                fetchRightsData(selectedRole, selectedModule);
+                setUserEdits({});
+                refetchExistingRights();
             } else {
                 warningNotify(response.data.message || "Failed to save rights");
             }
@@ -148,39 +127,36 @@ const UserRightCreation = () => {
     const handleCancel = () => {
         setSelectedRole("");
         setSelectedModule("");
-        setMenus([]);
-        setMenuSelections({});
-        setHasExisting(false);
+        setUserEdits({});
     };
 
     const handleClose = useCallback(() => {
-           navigate('/home/settings');
-       }, [navigate]);
+        navigate('/home/settings');
+    }, [navigate]);
+
     return (
         <Wrapper>
-            <Panel title="User Right Creation" 
-            >
-
+            <Panel title="User Right Creation">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%' }}>
                     <Box sx={{ width: { xs: '100%', md: '70%' } }}>
                         <FormRow label="Role" required>
                             <SelectLg
                                 value={selectedRole}
-                                onChange={(e) => setSelectedRole(e.target.value)}
-                                options={roles}
+                                onChange={handleRoleChange}
+                                options={ActiveRoles}
                             />
                         </FormRow>
 
                         <FormRow label="Module" required>
                             <SelectLg
                                 value={selectedModule}
-                                onChange={(e) => setSelectedModule(e.target.value)}
-                                options={modules}
+                                onChange={handleModuleChange}
+                                options={ActiveModules}
                             />
                         </FormRow>
                     </Box>
 
-                    {menus.length > 0 && (
+                    {Array.isArray(menus) && menus.length > 0 && (
                         <Box sx={{ width: { xs: '100%', md: '70%' }, mt: 2 }}>
                             <Typography level="h6" sx={{ mb: 2, color: '#374151', fontWeight: 600 }}>
                                 Configure Menus
@@ -211,7 +187,7 @@ const UserRightCreation = () => {
                                             <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                                                 <input
                                                     type="checkbox"
-                                                    checked={!!menuSelections[item.menu_id]}
+                                                    checked={isMenuChecked(item.menu_id)}
                                                     onChange={(e) => handleCheckboxChange(item.menu_id, e.target.checked)}
                                                     style={{
                                                         width: '18px',
@@ -241,7 +217,6 @@ const UserRightCreation = () => {
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>
-
             </Panel>
         </Wrapper>
     );

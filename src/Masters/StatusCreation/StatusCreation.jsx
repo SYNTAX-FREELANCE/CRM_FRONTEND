@@ -50,7 +50,7 @@ const StatusCreation = () => {
             alias: "",
             isActive: "Active",
         });
-    },[]);
+    }, []);
 
     const validateStatus = () => {
 
@@ -105,7 +105,6 @@ const StatusCreation = () => {
 
         } catch (error) {
 
-            console.log(error);
             warningNotify("Failed to load status details");
 
         }
@@ -231,11 +230,11 @@ const StatusCreation = () => {
 
 
     const handleClose = useCallback(() => {
-           navigate('/home/settings');
-       }, [navigate]);
+        navigate('/home/settings');
+    }, [navigate]);
     return (
         <Wrapper>
-            
+
 
             <Panel
                 title={
@@ -307,7 +306,7 @@ const StatusCreation = () => {
                         View
                     </Button>
 
-                
+
                     <Button onClick={handleClose}>
                         Close
                     </Button>
