@@ -64,6 +64,9 @@ const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
 const UserInfo = lazy(() => import("./UserInfo/UserInfo"));
 const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
+const MyCustomers = lazy(() => import("./Customers/MyCustomers"));
+const CustomerDetail = lazy(() => import("./Customers/CustomerDetail"));
+const PolicyUploadDetails = lazy(() => import("./Customers/PolicyUploadDetails"));
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -159,12 +162,24 @@ const router = createBrowserRouter([
         element: withSuspense(EmployeeBatchDetail),
       },
       {
+        path: "customer/:customerid",
+        element: withSuspense(CustomerDetail),
+      },
+      {
+        path: "customer/:customerid/policy/:policyid",
+        element: withSuspense(PolicyUploadDetails),
+      },
+      {
         path: "settings",
         element: withSuspense(Settings),
       },
       {
         path: "freshcalls",
         element: withSuspense(FreshCallsWorkspace),
+      },
+      {
+        path: "mycustomer",
+        element: withSuspense(MyCustomers),
       },
       {
         path: "allocation",

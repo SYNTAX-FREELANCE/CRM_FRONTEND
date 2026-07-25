@@ -41,6 +41,8 @@ import {
   getUserRightMenus,
   getExistingUserRights,
   getEmployeeMenuRights,
+  getEmployeePolicyDetail,
+  getCustomerPolicyDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -409,5 +411,26 @@ export const useGetEmployeeMenuRights = (roleId) => {
     enabled: Boolean(roleId),
   });
 };
+
+
+
+export const useGetEmployeePolicyDetails = (empid) => {
+  return useQuery({
+    queryKey: ["emp-policy-taken", empid],
+    queryFn: () => getEmployeePolicyDetail(empid),
+    enabled: Boolean(empid),
+  });
+};
+
+
+export const useGetCustomerPolicyDetails = (customerId) => {
+  return useQuery({
+    queryKey: ["customer-policy-taken", customerId],
+    queryFn: () => getCustomerPolicyDetails(customerId),
+    enabled: Boolean(customerId),
+  });
+};
+
+
 
 
