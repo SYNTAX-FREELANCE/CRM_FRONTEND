@@ -267,3 +267,14 @@ export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
 
   return groups;
 };
+
+
+export const themeColors = {
+  blue: "#2563eb",
+  blueSoft: "rgba(37,99,235,0.08)",
+  orange: "#ea580c",
+  orangeSoft: "rgba(234,88,12,0.08)",
+  border: "rgba(226,232,240,0.95)",
+  text: "#0f172a",
+  muted: "#64748b",
+};

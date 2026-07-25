@@ -375,6 +375,7 @@ export default function FreshCallsWorkspace() {
           </Paper>
         </Box>
       </Paper>
+      
       <Suspense fallback={null}>
         {
           drawerLoaded &&

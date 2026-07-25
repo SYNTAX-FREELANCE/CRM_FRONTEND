@@ -661,3 +661,33 @@ export const getEmployeeMenuRights = async (roleId) => {
 };
 
 
+
+export const getEmployeePolicyDetail = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(`/customer/employee-policy-taken/${empid}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getEmployeePolicyDetail error:", error);
+    return [];
+  }
+};
+
+export const getCustomerPolicyDetails = async (customerid) => {
+  if (!customerid) return [];
+  try {
+    const response = await axioslogin.get(`/lead/employee-policy-detail/${customerid}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getEmployeePolicyDetail error:", error);
+    return [];
+  }
+};
+
+
+
+
