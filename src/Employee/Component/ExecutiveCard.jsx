@@ -75,6 +75,7 @@ const ExecutiveCard = ({
                     boxShadow: "0 16px 32px rgba(15,23,42,0.10)",
                 },
             }}
+            
         >
             <Box
                 sx={{
@@ -129,45 +130,18 @@ const ExecutiveCard = ({
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} />
-                                <Typography sx={{ fontSize: 12.5, color: "#010101",fontWeight:800 }}> <strong style={{ fontSize: 16 }}>{calls}</strong> calls</Typography>
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a" ,fontWeight:800 }}> <strong style={{ fontSize: 16 }}>{calls}</strong> calls</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
-                                <Typography sx={{ fontSize: 12.5, color: "#010101",fontWeight:800 }}><strong style={{ fontSize: 16 }}>{sold}</strong> sold</Typography>
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a" ,fontWeight:800 }}><strong style={{ fontSize: 16 }}>{sold}</strong> sold</Typography>
                             </Box>
                         </Stack>
                     </Box>
                     <EmojiEventsIcon sx={{ color: highlight ? colors.orange : colors.blue, fontSize: 24 }} />
                 </Stack>
 
-                {/* <Divider sx={{ my: 1.75, borderColor: isDark ? "rgba(255,255,255,0.1)" : colors.border }} />
-
-                <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1 }}>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-
-                        <Box sx={{ width: "100%", height: { xs: 20, sm: 20 } }}>
-                            <SparkLineChart
-                                data={sparkData}
-                                area
-                                showHighlight={false}
-                                showTooltip={false}
-                                curve="natural"
-                                color={color}
-                                height={24}
-                                margin={{ top: 2, bottom: 2, left: 2, right: 2 }}
-                                sx={{
-                                    width: "100%",
-                                    "& .MuiAreaElement-root": {
-                                        fill: `${color}20`,
-                                    },
-                                    "& .MuiLineElement-root": {
-                                        strokeWidth: 2,
-                                    },
-                                }}
-                            />
-                        </Box>
-                    </Box>
-                </Box> */}
+               
             </CardContent>
         </Card>
     );

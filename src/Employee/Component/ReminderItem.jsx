@@ -58,8 +58,8 @@ const ReminderItem = ({ item }) => {
                 p: { xs: 1.25, md: 1.5 },
                 borderRadius: 3,
                 bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.9)",
-                boxShadow: isDark ? "none" : "0 6px 18px rgba(15,23,42,0.04)",
+               boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                 cursor: 'pointer'
             }}
         >

@@ -138,43 +138,58 @@ const CustomerDetail = () => {
             <Paper
                 elevation={0}
                 sx={{
-                    minHeight: "95vh",
+                    height: "95vh",
                     width: "100%",
-                    border: "1px solid rgba(255, 255, 255, 0.65)",
-                    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05)",
-                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,.65)",
+                    boxShadow: "0 20px 40px rgba(15,23,42,.05)",
+                    borderRadius: 0,
+                    background: "rgba(255,255,255,.5)",
+                    backdropFilter: "blur(24px)",
+
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 0,
-                    background: "rgba(255, 255, 255, 0.5)",
-                    backdropFilter: "blur(24px)",
+                    overflow: "hidden",
                 }}
             >
-                
+
                 <CustomerHeader customer={customer} />
 
                 <Box
                     sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                            xs: "repeat(1, minmax(0, 1fr))",
-                            sm: "repeat(1, minmax(0, 1fr))",
-                            md: "repeat(2, minmax(0, 1fr))",
-                            lg: "repeat(3, minmax(0, 1fr))",
-                            xl: "repeat(3, minmax(0, 1fr))",
+                        flex: 1,
+                        overflowY: "auto",
+
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
+
+                        "&::-webkit-scrollbar": {
+                            display: "none",
                         },
-                        gap: 1,
-                        width: "100%",
-                        mt: 2,
-                        p: 1
+
+                        p: 1,
                     }}
                 >
-                    {policyDetails?.map((policy) => (
-                        <PolicyCard
-                            policy={policy}
-                            onOpen={() => navigate(`/home/customer/${customerid}/policy/${policy.policy_id}`)}
-                        />
-                    ))}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: {
+                                xs: "repeat(1,minmax(0,1fr))",
+                                md: "repeat(2,minmax(0,1fr))",
+                                lg: "repeat(3,minmax(0,1fr))",
+                            },
+                            gap: 1,
+                        }}
+                    >
+                        {policyDetails?.map((policy) => (
+                            <PolicyCard
+                                key={policy.policy_id}
+                                policy={policy}
+                                onOpen={() =>
+                                    navigate(`/home/customer/${customerid}/policy/${policy.policy_id}`)
+                                }
+                            />
+                        ))}
+                    </Box>
                 </Box>
             </Paper>
             <FloatingBackButton navigateTo="/home/mycustomer" />

@@ -15,10 +15,13 @@ const CustomerHeader = ({ customer }) => {
     return (
         <Box
             sx={{
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
                 px: 3,
                 py: 2.5,
-                borderBottom: "1px solid #e5e7eb",
                 bgcolor: "#fff",
+                borderBottom: "1px solid #e5e7eb",
             }}
         >
             <Stack

@@ -216,56 +216,242 @@ export const getActivityDetails = (activity) => {
 
 // utils/groupLeadData.js
 
-export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
-  const groups = {};
+// export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
+//   const groups = {};
 
-  activeStatus.forEach((status) => {
-    groups[status.status_id] = [];
-  });
+//   activeStatus.forEach((status) => {
+//     groups[status.status_id] = [];
+//   });
 
-  groups[-1] = []; // Pending
-  groups[-2] = []; // Reminder
-  groups[-3] = []; // Reminder
+//   groups[-1] = []; // Pending
+//   groups[-2] = []; // Reminder
+//   groups[-3] = []; // Reminder
 
 
-  const start = startOfMonth(new Date());
-  const end = endOfMonth(addMonths(new Date(), 1));
+//   const start = startOfMonth(new Date());
+//   const end = endOfMonth(addMonths(new Date(), 1));
 
-  for (const lead of allCallDetails) {
-    // NEW tab -> only opened leads
-    if (lead?.status_id === 1) {
-      if (lead?.work_status === "IN_PROGRESS") {
-        groups[1].push(lead);
-      }
-    } else {
-      // All other statuses
-      groups[lead.status_id]?.push(lead);
-    }
+//   for (const lead of allCallDetails) {
+//     // NEW tab -> only opened leads
+//     if (lead?.status_id === 1) {
+//       if (lead?.work_status === "IN_PROGRESS") {
+//         groups[1].push(lead);
+//       }
+//     } else {
+//       // All other statuses
+//       groups[lead.status_id]?.push(lead);
+//     }
 
-    // Pending
-    if (lead?.work_status === "NOT_STARTED") {
-      groups[-1].push(lead);
-    }
+//     // Pending
+//     if (lead?.work_status === "NOT_STARTED") {
+//       groups[-1].push(lead);
+//     }
 
-    // Reminder
-    if (lead?.next_followup_date != null) {
-      groups[-2].push(lead);
-    }
+//     // Reminder
+//     if (lead?.next_followup_date != null) {
+//       groups[-2].push(lead);
+//     }
 
-    if (lead?.known_policy_expiry_date) {
-      const expiryDate = parseISO(lead.known_policy_expiry_date);
-      if (
-        isWithinInterval(expiryDate, {
-          start,
-          end,
-        })
-      ) {
-        groups[-3].push(lead);
-      }
-    }
-  }
+//     if (lead?.known_policy_expiry_date) {
+//       const expiryDate = parseISO(lead.known_policy_expiry_date);
+//       if (
+//         isWithinInterval(expiryDate, {
+//           start,
+//           end,
+//         })
+//       ) {
+//         groups[-3].push(lead);
+//       }
+//     }
+//   }
 
-  return groups;
+//   return groups;
+// };
+
+
+// export const groupLeadData = (allCallDetails = [], activeStatus = []) => {
+
+//   const groups = {};
+
+//   activeStatus.forEach((status) => {
+//     groups[status.status_id] = [];
+//   });
+
+//   groups[-1] = []; // Pending
+//   groups[-2] = []; // Follow-up Reminder
+//   groups[-3] = []; // Policy Renewal
+
+//   const today = new Date();
+
+//   const currentMonth = today.getMonth();
+//   const currentYear = today.getFullYear();
+
+//   const nextMonthDate = addMonths(today, 1);
+//   const nextMonth = nextMonthDate.getMonth();
+//   const nextMonthYear = nextMonthDate.getFullYear();
+
+//   for (const lead of allCallDetails) {
+
+//     // NEW Tab
+//     if (lead?.status_id === 1) {
+//       if (lead?.work_status === "IN_PROGRESS") {
+//         groups[1].push(lead);
+//       }
+//     } else {
+//       groups[lead.status_id]?.push(lead);
+//     }
+
+//     // Pending
+//     if (lead?.work_status === "NOT_STARTED") {
+//       groups[-1].push(lead);
+//     }
+
+//     // Follow-up Reminder
+//     if (lead?.next_followup_date) {
+//       groups[-2].push(lead);
+//     }
+
+//     // Renewal (Current Month + Next Month of CURRENT YEAR ONLY)
+//     if (lead?.policy_expiry_date) {
+
+//       const expiryDate = parseISO(lead.policy_expiry_date);
+
+//       const expiryMonth = expiryDate.getMonth();
+//       const expiryYear = expiryDate.getFullYear();
+
+//       const isCurrentMonth =
+//         expiryYear === currentYear &&
+//         expiryMonth === currentMonth;
+
+//       const isNextMonth =
+//         expiryYear === nextMonthYear &&
+//         expiryMonth === nextMonth;
+
+//       if (isCurrentMonth || isNextMonth) {
+//         groups[-3].push(lead);
+//       }
+//     }
+//   }
+
+//   return groups;
+// };
+
+
+
+export const groupLeadData = (
+    allCallDetails = [],
+    activeStatus = []
+) => {
+
+    const groups = {};
+
+    // Create groups from status master
+    activeStatus.forEach((status) => {
+        if (status?.status_id != null) {
+            groups[status.status_id] = [];
+        }
+    });
+
+    // Custom groups
+    groups[-1] = []; // Pending
+    groups[-2] = []; // Follow-up Reminder
+    groups[-3] = []; // Policy Renewal
+
+    const today = new Date();
+
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const nextMonthDate = addMonths(today, 1);
+    const nextMonth = nextMonthDate.getMonth();
+    const nextMonthYear = nextMonthDate.getFullYear();
+
+    allCallDetails.forEach((lead) => {
+
+        const statusId = Number(lead?.status_id);
+
+        // Make sure this status group exists
+        if (
+            statusId &&
+            groups[statusId] === undefined
+        ) {
+            groups[statusId] = [];
+        }
+
+        // -------------------------
+        // Status Tabs
+        // -------------------------
+
+        if (statusId === 1) {
+
+            // Only opened leads
+            if (lead?.work_status === "IN_PROGRESS") {
+                groups[statusId]?.push(lead);
+            }
+
+        } else {
+
+            groups[statusId]?.push(lead);
+
+        }
+
+        // -------------------------
+        // Pending
+        // -------------------------
+
+        if (lead?.work_status === "NOT_STARTED") {
+            groups[-1].push(lead);
+        }
+
+        // -------------------------
+        // Follow-up Reminder
+        // -------------------------
+
+        if (lead?.next_followup_date) {
+            groups[-2].push(lead);
+        }
+
+        // -------------------------
+        // Policy Renewal
+        // Show Current Month + Next Month
+        // -------------------------
+
+        if (lead?.policy_expiry_date) {
+
+            try {
+
+                const expiryDate = parseISO(
+                    lead.policy_expiry_date
+                );
+
+                const expiryMonth = expiryDate.getMonth();
+                const expiryYear = expiryDate.getFullYear();
+
+                const isCurrentMonth =
+                    expiryMonth === currentMonth &&
+                    expiryYear === currentYear;
+
+                const isNextMonth =
+                    expiryMonth === nextMonth &&
+                    expiryYear === nextMonthYear;
+
+                if (isCurrentMonth || isNextMonth) {
+                    groups[-3].push(lead);
+                }
+
+            } catch (err) {
+                console.error(
+                    "Invalid policy_expiry_date:",
+                    lead?.policy_expiry_date
+                );
+            }
+
+        }
+
+    });
+
+    return groups;
+
 };
 
 

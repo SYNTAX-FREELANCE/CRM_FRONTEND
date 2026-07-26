@@ -1,12 +1,13 @@
 import { useMemo } from "react";
-import { Chip, Stack, Typography } from "@mui/material";
+import { Chip, Stack, Typography, useTheme } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import { Box } from "@mui/joy";
 import { format, isValid } from "date-fns";
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import Tooltip from "@mui/material/Tooltip";
 
-export const TastkColumns = (openLead, isMobile = false) => {
+export const TastkColumns = (openLead, isMobile = false,isDark) => {
+
   const mobileColumns = [
     {
       field: "customer_name",
@@ -19,7 +20,7 @@ export const TastkColumns = (openLead, isMobile = false) => {
             sx={{ fontSize: 12 }}
             variant="body2"
             fontWeight={900}
-            color="#0f172a"
+            color={isDark ? "#f8fafc" : "#0f172a"}
           >
             {row.customer_name}
           </Typography>
@@ -80,7 +81,7 @@ export const TastkColumns = (openLead, isMobile = false) => {
               <SupportAgentIcon
                 sx={{
                   fontSize: 18,
-                  color: "#ff730e",
+                  color:isDark ? "#f8fafc" : "#0f172a" 
                 }}
               />
             </Tooltip>
@@ -89,11 +90,10 @@ export const TastkColumns = (openLead, isMobile = false) => {
             sx={{ fontSize: 12 }}
             variant="body2"
             fontWeight={900}
-            color="#0f172a"
+            color={isDark ? "#f8fafc" : "#0f172a" }
           >
             {row.customer_name}
           </Typography>
-
         </Stack>
       ),
     },
@@ -103,7 +103,12 @@ export const TastkColumns = (openLead, isMobile = false) => {
       minWidth: 140,
       flex: 1,
       renderCell: (params) => (
-        <Typography sx={{ fontSize: 12 }} variant="body2" color="#475569" fontWeight={900}>
+        <Typography
+          sx={{ fontSize: 12 }}
+          variant="body2"
+          color={isDark ? "#f8fafc" : "#0f172a" }
+          fontWeight={900}
+        >
           {params.value}
         </Typography>
       ),
@@ -125,7 +130,7 @@ export const TastkColumns = (openLead, isMobile = false) => {
               variant="body2"
               sx={{ fontSize: 12 }}
               fontWeight={900}
-              color="#475569"
+              color={isDark ? "#f8fafc" : "#0f172a" }
             >
               {formattedDate}
             </Typography>
@@ -143,7 +148,7 @@ export const TastkColumns = (openLead, isMobile = false) => {
           variant="body2"
           sx={{ fontSize: 12 }}
           fontWeight={900}
-          color="#475569"
+          color={isDark ? "#f8fafc" : "#0f172a" }
         >
           {params.value}
         </Typography>
@@ -172,7 +177,7 @@ export const TastkColumns = (openLead, isMobile = false) => {
           }}
         >
           <CallIcon sx={{ fontSize: 16 }} />
-          <Typography variant="body2" fontWeight={700} color="#475569">
+          <Typography variant="body2" fontWeight={700} color={isDark ? "#f8fafc" : "#0f172a" }>
             Call
           </Typography>
         </Box>

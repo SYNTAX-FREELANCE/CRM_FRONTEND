@@ -38,7 +38,8 @@ const PolicyInfoCard = ({ policy }) => {
                 borderRadius: 4,
                 border: `1px solid ${themeColors.border}`,
                 my: 1,
-                width: { xs: "100%", lg: "50%" },
+                // width: { xs: "100%", lg: "50%" },
+                width:'100%'
             }}
         >
             <Stack

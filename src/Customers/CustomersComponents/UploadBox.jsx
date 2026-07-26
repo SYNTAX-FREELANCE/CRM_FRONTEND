@@ -15,13 +15,7 @@ const UploadBox = ({
     onChange,
     onAdd,
 }) => {
-    const accept = multiple
-        ? acceptImagesOnly
-            ? "image/*"
-            : "image/*,.pdf"
-        : acceptImagesOnly
-            ? "image/*"
-            : "image/*,.pdf";
+    const accept = ".jpg,.jpeg,.png,.pdf";
 
     const handleFileChange = (e) => {
         if (onChange) onChange(e);
@@ -38,9 +32,10 @@ const UploadBox = ({
                 borderRadius: 3,
                 p: 2,
                 display: "flex",
+                flexDirection: { xs: 'column', sm: "row" },
                 justifyContent: "space-between",
-                alignItems: "center",
-                gap:2
+                // alignItems: "center",
+                gap: 2
             }}
         >
             <Box>
@@ -48,7 +43,7 @@ const UploadBox = ({
                 <Typography fontSize={10} fontWeight={600}>{subtitle}</Typography>
             </Box>
 
-            <Box sx={{ display: "flex", gap: 2 ,flexDirection:{xs:'column',sm:'row'}}}>
+            <Box sx={{ display: "flex", gap: 2,  }}>
                 <Button
                     sx={{
                         borderRadius: 2,
@@ -56,7 +51,7 @@ const UploadBox = ({
                         fontSize: { xs: 10, md: 14 }
                     }}
                     startIcon={<UploadIcon sx={{
-                        fontSize:9
+                        fontSize: 9
                     }} />}
                     component="label" variant="outlined">
                     Upload
