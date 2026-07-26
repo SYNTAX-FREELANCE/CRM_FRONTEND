@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Badge, Box, Typography } from "@mui/material";
+import { Badge, Box, Typography, useTheme } from "@mui/material";
 
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
@@ -59,6 +59,8 @@ const StatusFilterCard = ({
 }) => {
     const config = STATUS_CONFIG[title] || STATUS_CONFIG.NEW;
     const displayTitle = title === "SOLD" ? "CAPTURED" : title;
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     return (
         <Box
             onClick={onClick}
@@ -76,7 +78,8 @@ const StatusFilterCard = ({
                     ? `2px solid ${config.color}`
                     : "1px solid #E5E7EB",
 
-                bgcolor: active ? `${config.color}15` : "#fff",
+                // bgcolor: active ? `${config.color}15` : "#fff",
+                bgcolor: active ? `${config.color}15` : isDark ? "rgba(30,41,59,0.7)" : "#fff",
 
                 transition: ".25s",
 
@@ -105,7 +108,7 @@ const StatusFilterCard = ({
                             xs: 9,
                             sm: 12,
                         },
-                        color: "#292a2b",
+                        color: isDark ? "#f8fafc" : "#0f172a",
                         textTransform: "uppercase",
                         lineHeight: 1.2,
                     }}

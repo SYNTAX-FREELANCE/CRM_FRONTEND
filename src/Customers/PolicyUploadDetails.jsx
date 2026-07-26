@@ -19,7 +19,7 @@ import {
     InputLabel,
     IconButton,
 } from '@mui/material';
-import { useGetCustomerPolicyDetails } from '../CommonCode/useQuery';
+import { useGetCustomerPolicyDetails, useGetPolicyFiles } from '../CommonCode/useQuery';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import TextsmsIcon from '@mui/icons-material/Textsms';
@@ -30,6 +30,7 @@ import { errorNotify, getAuthUser, successNotify, warningNofity } from '../const
 import UploadBox from './CustomersComponents/UploadBox';
 import PolicyInfoCard from './CustomersComponents/PolicyInfoCard';
 import EditDocumentIcon from '@mui/icons-material/EditDocument';
+import FloatingBackButton from '../CommonComponents/FloatingBackButton';
 
 const themeColors = {
     orange: '#F57C00',
@@ -56,6 +57,15 @@ const PolicyUploadDetails = () => {
     const [loading, setLoading] = useState(false)
 
     const { data: policyDetails = [], isLoading, isError, refetch } = useGetCustomerPolicyDetails(customerid);
+    const { data: PolicyFiles = [], refetch: refetchPolicyFiles, isLoading: LoadingPolicyFiles } = useGetPolicyFiles(policyid);
+
+
+    const uploadedFiles = PolicyFiles ?? {};
+
+    const uploadedRC = uploadedFiles?.RC ?? [];
+    const uploadedPolicy = uploadedFiles?.PREVIOUS_POLICY ?? [];
+    const uploadedKYC = uploadedFiles?.KYC ?? [];
+    const uploadedVehicle = uploadedFiles?.VEHICLE_IMAGE ?? [];
 
     const policy = useMemo(
         () => policyDetails?.find((p) => String(p.policy_id) === String(policyid)),
@@ -118,12 +128,9 @@ const PolicyUploadDetails = () => {
             const { success, message } = response.data;
             if (success !== 1) return warningNofity(message)
             successNotify(message)
-            resetDetails()
+            resetDetails();
+            refetchPolicyFiles();
         } catch (err) {
-            console.log({
-                err
-            });
-            
             errorNotify("Error in Uploading Files Details!")
         } finally {
             setLoading(false)
@@ -141,22 +148,47 @@ const PolicyUploadDetails = () => {
 
     const handleUpload = (e, setter) => {
         const files = createFiles(e.target.files);
-
         setter(prev => [...prev, ...files]);
-
         e.target.value = "";
     };
 
-    const removeFile = (id, setter) => {
-        setter(prev => {
-            const file = prev.find(x => x.id === id);
 
-            if (file?.preview) {
-                URL.revokeObjectURL(file.preview);
+
+    const removeFile = async (item, setter) => {
+
+        try {
+            // File already exists on server
+            if (item.file_id) {
+                const { data } = await axioslogin.delete(
+                    `/employee/policy-document/${item.file_id}`
+                );
+                const { success, message } = data;
+                if (success !== 1) {
+                    return warningNofity(message);
+                }
+                successNotify(message);
+                // Refresh uploaded files
+                refetchPolicyFiles();
+                return;
             }
+            // Local file only
+            setter(prev => {
+                const file = prev.find(x => x.id === item.id);
+                if (file?.preview) {
+                    URL.revokeObjectURL(file.preview);
+                }
+                return prev.filter(x => x.id !== item.id);
+            });
 
-            return prev.filter(x => x.id !== id);
-        });
+        } catch (err) {
+            const message =
+                err.response?.data?.message ||
+                err.message ||
+                "Unable to remove file.";
+            errorNotify(message);
+
+        }
+
     };
 
     if (isLoading) {
@@ -209,25 +241,38 @@ const PolicyUploadDetails = () => {
             <Paper
                 elevation={0}
                 sx={{
-                    minHeight: "95vh",
+                    height: "95vh",
                     width: "100%",
-                    border: "1px solid rgba(255, 255, 255, 0.65)",
-                    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05)",
-                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,.65)",
+                    boxShadow: "0 20px 40px rgba(15,23,42,.05)",
+                    borderRadius: 0,
+                    background: "rgba(255,255,255,.5)",
+                    backdropFilter: "blur(24px)",
+
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 0,
-                    background: "rgba(255, 255, 255, 0.5)",
-                    backdropFilter: "blur(24px)",
+                    overflow: "hidden",
                 }}
             >
+
                 <CustomerHeader customer={customer} />
-                <Box sx={{
-                    p: { xs: 1, sm: 2 },
-                    display: 'flex',
-                    flexDirection: { xs: 'column', lg: 'row' },
-                    gap: 1
-                }}>
+
+
+                <Box
+                    sx={{
+                        flex: 1,
+                        overflowY: "auto",
+
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
+
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+
+                        p: 1,
+                    }}
+                >
 
                     <PolicyInfoCard policy={policy} />
 
@@ -237,7 +282,8 @@ const PolicyUploadDetails = () => {
                             p: 3,
                             borderRadius: 4,
                             border: `1px solid ${themeColors.border}`,
-                            width: { xs: "100%", lg: "50%" },
+                            // width: { xs: "100%", lg: "50%" },
+                            width: '100%'
                         }}
                     >
                         <Box sx={{
@@ -249,7 +295,7 @@ const PolicyUploadDetails = () => {
                             }} />
                             <Typography
                                 sx={{
-                                    fontSize: {xs:15,sm:20},
+                                    fontSize: { xs: 15, sm: 20 },
                                     fontWeight: 600,
                                     color: themeColors.textDark,
                                     mb: 3,
@@ -272,10 +318,14 @@ const PolicyUploadDetails = () => {
                             />
 
                             <UploadPreview
-                                files={rcFiles}
-
-                                onRemove={(id) => removeFile(id, setRcFiles)}
+                                files={[
+                                    ...(uploadedRC ?? []),
+                                    ...rcFiles
+                                ]}
+                                LoadingPolicyFiles={LoadingPolicyFiles}
+                                onRemove={(item) => removeFile(item, setRcFiles)}
                             />
+
                             <UploadBox
                                 title="Previous Insurance Policy"
                                 subtitle="Upload the latest insurance policy document for renewal verification."
@@ -285,9 +335,14 @@ const PolicyUploadDetails = () => {
                                 onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
                             />
                             <UploadPreview
-                                files={policyFiles}
-                                onRemove={(id) => removeFile(id, setPolicyFiles)}
+                                files={[
+                                    ...(uploadedPolicy ?? []),
+                                    ...policyFiles
+                                ]}
+                                LoadingPolicyFiles={LoadingPolicyFiles}
+                                onRemove={(item) => removeFile(item, setPolicyFiles)}
                             />
+
                             <UploadBox
                                 title="Customer KYC Documents"
                                 subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
@@ -298,9 +353,12 @@ const PolicyUploadDetails = () => {
                             />
 
                             <UploadPreview
-                                files={kycFiles}
-                                multiple
-                                onRemove={(id) => removeFile(id, setKycFiles)}
+                                files={[
+                                    ...(uploadedKYC ?? []),
+                                    ...kycFiles
+                                ]}
+                                LoadingPolicyFiles={LoadingPolicyFiles}
+                                onRemove={(item) => removeFile(item, setKycFiles)}
                             />
 
                             <UploadBox
@@ -313,15 +371,19 @@ const PolicyUploadDetails = () => {
                             />
 
                             <UploadPreview
-                                files={vehicleImages}
-                                onRemove={(id) => removeFile(id, setVehicleImages)}
+                                LoadingPolicyFiles={LoadingPolicyFiles}
+                                files={[
+                                    ...(uploadedVehicle ?? []),
+                                    ...vehicleImages
+                                ]}
+                                onRemove={(item) => removeFile(item, setVehicleImages)}
                             />
 
                         </Stack>
                     </Paper>
                 </Box>
-
             </Paper>
+            <FloatingBackButton />
         </Box>
     );
 };

@@ -113,6 +113,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                 height: "100%",
                 overflow: "hidden",
                 height: '60vh',
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                 overflowY: 'scroll',
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -123,13 +124,13 @@ const DashboardRemindersCard = ({ remindersData }) => {
 
             }}
         >
-            <CardContent sx={{ px: 2 }}>
+            <CardContent sx={{ px: 2,bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff", }}>
                 <Box
                     sx={{
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        bgcolor: "background.paper",
+                        // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                         p: 1
                     }}
                 >
@@ -141,6 +142,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             gap: 1.5,
                             flexDirection: { xs: "column", sm: "row" },
                             mb: 2,
+                            
 
                         }} >
                         <Box>
@@ -174,6 +176,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             },
                             gap: 2,
                             width: "100%",
+                            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                         }}
                     >
 
@@ -202,6 +205,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         alignItems: "center",
                         justifyContent: "space-between",
                         mb: 1.5,
+                        bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                     }}
                 >
                     <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a" }}>
@@ -218,7 +222,9 @@ const DashboardRemindersCard = ({ remindersData }) => {
                     />
                 </Box>
 
-                <Stack spacing={1.2}>
+                <Stack spacing={1.2} sx={{
+                    bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                }}>
                     {activeItems?.length ? (
                         activeItems?.map((item) => (
                             <Suspense key={item?.lead_id} fallback={<ReminderItemSkeleton />}>
@@ -232,7 +238,8 @@ const DashboardRemindersCard = ({ remindersData }) => {
                                 textAlign: "center",
                                 borderRadius: 3,
                                 bgcolor: isDark ? "rgba(30,41,59,0.9)" : "rgba(248,250,252,0.9)",
-                                border: "1px dashed rgba(148,163,184,0.5)",
+                                     boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                             }}
                         >
                             <Typography sx={{ fontWeight: 700, color: isDark ? "#cbd5e1" : "#334155" }}>

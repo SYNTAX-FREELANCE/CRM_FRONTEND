@@ -67,6 +67,13 @@ const LeadDetailsDrawer = ({
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
 
+
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return format(new Date(date), "dd-MMM-yyyy");
+  };
+
   const lead = selectedLead || {};
 
   const leadId = lead?.lead_id;
@@ -530,20 +537,14 @@ const LeadDetailsDrawer = ({
                   accent="orange"
                 />
                 <Row
-                  label="Policy Type"
-                  value={lead.policy_type || "-"}
-                  icon={<ArticleIcon sx={{ fontSize: 14 }} />}
-                  accent="orange"
-                />
-                <Row
                   label="Start Date"
-                  value={lead.start_date || "-"}
+                    value={formatDate(lead.start_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />
                 <Row
                   label="Expiry Date"
-                  value={lead.expiry_date || "-"}
+                   value={formatDate(lead.policy_expiry_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />

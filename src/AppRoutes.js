@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GlobalLoader from "./CommonComponents/GlobalLoader";
 import ProtectedRoute from "./utils/Protected/ProtectedRoute";
 import PublicRoute from "./utils/Protected/PublicRoute";
+import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
 
 
 // Lazy imports
@@ -147,7 +148,7 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
-    errorElement: <div>Error ocured</div>,
+    errorElement: <ErrorBoundaryPage />,
     children: [
       {
         index: true,

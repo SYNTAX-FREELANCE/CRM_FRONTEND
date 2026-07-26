@@ -19,13 +19,14 @@ import StatCard from "./Profilecomponents/StatCard";
 import AnalyticsCard from "./Profilecomponents/AnalyticsCard";
 import InfoCard from "./Profilecomponents/InfoCard";
 import { getAuthUser } from "../constant/Constant";
-import { useEmployeeRecentActivity, useGetAttendanceByDate, useProfilePhoto, useSingleEmployeeProfile } from "../CommonCode/useQuery";
+import { useEmployeeRecentActivity, useGetAttendanceByDate, useGetUserAttendance, useProfilePhoto, useSingleEmployeeProfile } from "../CommonCode/useQuery";
 import { format } from "date-fns";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { handleProfilePhotoChange } from "../CommonCode/CommonFun";
 import { useQueryClient } from "@tanstack/react-query";
 import ActivityCardSkeleton from "../SkeletonComponent/ActivityCardSkeleton";
 import FloatingBackButton from "../CommonComponents/FloatingBackButton";
+import AttendanceTimeline from "./Profilecomponents/AttendanceTimeline";
 
 const MyProfilePage = () => {
 
@@ -44,6 +45,17 @@ const MyProfilePage = () => {
     const { data: attendanceData, isLoading: loadingAttendance } = useGetAttendanceByDate(id, TodayDate);
     const { data: RecentActivities, isLoading: LoadingRecentActivities } = useEmployeeRecentActivity(id)
     const { data: profilePhotoUrl = "" } = useProfilePhoto(id);
+
+    const {
+        data: attendance = [],
+        isLoading: LoadingAttendance,
+        refetch,
+    } = useGetUserAttendance(id);
+
+    console.log(
+        attendance
+    );
+
 
 
     const fileInputRef = useRef(null);
@@ -96,7 +108,7 @@ const MyProfilePage = () => {
             <Box
                 sx={{
                     width: "100%",
-                    minHeight: "100%",
+                    height: "100%",
                     display: "flex",
                     gap: 2,
                     backdropFilter: "blur(12px)",
@@ -122,8 +134,8 @@ const MyProfilePage = () => {
                     <Box sx={{ width: "100%", display: "flex", justifyContent: "center", mb: 2 }}>
                         <Box
                             sx={{
-                                width: { xs: 180, sm: 220, md: 240 },
-                                height: { xs: 180, sm: 220, md: 240 },
+                                width: { xs: 180, sm: 220, md: 200 },
+                                height: { xs: 180, sm: 220, md: 200 },
                                 borderRadius: "50%",
                                 p: "6px",
                                 background: "linear-gradient(135deg, #2563eb, #f97316)",
@@ -141,7 +153,7 @@ const MyProfilePage = () => {
                                 }}
                             >
                                 <img
-                                    src={profilePhotoUrl ? profilePhotoUrl : logo}
+                                    src={profilePhotoUrl ?? logo}
                                     alt="profile-picture"
                                     style={{
                                         width: "100%",
@@ -224,7 +236,7 @@ const MyProfilePage = () => {
                 <Box
                     sx={{
                         width: { xs: "100%", lg: "50%" },
-                        py: { xs: 2, md: 3 },
+                        py: { xs: 2, md: 2 },
                         bgcolor: isDark ? "rgba(15,23,42,0.8)" : "rgb(255, 255, 255)"
                     }}
                 >
@@ -237,11 +249,8 @@ const MyProfilePage = () => {
                             <Box sx={{
                                 px: 1,
                             }}>
-                                <Typography sx={{ fontSize: 24, fontWeight: 800 }}>
+                                <Typography sx={{ fontSize: 20, fontWeight: 900 }}>
                                     Profile Overview
-                                </Typography>
-                                <Typography sx={{ color: "text.secondary", fontSize: { xs: 12, sm: 14 } }}>
-                                    Quick details and work summary
                                 </Typography>
                             </Box>
 
@@ -338,46 +347,30 @@ const MyProfilePage = () => {
                                 sx={{
                                     p: 2.5,
                                     borderRadius: 3,
-                                    border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.06)",
+                                    border: isDark
+                                        ? "1px solid rgba(255,255,255,0.1)"
+                                        : "1px solid rgba(0,0,0,0.06)",
                                     background: isDark ? "rgba(30,41,59,0.6)" : "#fff",
+
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    height: "100%",   // important
+                                    minHeight: 0,
+                                    overflow:'hidden'
                                 }}
                             >
-                                <Typography sx={{ fontSize: { xs: 16, sm: 18 }, fontWeight: 800, mb: 2 }}>
-                                    Analytics Details
-                                </Typography>
-
-                                <Box
+                                <Typography
                                     sx={{
-                                        display: "grid",
-                                        gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
-                                        gap: 2,
+                                        fontSize: { xs: 16, sm: 18 },
+                                        fontWeight: 800,
+                                        mb: 2,
                                     }}
                                 >
-                                    <AnalyticsCard
-                                        title="Quote"
-                                        value="96"
-                                        color="#2563eb"
-                                        data={[65, 72, 68, 80, 90, 88, 96]}
-                                    />
-                                    <AnalyticsCard
-                                        title="Callback"
-                                        value="84"
-                                        color="#f97316"
-                                        data={[45, 55, 60, 72, 78, 82, 84]}
-                                    />
-                                    <AnalyticsCard
-                                        title="Calls Sold"
-                                        value="86"
-                                        color="#16a34a"
-                                        data={[40, 48, 52, 60, 68, 74, 86]}
-                                    />
-                                    <AnalyticsCard
-                                        title="Lost"
-                                        value="18"
-                                        color="#eab308"
-                                        data={[28, 26, 24, 22, 20, 19, 18]}
-                                    />
-                                </Box>
+                                    Today's Attendance
+                                </Typography>
+
+                                  <AttendanceTimeline attendance={attendance} />
+                               
                             </Paper>
 
                         </Stack>
