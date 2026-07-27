@@ -9,6 +9,7 @@ import {
   Button,
   Stack,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { DataGrid } from "@mui/x-data-grid";
@@ -29,25 +30,31 @@ const LeadDetailsDrawer = lazy(() =>
 
 export default function FreshCallsWorkspace() {
 
-
+  const theme = useTheme();
   const navigate = useNavigate()
+  const authUser = getAuthUser();
+  const { state } = useLocation();
+  const openedRef = useRef(false);
+  const queryClient = useQueryClient();
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(1);
   const [drawerLoaded, setDrawerLoaded] = useState(false);
 
-  const authUser = getAuthUser();
+  const isDark = theme.palette.mode === 'dark';
 
-  const { state } = useLocation();
   const Status = state?.status
   const LeadId = state?.leadId
-  const openedRef = useRef(false);
+
+
+
 
 
   const { id } = authUser ?? {};
 
-  const queryClient = useQueryClient();
+
 
   const { data: LeadMasterDetail } = useLeadMaster();
 
@@ -56,6 +63,9 @@ export default function FreshCallsWorkspace() {
     isLoading: LoadingTableData,
     refetch
   } = useGetMyEmployeeActiveCalls(id);
+
+
+
 
   const openLead = useCallback(async (lead) => {
     setSelectedLead(lead);
@@ -99,9 +109,8 @@ export default function FreshCallsWorkspace() {
     }
   }, [id, AllCallDetails, statusFilter, queryClient, statusFilter]);
 
-  const isMobile = useMediaQuery("(max-width:600px)");
 
-  const columns = useMemo(() => TastkColumns(openLead, isMobile), [openLead, isMobile]);
+  const columns = useMemo(() => TastkColumns(openLead, isMobile,isDark), [openLead, isMobile,isDark]);
 
   const ActiveStatus = useMemo(() => {
     if (!Array.isArray(LeadMasterDetail)) return [];
@@ -186,7 +195,8 @@ export default function FreshCallsWorkspace() {
         "&::-webkit-scrollbar": {
           display: "none",
         },
-        background: `
+        // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+        background: isDark ? "rgba(30,41,59,0.7)" : `
           radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
           radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
           linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
@@ -198,13 +208,13 @@ export default function FreshCallsWorkspace() {
         sx={{
           minHeight: "95vh",
           width: "100%",
-          border: "1px solid rgba(255, 255, 255, 0.65)",
+          border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
           boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05)",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           borderRadius: 0,
-          background: "rgba(255, 255, 255, 0.5)",
+          bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
           backdropFilter: "blur(24px)",
         }}
       >
@@ -213,7 +223,7 @@ export default function FreshCallsWorkspace() {
             px: { xs: 2, md: 3 },
             py: 2.5,
             borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
-            background: "rgba(255, 255, 255, 0.35)",
+            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
             flex: "0 0 auto",
           }}
         >
@@ -224,10 +234,10 @@ export default function FreshCallsWorkspace() {
             gap={2}
           >
             <Box>
-              <Typography variant="h5" fontWeight={900} color="#0f172a" sx={{ letterSpacing: "-0.5px" }}>
+              <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: "-0.5px", color: isDark ? "#f8fafc" : "#0f172a" }}>
                 Task Queue
               </Typography>
-              <Typography variant="body2" color="#475569" sx={{ mt: 0.5, fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ mt: 0.5, fontWeight: 500, color: isDark ? "#f8fafc" : "#0f172a" }}>
                 Process assigned leads, update status, and manage client communications.
               </Typography>
             </Box>
@@ -334,7 +344,7 @@ export default function FreshCallsWorkspace() {
                 fontSize: "13px",
                 backgroundColor: "transparent",
                 "& .MuiDataGrid-columnHeaders": {
-                  background: "rgba(248, 250, 252, 0.55)",
+                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                   minHeight: "44px !important",
                   maxHeight: "44px !important",
                   borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
@@ -344,7 +354,7 @@ export default function FreshCallsWorkspace() {
                 },
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontWeight: 800,
-                  color: "#0d0f0e",
+                  color: isDark ? "#f8fafc" : "#0f172a",
                   fontSize: "12px",
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
@@ -356,7 +366,7 @@ export default function FreshCallsWorkspace() {
                 },
                 "& .MuiDataGrid-row": {
                   cursor: "pointer",
-                  background: "rgba(255, 255, 255, 0.15)",
+                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                   transition: "background-color 0.15s ease",
                   "&:hover": {
                     backgroundColor: "rgba(37,99,235,0.04)",
@@ -365,7 +375,7 @@ export default function FreshCallsWorkspace() {
                 "& .MuiDataGrid-footerContainer": {
                   minHeight: "44px",
                   borderTop: "1px solid rgba(226, 232, 240, 0.6)",
-                  background: "rgba(248, 250, 252, 0.55)",
+                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                 },
                 "& .MuiDataGrid-virtualScroller": {
                   overflowY: "auto",
@@ -375,6 +385,7 @@ export default function FreshCallsWorkspace() {
           </Paper>
         </Box>
       </Paper>
+
       <Suspense fallback={null}>
         {
           drawerLoaded &&

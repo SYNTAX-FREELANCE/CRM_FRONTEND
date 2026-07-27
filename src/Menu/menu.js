@@ -8,6 +8,8 @@ import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+
 
 export const MENU = [
   {
@@ -72,10 +74,17 @@ export const MENU = [
     alwaysShow: true,
   }, {
     module_id: 11,
+    label: "Customers",
+    icon: MilitaryTechIcon,
+    path: "/home/mycustomer",
+  }, {
+    module_id: 11,
     label: "Reports",
     icon: AssessmentIcon,
     path: "/home/reports",
-  }
+  },
+
+
 
 ];
 

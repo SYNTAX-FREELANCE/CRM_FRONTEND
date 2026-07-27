@@ -41,6 +41,10 @@ import {
   getUserRightMenus,
   getExistingUserRights,
   getEmployeeMenuRights,
+  getEmployeePolicyDetail,
+  getCustomerPolicyDetails,
+  getPolicyFilesDetails,
+  getUserAttendanceDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -196,8 +200,6 @@ export const useGetMyActiveCalls = (empid, statusFilter) => {
   });
 };
 
-
-
 export const useGetMyEmployeeActiveCalls = (empid) => {
   return useQuery({
     queryKey: ["emp-mycalls", empid],
@@ -207,7 +209,6 @@ export const useGetMyEmployeeActiveCalls = (empid) => {
     refetchOnWindowFocus: false,
   });
 };
-
 
 export const useAdminDashBoardCounts = (from, to) => {
   return useQuery({
@@ -234,21 +235,18 @@ export const useEmployeeRecentActivity = (empid) => {
     queryKey: ["emp-recent-activity", empid],
     queryFn: () => getEmployeeRecentActivity(empid),
     staleTime: Infinity,
-    enabled: !!empid
+    enabled: !!empid,
   });
 };
-
-
 
 export const useEmployeeAssignDetails = (empid) => {
   return useQuery({
     queryKey: ["assign-details", empid],
     queryFn: () => getEmployeeAssignDetails(empid),
     staleTime: Infinity,
-    enabled: empid !== ''
+    enabled: empid !== "",
   });
 };
-
 
 export const useGetLeadHistory = (leadId, enabled) => {
   return useQuery({
@@ -315,39 +313,33 @@ export const useGetActiveBatchs = () => {
   return useQuery({
     queryKey: ["active-batches"],
     queryFn: getActiveBatches,
-    staleTime: Infinity
+    staleTime: Infinity,
   });
 };
-
-
 
 export const useGetModuleRightDetail = (roleId) => {
   return useQuery({
     queryKey: ["moduleRights", roleId],
     queryFn: () => getModuleRights(roleId),
     staleTime: Infinity,
-    enabled: !!roleId
+    enabled: !!roleId,
   });
 };
-
-
 
 export const useGetActiveModuleRightDetail = (roleId) => {
   return useQuery({
     queryKey: ["active-moduleRights", roleId],
     queryFn: () => getActiveModuleRights(roleId),
     staleTime: Infinity,
-    enabled: !!roleId
+    enabled: !!roleId,
   });
 };
 
-
-
 export const useTopEmployess = () => {
   return useQuery({
-    queryKey: ["top-emp",],
+    queryKey: ["top-emp"],
     queryFn: getTopEmployees,
-    staleTime: Infinity
+    staleTime: Infinity,
   });
 };
 
@@ -375,7 +367,6 @@ export const useAllEmployeeDetails = () => {
   });
 };
 
-
 export const useSingleEmployeeProfile = (employeeId) => {
   return useQuery({
     queryKey: ["emp-single-profile", employeeId],
@@ -401,7 +392,6 @@ export const useGetExistingUserRights = (roleId, moduleId) => {
   });
 };
 
-
 export const useGetEmployeeMenuRights = (roleId) => {
   return useQuery({
     queryKey: ["emp-menu-rights", roleId],
@@ -410,4 +400,39 @@ export const useGetEmployeeMenuRights = (roleId) => {
   });
 };
 
+export const useGetEmployeePolicyDetails = (empid) => {
+  return useQuery({
+    queryKey: ["emp-policy-taken", empid],
+    queryFn: () => getEmployeePolicyDetail(empid),
+    enabled: Boolean(empid),
+  });
+};
 
+export const useGetCustomerPolicyDetails = (customerId) => {
+  return useQuery({
+    queryKey: ["customer-policy-taken", customerId],
+    queryFn: () => getCustomerPolicyDetails(customerId),
+    enabled: Boolean(customerId),
+    staleTime: Infinity,
+  });
+};
+
+export const useGetPolicyFiles = (policyId) => {
+  return useQuery({
+    queryKey: ["policy-files", policyId],
+    queryFn: () => getPolicyFilesDetails(policyId),
+    enabled: Boolean(policyId),
+    staleTime: Infinity,
+  });
+};
+
+
+export const useGetUserAttendance = (userId) => {
+    return useQuery({
+        queryKey: ["user-attendance", userId],
+        queryFn: () => getUserAttendanceDetails(userId),
+        enabled: Boolean(userId),
+        staleTime: Infinity,
+    });
+
+};

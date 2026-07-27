@@ -146,6 +146,7 @@ const EmployeeCard = ({ emp, onClick }) => {
                 "&:active": {
                     transform: "translateY(0)",
                 },
+                boxShadow:"md"
             }}
         >
             <Box
