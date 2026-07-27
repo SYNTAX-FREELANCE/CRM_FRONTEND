@@ -163,29 +163,53 @@ const DocumentUploads = ({
     const totalFilesCount = Object.values(documents).reduce((acc, curr) => acc + (curr?.length || 0), 0);
 
     return (
-        <Grid xs={12}>
+        <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
             <Box
                 sx={{
-                    p: { xs: 2, sm: 2.5, md: 3 },
-                    borderRadius: "20px",
+                    p: { xs: 1.5, sm: 2, md: 3 },
+                    borderRadius: { xs: "16px", sm: "20px" },
                     bgcolor: "#ffffff",
                     border: "1px solid #e2e8f0",
                     boxShadow: "0 2px 12px rgba(15, 23, 42, 0.03)",
-                    boxSizing: "border-box"
+                    boxSizing: "border-box",
+                    width: "100%"
                 }}
             >
                 {/* Header Row */}
-                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                        <Avatar variant="soft" sx={{ bgcolor: "rgba(37, 99, 235, 0.08)", color: "#2563eb", borderRadius: "10px", width: 36, height: 36 }}>
-                            <CloudUploadIcon sx={{ fontSize: 20 }} />
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mb: 2,
+                        gap: 1,
+                        flexWrap: "wrap"
+                    }}
+                >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.25 }, minWidth: 0 }}>
+                        <Avatar
+                            variant="soft"
+                            sx={{
+                                bgcolor: "rgba(37, 99, 235, 0.08)",
+                                color: "#2563eb",
+                                borderRadius: "10px",
+                                width: { xs: 32, sm: 36 },
+                                height: { xs: 32, sm: 36 },
+                                flexShrink: 0
+                            }}
+                        >
+                            <CloudUploadIcon sx={{ fontSize: { xs: 18, sm: 20 } }} />
                         </Avatar>
-                        <Box>
-                            <Typography level="title-md" sx={{ fontWeight: 800, color: "#0f172a", fontSize: { xs: "15px", sm: "16px" } }}>
+                        <Box sx={{ minWidth: 0 }}>
+                            <Typography
+                                level="title-md"
+                                sx={{
+                                    fontWeight: 800,
+                                    color: "#0f172a",
+                                    fontSize: { xs: "14px", sm: "16px" }
+                                }}
+                            >
                                 Document Uploads
-                            </Typography>
-                            <Typography level="body-xs" sx={{ color: "#64748b", fontWeight: 600 }}>
-                                KYC & identity documents
                             </Typography>
                         </Box>
                     </Box>
@@ -194,7 +218,13 @@ const DocumentUploads = ({
                         variant="soft"
                         color={totalFilesCount > 0 ? "success" : "neutral"}
                         size="sm"
-                        sx={{ borderRadius: "8px", fontWeight: 750, px: 1.2 }}
+                        sx={{
+                            borderRadius: "8px",
+                            fontWeight: 750,
+                            px: 1.2,
+                            flexShrink: 0,
+                            fontSize: { xs: "11px", sm: "12px" }
+                        }}
                     >
                         {totalFilesCount} {totalFilesCount === 1 ? "File" : "Files"}
                     </Chip>
@@ -202,16 +232,18 @@ const DocumentUploads = ({
 
                 <Divider sx={{ mb: 2.5, opacity: 0.5 }} />
 
-                {/* 4 Equal Clean Responsive Cards Grid */}
+                {/* Fully Responsive Grid across xs, sm, md, lg, xl, tab & mobile */}
                 <Box
                     sx={{
                         display: "grid",
                         gridTemplateColumns: {
                             xs: "1fr",
                             sm: "repeat(2, 1fr)",
-                            md: "repeat(4, 1fr)"
+                            md: "repeat(2, 1fr)",
+                            lg: "repeat(4, 1fr)",
+                            xl: "repeat(4, 1fr)"
                         },
-                        gap: 2,
+                        gap: { xs: 1.5, sm: 2 },
                         alignItems: "stretch"
                     }}
                 >
@@ -223,7 +255,7 @@ const DocumentUploads = ({
                             <Box
                                 key={key}
                                 sx={{
-                                    p: 2,
+                                    p: { xs: 1.5, sm: 2 },
                                     borderRadius: "14px",
                                     bgcolor: isUploaded ? "#f8fafc" : "#fafafa",
                                     border: `1px solid ${isUploaded ? "#cbd5e1" : "#e2e8f0"}`,
@@ -232,6 +264,7 @@ const DocumentUploads = ({
                                     flexDirection: "column",
                                     justifyContent: "space-between",
                                     transition: "all 0.2s ease-in-out",
+                                    minWidth: 0,
                                     "&:hover": {
                                         boxShadow: "0 6px 16px rgba(15, 23, 42, 0.05)",
                                         transform: "translateY(-2px)",
@@ -239,33 +272,74 @@ const DocumentUploads = ({
                                     }
                                 }}
                             >
-                                <Box>
+                                <Box sx={{ minWidth: 0 }}>
                                     {/* Title & Icon Header */}
-                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            mb: 1.5,
+                                            gap: 1
+                                        }}
+                                    >
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0, flex: 1 }}>
                                             {icon}
-                                            <Typography level="title-sm" sx={{ fontWeight: 800, color: "#0f172a", fontSize: "13.5px" }}>
+                                            <Typography
+                                                level="title-sm"
+                                                noWrap
+                                                title={label}
+                                                sx={{
+                                                    fontWeight: 800,
+                                                    color: "#0f172a",
+                                                    fontSize: { xs: "12.5px", sm: "13.5px" },
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis"
+                                                }}
+                                            >
                                                 {label}
                                             </Typography>
                                         </Box>
                                         {isUploaded ? (
-                                            <Chip size="sm" variant="soft" color="success" sx={{ fontSize: "10px", fontWeight: 800, borderRadius: "6px", px: 0.8 }}>
+                                            <Chip
+                                                size="sm"
+                                                variant="soft"
+                                                color="success"
+                                                sx={{
+                                                    fontSize: "10px",
+                                                    fontWeight: 800,
+                                                    borderRadius: "6px",
+                                                    px: 0.8,
+                                                    flexShrink: 0
+                                                }}
+                                            >
                                                 ✓ {fileList.length}
                                             </Chip>
                                         ) : (
-                                            <Chip size="sm" variant="soft" color="neutral" sx={{ fontSize: "10px", fontWeight: 700, borderRadius: "6px", px: 0.8 }}>
+                                            <Chip
+                                                size="sm"
+                                                variant="soft"
+                                                color="neutral"
+                                                sx={{
+                                                    fontSize: "10px",
+                                                    fontWeight: 700,
+                                                    borderRadius: "6px",
+                                                    px: 0.8,
+                                                    flexShrink: 0
+                                                }}
+                                            >
                                                 Empty
                                             </Chip>
                                         )}
                                     </Box>
 
-                                    {/* Uploaded Files List (2 files fully visible, scrollbar for 3+ files) */}
+                                    {/* Uploaded Files List */}
                                     {isUploaded ? (
                                         <Stack
                                             spacing={1}
                                             sx={{
                                                 my: 1,
-                                                maxHeight: fileList.length > 2 ? "90px" : "auto",
+                                                maxHeight: fileList.length > 2 ? "95px" : "auto",
                                                 overflowY: fileList.length > 2 ? "auto" : "visible",
                                                 pr: fileList.length > 2 ? 0.5 : 0,
                                                 "&::-webkit-scrollbar": {
@@ -291,8 +365,9 @@ const DocumentUploads = ({
                                                         display: "flex",
                                                         alignItems: "center",
                                                         justifyContent: "space-between",
-                                                        height: "40px",
-                                                        px: 1.2,
+                                                        minHeight: "40px",
+                                                        py: 0.5,
+                                                        px: { xs: 1, sm: 1.2 },
                                                         borderRadius: "8px",
                                                         bgcolor: "#ffffff",
                                                         border: "1px solid #e2e8f0",
@@ -300,9 +375,20 @@ const DocumentUploads = ({
                                                         boxSizing: "border-box"
                                                     }}
                                                 >
-                                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0, flex: 1, mr: 1 }}>
+                                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, minWidth: 0, flex: 1, mr: 0.5 }}>
                                                         <FilePresentIcon sx={{ color: color, fontSize: 16, flexShrink: 0 }} />
-                                                        <Typography level="body-xs" noWrap sx={{ fontWeight: 700, color: "#1e293b", fontSize: "11px" }}>
+                                                        <Typography
+                                                            level="body-xs"
+                                                            noWrap
+                                                            title={file.name}
+                                                            sx={{
+                                                                fontWeight: 700,
+                                                                color: "#1e293b",
+                                                                fontSize: { xs: "10.5px", sm: "11px" },
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis"
+                                                            }}
+                                                        >
                                                             {file.name}
                                                         </Typography>
                                                     </Box>
@@ -313,7 +399,8 @@ const DocumentUploads = ({
                                                             variant="plain"
                                                             color="primary"
                                                             onClick={() => handleViewFile(file, file.name)}
-                                                            sx={{ width: 24, height: 24, borderRadius: "4px" }}
+                                                            sx={{ width: { xs: 26, sm: 28 }, height: { xs: 26, sm: 28 }, borderRadius: "4px" }}
+                                                            title="View document"
                                                         >
                                                             <FilePresentIcon sx={{ fontSize: 14 }} />
                                                         </IconButton>
@@ -322,7 +409,8 @@ const DocumentUploads = ({
                                                             variant="plain"
                                                             color="danger"
                                                             onClick={() => handleFileDelete(file)}
-                                                            sx={{ width: 24, height: 24, borderRadius: "4px" }}
+                                                            sx={{ width: { xs: 26, sm: 28 }, height: { xs: 26, sm: 28 }, borderRadius: "4px" }}
+                                                            title="Delete document"
                                                         >
                                                             <DeleteOutlineIcon sx={{ fontSize: 14 }} />
                                                         </IconButton>
@@ -336,7 +424,7 @@ const DocumentUploads = ({
                                             component="label"
                                             sx={{
                                                 my: 1.5,
-                                                py: 2.5,
+                                                py: { xs: 2, sm: 2.5 },
                                                 px: 1.5,
                                                 borderRadius: "10px",
                                                 border: "1px dashed #cbd5e1",
@@ -348,15 +436,19 @@ const DocumentUploads = ({
                                                 gap: 0.5,
                                                 cursor: "pointer",
                                                 transition: "0.2s",
+                                                textAlign: "center",
                                                 "&:hover": {
                                                     borderColor: color,
                                                     bgcolor: "rgba(59, 130, 246, 0.04)"
                                                 }
                                             }}
                                         >
-                                            <CloudUploadIcon sx={{ color: "#94a3b8", fontSize: 20 }} />
-                                            <Typography level="body-xs" sx={{ fontWeight: 700, color: "#64748b", fontSize: "11px" }}>
+                                            <CloudUploadIcon sx={{ color: "#94a3b8", fontSize: { xs: 18, sm: 20 } }} />
+                                            <Typography level="body-xs" sx={{ fontWeight: 700, color: "#64748b", fontSize: { xs: "10.5px", sm: "11px" } }}>
                                                 Upload document
+                                            </Typography>
+                                            <Typography level="body-xs" sx={{ color: "#94a3b8", fontSize: "9.5px" }}>
+                                                JPG, PNG, PDF (Max 25MB)
                                             </Typography>
                                             <input
                                                 type="file"
@@ -381,7 +473,7 @@ const DocumentUploads = ({
                                             mt: 1.5,
                                             borderRadius: "8px",
                                             fontWeight: 750,
-                                            fontSize: "11px",
+                                            fontSize: { xs: "10.5px", sm: "11px" },
                                             width: "100%",
                                             height: 30
                                         }}
@@ -407,8 +499,9 @@ const DocumentUploads = ({
                         variant="outlined"
                         sx={{
                             width: { xs: "calc(100vw - 32px)", sm: "400px" },
-                            borderRadius: "16px",
-                            p: 3,
+                            maxWidth: "400px",
+                            borderRadius: { xs: "14px", sm: "16px" },
+                            p: { xs: 2.5, sm: 3 },
                             textAlign: "center",
                             alignItems: "center"
                         }}
@@ -439,8 +532,9 @@ const DocumentUploads = ({
                         variant="outlined"
                         sx={{
                             width: { xs: "calc(100vw - 32px)", sm: "400px" },
-                            borderRadius: "16px",
-                            p: 3,
+                            maxWidth: "400px",
+                            borderRadius: { xs: "14px", sm: "16px" },
+                            p: { xs: 2.5, sm: 3 },
                             textAlign: "center",
                             alignItems: "center"
                         }}
@@ -470,24 +564,25 @@ const DocumentUploads = ({
                     <ModalDialog
                         variant="outlined"
                         sx={{
-                            width: { xs: "95vw", sm: "85vw" },
+                            width: { xs: "94vw", sm: "88vw", md: "80vw" },
                             maxWidth: "1000px",
-                            height: "80vh",
-                            borderRadius: "20px",
-                            p: 2.5,
+                            height: { xs: "85vh", sm: "80vh" },
+                            maxHeight: "90vh",
+                            borderRadius: { xs: "14px", sm: "20px" },
+                            p: { xs: 1.5, sm: 2.5 },
                             display: "flex",
                             flexDirection: "column"
                         }}
                     >
-                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1, borderBottom: "1px solid #e2e8f0" }}>
-                            <Typography level="title-md" noWrap sx={{ fontWeight: 800 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1, borderBottom: "1px solid #e2e8f0", gap: 1 }}>
+                            <Typography level="title-md" noWrap sx={{ fontWeight: 800, fontSize: { xs: "14px", sm: "16px" }, minWidth: 0, flex: 1 }}>
                                 {viewingFileName}
                             </Typography>
-                            <IconButton variant="plain" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }}>
+                            <IconButton size="sm" variant="plain" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }}>
                                 ✕
                             </IconButton>
                         </Box>
-                        <DialogContent sx={{ mt: 1.5, flex: 1, minHeight: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#f8fafc", borderRadius: "10px", p: 1 }}>
+                        <DialogContent sx={{ mt: 1.5, flex: 1, minHeight: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#f8fafc", borderRadius: "10px", p: 1, overflow: "hidden" }}>
                             {viewingFileType && viewingFileType.startsWith("image/") ? (
                                 <img src={viewingFileUrl} alt={viewingFileName} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: "6px" }} />
                             ) : viewingFileType === "application/pdf" ? (
@@ -496,7 +591,7 @@ const DocumentUploads = ({
                                 <Typography level="body-sm" sx={{ fontWeight: 600 }}>Preview not available for this file type.</Typography>
                             )}
                         </DialogContent>
-                        <DialogActions sx={{ mt: 1.5, display: "flex", justifyContent: "space-between" }}>
+                        <DialogActions sx={{ mt: 1.5, display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", gap: 1 }}>
                             <Button
                                 variant="solid"
                                 color="primary"
@@ -506,11 +601,11 @@ const DocumentUploads = ({
                                     a.download = viewingFileName;
                                     a.click();
                                 }}
-                                sx={{ borderRadius: "8px" }}
+                                sx={{ borderRadius: "8px", width: { xs: "100%", sm: "auto" } }}
                             >
                                 Download File
                             </Button>
-                            <Button variant="outlined" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }} sx={{ borderRadius: "8px" }}>
+                            <Button variant="outlined" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }} sx={{ borderRadius: "8px", width: { xs: "100%", sm: "auto" } }}>
                                 Close
                             </Button>
                         </DialogActions>
