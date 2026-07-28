@@ -1,25 +1,29 @@
 import React from "react";
 import { Card, Typography, Stack, Box, Avatar, Chip } from "@mui/joy";
 import { AccessTimeIcon } from "./Icons";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const RemindersPanel = ({
     selectedDate = new Date(),
     activeEvents = []
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <Card
             sx={{
                 p: { xs: 2.5, sm: 3 },
                 borderRadius: "24px",
-                bgcolor: "white",
-                border: "1px solid rgba(0,0,0,0.02)",
-                boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                bgcolor: isDark ? "#1e293b" : "white",
+                border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
+                boxShadow: isDark ? "0 12px 36px rgba(0, 0, 0, 0.4)" : "0 12px 36px rgba(15, 23, 42, 0.03)",
                 height: { xs: "auto", md: "390px" },
                 display: "flex",
                 flexDirection: "column"
             }}
         >
-            <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b", mb: 2.5 }}>
+            <Typography level="title-md" sx={{ fontWeight: 900, color: isDark ? "#f8fafc" : "#1e1b4b", mb: 2.5 }}>
                 Tasks & Events ({selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })})
             </Typography>
 
@@ -35,17 +39,19 @@ const RemindersPanel = ({
                                 justifyContent: "space-between",
                                 p: { xs: 2, sm: 2.5 },
                                 borderRadius: "20px",
-                                bgcolor: "#ffffff",
-                                border: "1px solid rgba(0,0,0,0.05)",
+                                bgcolor: isDark ? "#0f172a" : "#ffffff",
+                                border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0,0,0,0.05)",
                                 borderLeft: `6px solid ${evt.lineBg}`,
-                                boxShadow: "0 4px 15px rgba(15, 23, 42, 0.01)",
+                                boxShadow: isDark ? "0 4px 15px rgba(0, 0, 0, 0.4)" : "0 4px 15px rgba(15, 23, 42, 0.01)",
                                 transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                 gap: 2,
                                 "&:hover": {
                                     transform: "translateY(-3px)",
-                                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.05)",
-                                    borderColor: "rgba(0,0,0,0.08)",
-                                    background: `linear-gradient(90deg, #ffffff 0%, ${evt.lineBg}04 100%)`
+                                    boxShadow: isDark ? "0 12px 30px rgba(0, 0, 0, 0.6)" : "0 12px 30px rgba(15, 23, 42, 0.05)",
+                                    borderColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.08)",
+                                    background: isDark
+                                        ? `linear-gradient(90deg, #0f172a 0%, ${evt.lineBg}1f 100%)`
+                                        : `linear-gradient(90deg, #ffffff 0%, ${evt.lineBg}04 100%)`
                                 }
                             }}
                         >
@@ -68,7 +74,7 @@ const RemindersPanel = ({
 
                                 <Box sx={{ minWidth: 0, flex: 1 }}>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flexWrap: "wrap" }}>
-                                        <Typography level="title-sm" sx={{ fontWeight: 800, color: "#1e1b4b", fontSize: { xs: "13px", sm: "14px" } }}>
+                                        <Typography level="title-sm" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#1e1b4b", fontSize: { xs: "13px", sm: "14px" } }}>
                                             {evt.title}
                                         </Typography>
                                         <Chip
@@ -88,10 +94,10 @@ const RemindersPanel = ({
                                     </Box>
 
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 0.75, flexWrap: "wrap" }}>
-                                        <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, fontSize: "11px" }}>
+                                        <Typography level="body-xs" sx={{ color: isDark ? "#cbd5e1" : "neutral.550", fontWeight: 700, fontSize: "11px" }}>
                                             <strong>Model:</strong> {evt.model || "N/A"}
                                         </Typography>
-                                        <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700, fontSize: "11px" }}>
+                                        <Typography level="body-xs" sx={{ color: isDark ? "#cbd5e1" : "neutral.550", fontWeight: 700, fontSize: "11px" }}>
                                             <strong>Reg:</strong> {evt.registration_number || "N/A"}
                                         </Typography>
                                     </Box>
@@ -101,13 +107,13 @@ const RemindersPanel = ({
                                             sx={{
                                                 mt: 1,
                                                 p: 1.25,
-                                                bgcolor: "#f8fafc",
+                                                bgcolor: isDark ? "#1e293b" : "#f8fafc",
                                                 borderRadius: "10px",
                                                 borderLeft: `3px solid ${evt.lineBg}`,
                                                 maxWidth: "100%"
                                             }}
                                         >
-                                            <Typography level="body-xs" sx={{ color: "neutral.600", fontStyle: "italic", fontWeight: 650, fontSize: "11px" }}>
+                                            <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.600", fontStyle: "italic", fontWeight: 650, fontSize: "11px" }}>
                                                 "{evt.remarks}"
                                             </Typography>
                                         </Box>
@@ -124,9 +130,9 @@ const RemindersPanel = ({
                                     flexShrink: 0
                                 }}
                             >
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, bgcolor: "#f1f5f9", px: 1.25, py: 0.5, borderRadius: "6px" }}>
-                                    <AccessTimeIcon style={{ fontSize: 12, color: "#64748b" }} />
-                                    <Typography level="body-xs" sx={{ fontWeight: 800, color: "#475569", fontFamily: "monospace", fontSize: "11px" }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, bgcolor: isDark ? "#334155" : "#f1f5f9", px: 1.25, py: 0.5, borderRadius: "6px" }}>
+                                    <AccessTimeIcon style={{ fontSize: 12, color: isDark ? "#cbd5e1" : "#64748b" }} />
+                                    <Typography level="body-xs" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#475569", fontFamily: "monospace", fontSize: "11px" }}>
                                         {evt.time}
                                     </Typography>
                                 </Box>
@@ -135,8 +141,8 @@ const RemindersPanel = ({
                     ))}
                 </Stack>
             ) : (
-                <Box sx={{ py: 6, textAlign: "center", bgcolor: "#f8fafc", borderRadius: "20px", border: "1px dashed rgba(0,0,0,0.08)" }}>
-                    <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700 }}>
+                <Box sx={{ py: 6, textAlign: "center", bgcolor: isDark ? "#0f172a" : "#f8fafc", borderRadius: "20px", border: isDark ? "1px dashed rgba(255,255,255,0.15)" : "1px dashed rgba(0,0,0,0.08)" }}>
+                    <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.550", fontWeight: 700 }}>
                         No tasks or events scheduled for this day
                     </Typography>
                 </Box>

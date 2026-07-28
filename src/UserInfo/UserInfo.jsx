@@ -17,13 +17,16 @@ import { useAuth } from "../Context/AuthContext";
 import { useAllEmployeeDetails } from "../CommonCode/useQuery";
 import { Paper, Stack, Typography } from "@mui/material";
 import GlobalLoader from "../CommonComponents/GlobalLoader";
+import { useThemeMode } from "../Context/ThemeContext";
 
 const EmployeeCard = lazy(() => import('./Components/EmployeeCard'))
 
 const UserInfo = () => {
     const navigate = useNavigate();
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     const [searchKeyword, setSearchKeyword] = useState("");
-    // const [viewMode, setViewMode] = useState("card");
     const { user } = useAuth();
     const isAdmin = user?.role?.toLowerCase() === "admin";
 
@@ -31,11 +34,9 @@ const UserInfo = () => {
 
     const employees = employeeListData || [];
 
-
     const filteredEmployees = useMemo(() => {
         const term = searchKeyword.trim().toLowerCase();
         if (!term) return employees;
-
 
         return employees?.filter((emp) =>
             [
@@ -58,7 +59,6 @@ const UserInfo = () => {
         return null;
     }
 
-
     return (
         <Box
             sx={{
@@ -70,11 +70,17 @@ const UserInfo = () => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
-                background: `
-                  radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-                  radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-                  linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-                `,
+                background: isDark
+                    ? `
+                      radial-gradient(circle at 15% 25%, rgba(30, 41, 59, 0.4) 0%, transparent 45%),
+                      radial-gradient(circle at 85% 75%, rgba(15, 23, 42, 0.6) 0%, transparent 45%),
+                      linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
+                    `
+                    : `
+                      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                      linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                    `,
             }}
         >
             <Paper
@@ -82,13 +88,13 @@ const UserInfo = () => {
                 sx={{
                     minHeight: "95vh",
                     width: "100%",
-                    border: "1px solid rgba(255, 255, 255, 0.65)",
-                    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05)",
+                    border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.65)",
+                    boxShadow: isDark ? "0 20px 40px rgba(0, 0, 0, 0.6)" : "0 20px 40px rgba(15, 23, 42, 0.05)",
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
                     borderRadius: 0,
-                    background: "rgba(255, 255, 255, 0.5)",
+                    background: isDark ? "rgba(15, 23, 42, 0.9)" : "rgba(255, 255, 255, 0.5)",
                     backdropFilter: "blur(24px)",
                 }}
             >
@@ -96,8 +102,8 @@ const UserInfo = () => {
                     sx={{
                         px: { xs: 2, md: 3 },
                         py: 2.5,
-                        borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
-                        background: "rgba(255, 255, 255, 0.35)",
+                        borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(226, 232, 240, 0.6)",
+                        background: isDark ? "rgba(15, 23, 42, 0.4)" : "rgba(255, 255, 255, 0.35)",
                         flex: "0 0 auto",
                     }}>
                     <Stack
@@ -107,10 +113,10 @@ const UserInfo = () => {
                         gap={2}
                     >
                         <Box>
-                            <Typography variant="h5" fontWeight={900} color="#0f172a" sx={{ letterSpacing: "-0.5px" }}>
+                            <Typography variant="h5" fontWeight={900} color={isDark ? "#f8fafc" : "#0f172a"} sx={{ letterSpacing: "-0.5px" }}>
                                 Employees
                             </Typography>
-                            <Typography variant="body2" color="#475569" sx={{ mt: 0.5, fontWeight: 500 }}>
+                            <Typography variant="body2" color={isDark ? "#94a3b8" : "#475569"} sx={{ mt: 0.5, fontWeight: 500 }}>
                                 Search and view employee records.
                             </Typography>
                         </Box>
@@ -128,12 +134,20 @@ const UserInfo = () => {
                                 placeholder="Search employees"
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
-                                startDecorator={<SearchIcon sx={{ color: "neutral.500" }} />}
+                                startDecorator={<SearchIcon sx={{ color: isDark ? "#94a3b8" : "neutral.500" }} />}
                                 size="sm"
                                 sx={{
                                     width: { xs: "100%", sm: 300 },
                                     borderRadius: "12px",
-                                    bgcolor: "#fff",
+                                    bgcolor: isDark ? "#0f172a" : "#fff",
+                                    color: isDark ? "#f8fafc" : "#0f172a",
+                                    border: isDark ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid #cbd5e1",
+                                    "& input": {
+                                        color: isDark ? "#f8fafc" : "#0f172a",
+                                    },
+                                    "& input::placeholder": {
+                                        color: isDark ? "#94a3b8" : "#64748b",
+                                    }
                                 }}
                             />
                         </Box>
@@ -146,10 +160,10 @@ const UserInfo = () => {
                         <EmployeeCardSkeleton />
                     ) : filteredEmployees.length === 0 ? (
                         <Box sx={{ textAlign: "center", py: 8 }}>
-                            <Typography level="h4" sx={{ fontWeight: 700 }}>
+                            <Typography level="h4" sx={{ fontWeight: 700, color: isDark ? "#f8fafc" : "inherit" }}>
                                 No Record Found
                             </Typography>
-                            <Typography level="body-sm" sx={{ color: "neutral.500", mt: 1 }}>
+                            <Typography level="body-sm" sx={{ color: isDark ? "#94a3b8" : "neutral.500", mt: 1 }}>
                                 Try a different keyword.
                             </Typography>
                         </Box>

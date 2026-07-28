@@ -2,28 +2,33 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
+import { useThemeMode } from '../../Context/ThemeContext';
 
 const UnlockNextBatchAction = ({
     onClick,
     open,
     title = 'Unlock Next Batch',
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <Box
             sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 borderRadius: '8px',
-                background:
-                    'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)',
-                border: '1px solid #dbeafe',
-                boxShadow: '0 8px 24px rgba(37,99,235,0.12)',
+                background: isDark
+                    ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+                    : 'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #dbeafe',
+                boxShadow: isDark ? '0 8px 24px rgba(0, 0, 0, 0.4)' : '0 8px 24px rgba(37,99,235,0.12)',
                 overflow: 'hidden',
                 transition: 'all .25s ease',
                 cursor: 'pointer',
                 '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 14px 30px rgba(37,99,235,.18)',
+                    boxShadow: isDark ? '0 14px 30px rgba(0, 0, 0, 0.6)' : '0 14px 30px rgba(37,99,235,.18)',
                 },
             }}
             onClick={onClick}
@@ -60,7 +65,7 @@ const UnlockNextBatchAction = ({
                     sx={{
                         fontWeight: { xs: 800, sm: 700 },
                         fontSize: { xs: 10, sm: 14 },
-                        color: '#1e3a8a',
+                        color: isDark ? '#f8fafc' : '#1e3a8a',
                         lineHeight: 1.2,
                     }}
                 >
@@ -71,7 +76,7 @@ const UnlockNextBatchAction = ({
                     sx={{
                         fontSize: { xs: 8, sm: 11 },
                         fontWeight: { xs: 800, sm: 700 },
-                        color: '#64748b',
+                        color: isDark ? '#94a3b8' : '#64748b',
                         mt: 0.3,
                     }}
                 >

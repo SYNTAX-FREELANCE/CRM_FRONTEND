@@ -25,8 +25,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-// import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
+import SecurityIcon from "@mui/icons-material/Security";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -52,11 +51,11 @@ const getTodayDate = () => {
     return `${year}-${month}-${day}`;
 };
 
-const EmployeePreformanceReport = () => {
+const DetailedUserLogReports = () => {
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
-
+    
     const [employeeId, setEmployeeId] = useState("");
     const [startDate, setStartDate] = useState(getFirstDayOfMonth());
     const [endDate, setEndDate] = useState(getTodayDate());
@@ -76,32 +75,32 @@ const EmployeePreformanceReport = () => {
 
     const handleSearch = async () => {
         if (!employeeId.trim()) {
-            warningNotify("Please enter a valid Employee ID");
+            warningNotify("Please select an Employee");
+            return;
+        }
+        if (!startDate || !endDate) {
+            warningNotify("Please select both start and end dates");
             return;
         }
 
         try {
             setLoading(true);
             setSearched(true);
-
-            let url = `/reports/employee-performance?employeeId=${encodeURIComponent(employeeId)}`;
-            if (startDate && endDate) {
-                url += `&fromDate=${startDate}&toDate=${endDate}`;
-            }
-
-            const response = await axioslogin.get(url);
-
+            const response = await axioslogin.get(
+                `/reports/employee-attendance-detailed?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`
+            );
+            
             if (response.data?.success === 1) {
                 setReportData(response.data.data || []);
                 setPage(0);
-                successNotify(`Retrieved ${response.data.data?.length || 0} performance records.`);
+                successNotify(`Retrieved ${response.data.data?.length || 0} detailed attendance records.`);
             } else {
-                warningNotify(response.data?.message || "Failed to fetch performance data");
+                warningNotify(response.data?.message || "Failed to fetch detailed attendance data");
                 setReportData([]);
             }
         } catch (error) {
-            console.error("Fetch report error:", error);
-            errorNotify("An error occurred while fetching the employee performance report");
+            console.error("Fetch detailed attendance error:", error);
+            errorNotify("An error occurred while fetching detailed attendance logs");
             setReportData([]);
         } finally {
             setLoading(false);
@@ -116,13 +115,10 @@ const EmployeePreformanceReport = () => {
 
         try {
             setExportLoading(true);
-
-            let url = `/reports/employee-performance/export?employeeId=${encodeURIComponent(employeeId)}`;
-            if (startDate && endDate) {
-                url += `&fromDate=${startDate}&toDate=${endDate}`;
-            }
-
-            const response = await axioslogin.get(url, { responseType: "blob" });
+            const response = await axioslogin.get(
+                `/reports/employee-attendance-detailed/export?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`,
+                { responseType: "blob" }
+            );
 
             // Trigger file download
             const blob = new Blob([response.data], {
@@ -131,15 +127,15 @@ const EmployeePreformanceReport = () => {
             const urlBlob = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = urlBlob;
-            link.setAttribute("download", `employee_${employeeId}_performance_report.xlsx`);
+            link.setAttribute("download", `detailed_attendance_report_${employeeId}_${startDate}_to_${endDate}.xlsx`);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(urlBlob);
-            successNotify("Performance report downloaded successfully!");
+            successNotify("Detailed attendance spreadsheet downloaded successfully!");
         } catch (error) {
             console.error("Export Excel error:", error);
-            errorNotify("Failed to download performance report");
+            errorNotify("Failed to download detailed attendance spreadsheet");
         } finally {
             setExportLoading(false);
         }
@@ -167,50 +163,27 @@ const EmployeePreformanceReport = () => {
         });
     }, [reportData, searchQuery]);
 
-    // Helpers to render clean badges
-    const renderBooleanBadge = (val, trueText, falseText) => {
-        const isActive = val === 1 || val === true;
-        return (
-            <Chip
-                size="sm"
-                variant="soft"
-                color={isActive ? "success" : "neutral"}
-                sx={{ fontWeight: 600, fontSize: "11px", borderRadius: "8px" }}
-            >
-                {isActive ? trueText : falseText}
-            </Chip>
-        );
-    };
-
-    const renderWorkStatusBadge = (status) => {
-        const text = (status || "").toUpperCase();
-        let color = "neutral";
-        if (text === "COMPLETED") color = "success";
-        else if (text === "PENDING") color = "warning";
-        else if (text === "IN_PROGRESS" || text === "PROCESSING") color = "primary";
-
-        return (
-            <Chip
-                size="sm"
-                variant="solid"
-                color={color}
-                sx={{ fontWeight: 700, fontSize: "11px", borderRadius: "8px" }}
-            >
-                {text || "N/A"}
-            </Chip>
-        );
-    };
-
-    const formatDate = (dateStr) => {
-        if (!dateStr) return "N/A";
-        const date = new Date(dateStr);
-        return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString();
-    };
-
     const formatDateTime = (dateStr) => {
         if (!dateStr) return "N/A";
         const date = new Date(dateStr);
-        return isNaN(date.getTime()) ? "N/A" : date.toLocaleString();
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
+    };
+
+    const formatProductivityHours = (val) => {
+        if (!val || isNaN(val)) return "0 hrs 0 mins";
+        const totalMinutes = Math.round(parseFloat(val) * 60);
+        const hrs = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        return `${hrs} hrs ${mins} mins`;
     };
 
     // Theme values mapping
@@ -228,12 +201,16 @@ const EmployeePreformanceReport = () => {
     return (
         <Box
             sx={{
-                p: { xs: 2, sm: 3, md: 4 },
                 minHeight: "95vh",
-                transition: "background 0.3s ease",
+                width: "100%",
+                overflowY: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": { display: "none" },
+                p: { xs: 1.5, sm: 2, md: 3 },
                 background: isDark
                     ? `
-                      radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.6) 0%, transparent 40%),
+                      radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.5) 0%, transparent 40%),
                       radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.7) 0%, transparent 40%),
                       linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
                     `
@@ -295,11 +272,11 @@ const EmployeePreformanceReport = () => {
                                     gap: 1.5,
                                 }}
                             >
-                                <BadgeOutlinedIcon sx={{ color: "#2563eb", fontSize: "2rem" }} />
-                                Employee Performance Report
+                                <SecurityIcon sx={{ color: "#3b82f6", fontSize: "2rem" }} />
+                                Detailed Employee Login Report
                             </Typography>
                             <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5, fontWeight: 500 }}>
-                                Enter an Employee ID and select optional dates to analyze workflow performance.
+                                View all individual session log-ins, log-outs, and shift productivity details per employee.
                             </Typography>
                         </Box>
                     </Box>
@@ -328,7 +305,7 @@ const EmployeePreformanceReport = () => {
                     <Grid xs={12} sm={4} md={2.5}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Start Date (Optional)
+                                Start Date *
                             </Typography>
                             <TextField
                                 type="date"
@@ -341,13 +318,21 @@ const EmployeePreformanceReport = () => {
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: inputBg,
+                                        color: inputTextColor,
                                         height: "40px",
                                         "& fieldset": {
-                                            borderColor: isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1",
+                                            border: inputBorder,
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#3b82f6",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                            borderColor: "#3b82f6",
                                         },
                                     },
                                     "& input": {
                                         color: inputTextColor,
+                                        fontSize: "14px",
                                     }
                                 }}
                             />
@@ -356,7 +341,7 @@ const EmployeePreformanceReport = () => {
                     <Grid xs={12} sm={4} md={2.5}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                End Date (Optional)
+                                End Date *
                             </Typography>
                             <TextField
                                 type="date"
@@ -369,133 +354,144 @@ const EmployeePreformanceReport = () => {
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: inputBg,
+                                        color: inputTextColor,
                                         height: "40px",
                                         "& fieldset": {
-                                            borderColor: isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1",
+                                            border: inputBorder,
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#3b82f6",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                            borderColor: "#3b82f6",
                                         },
                                     },
                                     "& input": {
                                         color: inputTextColor,
+                                        fontSize: "14px",
                                     }
                                 }}
                             />
                         </Box>
                     </Grid>
                     <Grid xs={12} sm={12} md={4}>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                gap: 1.5,
-                                flexWrap: "wrap",
-                                justifyContent: { xs: "stretch", sm: "flex-end" },
-                            }}
-                        >
+                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
                             <Button
-                                startDecorator={<RefreshIcon />}
-                                variant="outlined"
-                                color="neutral"
-                                onClick={handleReset}
+                                variant="solid"
+                                color="primary"
+                                startDecorator={loading ? <CircularProgress size="sm" /> : <SearchIcon />}
+                                onClick={handleSearch}
+                                disabled={loading}
                                 sx={{
                                     borderRadius: "12px",
-                                    fontWeight: 600,
+                                    height: "40px",
+                                    px: 2.5,
+                                    fontWeight: 700,
+                                    bgcolor: "#3b82f6",
+                                    "&:hover": { bgcolor: "#2563eb" },
+                                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+                                }}
+                            >
+                                Search Logs
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="neutral"
+                                startDecorator={<RefreshIcon />}
+                                onClick={handleReset}
+                                disabled={loading}
+                                sx={{
+                                    borderRadius: "12px",
+                                    height: "40px",
+                                    px: 2,
+                                    borderColor: isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1",
                                     color: textPrimaryColor,
-                                    border: isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #cbd5e1"
+                                    "&:hover": {
+                                        bgcolor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                                    },
                                 }}
                             >
                                 Reset
                             </Button>
                             <Button
-                                startDecorator={loading ? <CircularProgress size="sm" /> : <SearchIcon />}
                                 variant="solid"
-                                color="primary"
-                                onClick={handleSearch}
-                                disabled={loading}
+                                color="success"
+                                startDecorator={exportLoading ? <CircularProgress size="sm" /> : <FileDownloadIcon />}
+                                onClick={handleExportExcel}
+                                disabled={exportLoading || reportData.length === 0}
                                 sx={{
                                     borderRadius: "12px",
+                                    height: "40px",
+                                    px: 2.5,
                                     fontWeight: 700,
-                                    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                                    boxShadow: "0 4px 12px rgba(37, 99, 235, 0.2)",
-                                    "&:hover": {
-                                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                                    },
+                                    bgcolor: "#10b981",
+                                    "&:hover": { bgcolor: "#059669" },
+                                    boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
                                 }}
                             >
-                                Search Report
+                                Export Excel
                             </Button>
-                            {reportData.length > 0 && (
-                                <Button
-                                    startDecorator={exportLoading ? <CircularProgress size="sm" color="success" /> : <FileDownloadIcon />}
-                                    variant="solid"
-                                    color="success"
-                                    onClick={handleExportExcel}
-                                    disabled={exportLoading}
-                                    sx={{
-                                        borderRadius: "12px",
-                                        fontWeight: 700,
-                                        background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                                        boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
-                                        "&:hover": {
-                                            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                                        },
-                                    }}
-                                >
-                                    Export Excel
-                                </Button>
-                            )}
                         </Box>
                     </Grid>
                 </Grid>
 
-                {/* Table Data View */}
+                {/* Results Section */}
                 {searched && (
-                    <Box>
+                    <Box sx={{ mt: 2 }}>
                         {loading ? (
-                            <Box sx={{ display: "flex", justifyContent: "center", py: 8, flexDirection: "column", alignItems: "center", gap: 2 }}>
-                                <CircularProgress size="lg" />
-                                <Typography level="body-sm" sx={{ color: textSecondaryColor }}>
-                                    Compiling performance records...
-                                </Typography>
+                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
+                                <CircularProgress size="lg" color="primary" />
                             </Box>
                         ) : filteredData.length === 0 ? (
-                            <Box sx={{ textAlign: "center", py: 8, border: isDark ? "2px dashed rgba(255,255,255,0.15)" : "2px dashed #cbd5e1", borderRadius: "16px" }}>
-                                <Typography level="h4" sx={{ fontWeight: 800, color: textPrimaryColor }}>
-                                    No Records Found
+                            <Box
+                                sx={{
+                                    textAlign: "center",
+                                    py: 8,
+                                    px: 2,
+                                    bgcolor: isDark ? "rgba(30, 41, 59, 0.3)" : "rgba(248, 250, 252, 0.8)",
+                                    borderRadius: "16px",
+                                    border: isDark ? "1px dashed rgba(255, 255, 255, 0.15)" : "1px dashed #cbd5e1",
+                                }}
+                            >
+                                <Typography level="title-md" sx={{ color: textPrimaryColor, fontWeight: 700 }}>
+                                    No detailed attendance logs found
                                 </Typography>
-                                <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1 }}>
-                                    No lead activities found for Employee ID: {employeeId} matching the selected dates.
+                                <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5 }}>
+                                    Try selecting a different employee or expanding the date range.
                                 </Typography>
                             </Box>
                         ) : (
                             <Box>
-                                {/* Filter and Record stats bar */}
+                                {/* Filter Bar above table */}
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        flexDirection: { xs: "column", sm: "row" },
                                         justifyContent: "space-between",
-                                        alignItems: { xs: "stretch", sm: "center" },
+                                        alignItems: "center",
+                                        flexWrap: "wrap",
                                         gap: 2,
                                         mb: 2,
                                     }}
                                 >
-                                    <Typography level="body-sm" sx={{ fontWeight: 600, color: textSecondaryColor }}>
-                                        Showing {filteredData.length} records of {reportData.length} found.
+                                    <Typography level="body-sm" sx={{ fontWeight: 700, color: textSecondaryColor }}>
+                                        Showing {filteredData.length} records
                                     </Typography>
+
                                     <Input
-                                        placeholder="Search records in view..."
+                                        placeholder="Search in table..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         startDecorator={<FilterAltIcon sx={{ color: textSecondaryColor }} />}
                                         endDecorator={
                                             searchQuery && (
-                                                <Button
+                                                <IconButton
                                                     variant="plain"
                                                     color="neutral"
                                                     onClick={() => setSearchQuery("")}
                                                     sx={{ p: 0.5, minWidth: 0, borderRadius: "50%" }}
                                                 >
                                                     <ClearIcon sx={{ fontSize: "14px", color: textSecondaryColor }} />
-                                                </Button>
+                                                </IconButton>
                                             )
                                         }
                                         sx={{
@@ -528,25 +524,12 @@ const EmployeePreformanceReport = () => {
                                     <Table stickyHeader size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Vehicle ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned To</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned Date</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Work Status</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Remarks</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Active</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Requires Follow-up</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Call Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Follow-up Date Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created By</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Employee ID</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Employee Name</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Login Time</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Logout Time</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Productivity Hours</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>System IP</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -557,7 +540,7 @@ const EmployeePreformanceReport = () => {
                                                     const rowBg = isEven ? tableRowEvenBg : tableRowOddBg;
                                                     return (
                                                         <TableRow
-                                                            key={row.lead_id || index}
+                                                            key={row.id || index}
                                                             hover
                                                             sx={{
                                                                 bgcolor: rowBg,
@@ -567,27 +550,12 @@ const EmployeePreformanceReport = () => {
                                                                 }
                                                             }}
                                                         >
-                                                            <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.vehicle_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell>
-                                                            <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.status_name || "N/A"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.employee_name ? `${row.employee_name} (${row.employee_id})` : (row.assigned_to || "Unassigned")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDate(row.assigned_date)}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell>
-                                                            <TableCell>{renderWorkStatusBadge(row.work_status)}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell>
-                                                            <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: textPrimaryColor }}>
-                                                                {row.remarks || "—"}
-                                                            </TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.status_is_active, "Active", "Inactive")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.requires_followup, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_call_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_policy_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_followup_date_required, "Yes", "No")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.created_by || "—"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.username}</TableCell>
+                                                            <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.employee_name || "N/A"}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.login_time)}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.logout_time)}</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: "#10b981" }}>{formatProductivityHours(row.productivity_hours)}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.system_ip || "—"}</TableCell>
                                                         </TableRow>
                                                     );
                                                 })}
@@ -608,18 +576,13 @@ const EmployeePreformanceReport = () => {
                                         setPage(0);
                                     }}
                                     sx={{
-                                        borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                                        color: textPrimaryColor,
-                                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                                            fontSize: "13px",
-                                            fontWeight: 500,
+                                        color: textSecondaryColor,
+                                        borderTop: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
+                                        ".MuiTablePagination-selectIcon": {
                                             color: textSecondaryColor,
                                         },
-                                        "& .MuiTablePagination-select": {
-                                            fontSize: "13px",
-                                        },
-                                        "& .MuiTablePagination-actions svg": {
-                                            color: textPrimaryColor
+                                        ".MuiTablePagination-actions button": {
+                                            color: textSecondaryColor,
                                         }
                                     }}
                                 />
@@ -627,34 +590,9 @@ const EmployeePreformanceReport = () => {
                         )}
                     </Box>
                 )}
-
-                {/* Initial View State (before search) */}
-                {!searched && (
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            py: 10,
-                            textAlign: "center",
-                            border: isDark ? "2px dashed rgba(255,255,255,0.15)" : "2px dashed #cbd5e1",
-                            borderRadius: "16px",
-                            backgroundColor: isDark ? "rgba(30, 41, 59, 0.2)" : "rgba(248, 250, 252, 0.4)",
-                        }}
-                    >
-                        <SearchIcon sx={{ color: isDark ? "#475569" : "#94a3b8", fontSize: "3rem", mb: 2 }} />
-                        <Typography level="h4" sx={{ fontWeight: 800, color: textPrimaryColor }}>
-                            Run Performance Query
-                        </Typography>
-                        <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1, maxWidth: 400 }}>
-                            Enter an Employee ID and dates, then search to retrieve individual performance records.
-                        </Typography>
-                    </Box>
-                )}
             </Card>
         </Box>
     );
 };
 
-export default EmployeePreformanceReport;
+export default DetailedUserLogReports;

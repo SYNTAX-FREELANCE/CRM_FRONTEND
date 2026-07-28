@@ -5,8 +5,11 @@ import PersonPinIcon from '@mui/icons-material/PersonPin';
 import EditLocationAltIcon from '@mui/icons-material/EditLocationAlt';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import { Chip } from '@mui/material';
+import { useThemeMode } from '../../Context/ThemeContext';
 
 const LeadCard = ({ row }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -25,9 +28,10 @@ const LeadCard = ({ row }) => {
             sx={{
                 p: { xs: 1.4, md: 1.8 },
                 borderRadius: 2,
-                border: '1px solid #e2e8f0',
-                background:
-                    'linear-gradient(90deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,0.85) 52%, rgba(249,115,22,0.08) 100%)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid #e2e8f0',
+                background: isDark
+                    ? 'linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(15,23,42,0.9) 52%, rgba(249,115,22,0.2) 100%)'
+                    : 'linear-gradient(90deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,0.85) 52%, rgba(249,115,22,0.08) 100%)',
             }}
         >
             <Stack
@@ -49,6 +53,7 @@ const LeadCard = ({ row }) => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 1,
+                                color: isDark ? "#f8fafc" : "inherit"
                             }}
                         >
                             <PersonPinIcon
@@ -81,6 +86,7 @@ const LeadCard = ({ row }) => {
                                 fontSize: { xs: 10, sm: 12 },
                                 gap: 1,
                                 fontWeight: 600,
+                                color: isDark ? "#cbd5e1" : "inherit"
                             }}
                         >
                             <EditLocationAltIcon
@@ -99,6 +105,7 @@ const LeadCard = ({ row }) => {
                                 fontSize: { xs: 10, sm: 12 },
                                 gap: 1,
                                 fontWeight: 600,
+                                color: isDark ? "#cbd5e1" : "inherit"
                             }}
                         >
                             <DirectionsCarIcon

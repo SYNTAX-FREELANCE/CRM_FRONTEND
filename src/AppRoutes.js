@@ -120,6 +120,9 @@ const EmployeePerformanceReport = lazy(
 const EmployeeLoginReport = lazy(
   () => import("./Reports/UserLogReports"),
 );
+const DetailedEmployeeLoginReport = lazy(
+  () => import("./Reports/DetailedUserLogReports"),
+);
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -304,6 +307,10 @@ const router = createBrowserRouter([
       {
         path: "reports/UserLogReports",
         element: withSuspense(EmployeeLoginReport),
+      },
+      {
+        path: "reports/DetailedUserLogReports",
+        element: withSuspense(DetailedEmployeeLoginReport),
       },
 
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Stack, IconButton, Typography, Box } from "@mui/joy";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { format, getDaysInMonth, startOfMonth, getDay, isToday, isSameDay } from "date-fns";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const CalendarWidget = ({
     calendarDate,
@@ -11,6 +12,9 @@ const CalendarWidget = ({
     handleNextMonth,
     allReminders = []
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     const getActiveEvents = (date) => {
         const dateKey = format(date, "yyyy-MM-dd");
         return allReminders.filter(item => {
@@ -70,8 +74,8 @@ const CalendarWidget = ({
                         color: isSelected
                             ? "white"
                             : hasEvents
-                                ? (dayEvents[0].lineBg || "#7c3aed")
-                                : "#1e1b4b",
+                                ? (dayEvents[0].lineBg || "#a78bfa")
+                                : (isDark ? "#cbd5e1" : "#1e1b4b"),
                         border: isCurrentDayToday && !isSelected ? "2px solid #7c3aed" : "2px solid transparent",
                         fontWeight: isSelected || isCurrentDayToday || hasEvents ? 900 : 600,
                         fontSize: "12px",
@@ -83,7 +87,7 @@ const CalendarWidget = ({
                                 ? "linear-gradient(135deg, #7c3aed, #6366f1)"
                                 : hasEvents
                                     ? `${dayEvents[0].lineBg || "#7c3aed"}33`
-                                    : "rgba(124, 58, 237, 0.06)",
+                                    : (isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(124, 58, 237, 0.06)"),
                             transform: "scale(1.05)"
                         }
                     }}
@@ -116,28 +120,28 @@ const CalendarWidget = ({
             sx={{
                 p: { xs: 2, sm: 3 },
                 borderRadius: "24px",
-                bgcolor: "white",
-                border: "1px solid rgba(0,0,0,0.02)",
-                boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                bgcolor: isDark ? "#1e293b" : "white",
+                border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
+                boxShadow: isDark ? "0 12px 36px rgba(0, 0, 0, 0.4)" : "0 12px 36px rgba(15, 23, 42, 0.03)",
                 height: { xs: "auto", md: "390px" }
             }}
         >
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                <IconButton size="sm" variant="plain" onClick={handlePrevMonth} sx={{ borderRadius: "50%", "&:hover": { bgcolor: "neutral.50" } }}>
+                <IconButton size="sm" variant="plain" onClick={handlePrevMonth} sx={{ borderRadius: "50%", color: isDark ? "#cbd5e1" : undefined, "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.08)" : "neutral.50" } }}>
                     <ChevronLeft sx={{ fontSize: 18 }} />
                 </IconButton>
-                <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b", fontSize: "16px" }}>
+                <Typography level="title-md" sx={{ fontWeight: 900, color: isDark ? "#f8fafc" : "#1e1b4b", fontSize: "16px" }}>
                     {format(calendarDate, "MMMM yyyy")}
                 </Typography>
-                <IconButton size="sm" variant="plain" onClick={handleNextMonth} sx={{ borderRadius: "50%", "&:hover": { bgcolor: "neutral.50" } }}>
+                <IconButton size="sm" variant="plain" onClick={handleNextMonth} sx={{ borderRadius: "50%", color: isDark ? "#cbd5e1" : undefined, "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.08)" : "neutral.50" } }}>
                     <ChevronRight sx={{ fontSize: 18 }} />
                 </IconButton>
             </Stack>
 
             {/* Weekday titles */}
-            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", mb: 1.5, pb: 1, borderBottom: "1px solid rgba(0,0,0,0.03)" }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", mb: 1.5, pb: 1, borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.03)" }}>
                 {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-                    <Typography key={i} level="body-xs" sx={{ color: "neutral.400", fontWeight: 800, fontSize: "11px" }}>
+                    <Typography key={i} level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.400", fontWeight: 800, fontSize: "11px" }}>
                         {d}
                     </Typography>
                 ))}
