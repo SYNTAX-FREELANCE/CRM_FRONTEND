@@ -1,6 +1,6 @@
 import React, { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import { Box, Stack, Typography } from "@mui/joy";
-import { Paper, Button, useMediaQuery } from "@mui/material";
+import { Paper, Button, useMediaQuery, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 import {
@@ -16,41 +16,35 @@ import { errorNotify, getAuthUser, successNotify, warningNofity } from "../const
 import { axioslogin } from "../Connection/axios";
 import GlobalLoader from "../CommonComponents/GlobalLoader";
 
-
-
 const AllocationPreviewModal = lazy(() => import("./Components/AllocationPreviewModal"));
 
 const ViewAllocation = () => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+
     const [isReallocateMode, setIsReallocateMode] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [rowfullselect, setRowFullSelect] = useState([])
+    const [rowfullselect, setRowFullSelect] = useState([]);
     const [open, setOpen] = useState(false);
     const [selectedAssignedLead, setSelectedAssignedLead] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState("");
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [allocatedempid, setAllocateEmployeeId] = useState('')
+    const [allocatedempid, setAllocateEmployeeId] = useState('');
 
     const authUser = getAuthUser();
+    const { id } = authUser ?? {};
 
-    const { id } = authUser ?? {}
-
-    const { data: Employee_master = [] } = useAllEmployeeDetails()
-
+    const { data: Employee_master = [] } = useAllEmployeeDetails();
 
     const { data: AssignDetails = [], isLoading: LoadingTableData, refetch: FechtAllocationDetail } =
         useEmployeeAssignDetails(allocatedempid);
 
     const isMobile = useMediaQuery("(max-width:600px)");
-
     const employees = Array.isArray(Employee_master) ? Employee_master : [];
-
-
 
     const selectedRowDetails = useMemo(() => {
         return AssignDetails.filter((row) => selectedRows.includes(row.lead_id));
     }, [AssignDetails, selectedRows]);
-
- 
 
     const selectedEmployeeName = useMemo(() => {
         const emp = employees?.find(
@@ -59,11 +53,7 @@ const ViewAllocation = () => {
         return emp?.name || emp?.employee_name || "";
     }, [employees, selectedEmployee]);
 
-
-
-
     const handleSelect = useCallback((row, checked) => {
-
         if (!selectedEmployee || selectedEmployee?.trim() === "") return warningNofity("Select Employee First");
 
         if (String(row.user_id) === String(selectedEmployee)) {
@@ -74,7 +64,6 @@ const ViewAllocation = () => {
         if (checked) {
             setSelectedRows((prev) => [...prev, row.lead_id]);
             setRowFullSelect((prev) => [...prev, row]);
-
         } else {
             setSelectedRows((prev) => prev.filter((id) => id !== row.lead_id));
             setRowFullSelect((prev) => prev.filter((val) => val.lead_id !== row.lead_id));
@@ -87,11 +76,11 @@ const ViewAllocation = () => {
     };
 
     const resetDetail = useCallback(() => {
-        setSelectedRows([])
-        setRowFullSelect([])
-        setSelectedEmployee("")
-        setIsReallocateMode(false)
-    }, [])
+        setSelectedRows([]);
+        setRowFullSelect([]);
+        setSelectedEmployee("");
+        setIsReallocateMode(false);
+    }, []);
 
     const handleClose = () => {
         setOpen(false);
@@ -113,21 +102,19 @@ const ViewAllocation = () => {
             work_status: work_status,
             assigned_by: id,
             leads: rowfullselect
-        }
+        };
 
-    
-        
         try {
             const respose = await axioslogin.post('/lead/update-reallocation', payload);
             const { success, message } = respose?.data ?? {};
             if (success !== 1) return errorNotify("Api Error While Updating Leads");
             successNotify(message || "Reallocated SuccessFully");
             setPreviewOpen(false);
-            FechtAllocationDetail()
-            resetDetail()
+            FechtAllocationDetail();
+            resetDetail();
         } catch (error) {
-            errorNotify("Error in Handling Allocation")
-            console.error("Error in Handling Allocation")
+            errorNotify("Error in Handling Allocation");
+            console.error("Error in Handling Allocation");
         }
     }, [
         selectedEmployee,
@@ -137,7 +124,6 @@ const ViewAllocation = () => {
         FechtAllocationDetail,
         resetDetail
     ]);
-
 
     const handleSelectAll = useCallback(
         (checked) => {
@@ -173,7 +159,8 @@ const ViewAllocation = () => {
         selectedRows,
         handleSelect,
         AssignDetails,
-        handleSelectAll
+        handleSelectAll,
+        isDark
     );
 
     const isInvalidSelection = selectedRows?.some((leadId) => {
@@ -182,7 +169,6 @@ const ViewAllocation = () => {
     });
 
     const handleEmployeeChange = (value) => {
-
         const selectedRowsData = AssignDetails.filter((row) =>
             selectedRows.includes(row.lead_id)
         );
@@ -210,7 +196,13 @@ const ViewAllocation = () => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
-                background: `
+                background: isDark
+                    ? `
+          radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.18) 0%, transparent 45%),
+          radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.15) 0%, transparent 45%),
+          linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)
+        `
+                    : `
           radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
           radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
           linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
@@ -221,8 +213,8 @@ const ViewAllocation = () => {
                 sx={{
                     px: { xs: 2, md: 3 },
                     py: 2.5,
-                    borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
-                    background: "rgba(255, 255, 255, 0.35)",
+                    borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(226, 232, 240, 0.6)",
+                    background: isDark ? "rgba(15, 23, 42, 0.5)" : "rgba(255, 255, 255, 0.35)",
                     flex: "0 0 auto",
                 }}
             >
@@ -235,7 +227,7 @@ const ViewAllocation = () => {
                     <Box>
                         <Typography
                             fontWeight={900}
-                            color="#0f172a"
+                            color={isDark ? "#f8fafc" : "#0f172a"}
                             sx={{
                                 letterSpacing: "-0.5px",
                                 fontSize: { xs: 18, md: 32 },
@@ -245,7 +237,7 @@ const ViewAllocation = () => {
                         </Typography>
                         <Typography
                             variant="body2"
-                            color="#475569"
+                            color={isDark ? "#94a3b8" : "#475569"}
                             sx={{ mt: 0.5, fontWeight: 500, fontSize: { xs: 12, sm: 16 } }}
                         >
                             Process allocation and reallocation.
@@ -330,10 +322,10 @@ const ViewAllocation = () => {
                         height: { xs: "calc(100vh - 170px)", md: "calc(100vh - 180px)" },
                         borderRadius: 4,
                         overflow: "hidden",
-                        border: "1px solid rgba(255,255,255,.55)",
-                        background: "rgba(255,255,255,.25)",
+                        border: isDark ? "1px solid rgba(255,255,255,.1)" : "1px solid rgba(255,255,255,.55)",
+                        background: isDark ? "rgba(15,23,42,.85)" : "rgba(255,255,255,.25)",
                         backdropFilter: "blur(16px)",
-                        boxShadow: "0 10px 30px rgba(15,23,42,.05)",
+                        boxShadow: isDark ? "0 10px 30px rgba(0,0,0,.4)" : "0 10px 30px rgba(15,23,42,.05)",
                     }}
                 >
                     <DataGrid
@@ -370,44 +362,50 @@ const ViewAllocation = () => {
                             border: "none",
                             backgroundColor: "transparent",
                             fontSize: 13,
+                            color: isDark ? "#f8fafc" : undefined,
                             "& .MuiDataGrid-columnHeaders": {
-                                background: "linear-gradient(180deg,#f8fafc,#eef2ff)",
-                                borderBottom: "1px solid #e2e8f0",
+                                background: isDark ? "linear-gradient(180deg,#1e293b,#0f172a)" : "linear-gradient(180deg,#f8fafc,#eef2ff)",
+                                borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #e2e8f0",
                             },
                             "& .MuiDataGrid-columnHeaderTitle": {
                                 fontWeight: 700,
-                                color: "#334155",
+                                color: isDark ? "#cbd5e1" : "#334155",
                                 fontSize: 12,
                                 textTransform: "uppercase",
                                 letterSpacing: ".6px",
                             },
                             "& .MuiDataGrid-cell": {
-                                borderBottom: "1px solid #f1f5f9",
+                                borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #f1f5f9",
                                 display: "flex",
                                 alignItems: "center",
                                 outline: "none",
+                                color: isDark ? "#f8fafc" : undefined,
                             },
                             "& .MuiDataGrid-row": {
                                 transition: ".2s",
                                 "&:nth-of-type(even)": {
-                                    backgroundColor: "rgba(248,250,252,.35)",
+                                    backgroundColor: isDark ? "rgba(255,255,255,.02)" : "rgba(248,250,252,.35)",
                                 },
                                 "&:hover": {
-                                    backgroundColor: "rgba(37,99,235,.06)",
+                                    backgroundColor: isDark ? "rgba(37,99,235,.18)" : "rgba(37,99,235,.06)",
                                 },
                                 "&.Mui-selected": {
-                                    backgroundColor: "rgba(37,99,235,.08)",
+                                    backgroundColor: isDark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.08)",
                                 },
                             },
                             "& .MuiDataGrid-footerContainer": {
-                                borderTop: "1px solid #e2e8f0",
-                                background: "#f8fafc",
+                                borderTop: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #e2e8f0",
+                                background: isDark ? "#1e293b" : "#f8fafc",
+                                color: isDark ? "#f8fafc" : undefined,
+                                "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiIconButton-root": {
+                                    color: isDark ? "#f8fafc" : undefined,
+                                },
                             },
                             "& .MuiDataGrid-columnSeparator": {
                                 display: "none",
                             },
                             "& .MuiCheckbox-root": {
-                                color: "#2563eb",
+                                color: isDark ? "#60a5fa" : "#2563eb",
                             },
                             "& .MuiDataGrid-virtualScroller": {
                                 overflowY: "auto",
@@ -442,4 +440,4 @@ const ViewAllocation = () => {
     );
 };
 
-export default memo(ViewAllocation);
+export default memo(ViewAllocation);

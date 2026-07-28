@@ -35,10 +35,13 @@ import PersonalCompanyInfo from "./Components/PersonalCompanyInfo";
 import DocumentUploads from "./Components/DocumentUploads";
 // import PerformanceChart from "./Components/PerformanceChart";
 import { axioslogin } from "../Connection/axios";
+import { useThemeMode } from "../Context/ThemeContext";
 
 const EmployeeDetails = () => {
     const navigate = useNavigate();
     const { employeeId } = useParams();
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
 
     const authUser = getAuthUser();
 
@@ -320,7 +323,7 @@ const EmployeeDetails = () => {
 
     if (!displayEmployee) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column", gap: 2, p: 3 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column", gap: 2, p: 3, bgcolor: isDark ? "#020617" : "transparent" }}>
                 <Typography level="h4" color="danger">Staff Profile Not Found</Typography>
                 <Button variant="outlined" startDecorator={<ArrowBack />} onClick={() => navigate(-1)}>Back</Button>
             </Box>
@@ -335,7 +338,13 @@ const EmployeeDetails = () => {
                 display: "flex",
                 flexDirection: "column",
                 gap: { xs: 3, md: 4 },
-                bgcolor: "#f8fafc",
+                background: isDark
+                    ? `
+                      radial-gradient(circle at 15% 25%, rgba(30, 41, 59, 0.4) 0%, transparent 45%),
+                      radial-gradient(circle at 85% 75%, rgba(15, 23, 42, 0.6) 0%, transparent 45%),
+                      linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
+                    `
+                    : "#f8fafc",
                 fontFamily: "'Outfit', 'Inter', sans-serif",
                 overflowX: "hidden"
             }}
@@ -353,10 +362,11 @@ const EmployeeDetails = () => {
                         sx={{
                             borderRadius: "12px",
                             fontWeight: 700,
-                            bgcolor: "#ffffff",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-                            border: "1px solid rgba(0,0,0,0.04)",
-                            "&:hover": { bgcolor: "neutral.50" }
+                            bgcolor: isDark ? "#1e293b" : "#ffffff",
+                            color: isDark ? "#f8fafc" : "neutral.700",
+                            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.03)",
+                            border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.04)",
+                            "&:hover": { bgcolor: isDark ? "#334155" : "neutral.50" }
                         }}
                         onClick={() => navigate(-1)}
                     >
@@ -433,15 +443,15 @@ const EmployeeDetails = () => {
                 sx={{
                     p: 3,
                     borderRadius: "24px",
-                    bgcolor: "white",
-                    border: "1px solid rgba(0,0,0,0.02)",
-                    boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                    bgcolor: isDark ? "#1e293b" : "white",
+                    border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
+                    boxShadow: isDark ? "0 12px 36px rgba(0, 0, 0, 0.4)" : "0 12px 36px rgba(15, 23, 42, 0.03)",
                     mt: 3.5
                 }}
             >
                 <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} spacing={2}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b" }}>
+                        <Typography level="title-md" sx={{ fontWeight: 900, color: isDark ? "#f8fafc" : "#1e1b4b" }}>
                             Personal & Company Information Details
                         </Typography>
                     </Box>

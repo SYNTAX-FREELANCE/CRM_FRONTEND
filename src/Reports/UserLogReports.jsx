@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
 import { useThemeMode } from "../Context/ThemeContext";
 import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
+import UserSelectDropdown from "../CommonComponents/UserSelectDropdown";
 
 const getFirstDayOfMonth = () => {
     const date = new Date();
@@ -165,7 +166,24 @@ const UserLogReports = () => {
     const formatDateTime = (dateStr) => {
         if (!dateStr) return "N/A";
         const date = new Date(dateStr);
-        return isNaN(date.getTime()) ? "N/A" : date.toLocaleString();
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
+    };
+
+    const formatProductivityHours = (val) => {
+        if (!val || isNaN(val)) return "0 hrs 0 mins";
+        const totalMinutes = Math.round(parseFloat(val) * 60);
+        const hrs = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        return `${hrs} hrs ${mins} mins`;
     };
 
     // Theme values mapping
@@ -267,23 +285,16 @@ const UserLogReports = () => {
                     <Grid xs={12} sm={4} md={3}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Employee ID *
+                                Select Employee *
                             </Typography>
-                            <Input
-                                placeholder="Enter Employee ID"
+                            <UserSelectDropdown
                                 value={employeeId}
-                                onChange={(e) => setEmployeeId(e.target.value)}
-                                sx={{
-                                    borderRadius: "12px",
-                                    height: "40px",
-                                    backgroundColor: inputBg,
-                                    color: inputTextColor,
-                                    border: inputBorder,
-                                    px: 2,
-                                    "& input::placeholder": {
-                                        color: isDark ? "#64748b" : "#94a3b8"
-                                    }
-                                }}
+                                onChange={(val) => setEmployeeId(val)}
+                                placeholder="Select Employee"
+                                isDark={isDark}
+                                inputBg={inputBg}
+                                inputTextColor={inputTextColor}
+                                inputBorder={inputBorder}
                             />
                         </Box>
                     </Grid>
@@ -490,13 +501,10 @@ const UserLogReports = () => {
                                     <Table stickyHeader size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Log ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>User ID</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Employee ID</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Employee Name</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Login Time</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Logout Time</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Shift Status</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Productivity Hours</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>System IP</TableCell>
                                             </TableRow>
@@ -509,7 +517,7 @@ const UserLogReports = () => {
                                                     const rowBg = isEven ? tableRowEvenBg : tableRowOddBg;
                                                     return (
                                                         <TableRow
-                                                            key={row.id || index}
+                                                            key={row.attendance_date || row.id || index}
                                                             hover
                                                             sx={{
                                                                 bgcolor: rowBg,
@@ -519,23 +527,11 @@ const UserLogReports = () => {
                                                                 }
                                                             }}
                                                         >
-                                                            <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.user_id}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.username}</TableCell>
                                                             <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.employee_name || "N/A"}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.login_time)}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.logout_time)}</TableCell>
-                                                            <TableCell>
-                                                                <Chip
-                                                                    size="sm"
-                                                                    variant="soft"
-                                                                    color={row.shift_status === "PRESENT" || row.shift_status === "ON_DUTY" ? "success" : "neutral"}
-                                                                    sx={{ fontWeight: 600, borderRadius: "8px" }}
-                                                                >
-                                                                    {row.shift_status || "N/A"}
-                                                                </Chip>
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: "#10b981" }}>{row.productivity_hours || "0"}</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: "#10b981" }}>{formatProductivityHours(row.productivity_hours)}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.system_ip || "—"}</TableCell>
                                                         </TableRow>
                                                     );

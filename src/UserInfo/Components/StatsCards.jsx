@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Card, Box, Typography, Avatar } from "@mui/joy";
 import { NorthEast } from "@mui/icons-material";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const getStatusStyle = (statusName) => {
     const name = (statusName || "").toUpperCase();
@@ -13,6 +14,9 @@ const getStatusStyle = (statusName) => {
 };
 
 const StatsCards = ({ TotalCount = [] }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <Grid container spacing={2.5}>
             {TotalCount.map((item, idx) => {
@@ -23,16 +27,16 @@ const StatsCards = ({ TotalCount = [] }) => {
                             sx={{
                                 p: { xs: 1.5, sm: 2, md: 2.5 },
                                 borderRadius: "20px",
-                                bgcolor: "white",
-                                border: "1px solid rgba(0,0,0,0.02)",
+                                bgcolor: isDark ? "#1e293b" : "white",
+                                border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
                                 borderLeft: `6px solid ${style.color}`,
-                                boxShadow: "0 6px 20px rgba(15, 23, 42, 0.015)",
+                                boxShadow: isDark ? "0 6px 20px rgba(0, 0, 0, 0.4)" : "0 6px 20px rgba(15, 23, 42, 0.015)",
                                 position: "relative",
                                 overflow: "hidden",
                                 transition: "all 0.3s ease",
                                 "&:hover": {
                                     transform: "translateY(-4px)",
-                                    boxShadow: `0 10px 25px rgba(15, 23, 42, 0.06)`
+                                    boxShadow: isDark ? `0 10px 25px rgba(0, 0, 0, 0.6)` : `0 10px 25px rgba(15, 23, 42, 0.06)`
                                 }
                             }}
                         >
@@ -40,7 +44,7 @@ const StatsCards = ({ TotalCount = [] }) => {
                                 <Typography
                                     level="body-xs"
                                     sx={{
-                                        color: "neutral.550",
+                                        color: isDark ? "#94a3b8" : "neutral.550",
                                         fontWeight: 800,
                                         textTransform: "uppercase",
                                         letterSpacing: "0.5px",
@@ -66,7 +70,7 @@ const StatsCards = ({ TotalCount = [] }) => {
                                 level="h2"
                                 sx={{
                                     fontWeight: 950,
-                                    color: "#1e1b4b",
+                                    color: isDark ? "#f8fafc" : "#1e1b4b",
                                     mt: 1.5,
                                     fontSize: { xs: "20px", sm: "22px", md: "26px" },
                                     fontFamily: "monospace"

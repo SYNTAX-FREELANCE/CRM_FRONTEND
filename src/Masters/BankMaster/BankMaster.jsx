@@ -15,6 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import MasterWrapper from "../../Settings/CommonMasterComponent/MasterWrapper";
 import MasterTable from "../../Settings/CommonMasterComponent/MasterTable";
+import { warningNofity } from "../../constant/Constant";
 
 const BankMaster = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const BankMaster = () => {
 
   const handleSave = () => {
     if (!formData.bankName.trim()) {
-      alert("Please enter Bank Name");
+      warningNofity("Please enter Bank Name");
       return;
     }
 

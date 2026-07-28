@@ -6,7 +6,8 @@ import EventRepeatOutlinedIcon from "@mui/icons-material/EventRepeatOutlined";
 
 export const RenewalCustomerColumns = (
     openCustomer,
-    isMobile = false
+    isMobile = false,
+    isDark = false
 ) => {
 
     const mobileColumns = [
@@ -22,7 +23,7 @@ export const RenewalCustomerColumns = (
                             variant="body2"
                             fontWeight={900}
                             sx={{ fontSize: 12 }}
-                            color="#0f172a"
+                            color={isDark ? "#f8fafc" : "#0f172a"}
                         >
                             {row.customer_name}
                         </Typography>
@@ -41,7 +42,7 @@ export const RenewalCustomerColumns = (
 
                     <Typography
                         variant="caption"
-                        color="#64748b"
+                        color={isDark ? "#94a3b8" : "#64748b"}
                         fontWeight={700}
                     >
                         {row.registration_number}
@@ -67,14 +68,14 @@ export const RenewalCustomerColumns = (
                         alignItems: "center",
                         gap: 0.5,
                         cursor: "pointer",
-                        color: "#2563eb",
+                        color: isDark ? "#60a5fa" : "#2563eb",
                     }}
                 >
                     <VisibilityOutlinedIcon sx={{ fontSize: 17 }} />
                     <Typography
                         variant="body2"
                         fontWeight={700}
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: 12, color: isDark ? "#60a5fa" : "#2563eb" }}
                     >
                         View
                     </Typography>
@@ -106,7 +107,7 @@ export const RenewalCustomerColumns = (
                         variant="body2"
                         fontWeight={900}
                         sx={{ fontSize: 12 }}
-                        color="#0f172a"
+                        color={isDark ? "#f8fafc" : "#0f172a"}
                     >
                         {row.customer_name}
                     </Typography>
@@ -123,7 +124,7 @@ export const RenewalCustomerColumns = (
                     variant="body2"
                     fontWeight={900}
                     sx={{ fontSize: 12 }}
-                    color="#475569"
+                    color={isDark ? "#cbd5e1" : "#475569"}
                 >
                     {value}
                 </Typography>
@@ -139,7 +140,7 @@ export const RenewalCustomerColumns = (
                     variant="body2"
                     fontWeight={900}
                     sx={{ fontSize: 12 }}
-                    color="#475569"
+                    color={isDark ? "#cbd5e1" : "#475569"}
                 >
                     {value}
                 </Typography>
@@ -163,7 +164,7 @@ export const RenewalCustomerColumns = (
                         alignItems: "center",
                         gap: 0.8,
                         cursor: "pointer",
-                        color: "#2563eb",
+                        color: isDark ? "#60a5fa" : "#2563eb",
                     }}
                 >
                     <EventRepeatOutlinedIcon sx={{ fontSize: 18 }} />
@@ -171,7 +172,7 @@ export const RenewalCustomerColumns = (
                     <Typography
                         variant="body2"
                         fontWeight={700}
-                        color="#475569"
+                        color={isDark ? "#60a5fa" : "#475569"}
                     >
                         Renew
                     </Typography>
@@ -181,4 +182,4 @@ export const RenewalCustomerColumns = (
     ];
 
     return isMobile ? mobileColumns : desktopColumns;
-};
+};
