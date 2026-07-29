@@ -9,6 +9,7 @@ import {
     InputAdornment,
     Stack,
     Chip,
+    useTheme,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -21,6 +22,8 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef(null);
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
 
     const fetchSuggestions = async (query) => {
         if (!query || query.trim().length < 3) {
@@ -111,9 +114,9 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                 sx={{
                     p: 1,
                     borderRadius: 3,
-                    border: "1px solid rgba(226,232,240,0.95)",
-                    bgcolor: "#fff",
-                    boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
+                    border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(226,232,240,0.95)",
+                    bgcolor: isDark ? "#1e293b" : "#fff",
+                    boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.4)" : "0 10px 30px rgba(15,23,42,0.06)",
                 }}
             >
                 <TextField
@@ -137,7 +140,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                         disableUnderline: true,
                         startAdornment: (
                             <InputAdornment position="start">
-                                <SearchIcon sx={{ color: "#2563eb" }} />
+                                <SearchIcon sx={{ color: isDark ? "#60a5fa" : "#2563eb" }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
@@ -154,8 +157,8 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                                 height: 30,
                                                 borderRadius: "50%",
                                                 cursor: "pointer",
-                                                color: "#64748b",
-                                                "&:hover": { bgcolor: "rgba(148,163,184,0.12)" },
+                                                color: isDark ? "#94a3b8" : "#64748b",
+                                                "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.08)" : "rgba(148,163,184,0.12)" },
                                             }}
                                         >
                                             <CloseIcon sx={{ fontSize: 18 }} />
@@ -186,9 +189,9 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                         right: 0,
                         zIndex: 20,
                         borderRadius: 3,
-                        border: "1px solid rgba(226,232,240,0.95)",
-                        bgcolor: "#fff",
-                        boxShadow: "0 18px 45px rgba(15,23,42,0.12)",
+                        border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(226,232,240,0.95)",
+                        bgcolor: isDark ? "#1e293b" : "#fff",
+                        boxShadow: isDark ? "0 18px 45px rgba(0,0,0,0.5)" : "0 18px 45px rgba(15,23,42,0.12)",
                         overflow: "hidden",
                         maxHeight: 360,
                     }}
@@ -197,11 +200,11 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                         sx={{
                             px: 2,
                             py: 1.25,
-                            bgcolor: "rgba(37,99,235,0.06)",
-                            borderBottom: "1px solid rgba(226,232,240,0.9)",
+                            bgcolor: isDark ? "rgba(37,99,235,0.18)" : "rgba(37,99,235,0.06)",
+                            borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.9)",
                         }}
                     >
-                        <Typography sx={{ fontSize: 12, fontWeight: 800, color: "#2563eb" }}>
+                        <Typography sx={{ fontSize: 12, fontWeight: 800, color: isDark ? "#60a5fa" : "#2563eb" }}>
                             {inputValue.trim().length < 3
                                 ? "Type at least 3 characters"
                                 : `${options.length} result(s)`}
@@ -218,13 +221,13 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                     }}>
                         {inputValue.trim().length < 3 ? (
                             <Box sx={{ p: 2.5, textAlign: "center" }}>
-                                <Typography sx={{ color: "#64748b", fontWeight: 600 }}>
+                                <Typography sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 600 }}>
                                     Start typing to search customers
                                 </Typography>
                             </Box>
                         ) : options?.length === 0 && !loading ? (
                             <Box sx={{ p: 2.5, textAlign: "center" }}>
-                                <Typography sx={{ color: "#64748b", fontWeight: 600 }}>
+                                <Typography sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 600 }}>
                                     No matching customer found
                                 </Typography>
                             </Box>
@@ -240,10 +243,10 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                         px: 2,
                                         py: 1.4,
                                         cursor: "pointer",
-                                        borderBottom: "1px solid rgba(241,245,249,0.9)",
+                                        borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(241,245,249,0.9)",
                                         transition: "0.2s",
                                         "&:hover": {
-                                            bgcolor: "rgba(37,99,235,0.05)",
+                                            bgcolor: isDark ? "rgba(37,99,235,0.15)" : "rgba(37,99,235,0.05)",
                                         },
 
                                     }}
@@ -252,8 +255,8 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                         sx={{
                                             width: 42,
                                             height: 42,
-                                            bgcolor: "rgba(37,99,235,0.10)",
-                                            color: "#2563eb",
+                                            bgcolor: isDark ? "rgba(37,99,235,0.25)" : "rgba(37,99,235,0.10)",
+                                            color: isDark ? "#60a5fa" : "#2563eb",
                                             fontWeight: 800,
                                             fontSize: { xs: 14, sm: 16, md: 18 }
                                         }}
@@ -262,11 +265,11 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                     </Avatar>
 
                                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                                        <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: { xs: 12, sm: 14, md: 16 } }} noWrap>
+                                        <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a", fontSize: { xs: 12, sm: 14, md: 16 } }} noWrap>
                                             {option.customer_name || "-"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 13, color: "#2563eb", mt: 0.2, fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
+                                        <Typography sx={{ fontSize: 13, color: isDark ? "#60a5fa" : "#2563eb", mt: 0.2, fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
                                             {option.registration_number
                                                 ? `${option.registration_number}`
                                                 : option.mobile_number_1
@@ -274,7 +277,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                                     : " Customer"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 12, color: "#64748b", fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
+                                        <Typography sx={{ fontSize: 12, color: isDark ? "#94a3b8" : "#64748b", fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
                                             {getSubtitle(option) || "Search result"}
                                         </Typography>
                                     </Box>

@@ -11,8 +11,12 @@ import {
     Chip,
 } from "@mui/material";
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
+import { useThemeMode } from '../../Context/ThemeContext';
 
 const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <>
             {/* Backdrop */}
@@ -45,11 +49,11 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                         sm: '95%',
                         md: 650,
                     },
-                    bgcolor: '#fff',
+                    bgcolor: isDark ? '#1e293b' : '#fff',
                     borderTopLeftRadius: 24,
                     borderTopRightRadius: 24,
                     overflow: 'hidden',
-                    boxShadow: '0 -15px 40px rgba(15,23,42,.25)',
+                    boxShadow: isDark ? '0 -15px 40px rgba(0, 0, 0, 0.6)' : '0 -15px 40px rgba(15,23,42,.25)',
                     zIndex: 1300,
                     height: { xs: '85vh', sm: '90vh' }
                 }}
@@ -67,7 +71,7 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                             width: 60,
                             height: 6,
                             borderRadius: 10,
-                            bgcolor: '#cbd5e1',
+                            bgcolor: isDark ? '#475569' : '#cbd5e1',
                         }}
                     />
                 </Box>
@@ -143,7 +147,7 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                     <Typography
                         sx={{
                             fontSize: { xs: 12, sm: 14 },
-                            color: "#475569",
+                            color: isDark ? "#cbd5e1" : "#475569",
                             lineHeight: 1.9,
                             fontWeight: 600
                         }}>
@@ -158,14 +162,14 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                             mt: 3,
                             p: 2.5,
                             borderRadius: 3,
-                            bgcolor: "#eff6ff",
-                            border: "1px solid #bfdbfe",
+                            bgcolor: isDark ? "rgba(37, 99, 235, 0.15)" : "#eff6ff",
+                            border: isDark ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid #bfdbfe",
                         }}
                     >
                         <Typography
                             sx={{
                                 fontWeight: 800,
-                                color: "#060606",
+                                color: isDark ? "#f8fafc" : "#060606",
                                 mb: 1.5,
                                 fontSize: { xs: 14, sm: 16 },
                             }}>
@@ -177,7 +181,7 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                             sx={{
                                 pl: 2.5,
                                 m: 0,
-                                color: "#334155",
+                                color: isDark ? "#cbd5e1" : "#334155",
                                 lineHeight: 2,
                                 fontSize: { xs: 9, sm: 14 },
                             }}
@@ -196,13 +200,13 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                             mt: 3,
                             p: 2,
                             borderRadius: 3,
-                            bgcolor: "#fff7ed",
-                            border: "1px solid #fdba74",
+                            bgcolor: isDark ? "rgba(249, 115, 22, 0.15)" : "#fff7ed",
+                            border: isDark ? "1px solid rgba(249, 115, 22, 0.3)" : "1px solid #fdba74",
                         }}
                     >
                         <Typography
                             sx={{
-                                color: "#c2410c",
+                                color: isDark ? "#fb923c" : "#c2410c",
                                 fontWeight: 800,
                                 mb: 1,
                             }}
@@ -212,7 +216,7 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
 
                         <Typography
                             sx={{
-                                color: "#7c2d12",
+                                color: isDark ? "#fed7aa" : "#7c2d12",
                                 fontSize: 13,
                                 lineHeight: 1.8,
                                 fontSize: { xs: 10, sm: 14 },
@@ -229,6 +233,7 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                     <Box
                         sx={{
                             mt: 4,
+                            pb: 3,
                             display: "flex",
                             justifyContent: "flex-end",
                             gap: 2,
@@ -242,6 +247,8 @@ const UnlockNextBatchPanel = ({ open, batchNo, onClose ,onClick}) => {
                                 px: 3,
                                 textTransform: "none",
                                 fontWeight: 700,
+                                color: isDark ? "#cbd5e1" : undefined,
+                                borderColor: isDark ? "rgba(255, 255, 255, 0.2)" : undefined
                             }}
                         >
                             Cancel

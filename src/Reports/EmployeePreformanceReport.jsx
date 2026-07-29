@@ -25,7 +25,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+// import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
 import { useThemeMode } from "../Context/ThemeContext";
 import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
+import UserSelectDropdown from "../CommonComponents/UserSelectDropdown";
 
 const getFirstDayOfMonth = () => {
     const date = new Date();
@@ -55,7 +56,7 @@ const EmployeePreformanceReport = () => {
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
-    
+
     const [employeeId, setEmployeeId] = useState("");
     const [startDate, setStartDate] = useState(getFirstDayOfMonth());
     const [endDate, setEndDate] = useState(getTodayDate());
@@ -82,14 +83,14 @@ const EmployeePreformanceReport = () => {
         try {
             setLoading(true);
             setSearched(true);
-            
+
             let url = `/reports/employee-performance?employeeId=${encodeURIComponent(employeeId)}`;
             if (startDate && endDate) {
                 url += `&fromDate=${startDate}&toDate=${endDate}`;
             }
 
             const response = await axioslogin.get(url);
-            
+
             if (response.data?.success === 1) {
                 setReportData(response.data.data || []);
                 setPage(0);
@@ -115,7 +116,7 @@ const EmployeePreformanceReport = () => {
 
         try {
             setExportLoading(true);
-            
+
             let url = `/reports/employee-performance/export?employeeId=${encodeURIComponent(employeeId)}`;
             if (startDate && endDate) {
                 url += `&fromDate=${startDate}&toDate=${endDate}`;
@@ -311,23 +312,16 @@ const EmployeePreformanceReport = () => {
                     <Grid xs={12} sm={4} md={3}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Employee ID *
+                                Select Employee *
                             </Typography>
-                            <Input
-                                placeholder="Enter Employee ID"
+                            <UserSelectDropdown
                                 value={employeeId}
-                                onChange={(e) => setEmployeeId(e.target.value)}
-                                sx={{
-                                    borderRadius: "12px",
-                                    height: "40px",
-                                    backgroundColor: inputBg,
-                                    color: inputTextColor,
-                                    border: inputBorder,
-                                    px: 2,
-                                    "& input::placeholder": {
-                                        color: isDark ? "#64748b" : "#94a3b8"
-                                    }
-                                }}
+                                onChange={(val) => setEmployeeId(val)}
+                                placeholder="Select Employee"
+                                isDark={isDark}
+                                inputBg={inputBg}
+                                inputTextColor={inputTextColor}
+                                inputBorder={inputBorder}
                             />
                         </Box>
                     </Grid>

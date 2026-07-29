@@ -71,7 +71,7 @@ const stats = [
     bgColor: "rgba(249,115,22,0.1)",
   },
   {
-    title: "Sold",
+    title: "Capture",
     key: "totalSold",
     icon: <TrendingUp />,
     color: "#16a34a",

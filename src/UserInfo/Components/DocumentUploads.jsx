@@ -11,12 +11,16 @@ import {
 } from "./Icons";
 import { axioslogin } from "../../Connection/axios";
 import { errorNotify, infoNotify } from "../../constant/Constant";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const DocumentUploads = ({
     userId,
     employeeId,
     successNotify,
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     // Fetch and load existing files from database using useQuery hook from common useQuery file
     const { data: documents = { bankDetails: [], resume: [], aadhar: [], otherUploads: [] }, refetch: refetchDocuments } = useEmployeeFiles(userId);
 
@@ -98,54 +102,50 @@ const DocumentUploads = ({
             }
         } catch (error) {
             console.error("Upload error:", error);
-            errorNotify(error.response?.data?.message || "Failed to upload file");
+            errorNotify("Error uploading document");
         } finally {
             setIsUploading(false);
         }
     };
 
-    const handleFileDelete = (doc) => {
-        if (!doc || !doc.file_id) return;
-        setPendingDelete(doc);
+    const handleFileDelete = (file) => {
+        setPendingDelete(file);
         setDeleteConfirmOpen(true);
     };
 
     const executeFileDelete = async () => {
-        if (!pendingDelete || !pendingDelete.file_id) return;
-
+        if (!pendingDelete) return;
         try {
-            const response = await axioslogin.delete(`/employee/delete-file/${pendingDelete.file_id}`);
+            const response = await axioslogin.post("/employee/delete-document", {
+                file_id: pendingDelete.file_id,
+                file_path: pendingDelete.file_path,
+                user_id: userId
+            });
+
             if (response.data && response.data.success === 1) {
                 refetchDocuments();
-                successNotify("Document removed successfully.");
+                successNotify("Document deleted successfully!");
+                setDeleteConfirmOpen(false);
+                setPendingDelete(null);
             } else {
-                errorNotify(response.data.message || "Failed to delete file");
+                errorNotify(response.data.message || "Failed to delete document");
             }
         } catch (error) {
             console.error("Delete error:", error);
-            errorNotify(error.response?.data?.message || "Failed to delete file");
-        } finally {
-            setDeleteConfirmOpen(false);
-            setPendingDelete(null);
+            errorNotify("Error deleting document");
         }
     };
 
     const handleViewFile = async (file, fileName) => {
-        if (file instanceof File || file instanceof Blob) {
-            const url = URL.createObjectURL(file);
-            window.open(url, '_blank');
-            return;
-        }
         try {
-            const response = await axioslogin.get(`/fileupload/getMedicalDocFile`, {
-                params: { id: userId, filename: fileName },
-                responseType: 'blob'
+            const response = await axioslogin.get(`/employee/view-document?file_path=${encodeURIComponent(file.file_path)}`, {
+                responseType: "blob"
             });
-            const blob = new Blob([response.data], { type: response.headers['content-type'] });
-            const url = URL.createObjectURL(blob);
+            const blob = new Blob([response.data], { type: response.headers["content-type"] });
+            const blobUrl = URL.createObjectURL(blob);
 
-            setViewingFileUrl(url);
-            setViewingFileType(response.headers['content-type'] || 'application/octet-stream');
+            setViewingFileUrl(blobUrl);
+            setViewingFileType(response.headers["content-type"]);
             setViewingFileName(fileName);
             setViewModalOpen(true);
         } catch (error) {
@@ -154,10 +154,10 @@ const DocumentUploads = ({
     };
 
     const docCategories = [
-        { key: "bankDetails", label: "Bank Details", icon: <AccountBalanceIcon sx={{ color: "#2563eb", fontSize: 20 }} />, color: "#2563eb" },
-        { key: "resume", label: "Resume / CV", icon: <ResumeIcon sx={{ color: "#7c3aed", fontSize: 20 }} />, color: "#7c3aed" },
-        { key: "aadhar", label: "Aadhar Card", icon: <AadharIcon sx={{ color: "#059669", fontSize: 20 }} />, color: "#059669" },
-        { key: "otherUploads", label: "Other Uploads", icon: <CloudUploadIcon sx={{ color: "#ea580c", fontSize: 20 }} />, color: "#ea580c" }
+        { key: "bankDetails", label: "Bank Details", icon: <AccountBalanceIcon sx={{ color: isDark ? "#60a5fa" : "#2563eb", fontSize: 20 }} />, color: isDark ? "#60a5fa" : "#2563eb" },
+        { key: "resume", label: "Resume / CV", icon: <ResumeIcon sx={{ color: isDark ? "#a78bfa" : "#7c3aed", fontSize: 20 }} />, color: isDark ? "#a78bfa" : "#7c3aed" },
+        { key: "aadhar", label: "Aadhar Card", icon: <AadharIcon sx={{ color: isDark ? "#34d399" : "#059669", fontSize: 20 }} />, color: isDark ? "#34d399" : "#059669" },
+        { key: "otherUploads", label: "Other Uploads", icon: <CloudUploadIcon sx={{ color: isDark ? "#fb923c" : "#ea580c", fontSize: 20 }} />, color: isDark ? "#fb923c" : "#ea580c" }
     ];
 
     const totalFilesCount = Object.values(documents).reduce((acc, curr) => acc + (curr?.length || 0), 0);
@@ -168,23 +168,23 @@ const DocumentUploads = ({
                 sx={{
                     p: { xs: 2, sm: 2.5, md: 3 },
                     borderRadius: "20px",
-                    bgcolor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 2px 12px rgba(15, 23, 42, 0.03)",
+                    bgcolor: isDark ? "#1e293b" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid #e2e8f0",
+                    boxShadow: isDark ? "0 2px 12px rgba(0, 0, 0, 0.4)" : "0 2px 12px rgba(15, 23, 42, 0.03)",
                     boxSizing: "border-box"
                 }}
             >
                 {/* Header Row */}
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                        <Avatar variant="soft" sx={{ bgcolor: "rgba(37, 99, 235, 0.08)", color: "#2563eb", borderRadius: "10px", width: 36, height: 36 }}>
+                        <Avatar variant="soft" sx={{ bgcolor: isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(37, 99, 235, 0.08)", color: isDark ? "#60a5fa" : "#2563eb", borderRadius: "10px", width: 36, height: 36 }}>
                             <CloudUploadIcon sx={{ fontSize: 20 }} />
                         </Avatar>
                         <Box>
-                            <Typography level="title-md" sx={{ fontWeight: 800, color: "#0f172a", fontSize: { xs: "15px", sm: "16px" } }}>
+                            <Typography level="title-md" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a", fontSize: { xs: "15px", sm: "16px" } }}>
                                 Document Uploads
                             </Typography>
-                            <Typography level="body-xs" sx={{ color: "#64748b", fontWeight: 600 }}>
+                            <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 600 }}>
                                 KYC & identity documents
                             </Typography>
                         </Box>
@@ -200,7 +200,7 @@ const DocumentUploads = ({
                     </Chip>
                 </Box>
 
-                <Divider sx={{ mb: 2.5, opacity: 0.5 }} />
+                <Divider sx={{ mb: 2.5, opacity: isDark ? 0.2 : 0.5 }} />
 
                 {/* 4 Equal Clean Responsive Cards Grid */}
                 <Box
@@ -225,17 +225,21 @@ const DocumentUploads = ({
                                 sx={{
                                     p: 2,
                                     borderRadius: "14px",
-                                    bgcolor: isUploaded ? "#f8fafc" : "#fafafa",
-                                    border: `1px solid ${isUploaded ? "#cbd5e1" : "#e2e8f0"}`,
-                                    borderLeft: `4px solid ${isUploaded ? color : "#cbd5e1"}`,
+                                    bgcolor: isDark
+                                        ? (isUploaded ? "#0f172a" : "rgba(15, 23, 42, 0.6)")
+                                        : (isUploaded ? "#f8fafc" : "#fafafa"),
+                                    border: isDark
+                                        ? `1px solid ${isUploaded ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)"}`
+                                        : `1px solid ${isUploaded ? "#cbd5e1" : "#e2e8f0"}`,
+                                    borderLeft: `4px solid ${isUploaded ? color : (isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1")}`,
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "space-between",
                                     transition: "all 0.2s ease-in-out",
                                     "&:hover": {
-                                        boxShadow: "0 6px 16px rgba(15, 23, 42, 0.05)",
+                                        boxShadow: isDark ? "0 6px 16px rgba(0, 0, 0, 0.5)" : "0 6px 16px rgba(15, 23, 42, 0.05)",
                                         transform: "translateY(-2px)",
-                                        bgcolor: "#ffffff"
+                                        bgcolor: isDark ? "#1e293b" : "#ffffff"
                                     }
                                 }}
                             >
@@ -244,7 +248,7 @@ const DocumentUploads = ({
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                             {icon}
-                                            <Typography level="title-sm" sx={{ fontWeight: 800, color: "#0f172a", fontSize: "13.5px" }}>
+                                            <Typography level="title-sm" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a", fontSize: "13.5px" }}>
                                                 {label}
                                             </Typography>
                                         </Box>
@@ -259,7 +263,7 @@ const DocumentUploads = ({
                                         )}
                                     </Box>
 
-                                    {/* Uploaded Files List (2 files fully visible, scrollbar for 3+ files) */}
+                                    {/* Uploaded Files List */}
                                     {isUploaded ? (
                                         <Stack
                                             spacing={1}
@@ -272,14 +276,14 @@ const DocumentUploads = ({
                                                     width: "4px"
                                                 },
                                                 "&::-webkit-scrollbar-track": {
-                                                    bgcolor: "rgba(0,0,0,0.03)",
+                                                    bgcolor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
                                                     borderRadius: "4px"
                                                 },
                                                 "&::-webkit-scrollbar-thumb": {
-                                                    bgcolor: "rgba(0,0,0,0.15)",
+                                                    bgcolor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)",
                                                     borderRadius: "4px",
                                                     "&:hover": {
-                                                        bgcolor: "rgba(0,0,0,0.25)"
+                                                        bgcolor: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.25)"
                                                     }
                                                 }
                                             }}
@@ -294,15 +298,15 @@ const DocumentUploads = ({
                                                         height: "40px",
                                                         px: 1.2,
                                                         borderRadius: "8px",
-                                                        bgcolor: "#ffffff",
-                                                        border: "1px solid #e2e8f0",
+                                                        bgcolor: isDark ? "#1e293b" : "#ffffff",
+                                                        border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid #e2e8f0",
                                                         minWidth: 0,
                                                         boxSizing: "border-box"
                                                     }}
                                                 >
                                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0, flex: 1, mr: 1 }}>
                                                         <FilePresentIcon sx={{ color: color, fontSize: 16, flexShrink: 0 }} />
-                                                        <Typography level="body-xs" noWrap sx={{ fontWeight: 700, color: "#1e293b", fontSize: "11px" }}>
+                                                        <Typography level="body-xs" noWrap sx={{ fontWeight: 700, color: isDark ? "#f8fafc" : "#1e293b", fontSize: "11px" }}>
                                                             {file.name}
                                                         </Typography>
                                                     </Box>
@@ -339,8 +343,8 @@ const DocumentUploads = ({
                                                 py: 2.5,
                                                 px: 1.5,
                                                 borderRadius: "10px",
-                                                border: "1px dashed #cbd5e1",
-                                                bgcolor: "#f8fafc",
+                                                border: isDark ? "1px dashed rgba(255,255,255,0.2)" : "1px dashed #cbd5e1",
+                                                bgcolor: isDark ? "#1e293b" : "#f8fafc",
                                                 display: "flex",
                                                 flexDirection: "column",
                                                 alignItems: "center",
@@ -350,12 +354,12 @@ const DocumentUploads = ({
                                                 transition: "0.2s",
                                                 "&:hover": {
                                                     borderColor: color,
-                                                    bgcolor: "rgba(59, 130, 246, 0.04)"
+                                                    bgcolor: isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.04)"
                                                 }
                                             }}
                                         >
-                                            <CloudUploadIcon sx={{ color: "#94a3b8", fontSize: 20 }} />
-                                            <Typography level="body-xs" sx={{ fontWeight: 700, color: "#64748b", fontSize: "11px" }}>
+                                            <CloudUploadIcon sx={{ color: isDark ? "#94a3b8" : "#94a3b8", fontSize: 20 }} />
+                                            <Typography level="body-xs" sx={{ fontWeight: 700, color: isDark ? "#cbd5e1" : "#64748b", fontSize: "11px" }}>
                                                 Upload document
                                             </Typography>
                                             <input
@@ -383,7 +387,12 @@ const DocumentUploads = ({
                                             fontWeight: 750,
                                             fontSize: "11px",
                                             width: "100%",
-                                            height: 30
+                                            height: 30,
+                                            bgcolor: isDark ? "rgba(255,255,255,0.08)" : undefined,
+                                            color: isDark ? "#cbd5e1" : undefined,
+                                            "&:hover": {
+                                                bgcolor: isDark ? "rgba(255,255,255,0.15)" : undefined
+                                            }
                                         }}
                                     >
                                         + Add File
@@ -410,16 +419,18 @@ const DocumentUploads = ({
                             borderRadius: "16px",
                             p: 3,
                             textAlign: "center",
-                            alignItems: "center"
+                            alignItems: "center",
+                            bgcolor: isDark ? "#1e293b" : "#ffffff",
+                            borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : undefined
                         }}
                     >
                         <Avatar variant="soft" color="primary" sx={{ width: 48, height: 48, mb: 2 }}>
                             <CloudUploadIcon style={{ fontSize: 24 }} />
                         </Avatar>
-                        <Typography level="title-md" sx={{ fontWeight: 800, mb: 0.5 }}>
+                        <Typography level="title-md" sx={{ fontWeight: 800, mb: 0.5, color: isDark ? "#f8fafc" : "inherit" }}>
                             Upload Document
                         </Typography>
-                        <Typography level="body-xs" sx={{ color: "neutral.500", mb: 2.5 }}>
+                        <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.500", mb: 2.5 }}>
                             {isUploading ? "Uploading file, please wait..." : "Confirm file upload?"}
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
@@ -442,16 +453,18 @@ const DocumentUploads = ({
                             borderRadius: "16px",
                             p: 3,
                             textAlign: "center",
-                            alignItems: "center"
+                            alignItems: "center",
+                            bgcolor: isDark ? "#1e293b" : "#ffffff",
+                            borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : undefined
                         }}
                     >
                         <Avatar variant="soft" color="danger" sx={{ width: 48, height: 48, mb: 2 }}>
                             <DeleteOutlineIcon style={{ fontSize: 24 }} />
                         </Avatar>
-                        <Typography level="title-md" sx={{ fontWeight: 800, mb: 0.5 }}>
+                        <Typography level="title-md" sx={{ fontWeight: 800, mb: 0.5, color: isDark ? "#f8fafc" : "inherit" }}>
                             Delete Document
                         </Typography>
-                        <Typography level="body-xs" sx={{ color: "neutral.500", mb: 2.5 }}>
+                        <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.500", mb: 2.5 }}>
                             Are you sure you want to delete this document?
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
@@ -476,24 +489,26 @@ const DocumentUploads = ({
                             borderRadius: "20px",
                             p: 2.5,
                             display: "flex",
-                            flexDirection: "column"
+                            flexDirection: "column",
+                            bgcolor: isDark ? "#1e293b" : "#ffffff",
+                            borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : undefined
                         }}
                     >
-                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1, borderBottom: "1px solid #e2e8f0" }}>
-                            <Typography level="title-md" noWrap sx={{ fontWeight: 800 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1, borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid #e2e8f0" }}>
+                            <Typography level="title-md" noWrap sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "inherit" }}>
                                 {viewingFileName}
                             </Typography>
-                            <IconButton variant="plain" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }}>
+                            <IconButton variant="plain" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }} sx={{ color: isDark ? "#cbd5e1" : undefined }}>
                                 ✕
                             </IconButton>
                         </Box>
-                        <DialogContent sx={{ mt: 1.5, flex: 1, minHeight: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#f8fafc", borderRadius: "10px", p: 1 }}>
+                        <DialogContent sx={{ mt: 1.5, flex: 1, minHeight: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: isDark ? "#0f172a" : "#f8fafc", borderRadius: "10px", p: 1 }}>
                             {viewingFileType && viewingFileType.startsWith("image/") ? (
                                 <img src={viewingFileUrl} alt={viewingFileName} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", borderRadius: "6px" }} />
                             ) : viewingFileType === "application/pdf" ? (
                                 <iframe src={viewingFileUrl} title={viewingFileName} width="100%" height="100%" style={{ border: "none", borderRadius: "6px" }} />
                             ) : (
-                                <Typography level="body-sm" sx={{ fontWeight: 600 }}>Preview not available for this file type.</Typography>
+                                <Typography level="body-sm" sx={{ fontWeight: 600, color: isDark ? "#cbd5e1" : "inherit" }}>Preview not available for this file type.</Typography>
                             )}
                         </DialogContent>
                         <DialogActions sx={{ mt: 1.5, display: "flex", justifyContent: "space-between" }}>
@@ -510,7 +525,7 @@ const DocumentUploads = ({
                             >
                                 Download File
                             </Button>
-                            <Button variant="outlined" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }} sx={{ borderRadius: "8px" }}>
+                            <Button variant="outlined" color="neutral" onClick={() => { setViewModalOpen(false); setViewingFileUrl(""); }} sx={{ borderRadius: "8px", color: isDark ? "#cbd5e1" : undefined, borderColor: isDark ? "rgba(255,255,255,0.2)" : undefined }}>
                                 Close
                             </Button>
                         </DialogActions>

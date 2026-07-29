@@ -11,20 +11,51 @@ import {
     Work,
     ContentCopy
 } from "@mui/icons-material";
+import { useThemeMode } from "../../Context/ThemeContext";
 
-const getColorStyles = (color) => {
+const getColorStyles = (color, isDark = false) => {
     const schemas = {
-        blue: { bg: "rgba(59, 130, 246, 0.04)", iconBg: "rgba(59, 130, 246, 0.12)", iconColor: "#2563eb", border: "rgba(59, 130, 246, 0.12)", shadow: "rgba(37, 99, 235, 0.08)" },
-        indigo: { bg: "rgba(99, 102, 241, 0.04)", iconBg: "rgba(99, 102, 241, 0.12)", iconColor: "#4f46e5", border: "rgba(99, 102, 241, 0.12)", shadow: "rgba(79, 70, 229, 0.08)" },
-        teal: { bg: "rgba(20, 184, 166, 0.04)", iconBg: "rgba(20, 184, 166, 0.12)", iconColor: "#0d9488", border: "rgba(20, 184, 166, 0.12)", shadow: "rgba(13, 148, 136, 0.08)" },
-        orange: { bg: "rgba(249, 115, 22, 0.04)", iconBg: "rgba(249, 115, 22, 0.12)", iconColor: "#ea580c", border: "rgba(249, 115, 22, 0.12)", shadow: "rgba(234, 88, 12, 0.08)" },
-        amber: { bg: "rgba(245, 158, 11, 0.04)", iconBg: "rgba(245, 158, 11, 0.12)", iconColor: "#d97706", border: "rgba(245, 158, 11, 0.12)", shadow: "rgba(217, 119, 6, 0.08)" },
+        blue: {
+            bg: isDark ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.04)",
+            iconBg: isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.12)",
+            iconColor: isDark ? "#60a5fa" : "#2563eb",
+            border: isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.12)",
+            shadow: isDark ? "rgba(0, 0, 0, 0.4)" : "rgba(37, 99, 235, 0.08)"
+        },
+        indigo: {
+            bg: isDark ? "rgba(99, 102, 241, 0.12)" : "rgba(99, 102, 241, 0.04)",
+            iconBg: isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(99, 102, 241, 0.12)",
+            iconColor: isDark ? "#818cf8" : "#4f46e5",
+            border: isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(99, 102, 241, 0.12)",
+            shadow: isDark ? "rgba(0, 0, 0, 0.4)" : "rgba(79, 70, 229, 0.08)"
+        },
+        teal: {
+            bg: isDark ? "rgba(20, 184, 166, 0.12)" : "rgba(20, 184, 166, 0.04)",
+            iconBg: isDark ? "rgba(20, 184, 166, 0.25)" : "rgba(20, 184, 166, 0.12)",
+            iconColor: isDark ? "#2dd4bf" : "#0d9488",
+            border: isDark ? "rgba(20, 184, 166, 0.25)" : "rgba(20, 184, 166, 0.12)",
+            shadow: isDark ? "rgba(0, 0, 0, 0.4)" : "rgba(13, 148, 136, 0.08)"
+        },
+        orange: {
+            bg: isDark ? "rgba(249, 115, 22, 0.12)" : "rgba(249, 115, 22, 0.04)",
+            iconBg: isDark ? "rgba(249, 115, 22, 0.25)" : "rgba(249, 115, 22, 0.12)",
+            iconColor: isDark ? "#fb923c" : "#ea580c",
+            border: isDark ? "rgba(249, 115, 22, 0.25)" : "rgba(249, 115, 22, 0.12)",
+            shadow: isDark ? "rgba(0, 0, 0, 0.4)" : "rgba(234, 88, 12, 0.08)"
+        },
+        amber: {
+            bg: isDark ? "rgba(245, 158, 11, 0.12)" : "rgba(245, 158, 11, 0.04)",
+            iconBg: isDark ? "rgba(245, 158, 11, 0.25)" : "rgba(245, 158, 11, 0.12)",
+            iconColor: isDark ? "#fbbf24" : "#d97706",
+            border: isDark ? "rgba(245, 158, 11, 0.25)" : "rgba(245, 158, 11, 0.12)",
+            shadow: isDark ? "rgba(0, 0, 0, 0.4)" : "rgba(217, 119, 6, 0.08)"
+        },
     };
     return schemas[color] || schemas.blue;
 };
 
-const InfoTile = ({ icon, label, value, color = "blue", copyable = false, handleCopyToClipboard, fullWidth = false }) => {
-    const theme = getColorStyles(color);
+const InfoTile = ({ icon, label, value, color = "blue", copyable = false, handleCopyToClipboard, fullWidth = false, isDark = false }) => {
+    const theme = getColorStyles(color, isDark);
     return (
         <Box
             sx={{
@@ -59,13 +90,13 @@ const InfoTile = ({ icon, label, value, color = "blue", copyable = false, handle
                 {icon}
             </Avatar>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-                <Typography level="body-xs" sx={{ color: "#64748b", fontWeight: 700, fontSize: "11px", letterSpacing: "0.3px", textTransform: "uppercase" }}>
+                <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 700, fontSize: "11px", letterSpacing: "0.3px", textTransform: "uppercase" }}>
                     {label}
                 </Typography>
                 <Typography
                     level="body-sm"
                     sx={{
-                        color: "#0f172a",
+                        color: isDark ? "#f8fafc" : "#0f172a",
                         fontWeight: 750,
                         mt: 0.25,
                         fontSize: "13.5px",
@@ -87,7 +118,8 @@ const InfoTile = ({ icon, label, value, color = "blue", copyable = false, handle
                         borderRadius: "8px",
                         flexShrink: 0,
                         opacity: 0.8,
-                        "&:hover": { opacity: 1, bgcolor: "rgba(0,0,0,0.06)" }
+                        color: isDark ? "#cbd5e1" : "inherit",
+                        "&:hover": { opacity: 1, bgcolor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)" }
                     }}
                 >
                     <ContentCopy sx={{ fontSize: 13 }} />
@@ -101,6 +133,9 @@ const PersonalCompanyInfo = ({
     displayEmployee,
     handleCopyToClipboard
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <>
             {/* Personal Information */}
@@ -109,30 +144,30 @@ const PersonalCompanyInfo = ({
                     sx={{
                         p: { xs: 2, md: 3 },
                         borderRadius: "20px",
-                        bgcolor: "#ffffff",
-                        border: "1px solid rgba(226, 232, 240, 0.8)",
-                        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.03)",
+                        bgcolor: isDark ? "#1e293b" : "#ffffff",
+                        border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(226, 232, 240, 0.8)",
+                        boxShadow: isDark ? "0 4px 20px rgba(0, 0, 0, 0.4)" : "0 4px 20px rgba(15, 23, 42, 0.03)",
                         height: "100%",
                         boxSizing: "border-box"
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <Avatar variant="soft" sx={{ bgcolor: "rgba(79, 70, 229, 0.1)", color: "#4f46e5", borderRadius: "12px", width: 40, height: 40 }}>
+                            <Avatar variant="soft" sx={{ bgcolor: isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(79, 70, 229, 0.1)", color: isDark ? "#818cf8" : "#4f46e5", borderRadius: "12px", width: 40, height: 40 }}>
                                 <Person sx={{ fontSize: 22 }} />
                             </Avatar>
                             <Box>
-                                <Typography level="title-md" sx={{ fontWeight: 850, color: "#0f172a" }}>
+                                <Typography level="title-md" sx={{ fontWeight: 850, color: isDark ? "#f8fafc" : "#0f172a" }}>
                                     Personal Information
                                 </Typography>
-                                <Typography level="body-xs" sx={{ color: "#64748b", fontWeight: 600 }}>
+                                <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 600 }}>
                                     Primary identity & contact details
                                 </Typography>
                             </Box>
                         </Box>
                     </Box>
 
-                    <Divider sx={{ mb: 2.5, opacity: 0.6 }} />
+                    <Divider sx={{ mb: 2.5, opacity: isDark ? 0.2 : 0.6 }} />
 
                     <Box
                         sx={{
@@ -141,12 +176,12 @@ const PersonalCompanyInfo = ({
                             gap: 2
                         }}
                     >
-                        <InfoTile icon={<Badge />} label="Employee ID" value={displayEmployee?.employee_id} color="blue" handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<Person />} label="Gender" value={displayEmployee?.gender} color="indigo" handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<PhoneAndroid />} label="Mobile" value={displayEmployee?.mobile} color="teal" copyable={true} handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<CalendarMonth />} label="Date of Birth" value={displayEmployee?.dob} color="orange" handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<Email />} label="Email Address" value={displayEmployee?.email} color="blue" copyable={true} fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<LocationOn />} label="Residential Address" value={displayEmployee?.address} color="amber" fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} />
+                        <InfoTile icon={<Badge />} label="Employee ID" value={displayEmployee?.employee_id} color="blue" handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<Person />} label="Gender" value={displayEmployee?.gender} color="indigo" handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<PhoneAndroid />} label="Mobile" value={displayEmployee?.mobile} color="teal" copyable={true} handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<CalendarMonth />} label="Date of Birth" value={displayEmployee?.dob} color="orange" handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<Email />} label="Email Address" value={displayEmployee?.email} color="blue" copyable={true} fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<LocationOn />} label="Residential Address" value={displayEmployee?.address} color="amber" fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
                     </Box>
                 </Box>
             </Grid>
@@ -157,30 +192,30 @@ const PersonalCompanyInfo = ({
                     sx={{
                         p: { xs: 2, md: 3 },
                         borderRadius: "20px",
-                        bgcolor: "#ffffff",
-                        border: "1px solid rgba(226, 232, 240, 0.8)",
-                        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.03)",
+                        bgcolor: isDark ? "#1e293b" : "#ffffff",
+                        border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(226, 232, 240, 0.8)",
+                        boxShadow: isDark ? "0 4px 20px rgba(0, 0, 0, 0.4)" : "0 4px 20px rgba(15, 23, 42, 0.03)",
                         height: "100%",
                         boxSizing: "border-box"
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <Avatar variant="soft" sx={{ bgcolor: "rgba(234, 88, 12, 0.1)", color: "#ea580c", borderRadius: "12px", width: 40, height: 40 }}>
+                            <Avatar variant="soft" sx={{ bgcolor: isDark ? "rgba(249, 115, 22, 0.25)" : "rgba(234, 88, 12, 0.1)", color: isDark ? "#fb923c" : "#ea580c", borderRadius: "12px", width: 40, height: 40 }}>
                                 <Business sx={{ fontSize: 22 }} />
                             </Avatar>
                             <Box>
-                                <Typography level="title-md" sx={{ fontWeight: 850, color: "#0f172a" }}>
+                                <Typography level="title-md" sx={{ fontWeight: 850, color: isDark ? "#f8fafc" : "#0f172a" }}>
                                     Company Information
                                 </Typography>
-                                <Typography level="body-xs" sx={{ color: "#64748b", fontWeight: 600 }}>
+                                <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "#64748b", fontWeight: 600 }}>
                                     Corporate role & employment history
                                 </Typography>
                             </Box>
                         </Box>
                     </Box>
 
-                    <Divider sx={{ mb: 2.5, opacity: 0.6 }} />
+                    <Divider sx={{ mb: 2.5, opacity: isDark ? 0.2 : 0.6 }} />
 
                     <Box
                         sx={{
@@ -189,9 +224,9 @@ const PersonalCompanyInfo = ({
                             gap: 2
                         }}
                     >
-                        <InfoTile icon={<Business />} label="Company Name" value={displayEmployee?.company} color="blue" handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<Work />} label="Designation / Role" value={displayEmployee?.role} color="teal" handleCopyToClipboard={handleCopyToClipboard} />
-                        <InfoTile icon={<CalendarMonth />} label="Joining Date" value={displayEmployee?.joining} color="indigo" fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} />
+                        <InfoTile icon={<Business />} label="Company Name" value={displayEmployee?.company} color="blue" handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<Work />} label="Designation / Role" value={displayEmployee?.role} color="teal" handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
+                        <InfoTile icon={<CalendarMonth />} label="Joining Date" value={displayEmployee?.joining} color="indigo" fullWidth={true} handleCopyToClipboard={handleCopyToClipboard} isDark={isDark} />
                     </Box>
                 </Box>
             </Grid>

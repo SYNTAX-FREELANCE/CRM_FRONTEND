@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GlobalLoader from "./CommonComponents/GlobalLoader";
 import ProtectedRoute from "./utils/Protected/ProtectedRoute";
 import PublicRoute from "./utils/Protected/PublicRoute";
+import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
 
 
 // Lazy imports
@@ -64,6 +65,9 @@ const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
 const UserCreation = lazy(() => import("./Masters/UserCreation/UserCreation"));
 const UserInfo = lazy(() => import("./UserInfo/UserInfo"));
 const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
+const MyCustomers = lazy(() => import("./Customers/MyCustomers"));
+const CustomerDetail = lazy(() => import("./Customers/CustomerDetail"));
+const PolicyUploadDetails = lazy(() => import("./Customers/PolicyUploadDetails"));
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -116,6 +120,9 @@ const EmployeePerformanceReport = lazy(
 const EmployeeLoginReport = lazy(
   () => import("./Reports/UserLogReports"),
 );
+const DetailedEmployeeLoginReport = lazy(
+  () => import("./Reports/DetailedUserLogReports"),
+);
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -144,7 +151,7 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <ProtectedRoute>{withSuspense(RouteLayout)}</ProtectedRoute>,
-    errorElement: <div>Error ocured</div>,
+    errorElement: <ErrorBoundaryPage />,
     children: [
       {
         index: true,
@@ -159,12 +166,24 @@ const router = createBrowserRouter([
         element: withSuspense(EmployeeBatchDetail),
       },
       {
+        path: "customer/:customerid",
+        element: withSuspense(CustomerDetail),
+      },
+      {
+        path: "customer/:customerid/policy/:policyid",
+        element: withSuspense(PolicyUploadDetails),
+      },
+      {
         path: "settings",
         element: withSuspense(Settings),
       },
       {
         path: "freshcalls",
         element: withSuspense(FreshCallsWorkspace),
+      },
+      {
+        path: "mycustomer",
+        element: withSuspense(MyCustomers),
       },
       {
         path: "allocation",
@@ -288,6 +307,10 @@ const router = createBrowserRouter([
       {
         path: "reports/UserLogReports",
         element: withSuspense(EmployeeLoginReport),
+      },
+      {
+        path: "reports/DetailedUserLogReports",
+        element: withSuspense(DetailedEmployeeLoginReport),
       },
 
 

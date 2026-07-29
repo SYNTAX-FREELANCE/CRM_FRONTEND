@@ -6,6 +6,7 @@ import {
     Chip,
     Stack,
     Avatar,
+    useTheme,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
@@ -24,93 +25,111 @@ import LeadFollowUpCard from "../FreshCall/Components/LeadFollowUpCard";
 import LeadHistoryTimelineItem from "../FreshCall/Components/LeadHistoryTimelineItem";
 import EmptyCustomerState from "./EmptyCustomerState";
 
-const themeColors = {
-    blue: "#2563eb",
-    blueSoft: "rgba(37,99,235,0.08)",
-    orange: "#ea580c",
-    orangeSoft: "rgba(234,88,12,0.08)",
-    border: "rgba(226,232,240,0.95)",
-    text: "#0f172a",
-    muted: "#64748b",
+const getThemeColors = (isDark) => ({
+    blue: isDark ? "#60a5fa" : "#2563eb",
+    blueSoft: isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.08)",
+    orange: isDark ? "#fb923c" : "#ea580c",
+    orangeSoft: isDark ? "rgba(234,88,12,0.2)" : "rgba(234,88,12,0.08)",
+    border: isDark ? "rgba(255,255,255,0.1)" : "rgba(226,232,240,0.95)",
+    cardBg: isDark ? "rgba(30,41,59,0.9)" : "#fff",
+    listCardBg: isDark ? "rgba(30,41,59,0.6)" : "#fff",
+    text: isDark ? "#f8fafc" : "#0f172a",
+    muted: isDark ? "#94a3b8" : "#64748b",
+});
+
+const StatCard = ({ label, value, accent = "blue" }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+    const colors = getThemeColors(isDark);
+
+    return (
+        <Paper
+            variant="outlined"
+            sx={{
+                p: 1.5,
+                borderRadius: 2.5,
+                borderColor: colors.border,
+                bgcolor: colors.listCardBg,
+                boxShadow: isDark ? "0 6px 18px rgba(0,0,0,0.3)" : "0 6px 18px rgba(15,23,42,0.04)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 0.25,
+                minWidth: 92,
+                flex: "1 1 92px",
+            }}
+        >
+            <Typography sx={{ fontSize: 11, color: colors.muted, fontWeight: 700 }}>
+                {label}
+            </Typography>
+            <Typography
+                sx={{
+                    fontSize: 20,
+                    fontWeight: 900,
+                    color: accent === "orange" ? colors.orange : colors.blue,
+                    lineHeight: 1,
+                }}
+            >
+                {value}
+            </Typography>
+        </Paper>
+    );
 };
 
-const StatCard = ({ label, value, accent = "blue" }) => (
-    <Paper
-        variant="outlined"
-        sx={{
-            p: 1.5,
-            borderRadius: 2.5,
-            borderColor: themeColors.border,
-            bgcolor: "#fff",
-            boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
-            display: "flex",
-            flexDirection: "column",
-            gap: 0.25,
-            minWidth: 92,
-            flex: "1 1 92px",
-        }}
-    >
-        <Typography sx={{ fontSize: 11, color: themeColors.muted, fontWeight: 700 }}>
-            {label}
-        </Typography>
-        <Typography
+const ListCard = ({ title, subtitle, rightChip, icon, accent = "blue" }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+    const colors = getThemeColors(isDark);
+
+    return (
+        <Paper
+            variant="outlined"
             sx={{
-                fontSize: 20,
-                fontWeight: 900,
-                color: accent === "orange" ? themeColors.orange : themeColors.blue,
-                lineHeight: 1,
+                p: 1.5,
+                borderRadius: 2.5,
+                borderColor: colors.border,
+                bgcolor: colors.listCardBg,
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 1.2,
+                width: "100%",
             }}
         >
-            {value}
-        </Typography>
-    </Paper>
-);
+            <Avatar
+                sx={{
+                    width: 36,
+                    height: 36,
+                    bgcolor: accent === "orange" ? colors.orangeSoft : colors.blueSoft,
+                    color: accent === "orange" ? colors.orange : colors.blue,
+                    flexShrink: 0,
+                }}
+            >
+                {icon}
+            </Avatar>
 
-const ListCard = ({ title, subtitle, rightChip, icon, accent = "blue" }) => (
-    <Paper
-        variant="outlined"
-        sx={{
-            p: 1.5,
-            borderRadius: 2.5,
-            borderColor: themeColors.border,
-            bgcolor: "#fff",
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 1.2,
-            width: "100%",
-        }}
-    >
-        <Avatar
-            sx={{
-                width: 36,
-                height: 36,
-                bgcolor: accent === "orange" ? themeColors.orangeSoft : themeColors.blueSoft,
-                color: accent === "orange" ? themeColors.orange : themeColors.blue,
-                flexShrink: 0,
-            }}
-        >
-            {icon}
-        </Avatar>
-
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 800, color: themeColors.text, fontSize: 14 }}>
-                {title}
-            </Typography>
-            {subtitle && (
-                <Typography sx={{ fontSize: 12, color: themeColors.muted, mt: 0.25 }}>
-                    {subtitle}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography sx={{ fontWeight: 800, color: colors.text, fontSize: 14 }}>
+                    {title}
                 </Typography>
-            )}
-        </Box>
+                {subtitle && (
+                    <Typography sx={{ fontSize: 12, color: colors.muted, mt: 0.25 }}>
+                        {subtitle}
+                    </Typography>
+                )}
+            </Box>
 
-        {rightChip}
-    </Paper>
-);
+            {rightChip}
+        </Paper>
+    );
+};
 
 const CustomerDetailPanel = ({ customer, loading }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+    const colors = getThemeColors(isDark);
+
     if (loading) {
         return (
-            <Box sx={{ p: 4, textAlign: "center", color: themeColors.muted }}>
+            <Box sx={{ p: 4, textAlign: "center", color: colors.muted }}>
                 Loading customer details...
             </Box>
         );
@@ -135,9 +154,9 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                 sx={{
                     p: { xs: 2, md: 2.5 },
                     borderRadius: 3,
-                    borderColor: themeColors.border,
-                    bgcolor: "#fff",
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.05)",
+                    borderColor: colors.border,
+                    bgcolor: colors.cardBg,
+                    boxShadow: isDark ? "0 8px 24px rgba(0,0,0,0.4)" : "0 8px 24px rgba(15,23,42,0.05)",
                     mb: 2,
                 }}
             >
@@ -152,10 +171,10 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                     }}
                 >
                     <Box sx={{ minWidth: 0 }}>
-                        <Typography variant="h6" fontWeight={900} color={themeColors.text}>
+                        <Typography variant="h6" fontWeight={900} color={colors.text}>
                             {customerInfo.customer_name || "-"}
                         </Typography>
-                        <Typography sx={{ fontSize: 13, color: themeColors.muted }}>
+                        <Typography sx={{ fontSize: 13, color: colors.muted }}>
                             Customer profile overview
                         </Typography>
                     </Box>
@@ -210,10 +229,14 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                                                     size="small"
                                                     label={v.is_active ? "Active" : "Inactive"}
                                                     sx={{
-                                                        bgcolor: v.is_active ? "rgba(34,197,94,0.10)" : "rgba(148,163,184,0.12)",
-                                                        color: v.is_active ? "#16a34a" : "#475569",
+                                                        bgcolor: v.is_active
+                                                            ? (isDark ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.10)")
+                                                            : (isDark ? "rgba(148,163,184,0.2)" : "rgba(148,163,184,0.12)"),
+                                                        color: v.is_active
+                                                            ? (isDark ? "#4ade80" : "#16a34a")
+                                                            : (isDark ? "#cbd5e1" : "#475569"),
                                                         fontWeight: 800,
-                                                        fontSize:{xs:10,sm:14}
+                                                        fontSize: { xs: 10, sm: 14 }
                                                     }}
                                                 />
                                             }
@@ -244,8 +267,8 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                                                     size="small"
                                                     label={l.work_status}
                                                     sx={{
-                                                        bgcolor: "rgba(37,99,235,0.08)",
-                                                        color: themeColors.blue,
+                                                        bgcolor: colors.blueSoft,
+                                                        color: colors.blue,
                                                         fontWeight: 800,
                                                     }}
                                                 />
@@ -344,7 +367,7 @@ const CustomerDetailPanel = ({ customer, loading }) => {
                     {(customerInfo.remarks || leads.some((l) => l.remarks)) && (
                         <Box sx={{ flex: "1 1 100%", minWidth: "100%" }}>
                             <Section title="Notes and Remarks" icon={<NotesIcon sx={{ fontSize: 16 }} />} accent="orange" defaultExpanded>
-                                <Typography sx={{ fontSize: 14, color: themeColors.text, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+                                <Typography sx={{ fontSize: 14, color: colors.text, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
                                     {customerInfo.remarks ||
                                         leads.map((l) => l.remarks).filter(Boolean).join("\n\n") ||
                                         "No notes available"}
@@ -358,4 +381,4 @@ const CustomerDetailPanel = ({ customer, loading }) => {
     );
 };
 
-export default CustomerDetailPanel;
+export default CustomerDetailPanel;
