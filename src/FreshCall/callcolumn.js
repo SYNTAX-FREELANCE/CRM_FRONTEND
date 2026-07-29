@@ -6,7 +6,8 @@ import { format, isValid } from "date-fns";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import Tooltip from "@mui/material/Tooltip";
 
-export const TastkColumns = (openLead, isMobile = false,isDark) => {
+export const TastkColumns = (openLead, isMobile = false, isDark) => {
+
 
   const mobileColumns = [
     {
@@ -81,7 +82,7 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
               <SupportAgentIcon
                 sx={{
                   fontSize: 18,
-                  color:isDark ? "#f8fafc" : "#0f172a" 
+                  color: isDark ? "#f8fafc" : "#0f172a"
                 }}
               />
             </Tooltip>
@@ -90,7 +91,7 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
             sx={{ fontSize: 12 }}
             variant="body2"
             fontWeight={900}
-            color={isDark ? "#f8fafc" : "#0f172a" }
+            color={isDark ? "#f8fafc" : "#0f172a"}
           >
             {row.customer_name}
           </Typography>
@@ -106,7 +107,7 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
         <Typography
           sx={{ fontSize: 12 }}
           variant="body2"
-          color={isDark ? "#f8fafc" : "#0f172a" }
+          color={isDark ? "#f8fafc" : "#0f172a"}
           fontWeight={900}
         >
           {params.value}
@@ -130,7 +131,57 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
               variant="body2"
               sx={{ fontSize: 12 }}
               fontWeight={900}
-              color={isDark ? "#f8fafc" : "#0f172a" }
+              color={isDark ? "#f8fafc" : "#0f172a"}
+            >
+              {formattedDate}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "registration_date",
+      headerName: "Manufacture Date",
+      minWidth: 140,
+      flex: 0.8,
+      renderCell: ({ value }) => {
+        const formattedDate =
+          value && isValid(new Date(value))
+            ? format(new Date(value), "MMMM d, yyyy")
+            : "-";
+
+        return (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: 12 }}
+              fontWeight={900}
+              color={isDark ? "#f8fafc" : "#0f172a"}
+            >
+              {formattedDate}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "next_followup_date",
+      headerName: "Next Follow Up Date",
+      minWidth: 140,
+      flex: 0.8,
+      renderCell: ({ value }) => {
+        const formattedDate =
+          value && isValid(new Date(value))
+            ? format(new Date(value), "MMMM d, yyyy")
+            : "-";
+
+        return (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: 12 }}
+              fontWeight={900}
+              color={isDark ? "#f8fafc" : "#0f172a"}
             >
               {formattedDate}
             </Typography>
@@ -148,7 +199,7 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
           variant="body2"
           sx={{ fontSize: 12 }}
           fontWeight={900}
-          color={isDark ? "#f8fafc" : "#0f172a" }
+          color={isDark ? "#f8fafc" : "#0f172a"}
         >
           {params.value}
         </Typography>
@@ -177,7 +228,7 @@ export const TastkColumns = (openLead, isMobile = false,isDark) => {
           }}
         >
           <CallIcon sx={{ fontSize: 16 }} />
-          <Typography variant="body2" fontWeight={700} color={isDark ? "#f8fafc" : "#0f172a" }>
+          <Typography variant="body2" fontWeight={700} color={isDark ? "#f8fafc" : "#0f172a"}>
             Call
           </Typography>
         </Box>
