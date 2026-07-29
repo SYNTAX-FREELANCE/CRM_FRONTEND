@@ -333,4 +333,4 @@ const MyCustomers = () => {
     );
 };
 
-export default memo(MyCustomers);
+export default memo(MyCustomers);
