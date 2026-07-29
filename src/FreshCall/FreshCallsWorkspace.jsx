@@ -14,7 +14,7 @@ import {
 import PhoneIcon from "@mui/icons-material/Phone";
 import { DataGrid } from "@mui/x-data-grid";
 import DetailRow from "./DetailRow";
-import { groupedData, groupLeadData, summaryData } from "../CommonCode/Reusable";
+import { groupLeadData } from "../CommonCode/Reusable";
 import { useGetMyEmployeeActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
@@ -64,6 +64,9 @@ export default function FreshCallsWorkspace() {
     refetch
   } = useGetMyEmployeeActiveCalls(id);
 
+console.log({
+  AllCallDetails
+});
 
 
 
@@ -110,7 +113,8 @@ export default function FreshCallsWorkspace() {
   }, [id, AllCallDetails, statusFilter, queryClient, statusFilter]);
 
 
-  const columns = useMemo(() => TastkColumns(openLead, isMobile,isDark), [openLead, isMobile,isDark]);
+  const columns = useMemo(() => TastkColumns(openLead, isMobile, isDark), [openLead, isMobile, isDark]);
+
 
   const ActiveStatus = useMemo(() => {
     if (!Array.isArray(LeadMasterDetail)) return [];

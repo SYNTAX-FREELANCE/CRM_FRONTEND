@@ -13,12 +13,14 @@ const StatusCountCard = ({
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
 
+    const FinalTitle = title === 'SOLD' ? "CAPTURED" : title;
+
     return (
         <Card
             onClick={() => navigate('/home/freshcalls', {
                 state: { status: statusId }
             })}
-            
+
             elevation={0}
             sx={{
                 minWidth: 0,
@@ -61,7 +63,7 @@ const StatusCountCard = ({
                         fontSize: 10,
                     }}
                 >
-                    {title}
+                    {FinalTitle}
                 </Typography>
 
                 <Typography
@@ -71,9 +73,9 @@ const StatusCountCard = ({
                         mb: 0.5,
                         color: isDark ? "#f8fafc" : "#050505",
                         letterSpacing: 1,
-                        textShadow: isDark 
-                           ? "0px 4px 12px rgba(0,0,0,0.6)"
-                           : `
+                        textShadow: isDark
+                            ? "0px 4px 12px rgba(0,0,0,0.6)"
+                            : `
                              1px 1px 0px #fff,
                              2px 2px 0px #d1d5db,
                              3px 3px 0px #cbd5e1,
