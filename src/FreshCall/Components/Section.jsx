@@ -18,16 +18,10 @@ const Section = ({ title, icon, children, accent = "blue", defaultExpanded = tru
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         bgcolor: isDark
-          ? (isOrange ? "rgba(30, 41, 59, 0.6)" : "rgba(30, 41, 59, 0.6)")
-          : (isOrange ? "rgba(255, 247, 237, 0.45)" : "rgba(239, 246, 255, 0.45)"),
+          ? (isOrange ? "rgba(5, 5, 5, 0.6)" : "rgba(10, 10, 10, 0.6)")
+          : (isOrange ? "rgba(254, 252, 249, 0.45)" : "rgba(239, 246, 255, 0.45)"),
         overflow: "hidden",
         transition: "all 0.3s ease",
-        "&:hover": {
-          bgcolor: isDark
-            ? (isOrange ? "rgba(30, 41, 59, 0.8)" : "rgba(30, 41, 59, 0.8)")
-            : (isOrange ? "rgba(255, 247, 237, 0.55)" : "rgba(239, 246, 255, 0.55)"),
-          border: isDark ? "1px solid rgba(255, 255, 255, 0.15)" : "1px solid rgba(255, 255, 255, 0.25)",
-        },
       }}
     >
       <Box
@@ -41,8 +35,8 @@ const Section = ({ title, icon, children, accent = "blue", defaultExpanded = tru
           cursor: "pointer",
           userSelect: "none",
           bgcolor: isDark
-            ? (isOrange ? "rgba(249, 115, 22, 0.18)" : "rgba(37, 99, 235, 0.18)")
-            : (isOrange ? "rgba(249, 115, 22, 0.08)" : "rgba(37, 99, 235, 0.08)"),
+            ? (isOrange ? "rgba(2, 2, 2, 0.18)" : "rgba(37, 99, 235, 0.18)")
+            : (isOrange ? "rgba(0, 0, 0, 0.08)" : "rgba(37, 99, 235, 0.08)"),
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
           borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(255, 255, 255, 0.12)",
@@ -57,7 +51,7 @@ const Section = ({ title, icon, children, accent = "blue", defaultExpanded = tru
               display: "grid",
               placeItems: "center",
               bgcolor: isOrange
-                ? (isDark ? "rgba(249, 115, 22, 0.25)" : "rgba(249, 115, 22, 0.2)")
+                ? (isDark ? "rgba(9, 9, 9, 0.25)" : "rgba(0, 0, 0, 0.2)")
                 : (isDark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.2)"),
               color: isOrange
                 ? (isDark ? "#fb923c" : "#f97316")
@@ -93,6 +87,7 @@ const Section = ({ title, icon, children, accent = "blue", defaultExpanded = tru
             sx={{
               transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
               transition: "transform 0.25s ease",
+              color: isDark ? "#ffffff" : "#1e293b",
             }}
           />
         </IconButton>
@@ -105,4 +100,4 @@ const Section = ({ title, icon, children, accent = "blue", defaultExpanded = tru
   );
 };
 
-export default Section;
+export default Section;

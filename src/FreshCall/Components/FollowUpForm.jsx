@@ -12,6 +12,7 @@ import {
     TextField,
     Typography,
     useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
@@ -37,12 +38,7 @@ import OutcomeCard from "./OutcomeCard";
 import OutcomeCardSkeleton from "../../SkeletonComponent/OutcomeCardSkeleton";
 import PolicyDetailsFormSkeleton from "../../SkeletonComponent/PolicyDetailsFormSkeleton";
 
-const glassCard = {
-    bgcolor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 12px 35px rgba(15,23,42,.08)",
-    borderRadius: 4,
-};
+
 
 
 const PolicyDetailsForm = lazy(() => import('./PolicyDetailsForm'))
@@ -155,13 +151,22 @@ export const OUTCOMES = [
 
 const FollowUpForm = ({
     statusName,
-      onCancel,
+    onCancel,
     onSave
 }) => {
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const isMobile = useMediaQuery("(max-width:600px)");
     const needsDate = statusName?.requires_followup === 1;
     const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
 
+    const glassCard = {
+        bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
+        border: "1px solid #e2e8f0",
+        boxShadow: "0 12px 35px rgba(15,23,42,.08)",
+        borderRadius: 4,
+    };
 
     const [followUpDate, setFollowUpDate] = useState("");
     const [followUpRemarks, setFollowUpRemarks] = useState("");
@@ -217,7 +222,7 @@ const FollowUpForm = ({
 
             <Stack spacing={1.5}>
                 <Box>
-                    <Typography sx={{ mb: 1, fontWeight: 800, color: "#334155" }}>
+                    <Typography sx={{ mb: 1, fontWeight: 800, color: isDark ? "#ffffff" : "#1e293b", }}>
                         Call Outcome
                     </Typography>
                     {needsDate &&
@@ -300,7 +305,8 @@ const FollowUpForm = ({
                         sx={{
                             "& .MuiOutlinedInput-root": {
                                 borderRadius: 3,
-                                bgcolor: "#fff",
+                               bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
+                                
                             },
                         }}
                     />

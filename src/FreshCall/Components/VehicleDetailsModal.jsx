@@ -13,6 +13,7 @@ import {
     Stack,
     TextField,
     InputAdornment,
+    useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
@@ -30,21 +31,7 @@ import { axioslogin } from "../../Connection/axios";
 import { getAuthUser, successNotify, warningNotify } from "../../constant/Constant";
 import { format } from "date-fns";
 
-const compactInput = {
-    "& .MuiOutlinedInput-root": {
-        borderRadius: 2,
-        fontSize: 13,
-        backgroundColor: "rgba(255,255,255,0.95)",
-    },
-    "& .MuiInputLabel-root": {
-        fontSize: 12,
-    },
-    "& .MuiFormHelperText-root": {
-        fontSize: { xs: 8, sm: 12 },
-        marginLeft: 0,
-        marginTop: 1,
-    },
-};
+
 
 const initialVehicleData = {
     registration_number: "",
@@ -62,9 +49,28 @@ const initialVehicleData = {
 };
 
 const VehicleDetailsModal = ({ open, onClose, lead }) => {
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const [vehicleData, setVehicleData] = useState(initialVehicleData);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+
+    const compactInput = {
+    "& .MuiOutlinedInput-root": {
+        borderRadius: 2,
+        fontSize: 13,
+        backgroundColor: isDark ? "rgba(8, 8, 8, 0.8)": "rgba(255,255,255,0.95)",
+    },
+    "& .MuiInputLabel-root": {
+        fontSize: 12,
+    },
+    "& .MuiFormHelperText-root": {
+        fontSize: { xs: 8, sm: 12 },
+        marginLeft: 0,
+        marginTop: 1,
+    },
+};
 
     const authUser = getAuthUser();
     const { id } = authUser ?? {};
@@ -300,7 +306,7 @@ const VehicleDetailsModal = ({ open, onClose, lead }) => {
                         p: { xs: 0.5, sm: 3 },
                         minHeight: { xs: "70vh", sm: "40vh" },
                         overflow: "hidden",
-                        bgcolor: "transparent",
+                        bgcolor: isDark ? "rgba(8, 8, 8, 0.8)" : "transparent",
                     }}
                 >
                     <Box

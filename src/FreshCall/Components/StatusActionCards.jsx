@@ -5,6 +5,7 @@ import {
     Typography,
     Button,
     alpha,
+    useTheme,
 } from "@mui/material";
 
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
@@ -58,6 +59,9 @@ const StatusActionCards = ({
 
     const { data: LeadMasterDetail = [] } = useLeadMaster();
 
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
     const statuses = useMemo(() => {
         return Array.isArray(LeadMasterDetail)
             ? LeadMasterDetail.filter(
@@ -83,7 +87,7 @@ const StatusActionCards = ({
                     sx={{
                         fontWeight: 900,
                         fontSize: 18,
-                        color: "#0f172a",
+                        color: isDark ? "#ffffff" : "#1e293b",
                     }}
                 >
                     {title}

@@ -11,6 +11,7 @@ import {
   Divider,
   TextField,
   Paper,
+  useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
@@ -44,6 +45,7 @@ import StatusActionCardsSkeleton from "../SkeletonComponent/StatusActionCardsSke
 import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
 import { DatePicker } from "@mui/x-date-pickers";
 import EditableDateField from "./Components/EditableDateField";
+import LeadVehicleUploads from "./Components/LeadVehicleUploads";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -70,6 +72,8 @@ const LeadDetailsDrawer = ({
   const { id } = authUser ?? {};
 
 
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const formatDate = (date) => {
     if (!date) return "-";
@@ -387,14 +391,14 @@ const LeadDetailsDrawer = ({
           maxWidth: "100%",
           height: "100%",
           ...glassEffect,
-          bgcolor: "rgba(255, 255, 255, 0.82)",
+          bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
           boxShadow:
             "0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(255, 255, 255, 0.5) inset",
           overflow: "hidden",
         },
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff", }}>
 
         <LeadHeader
           lead={lead}
@@ -597,7 +601,15 @@ const LeadDetailsDrawer = ({
                 </Stack>
               </Paper>
             </Section> */}
+            <Section
+              title="Upload Details"
+              icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
+              accent="blue"
+              defaultExpanded={true}
+            >
 
+              <LeadVehicleUploads lead={lead} />
+            </Section>
 
 
 
@@ -683,12 +695,12 @@ const LeadDetailsDrawer = ({
                     p: 1.5,
                     borderRadius: 2.5,
                     ...glassEffect,
-                    bgcolor: "rgba(255,255,255,0.6)",
+                    bgcolor: isDark ? "rgba(10, 17, 45, 0.78)" : "rgba(255,255,255,0.6)",
                   }}
                 >
                   <Typography
                     variant="caption"
-                    sx={{ fontWeight: 900, color: "#2563eb", letterSpacing: 0.8 }}
+                    sx={{ fontWeight: 900, color: isDark ? "#ffffff" : "#1e293b", letterSpacing: 0.8 }}
                   >
                     LEAD STATUS
                   </Typography>
@@ -697,7 +709,6 @@ const LeadDetailsDrawer = ({
 
                   <Suspense fallback={<StatusActionCardsSkeleton />}>
                     <StatusActionCards
-                      // statuses={ActiveStatus}
                       selectedStatus={selectedStatus}
                       onStatusClick={handleSelectStatus}
                       onReset={handleReset}

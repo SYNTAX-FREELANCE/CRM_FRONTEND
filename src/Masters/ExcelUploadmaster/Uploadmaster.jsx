@@ -95,10 +95,7 @@ const Uploadmaster = () => {
           const url = type === "customer"
             ? `/customer/getbyid/${id}`
             : `/customer/getbyid-vehicle/${id}`;
-
-          console.log("Fetching edit record, URL:", url);
           const response = await axioslogin.get(url);
-          console.log("Fetch response data:", response.data);
           const { success, data, message } = response.data;
 
           if (success === 1) {
