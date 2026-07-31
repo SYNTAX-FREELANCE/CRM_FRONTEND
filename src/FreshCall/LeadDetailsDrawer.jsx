@@ -10,6 +10,7 @@ import {
   Typography,
   Divider,
   TextField,
+  Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
@@ -25,6 +26,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+import EditDocumentIcon from '@mui/icons-material/EditDocument';
 
 import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
@@ -483,6 +485,122 @@ const LeadDetailsDrawer = ({
               />
             </Section>
 
+            {/* <Section
+              title="Upload Details"
+              icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
+              accent="blue"
+              defaultExpanded={true}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 4,
+                  border: `1px solid ${themeColors.border}`,
+                  // width: { xs: "100%", lg: "50%" },
+                  width: '100%'
+                }}
+              >
+                <Box sx={{
+                  display: "flex",
+                  gap: 1
+                }}>
+                  <EditDocumentIcon sx={{
+                    color: '#fb3e05'
+                  }} />
+                  <Typography
+                    sx={{
+                      fontSize: { xs: 15, sm: 20 },
+                      fontWeight: 600,
+                      color: themeColors.textDark,
+                      mb: 3,
+                    }}>
+                    POLICY DOCUMENT UPLOADS
+                  </Typography>
+                </Box>
+
+
+
+                <Stack spacing={2}>
+
+                  <UploadBox
+                    title="Registration Certificate (RC)"
+                    subtitle="Upload the vehicle Registration Certificate (Smart Card or RC Book)."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setRcFiles)}
+                    onAdd={() => uploadFiles(rcFiles, "RC")}
+                  />
+
+                  <UploadPreview
+                    files={[
+                      ...(uploadedRC ?? []),
+                      ...rcFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setRcFiles)}
+                  />
+
+                  <UploadBox
+                    title="Previous Insurance Policy"
+                    subtitle="Upload the latest insurance policy document for renewal verification."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setPolicyFiles)}
+                    onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
+                  />
+                  <UploadPreview
+                    files={[
+                      ...(uploadedPolicy ?? []),
+                      ...policyFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setPolicyFiles)}
+                  />
+
+                  <UploadBox
+                    title="Customer KYC Documents"
+                    subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setKycFiles)}
+                    onAdd={() => uploadFiles(kycFiles, "KYC")}
+                  />
+
+                  <UploadPreview
+                    files={[
+                      ...(uploadedKYC ?? []),
+                      ...kycFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setKycFiles)}
+                  />
+
+                  <UploadBox
+                    title="Vehicle Inspection Images"
+                    subtitle="Upload clear photos of the Front, Rear, Left Side, Right Side and any existing damages if applicable."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setVehicleImages)}
+                    onAdd={() => uploadFiles(vehicleImages, "VEHICLE_IMAGE")}
+                  />
+
+                  <UploadPreview
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    files={[
+                      ...(uploadedVehicle ?? []),
+                      ...vehicleImages
+                    ]}
+                    onRemove={(item) => removeFile(item, setVehicleImages)}
+                  />
+
+                </Stack>
+              </Paper>
+            </Section> */}
+
+
+
+
             {
               hasFollowUp && (
                 <Section
@@ -538,13 +656,13 @@ const LeadDetailsDrawer = ({
                 />
                 <Row
                   label="Start Date"
-                    value={formatDate(lead.start_date)}
+                  value={formatDate(lead.start_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />
                 <Row
                   label="Expiry Date"
-                   value={formatDate(lead.policy_expiry_date)}
+                  value={formatDate(lead.policy_expiry_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />
@@ -556,8 +674,6 @@ const LeadDetailsDrawer = ({
                 />
               </Section>
             )}
-
-
 
             {
               isCallAccess && (

@@ -339,118 +339,118 @@ export const getActivityDetails = (activity) => {
 
 
 export const groupLeadData = (
-    allCallDetails = [],
-    activeStatus = []
+  allCallDetails = [],
+  activeStatus = []
 ) => {
 
-    const groups = {};
+  const groups = {};
 
-    // Create groups from status master
-    activeStatus.forEach((status) => {
-        if (status?.status_id != null) {
-            groups[status.status_id] = [];
-        }
-    });
+  // Create groups from status master
+  activeStatus.forEach((status) => {
+    if (status?.status_id != null) {
+      groups[status.status_id] = [];
+    }
+  });
 
-    // Custom groups
-    groups[-1] = []; // Pending
-    groups[-2] = []; // Follow-up Reminder
-    groups[-3] = []; // Policy Renewal
+  // Custom groups
+  groups[-1] = []; // Pending
+  groups[-2] = []; // Follow-up Reminder
+  groups[-3] = []; // Policy Renewal
 
-    const today = new Date();
+  const today = new Date();
 
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
 
-    const nextMonthDate = addMonths(today, 1);
-    const nextMonth = nextMonthDate.getMonth();
-    const nextMonthYear = nextMonthDate.getFullYear();
+  const nextMonthDate = addMonths(today, 1);
+  const nextMonth = nextMonthDate.getMonth();
+  const nextMonthYear = nextMonthDate.getFullYear();
 
-    allCallDetails.forEach((lead) => {
+  allCallDetails.forEach((lead) => {
 
-        const statusId = Number(lead?.status_id);
+    const statusId = Number(lead?.status_id);
 
-        // Make sure this status group exists
-        if (
-            statusId &&
-            groups[statusId] === undefined
-        ) {
-            groups[statusId] = [];
-        }
+    // Make sure this status group exists
+    if (
+      statusId &&
+      groups[statusId] === undefined
+    ) {
+      groups[statusId] = [];
+    }
 
-        // -------------------------
-        // Status Tabs
-        // -------------------------
+    // -------------------------
+    // Status Tabs
+    // -------------------------
 
-        if (statusId === 1) {
+    if (statusId === 1) {
 
-            // Only opened leads
-            if (lead?.work_status === "IN_PROGRESS") {
-                groups[statusId]?.push(lead);
-            }
+      // Only opened leads
+      if (lead?.work_status === "IN_PROGRESS") {
+        groups[statusId]?.push(lead);
+      }
 
-        } else {
+    } else {
 
-            groups[statusId]?.push(lead);
+      groups[statusId]?.push(lead);
 
-        }
+    }
 
-        // -------------------------
-        // Pending
-        // -------------------------
+    // -------------------------
+    // Pending
+    // -------------------------
 
-        if (lead?.work_status === "NOT_STARTED") {
-            groups[-1].push(lead);
-        }
+    if (lead?.work_status === "NOT_STARTED") {
+      groups[-1].push(lead);
+    }
 
-        // -------------------------
-        // Follow-up Reminder
-        // -------------------------
+    // -------------------------
+    // Follow-up Reminder
+    // -------------------------
 
-        if (lead?.next_followup_date) {
-            groups[-2].push(lead);
-        }
+    if (lead?.next_followup_date && Number(lead.status_id) !== 6) {
+      groups[-2].push(lead);
+    }
 
-        // -------------------------
-        // Policy Renewal
-        // Show Current Month + Next Month
-        // -------------------------
+    // -------------------------
+    // Policy Renewal
+    // Show Current Month + Next Month
+    // -------------------------
 
-        if (lead?.policy_expiry_date) {
+    if (lead?.policy_expiry_date) {
 
-            try {
+      try {
 
-                const expiryDate = parseISO(
-                    lead.policy_expiry_date
-                );
+        const expiryDate = parseISO(
+          lead.policy_expiry_date
+        );
 
-                const expiryMonth = expiryDate.getMonth();
-                const expiryYear = expiryDate.getFullYear();
+        const expiryMonth = expiryDate.getMonth();
+        const expiryYear = expiryDate.getFullYear();
 
-                const isCurrentMonth =
-                    expiryMonth === currentMonth &&
-                    expiryYear === currentYear;
+        const isCurrentMonth =
+          expiryMonth === currentMonth &&
+          expiryYear === currentYear;
 
-                const isNextMonth =
-                    expiryMonth === nextMonth &&
-                    expiryYear === nextMonthYear;
+        const isNextMonth =
+          expiryMonth === nextMonth &&
+          expiryYear === nextMonthYear;
 
-                if (isCurrentMonth || isNextMonth) {
-                    groups[-3].push(lead);
-                }
-
-            } catch (err) {
-                console.error(
-                    "Invalid policy_expiry_date:",
-                    lead?.policy_expiry_date
-                );
-            }
-
+        if (isCurrentMonth || isNextMonth) {
+          groups[-3].push(lead);
         }
 
-    });
+      } catch (err) {
+        console.error(
+          "Invalid policy_expiry_date:",
+          lead?.policy_expiry_date
+        );
+      }
 
-    return groups;
+    }
+
+  });
+
+  return groups;
 
 };
 

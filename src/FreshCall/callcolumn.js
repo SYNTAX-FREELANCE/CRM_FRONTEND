@@ -20,7 +20,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Typography
             sx={{ fontSize: 12 }}
             variant="body2"
-            fontWeight={900}
+            fontWeight={600}
             color={isDark ? "#f8fafc" : "#0f172a"}
           >
             {row.customer_name}
@@ -90,7 +90,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Typography
             sx={{ fontSize: 12 }}
             variant="body2"
-            fontWeight={900}
+            fontWeight={600}
             color={isDark ? "#f8fafc" : "#0f172a"}
           >
             {row.customer_name}
@@ -108,7 +108,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           sx={{ fontSize: 12 }}
           variant="body2"
           color={isDark ? "#f8fafc" : "#0f172a"}
-          fontWeight={900}
+          fontWeight={600}
         >
           {params.value}
         </Typography>
@@ -130,7 +130,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             <Typography
               variant="body2"
               sx={{ fontSize: 12 }}
-              fontWeight={900}
+              fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
               {formattedDate}
@@ -141,7 +141,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
     },
     {
       field: "registration_date",
-      headerName: "Manufacture Date",
+      headerName: "REGISTRATION DATE",
       minWidth: 140,
       flex: 0.8,
       renderCell: ({ value }) => {
@@ -155,7 +155,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             <Typography
               variant="body2"
               sx={{ fontSize: 12 }}
-              fontWeight={900}
+              fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
               {formattedDate}
@@ -166,7 +166,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
     },
     {
       field: "next_followup_date",
-      headerName: "Next Follow Up Date",
+      headerName: "REMINDER DATE",
       minWidth: 140,
       flex: 0.8,
       renderCell: ({ value }) => {
@@ -180,7 +180,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             <Typography
               variant="body2"
               sx={{ fontSize: 12 }}
-              fontWeight={900}
+              fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
               {formattedDate}
@@ -198,7 +198,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
         <Typography
           variant="body2"
           sx={{ fontSize: 12 }}
-          fontWeight={900}
+          fontWeight={600}
           color={isDark ? "#f8fafc" : "#0f172a"}
         >
           {params.value}
