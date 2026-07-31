@@ -45,6 +45,7 @@ import {
   getCustomerPolicyDetails,
   getPolicyFilesDetails,
   getUserAttendanceDetails,
+  getLeadUploadFiles,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -428,11 +429,23 @@ export const useGetPolicyFiles = (policyId) => {
 
 
 export const useGetUserAttendance = (userId) => {
-    return useQuery({
-        queryKey: ["user-attendance", userId],
-        queryFn: () => getUserAttendanceDetails(userId),
-        enabled: Boolean(userId),
-        staleTime: Infinity,
-    });
+  return useQuery({
+    queryKey: ["user-attendance", userId],
+    queryFn: () => getUserAttendanceDetails(userId),
+    enabled: Boolean(userId),
+    staleTime: Infinity,
+  });
 
+};
+
+
+
+export const useGetLeadFiles = (leadId) => {
+  return useQuery({
+    queryKey: ["lead-files", leadId],
+    queryFn: () => getLeadUploadFiles(leadId),
+    enabled: Boolean(leadId),
+    staleTime: Infinity,
+    enabled: !!leadId
+  });
 };

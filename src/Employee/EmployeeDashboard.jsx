@@ -97,11 +97,6 @@ const EmployeeDashboard = () => {
     const { data: remindersData = [], isLoading: LoadingReminderData } = useFetchDashBoardReminders(id);
 
 
-    console.log({
-        remindersData
-    });
-    
-
     const { data: ToSaleEmployees = [], isLoading: LoadingTopEmployees } = useTopEmployess();
 
     return (

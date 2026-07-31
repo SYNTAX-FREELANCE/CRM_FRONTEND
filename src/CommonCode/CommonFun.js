@@ -404,7 +404,7 @@ export const FetchCallCenterPerformance = async (
     console.error("FetchCallCenterPerformance error:", error);
     throw new Error(
       error?.response?.data?.message ||
-        "Failed to fetch call center performance",
+      "Failed to fetch call center performance",
     );
   }
 };
@@ -697,6 +697,21 @@ export const getPolicyFilesDetails = async (policyId) => {
   try {
     const response = await axioslogin.get(
       `/employee/policy-documents/${policyId}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getPolicyFilesDetails error:", error);
+    return [];
+  }
+};
+
+export const getLeadUploadFiles = async (leadId) => {
+  if (!leadId) return [];
+  try {
+    const response = await axioslogin.get(
+      `/employee/lead-documents/${leadId}`,
     );
     const { success, data } = response.data;
     if (success === 1) return data;

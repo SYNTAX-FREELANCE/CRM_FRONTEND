@@ -64,10 +64,6 @@ export default function FreshCallsWorkspace() {
     refetch
   } = useGetMyEmployeeActiveCalls(id);
 
-console.log({
-  AllCallDetails
-});
-
 
 
   const openLead = useCallback(async (lead) => {
