@@ -7,13 +7,13 @@ const themeColors = {
     textLight: "#64748B",
 };
 
-const DetailLine = ({ label, value }) => (
+const DetailLine = ({ label, value, isDark }) => (
     <Stack
         direction="row"
         justifyContent="space-between"
         spacing={2}
         sx={{
-            bgcolor: "#fffffe",
+            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
             p: 0.5,
             borderBottom: "0.5px solid #716c6c3d",
         }}
@@ -21,7 +21,7 @@ const DetailLine = ({ label, value }) => (
         <Typography
             variant="body2"
             sx={{
-                color: themeColors.textLight,
+                color:  isDark ? "#f8fafc" : "text.secondary",
                 minWidth: 110,
                 fontWeight: 800,
                 fontSize: { xs: 10, sm: 14 },
@@ -32,7 +32,7 @@ const DetailLine = ({ label, value }) => (
         <Typography
             variant="body2"
             sx={{
-                color: themeColors.textDark,
+                color: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                 fontWeight: 800,
                 textAlign: "right",
                 fontSize: { xs: 12, sm: 14 },

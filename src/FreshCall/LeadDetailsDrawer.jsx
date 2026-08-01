@@ -53,11 +53,9 @@ const glassEffect = {
   border: "1px solid rgba(255, 255, 255, 0.18)",
 };
 
-
 const StatusActionCards = lazy(() => import("./Components/StatusActionCards"))
 const FollowUpForm = lazy(() => import("./Components/FollowUpForm"))
 const LeadHeader = lazy(() => import("./Components/LeadHeader"))
-
 
 const leadColor = "#2563eb";
 
@@ -65,12 +63,12 @@ const LeadDetailsDrawer = ({
   open,
   onClose,
   selectedLead,
-  setSelectedLead
+  setSelectedLead,
+  statusFilter
 }) => {
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
-
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -81,10 +79,10 @@ const LeadDetailsDrawer = ({
   };
 
   const lead = selectedLead || {};
-
+  const isRenewalTab = Number(statusFilter) === -3;
   const leadId = lead?.lead_id;
   const statusId = lead?.status_id;
-  const isCallAccess = lead?.is_call_required === 1;
+  const isCallAccess = lead?.is_call_required === 1 || isRenewalTab;
   const VehicleId = lead?.vehicle_id;
 
   const [callAnchorEl, setCallAnchorEl] = useState(null);

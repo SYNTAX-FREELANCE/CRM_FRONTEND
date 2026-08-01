@@ -4,6 +4,7 @@ import {
     Box,
     Stack,
     Typography,
+    useTheme,
 } from "@mui/material";
 
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
@@ -12,6 +13,9 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 
 const CustomerHeader = ({ customer }) => {
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     return (
         <Box
             sx={{
@@ -20,8 +24,8 @@ const CustomerHeader = ({ customer }) => {
                 zIndex: 10,
                 px: 3,
                 py: 2.5,
-                bgcolor: "#fff",
-                borderBottom: "1px solid #e5e7eb",
+                borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.8)",
+                bgcolor: isDark ? "rgba(34, 46, 69, 0.93)" : "#fff",
             }}
         >
             <Stack
@@ -49,7 +53,7 @@ const CustomerHeader = ({ customer }) => {
                             sx={{
                                 fontSize: { xs: 16, md: 24 },
                                 fontWeight: 800,
-                                color: "#060606",
+                                color: isDark ? "#f8fafc" : "#2f333c",
                             }}
                         >
                             {customer?.customer_name?.toUpperCase()}
@@ -74,7 +78,7 @@ const CustomerHeader = ({ customer }) => {
                                         sx={{
                                             fontSize: 10,
                                             fontWeight: 800,
-                                            color: "#494848",
+                                            color: isDark ? "#f8fafc" : "text.secondary",
                                         }}
                                     >
                                         {customer?.mobile_number_1 || "-"}
@@ -89,7 +93,7 @@ const CustomerHeader = ({ customer }) => {
                                         sx={{
                                             fontSize: 10,
                                             fontWeight: 800,
-                                            color: "#494848",
+                                            color: isDark ? "#f8fafc" : "text.secondary",
                                         }}
                                     >
                                         {customer?.email || "-"}
@@ -107,7 +111,7 @@ const CustomerHeader = ({ customer }) => {
                                         sx={{
                                             fontSize: 10,
                                             fontWeight: 800,
-                                            color: "#494848",
+                                            color: isDark ? "#f8fafc" : "text.secondary",
                                         }}
                                     >
                                         Customer Type -
@@ -117,7 +121,7 @@ const CustomerHeader = ({ customer }) => {
                                         sx={{
                                             fontSize: 10,
                                             fontWeight: 800,
-                                            color: "#494848",
+                                            color: isDark ? "#f8fafc" : "text.secondary",
                                         }}
                                     >
                                         {customer?.is_previous_customer
@@ -135,7 +139,7 @@ const CustomerHeader = ({ customer }) => {
                                         sx={{
                                             fontSize: 10,
                                             fontWeight: 800,
-                                            color: "#494848",
+                                            color: isDark ? "#f8fafc" : "text.secondary",
                                         }}
                                     >
                                         {[customer?.city, customer?.district]

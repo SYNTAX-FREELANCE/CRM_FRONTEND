@@ -9,6 +9,7 @@ import {
     Divider,
     Chip,
     InputAdornment,
+    useTheme,
 } from "@mui/material";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
@@ -27,6 +28,10 @@ const PolicyDetailsForm = ({
     setPolicyData,
     insuranceCompanies = [],
 }) => {
+
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const handleChange = (field) => (event) => {
         setPolicyData((prev) => ({
             ...prev,
@@ -38,7 +43,7 @@ const PolicyDetailsForm = ({
         <Box
             sx={{
                 p: 2.5,
-                bgcolor: "#fff",
+                bgcolor:  isDark ? "#1e293b" : "#ffffff",
                 borderRadius: 3,
             }}>
             <Divider sx={{ mb: 3 }}>
