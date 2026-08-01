@@ -21,6 +21,7 @@ import {
     FormControl,
     InputLabel,
     Avatar,
+    useTheme,
 } from '@mui/material';
 import { useGetCustomerPolicyDetails } from '../CommonCode/useQuery';
 import PolicyCard from './CustomersComponents/PolicyCard';
@@ -65,6 +66,10 @@ const CustomerDetail = () => {
         isError,
         refetch,
     } = useGetCustomerPolicyDetails(customerid);
+
+    
+        const theme = useTheme();
+        const isDark = theme.palette.mode === 'dark';
 
     const customer = useMemo(() => {
         if (!policyDetails?.length) return null;
@@ -143,7 +148,8 @@ const CustomerDetail = () => {
                     border: "1px solid rgba(255,255,255,.65)",
                     boxShadow: "0 20px 40px rgba(15,23,42,.05)",
                     borderRadius: 0,
-                    background: "rgba(255,255,255,.5)",
+                    // background: "rgba(255,255,255,.5)",
+                      bgcolor: isDark ? "rgba(36, 44, 60, 0.93)" : "#fff",
                     backdropFilter: "blur(24px)",
 
                     display: "flex",
@@ -182,6 +188,7 @@ const CustomerDetail = () => {
                     >
                         {policyDetails?.map((policy) => (
                             <PolicyCard
+                            isDark={isDark}
                                 key={policy.policy_id}
                                 policy={policy}
                                 onOpen={() =>

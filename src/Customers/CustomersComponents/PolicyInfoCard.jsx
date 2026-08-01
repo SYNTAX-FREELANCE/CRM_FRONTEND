@@ -27,8 +27,10 @@ const formatDate = (isoString) => {
 
 
 
-const PolicyInfoCard = ({ policy }) => {
+const PolicyInfoCard = ({ policy ,isDark}) => {
     if (!policy) return null;
+
+
 
     return (
         <Paper
@@ -62,7 +64,7 @@ const PolicyInfoCard = ({ policy }) => {
                         <Typography
                             sx={{
                                 fontWeight: 700,
-                                color: "#111827",
+                                color: isDark ? "#ffffff" : "#1e293b",
                                 lineHeight: 1,
                                 fontSize: { xs: 15, sm: 20 },
                             }}
@@ -98,21 +100,22 @@ const PolicyInfoCard = ({ policy }) => {
             </Stack>
 
             <Stack spacing={1.25}>
-                <DetailLine
+                <DetailLine isDark={isDark}
                     label="Vehicle"
                     value={`${policy.vehicle_maker} ${policy.model}`}
                 />
-                <DetailLine label="Reg No" value={policy.registration_number} />
-                <DetailLine label="Engine No" value={policy.engine_number || "-"} />
-                <DetailLine label="Chassis No" value={policy.chassis_number || "-"} />
-                <DetailLine label="Start Date" value={formatDate(policy.start_date)} />
-                <DetailLine label="Expiry Date" value={formatDate(policy.expiry_date)} />
-                <DetailLine label="Premium" value={`₹${policy.premium_amount}`} />
+                <DetailLine isDark={isDark} label="Reg No" value={policy.registration_number} />
+                <DetailLine isDark={isDark}  label="Engine No" value={policy.engine_number || "-"} />
+                <DetailLine isDark={isDark} label="Chassis No" value={policy.chassis_number || "-"} />
+                <DetailLine isDark={isDark} label="Start Date" value={formatDate(policy.start_date)} />
+                <DetailLine isDark={isDark} label="Expiry Date" value={formatDate(policy.expiry_date)} />
+                <DetailLine isDark={isDark}  label="Premium" value={`₹${policy.premium_amount}`} />
                 <DetailLine
+                isDark={isDark}
                     label="IDV"
                     value={`₹${policy.insured_declared_value}`}
                 />
-                <DetailLine label="Sold By" value={policy.sold_by || "-"} />
+                <DetailLine isDark={isDark} label="Sold By" value={policy.sold_by || "-"} />
             </Stack>
 
             <Box

@@ -13,7 +13,7 @@ import {
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 
 
-const PolicyCard = ({ policy, onOpen }) => {
+const PolicyCard = ({ policy, onOpen, isDark }) => {
     const status = (policy.policy_status || "UNKNOWN").toUpperCase();
 
     const statusColor =
