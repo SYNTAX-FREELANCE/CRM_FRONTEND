@@ -46,6 +46,8 @@ import {
   getPolicyFilesDetails,
   getUserAttendanceDetails,
   getLeadUploadFiles,
+  getFetTargetMaster,
+  getEmployeeTargetDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -447,5 +449,23 @@ export const useGetLeadFiles = (leadId) => {
     enabled: Boolean(leadId),
     staleTime: Infinity,
     enabled: !!leadId
+  });
+};
+
+
+export const useTargetMaster = () => {
+  return useQuery({
+    queryKey: ["target-master"],
+    queryFn: getFetTargetMaster,
+  });
+};
+
+export const useGetMyTargetDetail = (employeeid) => {
+  return useQuery({
+    queryKey: ["employee-current-target", employeeid],
+    queryFn: () => getEmployeeTargetDetails(employeeid),
+    enabled: Boolean(employeeid),
+    staleTime: Infinity,
+    enabled: !!employeeid
   });
 };

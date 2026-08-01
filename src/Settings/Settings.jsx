@@ -52,6 +52,7 @@ const Settings = () => {
         { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
         { menuslno: 10, label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
         { menuslno: 11, label: "Vehicle Master", path: "/home/setting/vehiclemaster", icon: <DirectionsCarIcon /> },
+
       ],
     },
     {
@@ -65,6 +66,7 @@ const Settings = () => {
         { menuslno: 14, label: "User Right Master", path: "/home/setting/userrightmaster", icon: <VpnKeyIcon /> },
         { menuslno: 15, label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
         { menuslno: 16, label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
+        { menuslno: 17, label: "Target Master", path: "/home/setting/targetmaster", icon: <DirectionsCarIcon /> },
       ],
     },
 

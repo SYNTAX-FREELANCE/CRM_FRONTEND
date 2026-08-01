@@ -130,7 +130,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                        bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                         p: 1
                     }}
                 >
@@ -142,8 +142,6 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             gap: 1.5,
                             flexDirection: { xs: "column", sm: "row" },
                             mb: 2,
-                            
-
                         }} >
                         <Box>
                             <Typography sx={{ fontSize: { xs: 18, md: 22 }, fontWeight: 900, color: isDark ? "#f8fafc" : "#0f172a" }}>
@@ -176,7 +174,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             },
                             gap: 2,
                             width: "100%",
-                            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fffdfd",
                         }}
                     >
 
