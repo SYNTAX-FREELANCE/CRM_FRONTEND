@@ -35,6 +35,7 @@ const VehicleCreation = () => {
         vehicleCategory: "",
         fuelType: "",
         seatCapacity: "",
+        knownPolicyExpiryDate: "",
     });
 
     const [toast, setToast] = useState("");
@@ -74,6 +75,7 @@ const VehicleCreation = () => {
             vehicleCategory: "",
             fuelType: "",
             seatCapacity: "",
+            knownPolicyExpiryDate: "",
         });
     };
 
@@ -94,60 +96,60 @@ const VehicleCreation = () => {
             return false;
         }
 
-        if (!vehicle.rto.trim()) {
-            warningNotify("RTO Details is required");
-            return false;
-        }
+        // if (!vehicle.rto.trim()) {
+        //     warningNotify("RTO Details is required");
+        //     return false;
+        // }
 
-        if (!vehicle.registrationData) {
-            warningNotify("Registration Date is required");
-            return false;
-        }
+        // if (!vehicle.registrationData) {
+        //     warningNotify("Registration Date is required");
+        //     return false;
+        // }
 
-        if (!vehicle.vehicleMaker.trim()) {
-            warningNotify("Vehicle Maker is required");
-            return false;
-        }
+        // if (!vehicle.vehicleMaker.trim()) {
+        //     warningNotify("Vehicle Maker is required");
+        //     return false;
+        // }
 
-        if (!vehicle.model.trim()) {
-            warningNotify("Vehicle Model is required");
-            return false;
-        }
+        // if (!vehicle.model.trim()) {
+        //     warningNotify("Vehicle Model is required");
+        //     return false;
+        // }
 
-        if (!vehicle.engineNumber.trim()) {
-            warningNotify("Engine Number is required");
-            return false;
-        }
+        // if (!vehicle.engineNumber.trim()) {
+        //     warningNotify("Engine Number is required");
+        //     return false;
+        // }
 
-        if (!vehicle.chassisNumber.trim()) {
-            warningNotify("Chassis Number is required");
-            return false;
-        }
+        // if (!vehicle.chassisNumber.trim()) {
+        //     warningNotify("Chassis Number is required");
+        //     return false;
+        // }
 
-        if (!vehicle.vehicleClass.trim()) {
-            warningNotify("Vehicle Class is required");
-            return false;
-        }
+        // if (!vehicle.vehicleClass.trim()) {
+        //     warningNotify("Vehicle Class is required");
+        //     return false;
+        // }
 
-        if (!vehicle.vehicleCategory.trim()) {
-            warningNotify("Vehicle Category is required");
-            return false;
-        }
+        // if (!vehicle.vehicleCategory.trim()) {
+        //     warningNotify("Vehicle Category is required");
+        //     return false;
+        // }
 
-        if (!vehicle.fuelType) {
-            warningNotify("Fuel Type is required");
-            return false;
-        }
+        // if (!vehicle.fuelType) {
+        //     warningNotify("Fuel Type is required");
+        //     return false;
+        // }
 
-        if (!vehicle.seatCapacity || !vehicle.seatCapacity.toString().trim()) {
-            warningNotify("Seating Capacity is required");
-            return false;
-        }
+        // if (!vehicle.seatCapacity || !vehicle.seatCapacity.toString().trim()) {
+        //     warningNotify("Seating Capacity is required");
+        //     return false;
+        // }
 
-        if (!/^\d+$/.test(vehicle.seatCapacity.toString().trim())) {
-            warningNotify("Seat Capacity must be numeric");
-            return false;
-        }
+        // if (!/^\d+$/.test(vehicle.seatCapacity.toString().trim())) {
+        //     warningNotify("Seat Capacity must be numeric");
+        //     return false;
+        // }
 
         return true;
     };
@@ -168,6 +170,11 @@ const VehicleCreation = () => {
                     formattedDate = new Date(data.registration_date).toISOString().split('T')[0];
                 }
 
+                let formattedExpiryDate = "";
+                if (data.known_policy_expiry_date) {
+                    formattedExpiryDate = new Date(data.known_policy_expiry_date).toISOString().split('T')[0];
+                }
+
                 setVehicle({
                     customerId: data.customer_id || "",
                     registrationNumber: data.registration_number || "",
@@ -181,6 +188,7 @@ const VehicleCreation = () => {
                     vehicleCategory: data.vehicle_category || "",
                     fuelType: data.fuel_type || "",
                     seatCapacity: data.seat_capacity || "",
+                    knownPolicyExpiryDate: formattedExpiryDate,
                 });
             }
         } catch (error) {
@@ -212,7 +220,9 @@ const VehicleCreation = () => {
                 vehicle_class: vehicle.vehicleClass.trim() || null,
                 vehicle_category: vehicle.vehicleCategory.trim() || null,
                 fuel_type: vehicle.fuelType || null,
-                seat_capacity: vehicle.seatCapacity || null
+                seat_capacity: vehicle.seatCapacity || null,
+                known_policy_expiry_date: vehicle.knownPolicyExpiryDate || null,
+                expiry_date: vehicle.knownPolicyExpiryDate || null
             };
 
             let response;
@@ -330,7 +340,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="RTO Details" required>
+                                <FormRow label="RTO Details" >
                                     <InputLg
                                         value={vehicle.rto}
                                         onChange={set("rto")}
@@ -338,14 +348,32 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Registration Date" required>
+                                <FormRow label="Registration Date" >
                                     <InputDate
                                         value={vehicle.registrationData}
                                         onChange={set("registrationData")}
                                     />
                                 </FormRow>
 
-                                <FormRow label="Vehicle Maker" required>
+                                <FormRow label="Expire Date" >
+                                    <input
+                                        type="date"
+                                        style={{
+                                            height: "30px",
+                                            width: "100%",
+                                            fontSize: "13px",
+                                            border: "1px solid #d1d5db",
+                                            borderRadius: "4px",
+                                            padding: "0 8px",
+                                            outline: "none",
+                                            backgroundColor: "#fff",
+                                        }}
+                                        value={vehicle.knownPolicyExpiryDate}
+                                        onChange={set("knownPolicyExpiryDate")}
+                                    />
+                                </FormRow>
+
+                                <FormRow label="Vehicle Maker" >
                                     <InputLg
                                         value={vehicle.vehicleMaker}
                                         onChange={set("vehicleMaker")}
@@ -353,7 +381,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Vehicle Model" required>
+                                <FormRow label="Vehicle Model" >
                                     <InputLg
                                         value={vehicle.model}
                                         onChange={set("model")}
@@ -363,7 +391,7 @@ const VehicleCreation = () => {
                             </div>
 
                             <div>
-                                <FormRow label="Engine Number" required>
+                                <FormRow label="Engine Number" >
                                     <InputLg
                                         value={vehicle.engineNumber}
                                         onChange={set("engineNumber")}
@@ -371,7 +399,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Chassis Number" required>
+                                <FormRow label="Chassis Number" >
                                     <InputLg
                                         value={vehicle.chassisNumber}
                                         onChange={set("chassisNumber")}
@@ -379,7 +407,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Vehicle Class" required>
+                                <FormRow label="Vehicle Class" >
                                     <InputLg
                                         value={vehicle.vehicleClass}
                                         onChange={set("vehicleClass")}
@@ -387,7 +415,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Vehicle Category" required>
+                                <FormRow label="Vehicle Category" >
                                     <InputLg
                                         value={vehicle.vehicleCategory}
                                         onChange={set("vehicleCategory")}
@@ -395,7 +423,7 @@ const VehicleCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Fuel Type" required>
+                                <FormRow label="Fuel Type" >
                                     <select
                                         style={{
                                             border: "1px solid #d1d5db",
@@ -420,7 +448,7 @@ const VehicleCreation = () => {
                                     </select>
                                 </FormRow>
 
-                                <FormRow label="Seating Capacity" required>
+                                <FormRow label="Seating Capacity" >
                                     <InputLg
                                         value={vehicle.seatCapacity}
                                         onChange={set("seatCapacity")}
