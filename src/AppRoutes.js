@@ -68,6 +68,7 @@ const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
 const MyCustomers = lazy(() => import("./Customers/MyCustomers"));
 const CustomerDetail = lazy(() => import("./Customers/CustomerDetail"));
 const PolicyUploadDetails = lazy(() => import("./Customers/PolicyUploadDetails"));
+const EmployeeTargetCreation = lazy(() => import("./Masters/TargetMaster/EmployeeTargetCreation"));
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -312,7 +313,10 @@ const router = createBrowserRouter([
         path: "reports/DetailedUserLogReports",
         element: withSuspense(DetailedEmployeeLoginReport),
       },
-
+      {
+        path: "setting/targetmaster",
+        element: withSuspense(EmployeeTargetCreation),
+      },
 
       // {
       //   path: "*",

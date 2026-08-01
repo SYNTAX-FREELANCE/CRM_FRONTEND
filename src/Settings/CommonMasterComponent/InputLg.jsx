@@ -1,14 +1,21 @@
 // src/components/forms/InputLg.jsx
 
-import { styles } from '../../Style/formStyles';
+import { styles } from "../../Style/formStyles";
 
-const InputLg = ({ value, onChange, placeholder }) => (
+const InputLg = ({
+    value,
+    type = "text",
+    onChange,
+    placeholder,
+    ...props
+}) => (
     <input
         style={styles.inputLg}
-        type="text"
+        type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        {...props}
     />
 );
 

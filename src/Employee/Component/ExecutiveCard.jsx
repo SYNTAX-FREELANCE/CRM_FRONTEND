@@ -115,7 +115,7 @@ const ExecutiveCard = ({
                         }}
                     >
                         {name
-                            .split(" ")
+                            ?.split(" ")
                             .map((s) => s[0])
                             .slice(0, 2)
                             .join("")}
