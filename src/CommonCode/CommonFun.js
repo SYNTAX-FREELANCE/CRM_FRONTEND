@@ -736,3 +736,35 @@ export const getUserAttendanceDetails = async (userId) => {
     return [];
   }
 };
+
+
+
+export const getFetTargetMaster = async () => {
+  try {
+    const response = await axioslogin.get(`/target/getall`);
+    const { success, data } = response.data;
+    if (success !== 1) {
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.error("getFetTargetMaster error:", error);
+    return [];
+  }
+};
+
+
+export const getEmployeeTargetDetails = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/target/current/${empid}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getEmployeeTargetDetails error:", error);
+    return [];
+  }
+};
