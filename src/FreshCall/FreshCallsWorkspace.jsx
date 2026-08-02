@@ -55,7 +55,6 @@ export default function FreshCallsWorkspace() {
   const { data: EmployeeTargetDetails = [] } = useGetMyTargetDetail(id);
 
 
-
   const {
     data: AllCallDetails = [],
     isLoading: LoadingTableData,
@@ -406,6 +405,7 @@ export default function FreshCallsWorkspace() {
             onClose={() => setDetailOpen(false)}
             selectedLead={selectedLead}
             setSelectedLead={setSelectedLead}
+            statusFilter={statusFilter}
           />
         }
       </Suspense>

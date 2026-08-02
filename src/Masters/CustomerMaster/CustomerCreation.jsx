@@ -32,6 +32,7 @@ const CustomerCreation = () => {
         state: "",
         pincode: "",
         isActive: "Active",
+        isPreviousCustomer: false,
     });
 
     const [toast, setToast] = useState("");
@@ -74,6 +75,7 @@ const CustomerCreation = () => {
             state: "",
             pincode: "",
             isActive: "Active",
+            isPreviousCustomer: false,
         });
     };
 
@@ -83,10 +85,10 @@ const CustomerCreation = () => {
             return false;
         }
 
-        if (!/^[a-zA-Z\s]+$/.test(customer.customerName.trim())) {
-            warningNotify("Customer Name must contain only letters and spaces");
-            return false;
-        }
+        // if (!/^[a-zA-Z\s]+$/.test(customer.customerName.trim())) {
+        //     warningNotify("Customer Name must contain only letters and spaces");
+        //     return false;
+        // }
 
         if (customer.customerName.trim().length < 2) {
             warningNotify("Customer Name must be at least 2 characters");
@@ -108,51 +110,51 @@ const CustomerCreation = () => {
             return false;
         }
 
-        if (customer.mobileNumber2.trim() && customer.mobileNumber2.trim().length !== 10) {
-            warningNotify("Mobile Number 2 must be exactly 10 digits");
-            return false;
-        }
+        // if (customer.mobileNumber2.trim() && customer.mobileNumber2.trim().length !== 10) {
+        //     warningNotify("Mobile Number 2 must be exactly 10 digits");
+        //     return false;
+        // }
 
-        if (!customer.email.trim()) {
-            warningNotify("Email Address is required");
-            return false;
-        }
+        // if (!customer.email.trim()) {
+        //     warningNotify("Email Address is required");
+        //     return false;
+        // }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(customer.email.trim())) {
-            warningNotify("Invalid email address format");
-            return false;
-        }
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // if (!emailRegex.test(customer.email.trim())) {
+        //     warningNotify("Invalid email address format");
+        //     return false;
+        // }
 
-        if (!customer.address.trim()) {
-            warningNotify("Address is required");
-            return false;
-        }
+        // if (!customer.address.trim()) {
+        //     warningNotify("Address is required");
+        //     return false;
+        // }
 
-        if (!customer.city.trim()) {
-            warningNotify("City is required");
-            return false;
-        }
+        // if (!customer.city.trim()) {
+        //     warningNotify("City is required");
+        //     return false;
+        // }
 
-        if (!customer.district.trim()) {
-            warningNotify("District is required");
-            return false;
-        }
+        // if (!customer.district.trim()) {
+        //     warningNotify("District is required");
+        //     return false;
+        // }
 
-        if (!customer.state.trim()) {
-            warningNotify("State is required");
-            return false;
-        }
+        // if (!customer.state.trim()) {
+        //     warningNotify("State is required");
+        //     return false;
+        // }
 
-        if (!customer.pincode.trim()) {
-            warningNotify("Pincode is required");
-            return false;
-        }
+        // if (!customer.pincode.trim()) {
+        //     warningNotify("Pincode is required");
+        //     return false;
+        // }
 
-        if (!/^\d{6}$/.test(customer.pincode.trim())) {
-            warningNotify("Pincode must be exactly 6 digits");
-            return false;
-        }
+        // if (!/^\d{6}$/.test(customer.pincode.trim())) {
+        //     warningNotify("Pincode must be exactly 6 digits");
+        //     return false;
+        // }
 
         return true;
     };
@@ -178,6 +180,7 @@ const CustomerCreation = () => {
                     state: data.state || "",
                     pincode: data.pincode || "",
                     isActive: data.is_active === 1 ? "Active" : "Inactive",
+                    isPreviousCustomer: data.is_previous_customer === 1 || data.is_previous_customer === true || data.is_previous_customer === "yes",
                 });
             }
         } catch (error) {
@@ -207,7 +210,8 @@ const CustomerCreation = () => {
                 district: customer.district.trim() || null,
                 state: customer.state.trim() || null,
                 pincode: customer.pincode.trim() || null,
-                is_active: customer.isActive === "Active" ? 1 : 0
+                is_active: customer.isActive === "Active" ? 1 : 0,
+                is_previous_customer: customer.isPreviousCustomer ? 1 : 0
             };
 
             let response;
@@ -275,6 +279,7 @@ const CustomerCreation = () => {
                     { field: "email", headerName: "Email Address" },
                     { field: "city", headerName: "City" },
                     { field: "state", headerName: "State" },
+                    { field: "is_previous_customer", headerName: "Previous Customer", type: "status" },
                     { field: "is_active", headerName: "Status", type: "status" }
                 ]
             }
@@ -334,7 +339,7 @@ const CustomerCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Email Address" required>
+                                <FormRow label="Email Address" >
                                     <InputLg
                                         value={customer.email}
                                         onChange={set("email")}
@@ -342,7 +347,7 @@ const CustomerCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Address" required>
+                                <FormRow label="Address" >
                                     <textarea
                                         style={{
                                             ...styles.inputLg,
@@ -359,7 +364,7 @@ const CustomerCreation = () => {
                             </div>
 
                             <div>
-                                <FormRow label="City" required>
+                                <FormRow label="City" >
                                     <InputLg
                                         value={customer.city}
                                         onChange={set("city")}
@@ -367,7 +372,7 @@ const CustomerCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="District" required>
+                                <FormRow label="District" >
                                     <InputLg
                                         value={customer.district}
                                         onChange={set("district")}
@@ -375,7 +380,7 @@ const CustomerCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="State" required>
+                                <FormRow label="State" >
                                     <InputLg
                                         value={customer.state}
                                         onChange={set("state")}
@@ -383,7 +388,7 @@ const CustomerCreation = () => {
                                     />
                                 </FormRow>
 
-                                <FormRow label="Pincode" required>
+                                <FormRow label="Pincode" >
                                     <InputLg
                                         value={customer.pincode}
                                         onChange={set("pincode")}
@@ -396,6 +401,39 @@ const CustomerCreation = () => {
                                         value={customer.isActive}
                                         onChange={set("isActive")}
                                     />
+                                </FormRow>
+
+                                <FormRow label="Is Previous Customer">
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", height: "40px" }}>
+                                        <input
+                                            type="checkbox"
+                                            id="isPreviousCustomer"
+                                            checked={customer.isPreviousCustomer}
+                                            onChange={(e) =>
+                                                setCustomer((prev) => ({
+                                                    ...prev,
+                                                    isPreviousCustomer: e.target.checked
+                                                }))
+                                            }
+                                            style={{
+                                                width: "20px",
+                                                height: "20px",
+                                                cursor: "pointer",
+                                                accentColor: "#2563eb"
+                                            }}
+                                        />
+                                        <label
+                                            htmlFor="isPreviousCustomer"
+                                            style={{
+                                                cursor: "pointer",
+                                                fontSize: "14px",
+                                                fontWeight: 500,
+                                                color: customer.isPreviousCustomer ? "#2563eb" : "#64748b"
+                                            }}
+                                        >
+                                            {customer.isPreviousCustomer ? "Yes" : "No"}
+                                        </label>
+                                    </div>
                                 </FormRow>
                             </div>
                         </div>

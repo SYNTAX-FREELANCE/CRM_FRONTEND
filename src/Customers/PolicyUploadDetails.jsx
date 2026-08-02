@@ -18,6 +18,7 @@ import {
     FormControl,
     InputLabel,
     IconButton,
+    useTheme,
 } from '@mui/material';
 import { useGetCustomerPolicyDetails, useGetPolicyFiles } from '../CommonCode/useQuery';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
@@ -46,6 +47,9 @@ const themeColors = {
 const PolicyUploadDetails = () => {
     const { customerid, policyid } = useParams();
     const navigate = useNavigate();
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const authUser = getAuthUser();
     const { id } = authUser ?? {}
@@ -246,7 +250,7 @@ const PolicyUploadDetails = () => {
                     border: "1px solid rgba(255,255,255,.65)",
                     boxShadow: "0 20px 40px rgba(15,23,42,.05)",
                     borderRadius: 0,
-                    background: "rgba(255,255,255,.5)",
+                    background: isDark ? "rgba(12, 18, 26, 0.93)" : "#fff",
                     backdropFilter: "blur(24px)",
 
                     display: "flex",
@@ -274,7 +278,7 @@ const PolicyUploadDetails = () => {
                     }}
                 >
 
-                    <PolicyInfoCard policy={policy} />
+                    <PolicyInfoCard isDark={isDark} policy={policy} />
 
                     <Paper
                         elevation={0}
@@ -297,7 +301,7 @@ const PolicyUploadDetails = () => {
                                 sx={{
                                     fontSize: { xs: 15, sm: 20 },
                                     fontWeight: 600,
-                                    color: themeColors.textDark,
+                                    color:isDark ? "#f8fafc" : "text.secondary",
                                     mb: 3,
                                 }}>
                                 POLICY DOCUMENT UPLOADS
@@ -384,7 +388,7 @@ const PolicyUploadDetails = () => {
                 </Box>
             </Paper>
             <FloatingBackButton />
-        </Box>
+        </Box >
     );
 };
 
