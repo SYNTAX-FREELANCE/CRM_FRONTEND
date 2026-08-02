@@ -3,6 +3,7 @@ import { Card, Box, Avatar, CircularProgress, Typography, Chip, Stack, IconButto
 import { CameraAlt, Email, Call } from "@mui/icons-material";
 import { useAuth } from "../../Context/AuthContext";
 import { successNotify } from "../../constant/Constant";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const ProfileWidget = ({
     displayEmployee,
@@ -11,6 +12,8 @@ const ProfileWidget = ({
     handleProfilePhotoChange,
     isAdmin
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
 
     return (
         <Card
@@ -18,8 +21,9 @@ const ProfileWidget = ({
                 p: 0,
                 borderRadius: "24px",
                 overflow: "hidden",
-                border: "1px solid rgba(0,0,0,0.02)",
-                boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                bgcolor: isDark ? "#1e293b" : "white",
+                border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
+                boxShadow: isDark ? "0 12px 36px rgba(0, 0, 0, 0.4)" : "0 12px 36px rgba(15, 23, 42, 0.03)",
                 height: { xs: "auto", md: "390px" }
             }}
         >
@@ -31,7 +35,9 @@ const ProfileWidget = ({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)",
+                        background: isDark
+                            ? "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%)"
+                            : "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)",
                         position: "relative"
                     }}
                 >
@@ -70,15 +76,15 @@ const ProfileWidget = ({
                     sx={{
                         width: 90,
                         height: 90,
-                        border: "4px solid #ffffff",
-                        boxShadow: "0 8px 24px rgba(15, 23, 42, 0.1)",
+                        border: isDark ? "4px solid #1e293b" : "4px solid #ffffff",
+                        boxShadow: isDark ? "0 8px 24px rgba(0, 0, 0, 0.5)" : "0 8px 24px rgba(15, 23, 42, 0.1)",
                         position: "absolute",
                         bottom: "-45px",
                         left: { xs: "50%", sm: "24px" },
                         transform: { xs: "translateX(-50%)", sm: "none" },
                         zIndex: 2,
-                        bgcolor: "#e0e7ff",
-                        color: "#4f46e5",
+                        bgcolor: isDark ? "#312e81" : "#e0e7ff",
+                        color: isDark ? "#a5b4fc" : "#4f46e5",
                         fontSize: "32px",
                         fontWeight: 800,
                         cursor: (isAdmin || isProfilePhotoUploading) ? "default" : "pointer",
@@ -124,7 +130,7 @@ const ProfileWidget = ({
                     }}
                 >
                     <Box sx={{ minWidth: 0, pr: { xs: 0, sm: 2 } }}>
-                        <Typography level="title-lg" sx={{ fontWeight: 900, color: "#1e1b4b" }} noWrap>
+                        <Typography level="title-lg" sx={{ fontWeight: 900, color: isDark ? "#f8fafc" : "#1e1b4b" }} noWrap>
                             {displayEmployee.name}
                         </Typography>
                         <Box sx={{ display: "flex", justifyContent: { xs: "center", sm: "flex-start" }, alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
@@ -134,8 +140,8 @@ const ProfileWidget = ({
                                 sx={{
                                     fontSize: "10px",
                                     fontWeight: 800,
-                                    bgcolor: "rgba(124, 58, 237, 0.08)",
-                                    color: "#7c3aed",
+                                    bgcolor: isDark ? "rgba(167, 139, 250, 0.15)" : "rgba(124, 58, 237, 0.08)",
+                                    color: isDark ? "#c084fc" : "#7c3aed",
                                     px: 1,
                                     py: 0.25,
                                     borderRadius: "6px"
@@ -173,11 +179,11 @@ const ProfileWidget = ({
                                 borderRadius: "50%",
                                 width: "36px",
                                 height: "36px",
-                                borderColor: "rgba(99, 102, 241, 0.15)",
-                                color: "#4f46e5",
-                                bgcolor: "rgba(99, 102, 241, 0.02)",
+                                borderColor: isDark ? "rgba(165, 180, 252, 0.3)" : "rgba(99, 102, 241, 0.15)",
+                                color: isDark ? "#a5b4fc" : "#4f46e5",
+                                bgcolor: isDark ? "rgba(99, 102, 241, 0.15)" : "rgba(99, 102, 241, 0.02)",
                                 transition: "0.2s",
-                                "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
+                                "&:hover": { bgcolor: isDark ? "rgba(99, 102, 241, 0.3)" : "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
                             }}
                         >
                             <Email sx={{ fontSize: 15 }} />
@@ -193,22 +199,22 @@ const ProfileWidget = ({
                                 borderRadius: "50%",
                                 width: "36px",
                                 height: "36px",
-                                borderColor: "rgba(99, 102, 241, 0.15)",
-                                color: "#4f46e5",
-                                bgcolor: "rgba(99, 102, 241, 0.02)",
+                                borderColor: isDark ? "rgba(165, 180, 252, 0.3)" : "rgba(99, 102, 241, 0.15)",
+                                color: isDark ? "#a5b4fc" : "#4f46e5",
+                                bgcolor: isDark ? "rgba(99, 102, 241, 0.15)" : "rgba(99, 102, 241, 0.02)",
                                 transition: "0.2s",
-                                "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
+                                "&:hover": { bgcolor: isDark ? "rgba(99, 102, 241, 0.3)" : "rgba(99, 102, 241, 0.08)", transform: "scale(1.08)" }
                             }}
                         >
                             <Call sx={{ fontSize: 15 }} />
                         </IconButton>
                     </Stack>
                 </Box>
-                <Divider sx={{ mb: 2, opacity: 0.6 }} />
+                <Divider sx={{ mb: 2, opacity: isDark ? 0.2 : 0.6 }} />
                 <Stack spacing={1.5}>
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "center", sm: "center" }, gap: { xs: 0.5, sm: 0 } }}>
-                        <Typography level="body-xs" sx={{ color: "neutral.500", fontWeight: 700 }}>Worksite Location</Typography>
-                        <Typography level="body-xs" sx={{ color: "#1e1b4b", fontWeight: 800 }}>{displayEmployee.company}</Typography>
+                        <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.500", fontWeight: 700 }}>Worksite Location</Typography>
+                        <Typography level="body-xs" sx={{ color: isDark ? "#f8fafc" : "#1e1b4b", fontWeight: 800 }}>{displayEmployee.company}</Typography>
                     </Box>
                 </Stack>
             </Box>

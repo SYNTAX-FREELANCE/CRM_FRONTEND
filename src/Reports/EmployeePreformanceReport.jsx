@@ -25,7 +25,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+// import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
 import { useThemeMode } from "../Context/ThemeContext";
 import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
+import UserSelectDropdown from "../CommonComponents/UserSelectDropdown";
 
 const getFirstDayOfMonth = () => {
     const date = new Date();
@@ -55,7 +56,7 @@ const EmployeePreformanceReport = () => {
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
-    
+
     const [employeeId, setEmployeeId] = useState("");
     const [startDate, setStartDate] = useState(getFirstDayOfMonth());
     const [endDate, setEndDate] = useState(getTodayDate());
@@ -82,15 +83,16 @@ const EmployeePreformanceReport = () => {
         try {
             setLoading(true);
             setSearched(true);
-            
+
             let url = `/reports/employee-performance?employeeId=${encodeURIComponent(employeeId)}`;
             if (startDate && endDate) {
                 url += `&fromDate=${startDate}&toDate=${endDate}`;
             }
 
             const response = await axioslogin.get(url);
-            
+
             if (response.data?.success === 1) {
+                console.log(response.data.data);
                 setReportData(response.data.data || []);
                 setPage(0);
                 successNotify(`Retrieved ${response.data.data?.length || 0} performance records.`);
@@ -115,7 +117,7 @@ const EmployeePreformanceReport = () => {
 
         try {
             setExportLoading(true);
-            
+
             let url = `/reports/employee-performance/export?employeeId=${encodeURIComponent(employeeId)}`;
             if (startDate && endDate) {
                 url += `&fromDate=${startDate}&toDate=${endDate}`;
@@ -311,23 +313,16 @@ const EmployeePreformanceReport = () => {
                     <Grid xs={12} sm={4} md={3}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Employee ID *
+                                Select Employee *
                             </Typography>
-                            <Input
-                                placeholder="Enter Employee ID"
+                            <UserSelectDropdown
                                 value={employeeId}
-                                onChange={(e) => setEmployeeId(e.target.value)}
-                                sx={{
-                                    borderRadius: "12px",
-                                    height: "40px",
-                                    backgroundColor: inputBg,
-                                    color: inputTextColor,
-                                    border: inputBorder,
-                                    px: 2,
-                                    "& input::placeholder": {
-                                        color: isDark ? "#64748b" : "#94a3b8"
-                                    }
-                                }}
+                                onChange={(val) => setEmployeeId(val)}
+                                placeholder="Select Employee"
+                                isDark={isDark}
+                                inputBg={inputBg}
+                                inputTextColor={inputTextColor}
+                                inputBorder={inputBorder}
                             />
                         </Box>
                     </Grid>
@@ -534,25 +529,26 @@ const EmployeePreformanceReport = () => {
                                     <Table stickyHeader size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell>
+                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer ID</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Vehicle ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell> */}
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer Name</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Name</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned To</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned Date</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell>
+                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell> */}
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Work Status</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell>
+                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell> */}
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Remarks</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell>
+                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Active</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Requires Follow-up</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Call Required</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy Required</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Follow-up Date Required</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created By</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -573,27 +569,28 @@ const EmployeePreformanceReport = () => {
                                                                 }
                                                             }}
                                                         >
-                                                            <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell>
+                                                            {/* <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.customer_id}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.vehicle_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell> */}
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_name || "N/A"}</TableCell>
                                                             <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.status_name || "N/A"}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.employee_name ? `${row.employee_name} (${row.employee_id})` : (row.assigned_to || "Unassigned")}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDate(row.assigned_date)}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell>
+                                                            {/* <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell> */}
                                                             <TableCell>{renderWorkStatusBadge(row.work_status)}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell>
+                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell> */}
                                                             <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: textPrimaryColor }}>
                                                                 {row.remarks || "—"}
                                                             </TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
+                                                            {/* <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
                                                             <TableCell>{renderBooleanBadge(row.status_is_active, "Active", "Inactive")}</TableCell>
                                                             <TableCell>{renderBooleanBadge(row.requires_followup, "Yes", "No")}</TableCell>
                                                             <TableCell>{renderBooleanBadge(row.is_call_required, "Yes", "No")}</TableCell>
                                                             <TableCell>{renderBooleanBadge(row.is_policy_required, "Yes", "No")}</TableCell>
                                                             <TableCell>{renderBooleanBadge(row.is_followup_date_required, "Yes", "No")}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.created_by || "—"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell>
+                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell> */}
                                                         </TableRow>
                                                     );
                                                 })}

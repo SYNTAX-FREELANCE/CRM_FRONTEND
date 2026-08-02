@@ -52,12 +52,6 @@ const MyProfilePage = () => {
         refetch,
     } = useGetUserAttendance(id);
 
-    console.log(
-        attendance
-    );
-
-
-
     const fileInputRef = useRef(null);
     const formatHours = (hours) => {
         if (!hours) return "--";

@@ -51,7 +51,7 @@ const getTodayDate = () => {
     return `${year}-${month}-${day}`;
 };
 
-const UserLogReports = () => {
+const DetailedUserLogReports = () => {
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
@@ -75,7 +75,7 @@ const UserLogReports = () => {
 
     const handleSearch = async () => {
         if (!employeeId.trim()) {
-            warningNotify("Please enter an Employee ID");
+            warningNotify("Please select an Employee");
             return;
         }
         if (!startDate || !endDate) {
@@ -87,20 +87,20 @@ const UserLogReports = () => {
             setLoading(true);
             setSearched(true);
             const response = await axioslogin.get(
-                `/reports/employee-attendance?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`
+                `/reports/employee-attendance-detailed?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`
             );
             
             if (response.data?.success === 1) {
                 setReportData(response.data.data || []);
                 setPage(0);
-                successNotify(`Retrieved ${response.data.data?.length || 0} attendance records.`);
+                successNotify(`Retrieved ${response.data.data?.length || 0} detailed attendance records.`);
             } else {
-                warningNotify(response.data?.message || "Failed to fetch attendance data");
+                warningNotify(response.data?.message || "Failed to fetch detailed attendance data");
                 setReportData([]);
             }
         } catch (error) {
-            console.error("Fetch attendance error:", error);
-            errorNotify("An error occurred while fetching the attendance logs");
+            console.error("Fetch detailed attendance error:", error);
+            errorNotify("An error occurred while fetching detailed attendance logs");
             setReportData([]);
         } finally {
             setLoading(false);
@@ -116,7 +116,7 @@ const UserLogReports = () => {
         try {
             setExportLoading(true);
             const response = await axioslogin.get(
-                `/reports/employee-attendance/export?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`,
+                `/reports/employee-attendance-detailed/export?employeeId=${encodeURIComponent(employeeId)}&fromDate=${startDate}&toDate=${endDate}`,
                 { responseType: "blob" }
             );
 
@@ -127,15 +127,15 @@ const UserLogReports = () => {
             const urlBlob = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = urlBlob;
-            link.setAttribute("download", `attendance_report_${employeeId}_${startDate}_to_${endDate}.xlsx`);
+            link.setAttribute("download", `detailed_attendance_report_${employeeId}_${startDate}_to_${endDate}.xlsx`);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(urlBlob);
-            successNotify("Attendance spreadsheet downloaded successfully!");
+            successNotify("Detailed attendance spreadsheet downloaded successfully!");
         } catch (error) {
             console.error("Export Excel error:", error);
-            errorNotify("Failed to download attendance spreadsheet");
+            errorNotify("Failed to download detailed attendance spreadsheet");
         } finally {
             setExportLoading(false);
         }
@@ -201,12 +201,16 @@ const UserLogReports = () => {
     return (
         <Box
             sx={{
-                p: { xs: 2, sm: 3, md: 4 },
                 minHeight: "95vh",
-                transition: "background 0.3s ease",
+                width: "100%",
+                overflowY: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": { display: "none" },
+                p: { xs: 1.5, sm: 2, md: 3 },
                 background: isDark
                     ? `
-                      radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.6) 0%, transparent 40%),
+                      radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.5) 0%, transparent 40%),
                       radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.7) 0%, transparent 40%),
                       linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
                     `
@@ -269,10 +273,10 @@ const UserLogReports = () => {
                                 }}
                             >
                                 <SecurityIcon sx={{ color: "#3b82f6", fontSize: "2rem" }} />
-                                Employee Login Report
+                                Detailed Employee Login Report
                             </Typography>
                             <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5, fontWeight: 500 }}>
-                                View and audit employee login logs, shift statuses, and productivity hours.
+                                View all individual session log-ins, log-outs, and shift productivity details per employee.
                             </Typography>
                         </Box>
                     </Box>
@@ -314,13 +318,21 @@ const UserLogReports = () => {
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: inputBg,
+                                        color: inputTextColor,
                                         height: "40px",
                                         "& fieldset": {
-                                            borderColor: isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1",
+                                            border: inputBorder,
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#3b82f6",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                            borderColor: "#3b82f6",
                                         },
                                     },
                                     "& input": {
                                         color: inputTextColor,
+                                        fontSize: "14px",
                                     }
                                 }}
                             />
@@ -342,133 +354,144 @@ const UserLogReports = () => {
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: inputBg,
+                                        color: inputTextColor,
                                         height: "40px",
                                         "& fieldset": {
-                                            borderColor: isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1",
+                                            border: inputBorder,
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#3b82f6",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                            borderColor: "#3b82f6",
                                         },
                                     },
                                     "& input": {
                                         color: inputTextColor,
+                                        fontSize: "14px",
                                     }
                                 }}
                             />
                         </Box>
                     </Grid>
                     <Grid xs={12} sm={12} md={4}>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                gap: 1.5,
-                                flexWrap: "wrap",
-                                justifyContent: { xs: "stretch", sm: "flex-end" },
-                            }}
-                        >
+                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
                             <Button
-                                startDecorator={<RefreshIcon />}
-                                variant="outlined"
-                                color="neutral"
-                                onClick={handleReset}
+                                variant="solid"
+                                color="primary"
+                                startDecorator={loading ? <CircularProgress size="sm" /> : <SearchIcon />}
+                                onClick={handleSearch}
+                                disabled={loading}
                                 sx={{
                                     borderRadius: "12px",
-                                    fontWeight: 600,
+                                    height: "40px",
+                                    px: 2.5,
+                                    fontWeight: 700,
+                                    bgcolor: "#3b82f6",
+                                    "&:hover": { bgcolor: "#2563eb" },
+                                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+                                }}
+                            >
+                                Search Logs
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="neutral"
+                                startDecorator={<RefreshIcon />}
+                                onClick={handleReset}
+                                disabled={loading}
+                                sx={{
+                                    borderRadius: "12px",
+                                    height: "40px",
+                                    px: 2,
+                                    borderColor: isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1",
                                     color: textPrimaryColor,
-                                    border: isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #cbd5e1"
+                                    "&:hover": {
+                                        bgcolor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                                    },
                                 }}
                             >
                                 Reset
                             </Button>
                             <Button
-                                startDecorator={loading ? <CircularProgress size="sm" /> : <SearchIcon />}
                                 variant="solid"
-                                color="primary"
-                                onClick={handleSearch}
-                                disabled={loading}
+                                color="success"
+                                startDecorator={exportLoading ? <CircularProgress size="sm" /> : <FileDownloadIcon />}
+                                onClick={handleExportExcel}
+                                disabled={exportLoading || reportData.length === 0}
                                 sx={{
                                     borderRadius: "12px",
+                                    height: "40px",
+                                    px: 2.5,
                                     fontWeight: 700,
-                                    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                                    boxShadow: "0 4px 12px rgba(37, 99, 235, 0.2)",
-                                    "&:hover": {
-                                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                                    },
+                                    bgcolor: "#10b981",
+                                    "&:hover": { bgcolor: "#059669" },
+                                    boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
                                 }}
                             >
-                                Search Report
+                                Export Excel
                             </Button>
-                            {reportData.length > 0 && (
-                                <Button
-                                    startDecorator={exportLoading ? <CircularProgress size="sm" color="success" /> : <FileDownloadIcon />}
-                                    variant="solid"
-                                    color="success"
-                                    onClick={handleExportExcel}
-                                    disabled={exportLoading}
-                                    sx={{
-                                        borderRadius: "12px",
-                                        fontWeight: 700,
-                                        background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                                        boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
-                                        "&:hover": {
-                                            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                                        },
-                                    }}
-                                >
-                                    Export Excel
-                                </Button>
-                            )}
                         </Box>
                     </Grid>
                 </Grid>
 
-                {/* Table Data View */}
+                {/* Results Section */}
                 {searched && (
-                    <Box>
+                    <Box sx={{ mt: 2 }}>
                         {loading ? (
-                            <Box sx={{ display: "flex", justifyContent: "center", py: 8, flexDirection: "column", alignItems: "center", gap: 2 }}>
-                                <CircularProgress size="lg" />
-                                <Typography level="body-sm" sx={{ color: textSecondaryColor }}>
-                                    Compiling attendance logs...
-                                </Typography>
+                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
+                                <CircularProgress size="lg" color="primary" />
                             </Box>
                         ) : filteredData.length === 0 ? (
-                            <Box sx={{ textAlign: "center", py: 8, border: isDark ? "2px dashed rgba(255,255,255,0.15)" : "2px dashed #cbd5e1", borderRadius: "16px" }}>
-                                <Typography level="h4" sx={{ fontWeight: 800, color: textPrimaryColor }}>
-                                    No Records Found
+                            <Box
+                                sx={{
+                                    textAlign: "center",
+                                    py: 8,
+                                    px: 2,
+                                    bgcolor: isDark ? "rgba(30, 41, 59, 0.3)" : "rgba(248, 250, 252, 0.8)",
+                                    borderRadius: "16px",
+                                    border: isDark ? "1px dashed rgba(255, 255, 255, 0.15)" : "1px dashed #cbd5e1",
+                                }}
+                            >
+                                <Typography level="title-md" sx={{ color: textPrimaryColor, fontWeight: 700 }}>
+                                    No detailed attendance logs found
                                 </Typography>
-                                <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1 }}>
-                                    No login records exist for employee: {employeeId} in the selected dates.
+                                <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5 }}>
+                                    Try selecting a different employee or expanding the date range.
                                 </Typography>
                             </Box>
                         ) : (
                             <Box>
-                                {/* Filter and Record stats bar */}
+                                {/* Filter Bar above table */}
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        flexDirection: { xs: "column", sm: "row" },
                                         justifyContent: "space-between",
-                                        alignItems: { xs: "stretch", sm: "center" },
+                                        alignItems: "center",
+                                        flexWrap: "wrap",
                                         gap: 2,
                                         mb: 2,
                                     }}
                                 >
-                                    <Typography level="body-sm" sx={{ fontWeight: 600, color: textSecondaryColor }}>
-                                        Showing {filteredData.length} logs of {reportData.length} found.
+                                    <Typography level="body-sm" sx={{ fontWeight: 700, color: textSecondaryColor }}>
+                                        Showing {filteredData.length} records
                                     </Typography>
+
                                     <Input
-                                        placeholder="Search records in view..."
+                                        placeholder="Search in table..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         startDecorator={<FilterAltIcon sx={{ color: textSecondaryColor }} />}
                                         endDecorator={
                                             searchQuery && (
-                                                <Button
+                                                <IconButton
                                                     variant="plain"
                                                     color="neutral"
                                                     onClick={() => setSearchQuery("")}
                                                     sx={{ p: 0.5, minWidth: 0, borderRadius: "50%" }}
                                                 >
                                                     <ClearIcon sx={{ fontSize: "14px", color: textSecondaryColor }} />
-                                                </Button>
+                                                </IconButton>
                                             )
                                         }
                                         sx={{
@@ -517,7 +540,7 @@ const UserLogReports = () => {
                                                     const rowBg = isEven ? tableRowEvenBg : tableRowOddBg;
                                                     return (
                                                         <TableRow
-                                                            key={row.attendance_date || row.id || index}
+                                                            key={row.id || index}
                                                             hover
                                                             sx={{
                                                                 bgcolor: rowBg,
@@ -553,18 +576,13 @@ const UserLogReports = () => {
                                         setPage(0);
                                     }}
                                     sx={{
-                                        borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                                        color: textPrimaryColor,
-                                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                                            fontSize: "13px",
-                                            fontWeight: 500,
+                                        color: textSecondaryColor,
+                                        borderTop: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
+                                        ".MuiTablePagination-selectIcon": {
                                             color: textSecondaryColor,
                                         },
-                                        "& .MuiTablePagination-select": {
-                                            fontSize: "13px",
-                                        },
-                                        "& .MuiTablePagination-actions svg": {
-                                            color: textPrimaryColor
+                                        ".MuiTablePagination-actions button": {
+                                            color: textSecondaryColor,
                                         }
                                     }}
                                 />
@@ -572,34 +590,9 @@ const UserLogReports = () => {
                         )}
                     </Box>
                 )}
-
-                {/* Initial View State (before search) */}
-                {!searched && (
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            py: 10,
-                            textAlign: "center",
-                            border: isDark ? "2px dashed rgba(255,255,255,0.15)" : "2px dashed #cbd5e1",
-                            borderRadius: "16px",
-                            backgroundColor: isDark ? "rgba(30, 41, 59, 0.2)" : "rgba(248, 250, 252, 0.4)",
-                        }}
-                    >
-                        <SearchIcon sx={{ color: isDark ? "#475569" : "#94a3b8", fontSize: "3rem", mb: 2 }} />
-                        <Typography level="h4" sx={{ fontWeight: 800, color: textPrimaryColor }}>
-                            Run Attendance Query
-                        </Typography>
-                        <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1, maxWidth: 400 }}>
-                            Enter an Employee ID and select dates to query user logs.
-                        </Typography>
-                    </Box>
-                )}
             </Card>
         </Box>
     );
 };
 
-export default UserLogReports;
+export default DetailedUserLogReports;

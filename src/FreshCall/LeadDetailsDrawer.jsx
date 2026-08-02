@@ -10,6 +10,8 @@ import {
   Typography,
   Divider,
   TextField,
+  Paper,
+  useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
@@ -25,6 +27,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+import EditDocumentIcon from '@mui/icons-material/EditDocument';
 
 import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
@@ -42,6 +45,7 @@ import StatusActionCardsSkeleton from "../SkeletonComponent/StatusActionCardsSke
 import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
 import { DatePicker } from "@mui/x-date-pickers";
 import EditableDateField from "./Components/EditableDateField";
+import LeadVehicleUploads from "./Components/LeadVehicleUploads";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -49,11 +53,9 @@ const glassEffect = {
   border: "1px solid rgba(255, 255, 255, 0.18)",
 };
 
-
 const StatusActionCards = lazy(() => import("./Components/StatusActionCards"))
 const FollowUpForm = lazy(() => import("./Components/FollowUpForm"))
 const LeadHeader = lazy(() => import("./Components/LeadHeader"))
-
 
 const leadColor = "#2563eb";
 
@@ -61,13 +63,15 @@ const LeadDetailsDrawer = ({
   open,
   onClose,
   selectedLead,
-  setSelectedLead
+  setSelectedLead,
+  statusFilter
 }) => {
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {};
 
-
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const formatDate = (date) => {
     if (!date) return "-";
@@ -75,10 +79,10 @@ const LeadDetailsDrawer = ({
   };
 
   const lead = selectedLead || {};
-
+  const isRenewalTab = Number(statusFilter) === -3;
   const leadId = lead?.lead_id;
   const statusId = lead?.status_id;
-  const isCallAccess = lead?.is_call_required === 1;
+  const isCallAccess = lead?.is_call_required === 1 || isRenewalTab;
   const VehicleId = lead?.vehicle_id;
 
   const [callAnchorEl, setCallAnchorEl] = useState(null);
@@ -385,14 +389,14 @@ const LeadDetailsDrawer = ({
           maxWidth: "100%",
           height: "100%",
           ...glassEffect,
-          bgcolor: "rgba(255, 255, 255, 0.82)",
+          bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
           boxShadow:
             "0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(255, 255, 255, 0.5) inset",
           overflow: "hidden",
         },
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff", }}>
 
         <LeadHeader
           lead={lead}
@@ -483,6 +487,130 @@ const LeadDetailsDrawer = ({
               />
             </Section>
 
+            {/* <Section
+              title="Upload Details"
+              icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
+              accent="blue"
+              defaultExpanded={true}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 4,
+                  border: `1px solid ${themeColors.border}`,
+                  // width: { xs: "100%", lg: "50%" },
+                  width: '100%'
+                }}
+              >
+                <Box sx={{
+                  display: "flex",
+                  gap: 1
+                }}>
+                  <EditDocumentIcon sx={{
+                    color: '#fb3e05'
+                  }} />
+                  <Typography
+                    sx={{
+                      fontSize: { xs: 15, sm: 20 },
+                      fontWeight: 600,
+                      color: themeColors.textDark,
+                      mb: 3,
+                    }}>
+                    POLICY DOCUMENT UPLOADS
+                  </Typography>
+                </Box>
+
+
+
+                <Stack spacing={2}>
+
+                  <UploadBox
+                    title="Registration Certificate (RC)"
+                    subtitle="Upload the vehicle Registration Certificate (Smart Card or RC Book)."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setRcFiles)}
+                    onAdd={() => uploadFiles(rcFiles, "RC")}
+                  />
+
+                  <UploadPreview
+                    files={[
+                      ...(uploadedRC ?? []),
+                      ...rcFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setRcFiles)}
+                  />
+
+                  <UploadBox
+                    title="Previous Insurance Policy"
+                    subtitle="Upload the latest insurance policy document for renewal verification."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setPolicyFiles)}
+                    onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
+                  />
+                  <UploadPreview
+                    files={[
+                      ...(uploadedPolicy ?? []),
+                      ...policyFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setPolicyFiles)}
+                  />
+
+                  <UploadBox
+                    title="Customer KYC Documents"
+                    subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setKycFiles)}
+                    onAdd={() => uploadFiles(kycFiles, "KYC")}
+                  />
+
+                  <UploadPreview
+                    files={[
+                      ...(uploadedKYC ?? []),
+                      ...kycFiles
+                    ]}
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    onRemove={(item) => removeFile(item, setKycFiles)}
+                  />
+
+                  <UploadBox
+                    title="Vehicle Inspection Images"
+                    subtitle="Upload clear photos of the Front, Rear, Left Side, Right Side and any existing damages if applicable."
+                    multiple
+                    loading={loading}
+                    onChange={(e) => handleUpload(e, setVehicleImages)}
+                    onAdd={() => uploadFiles(vehicleImages, "VEHICLE_IMAGE")}
+                  />
+
+                  <UploadPreview
+                    LoadingPolicyFiles={LoadingPolicyFiles}
+                    files={[
+                      ...(uploadedVehicle ?? []),
+                      ...vehicleImages
+                    ]}
+                    onRemove={(item) => removeFile(item, setVehicleImages)}
+                  />
+
+                </Stack>
+              </Paper>
+            </Section> */}
+            <Section
+              title="Upload Details"
+              icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
+              accent="blue"
+              defaultExpanded={true}
+            >
+
+              <LeadVehicleUploads lead={lead} />
+            </Section>
+
+
+
             {
               hasFollowUp && (
                 <Section
@@ -538,13 +666,13 @@ const LeadDetailsDrawer = ({
                 />
                 <Row
                   label="Start Date"
-                    value={formatDate(lead.start_date)}
+                  value={formatDate(lead.start_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />
                 <Row
                   label="Expiry Date"
-                   value={formatDate(lead.policy_expiry_date)}
+                  value={formatDate(lead.policy_expiry_date)}
                   icon={<ArticleIcon sx={{ fontSize: 14 }} />}
                   accent="orange"
                 />
@@ -557,8 +685,6 @@ const LeadDetailsDrawer = ({
               </Section>
             )}
 
-
-
             {
               isCallAccess && (
                 <Box
@@ -567,12 +693,12 @@ const LeadDetailsDrawer = ({
                     p: 1.5,
                     borderRadius: 2.5,
                     ...glassEffect,
-                    bgcolor: "rgba(255,255,255,0.6)",
+                    bgcolor: isDark ? "rgba(10, 17, 45, 0.78)" : "rgba(255,255,255,0.6)",
                   }}
                 >
                   <Typography
                     variant="caption"
-                    sx={{ fontWeight: 900, color: "#2563eb", letterSpacing: 0.8 }}
+                    sx={{ fontWeight: 900, color: isDark ? "#ffffff" : "#1e293b", letterSpacing: 0.8 }}
                   >
                     LEAD STATUS
                   </Typography>
@@ -581,7 +707,6 @@ const LeadDetailsDrawer = ({
 
                   <Suspense fallback={<StatusActionCardsSkeleton />}>
                     <StatusActionCards
-                      // statuses={ActiveStatus}
                       selectedStatus={selectedStatus}
                       onStatusClick={handleSelectStatus}
                       onReset={handleReset}

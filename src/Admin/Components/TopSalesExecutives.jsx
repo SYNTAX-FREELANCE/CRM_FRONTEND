@@ -76,7 +76,7 @@ const TopSalesExecutives = ({ data = [] }) => {
                     display: "none",
                 },
             }}>
-                {top3.map((item, idx) => (
+                {top3?.map((item, idx) => (
                     <ExecutiveCard
                         key={item.employee_id || item.user_id || idx}
                         rank={item.rank_no}
@@ -84,7 +84,7 @@ const TopSalesExecutives = ({ data = [] }) => {
                         avatar={item.avatar}
                         calls={item.total_calls}
                         sold={item.total_sold}
-                        empid={item.user_id}
+                        empid={item.employee_id}
                         highlight={idx === 0}
                     />
                 ))}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Paper, Divider } from "@mui/material";
+import { Box, Typography, Paper, Divider, useTheme } from "@mui/material";
 import CustomerDetailPanel from "./CustomerDetailPage";
 import CustomerSearchBar from "./CustomerSearchBar";
 
@@ -7,16 +7,18 @@ import CustomerSearchBar from "./CustomerSearchBar";
 const CustomerSearchPage = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
 
     return (
-        <Box sx={{ minHeight: "90vh", bgcolor: "#f8fafc" }}>
+        <Box sx={{ minHeight: "90vh", bgcolor: isDark ? "background.default" : "#f8fafc" }}>
             <Box
                 sx={{
                     p: { xs: 2, md: 3 },
                 }}>
                 <Typography variant="h4"
                     fontWeight={900}
-                    sx={{ mb: 0.5, color: "#0f172a", fontSize: { xs: 25, md: 30 } }}>
+                    sx={{ mb: 0.5, color: isDark ? "text.primary" : "#0f172a", fontSize: { xs: 25, md: 30 } }}>
                     Global Customer Search
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 3, color: "text.secondary", fontSize: { xs: 8, md: 12 } }}>
@@ -28,7 +30,7 @@ const CustomerSearchPage = () => {
                     setDetailLoading={setDetailLoading}
                 />
 
-                <Divider sx={{ my: 3 }} />
+                <Divider sx={{ my: 3, borderColor: isDark ? "rgba(255,255,255,0.12)" : undefined }} />
 
                 <CustomerDetailPanel
                     customer={selectedCustomer}

@@ -23,11 +23,14 @@ import LeadCard from './Components/LeadCard';
 import { axioslogin } from '../Connection/axios';
 import { errorNotify, getAuthUser, successNotify, warningNofity } from '../constant/Constant';
 import { useQueryClient } from '@tanstack/react-query';
+import { useThemeMode } from '../Context/ThemeContext';
 
 
 const EmployeeBatchDetail = () => {
     const { empid } = useParams();
     const authUser = getAuthUser();
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
 
     const queryClient = useQueryClient();
 
@@ -99,11 +102,17 @@ const EmployeeBatchDetail = () => {
             sx={{
                 height: '95vh',
                 width: '100%',
-                background: `
-                    radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-                    radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-                    linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-                `,
+                background: isDark
+                    ? `
+                        radial-gradient(circle at 15% 25%, rgba(30, 41, 59, 0.4) 0%, transparent 45%),
+                        radial-gradient(circle at 85% 75%, rgba(15, 23, 42, 0.6) 0%, transparent 45%),
+                        linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
+                      `
+                    : `
+                        radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                        radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                        linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                      `,
             }}
         >
             <Paper
@@ -113,10 +122,10 @@ const EmployeeBatchDetail = () => {
                     width: '100%',
                     borderRadius: 2,
                     overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.7)',
-                    background: 'rgba(255,255,255,0.62)',
+                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.7)',
+                    background: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255,255,255,0.62)',
                     backdropFilter: 'blur(22px)',
-                    boxShadow: '0 18px 50px rgba(15, 23, 42, 0.08)',
+                    boxShadow: isDark ? '0 20px 40px rgba(0, 0, 0, 0.6)' : '0 18px 50px rgba(15, 23, 42, 0.08)',
                     display: 'flex',
                     flexDirection: 'column',
                 }}
@@ -125,9 +134,10 @@ const EmployeeBatchDetail = () => {
                     sx={{
                         px: { xs: 2, md: 3 },
                         py: { xs: 2, md: 2.5 },
-                        background: 'rgba(255,255,255,0.62)',
+                        background: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255,255,255,0.62)',
                         backdropFilter: 'blur(22px)',
-                        boxShadow: '0 18px 50px rgba(15, 23, 42, 0.08)',
+                        borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                        boxShadow: isDark ? '0 4px 20px rgba(0, 0, 0, 0.4)' : '0 18px 50px rgba(15, 23, 42, 0.08)',
                         position: 'sticky',
                         top: 0,
                         zIndex: 20,
@@ -149,9 +159,9 @@ const EmployeeBatchDetail = () => {
                                         borderRadius: '50%',
                                         display: 'grid',
                                         placeItems: 'center',
-                                        bgcolor: 'rgba(37,99,235,0.12)',
-                                        color: '#2563eb',
-                                        boxShadow: 'inset 0 0 0 1px rgba(37,99,235,0.15)',
+                                        bgcolor: isDark ? 'rgba(59,130,246,0.2)' : 'rgba(37,99,235,0.12)',
+                                        color: isDark ? '#60a5fa' : '#2563eb',
+                                        boxShadow: isDark ? 'inset 0 0 0 1px rgba(96,165,250,0.3)' : 'inset 0 0 0 1px rgba(37,99,235,0.15)',
                                     }}
                                 >
                                     <SettingsAccessibilityIcon sx={{ fontSize: { xs: 16, sm: 22 } }} />
@@ -163,7 +173,7 @@ const EmployeeBatchDetail = () => {
                                             fontSize: { xs: 16, sm: 26 },
                                             fontWeight: 900,
                                             letterSpacing: '-0.6px',
-                                            color: '#0f172a',
+                                            color: isDark ? '#f8fafc' : '#0f172a',
                                             lineHeight: 1.1,
                                         }}>
                                         Batch Detail
@@ -171,7 +181,7 @@ const EmployeeBatchDetail = () => {
                                     <Typography
                                         sx={{
                                             mt: 0.4,
-                                            color: '#475569',
+                                            color: isDark ? '#94a3b8' : '#475569',
                                             fontSize: { xs: 8, sm: 14 },
                                             fontWeight: 500,
                                         }}
@@ -224,7 +234,7 @@ const EmployeeBatchDetail = () => {
                                 >
                                     <Box
                                         sx={{
-                                            background: expanded ? 'transparent' : 'rgba(255,255,255,0.62)',
+                                            background: expanded ? 'transparent' : (isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255,255,255,0.62)'),
                                             borderTopRightRadius: 19,
                                             borderTopLeftRadius: 19,
                                             borderBottom: '0.5px solid rgba(240, 131, 21, 0.91)',
@@ -240,9 +250,9 @@ const EmployeeBatchDetail = () => {
                                                 px: { xs: 2, md: 3 },
                                                 py: { xs: 2, md: 2.5 },
                                                 cursor: 'pointer',
-                                                background: 'rgba(255,255,255,0.62)',
+                                                background: isDark ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255,255,255,0.62)',
                                                 backdropFilter: 'blur(22px)',
-                                                boxShadow: '0 18px 50px rgba(238, 121, 20, 0.08)',
+                                                boxShadow: isDark ? '0 18px 50px rgba(0, 0, 0, 0.4)' : '0 18px 50px rgba(238, 121, 20, 0.08)',
                                                 borderTopRightRadius: 10,
                                                 borderTopLeftRadius: 10,
                                             }}
@@ -258,7 +268,7 @@ const EmployeeBatchDetail = () => {
                                                 >
                                                     <Typography
                                                         variant="h6"
-                                                        sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 16 } }}
+                                                        sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 16 }, color: isDark ? '#f8fafc' : '#0f172a' }}
                                                     >
                                                         BATCH NO #{batchNo}
                                                     </Typography>
@@ -269,6 +279,8 @@ const EmployeeBatchDetail = () => {
                                                             sx={{
                                                                 fontSize: 10,
                                                                 fontWeight: 800,
+                                                                bgcolor: isDark ? 'rgba(255,255,255,0.12)' : undefined,
+                                                                color: isDark ? '#f8fafc' : undefined,
                                                             }}
                                                         />
                                                         <Box
@@ -278,7 +290,7 @@ const EmployeeBatchDetail = () => {
                                                                 gap: 0.5,
                                                                 fontSize: 12,
                                                                 fontWeight: 800,
-                                                                color: '#2563eb',
+                                                                color: isDark ? '#60a5fa' : '#2563eb',
                                                                 userSelect: 'none',
                                                             }}
                                                         >
@@ -298,12 +310,13 @@ const EmployeeBatchDetail = () => {
                                                         fontSize: { xs: 8, sm: 10 },
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        gap: 1
+                                                        gap: 1,
+                                                        color: isDark ? '#cbd5e1' : 'inherit'
                                                     }}
                                                 >
                                                     <CalendarMonthIcon sx={{
                                                         fontSize: 12,
-                                                        color: '#ee790b'
+                                                        color: isDark ? '#f97316' : '#ee790b'
                                                     }} /> {new Date(first.assigned_at).toLocaleString()}
                                                 </Typography>
                                             </Box>

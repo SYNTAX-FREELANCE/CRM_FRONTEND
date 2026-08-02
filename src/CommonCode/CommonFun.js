@@ -404,7 +404,7 @@ export const FetchCallCenterPerformance = async (
     console.error("FetchCallCenterPerformance error:", error);
     throw new Error(
       error?.response?.data?.message ||
-        "Failed to fetch call center performance",
+      "Failed to fetch call center performance",
     );
   }
 };
@@ -707,6 +707,21 @@ export const getPolicyFilesDetails = async (policyId) => {
   }
 };
 
+export const getLeadUploadFiles = async (leadId) => {
+  if (!leadId) return [];
+  try {
+    const response = await axioslogin.get(
+      `/employee/lead-documents/${leadId}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getPolicyFilesDetails error:", error);
+    return [];
+  }
+};
+
 export const getUserAttendanceDetails = async (userId) => {
   if (!userId) return [];
   try {
@@ -718,6 +733,38 @@ export const getUserAttendanceDetails = async (userId) => {
     return data;
   } catch (error) {
     console.error("getUserAttendanceDetails error:", error);
+    return [];
+  }
+};
+
+
+
+export const getFetTargetMaster = async () => {
+  try {
+    const response = await axioslogin.get(`/target/getall`);
+    const { success, data } = response.data;
+    if (success !== 1) {
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.error("getFetTargetMaster error:", error);
+    return [];
+  }
+};
+
+
+export const getEmployeeTargetDetails = async (empid) => {
+  if (!empid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/target/current/${empid}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getEmployeeTargetDetails error:", error);
     return [];
   }
 };

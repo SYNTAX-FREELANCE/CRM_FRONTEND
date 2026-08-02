@@ -3,12 +3,15 @@ import {
     MaterialReactTable,
     useMaterialReactTable,
 } from "material-react-table";
+import { useTheme } from "@mui/material";
 
 const CustomerAllocationTable = ({
     data = [],
     selectedRows,
     setSelectedRows,
 }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
 
     const columns = useMemo(
         () => [
@@ -78,13 +81,15 @@ const CustomerAllocationTable = ({
             elevation: 0,
             sx: {
                 borderRadius: 2,
-                border: "1px solid #e5e7eb",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #e5e7eb",
+                bgcolor: isDark ? "#0f172a" : "#fff",
             },
         },
 
         muiTableContainerProps: {
             sx: {
                 maxHeight: 550,
+                bgcolor: isDark ? "#0f172a" : undefined,
             },
         },
 
@@ -94,9 +99,9 @@ const CustomerAllocationTable = ({
                 fontSize: "13px",
                 py: 0.8,
                 px: 1,
-                backgroundColor: "#f8fafc",
-                color: "#374151",
-                borderBottom: "1px solid #e5e7eb",
+                backgroundColor: isDark ? "#1e293b" : "#f8fafc",
+                color: isDark ? "#f8fafc" : "#374151",
+                borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #e5e7eb",
             },
         },
 
@@ -106,6 +111,8 @@ const CustomerAllocationTable = ({
                 py: 0.6,
                 px: 1,
                 whiteSpace: "nowrap",
+                color: isDark ? "#cbd5e1" : undefined,
+                borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : undefined,
             },
         },
 
@@ -113,8 +120,9 @@ const CustomerAllocationTable = ({
             hover: true,
             sx: {
                 height: 40,
+                backgroundColor: isDark ? "#0f172a" : undefined,
                 "&:hover": {
-                    backgroundColor: "#f9fafb",
+                    backgroundColor: isDark ? "#1e293b" : "#f9fafb",
                 },
             },
         },
@@ -127,10 +135,16 @@ const CustomerAllocationTable = ({
             rowsPerPageOptions: [10, 20, 50, 100],
             showFirstButton: true,
             showLastButton: true,
+            sx: {
+                color: isDark ? "#f8fafc" : undefined,
+                "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiIconButton-root": {
+                    color: isDark ? "#f8fafc" : undefined,
+                },
+            },
         },
     });
 
     return <MaterialReactTable table={table} />;
 };
 
-export default CustomerAllocationTable;
+export default CustomerAllocationTable;

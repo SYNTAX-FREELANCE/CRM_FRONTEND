@@ -14,14 +14,15 @@ import {
 import PhoneIcon from "@mui/icons-material/Phone";
 import { DataGrid } from "@mui/x-data-grid";
 import DetailRow from "./DetailRow";
-import { groupedData, groupLeadData, summaryData } from "../CommonCode/Reusable";
-import { useGetMyEmployeeActiveCalls, useLeadMaster } from "../CommonCode/useQuery";
+import { groupLeadData } from "../CommonCode/Reusable";
+import { useGetMyEmployeeActiveCalls, useGetMyTargetDetail, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
 import { axioslogin } from "../Connection/axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatusFilterCard from "./Components/StatusFilterCard";
+import EmployeeTargetCard from "./Components/EmployeeTargetCard";
 
 
 const LeadDetailsDrawer = lazy(() =>
@@ -47,23 +48,18 @@ export default function FreshCallsWorkspace() {
 
   const Status = state?.status
   const LeadId = state?.leadId
-
-
-
-
-
   const { id } = authUser ?? {};
 
 
+  const { data: LeadMasterDetail = [] } = useLeadMaster();
+  const { data: EmployeeTargetDetails = [] } = useGetMyTargetDetail(id);
 
-  const { data: LeadMasterDetail } = useLeadMaster();
 
   const {
     data: AllCallDetails = [],
     isLoading: LoadingTableData,
     refetch
   } = useGetMyEmployeeActiveCalls(id);
-
 
 
 
@@ -110,7 +106,8 @@ export default function FreshCallsWorkspace() {
   }, [id, AllCallDetails, statusFilter, queryClient, statusFilter]);
 
 
-  const columns = useMemo(() => TastkColumns(openLead, isMobile,isDark), [openLead, isMobile,isDark]);
+  const columns = useMemo(() => TastkColumns(openLead, isMobile, isDark), [openLead, isMobile, isDark]);
+
 
   const ActiveStatus = useMemo(() => {
     if (!Array.isArray(LeadMasterDetail)) return [];
@@ -228,12 +225,15 @@ export default function FreshCallsWorkspace() {
           }}
         >
           <Stack
-            direction={{ xs: "column", md: "row" }}
+            direction={{ xs: "column", lg: "row" }}
             justifyContent="space-between"
-            alignItems={{ xs: "flex-start", md: "center" }}
+            alignItems={{ xs: "flex-start", lg: "center" }}
             gap={2}
+            width={'100%'}
           >
-            <Box>
+            <Box sx={{
+              width: { xs: "100%", lg: "30%" }
+            }}>
               <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: "-0.5px", color: isDark ? "#f8fafc" : "#0f172a" }}>
                 Task Queue
               </Typography>
@@ -241,27 +241,38 @@ export default function FreshCallsWorkspace() {
                 Process assigned leads, update status, and manage client communications.
               </Typography>
             </Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: { xs: "column", xl: "row" },
+              gap: 1,
+              width: { xs: "100%", lg: "70%" },
+              alignItems: { xs: "flex-start", md: "flex-end",xl:'center' },
+              justifyContent:'flex-end'
+            }}>
+              <EmployeeTargetCard data={EmployeeTargetDetails} />
 
-            <Button
-              variant="contained"
-              onClick={getFreshCalls}
-              startIcon={<PhoneIcon />}
-              sx={{
-                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                textTransform: "none",
-                fontWeight: 700,
-                borderRadius: 2.5,
-                px: 3,
-                py: 1,
-                boxShadow: "0 8px 20px rgba(37,99,235,0.18)",
-                "&:hover": {
-                  transform: "translateY(-1px)",
-                  boxShadow: "0 10px 25px rgba(37,99,235,0.25)",
-                },
-              }}
-            >
-              Load Next Queue
-            </Button>
+              <Button
+                variant="contained"
+                onClick={getFreshCalls}
+                startIcon={<PhoneIcon />}
+                sx={{
+                  background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  borderRadius: 2.5,
+                  width: 200,
+                  px: 1,
+                  py:1,
+                  boxShadow: "0 8px 20px rgba(37,99,235,0.18)",
+                  "&:hover": {
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 10px 25px rgba(37,99,235,0.25)",
+                  },
+                }}
+              >
+                Next Queue
+              </Button>
+            </Box>
           </Stack>
         </Box>
         <Box
@@ -394,6 +405,7 @@ export default function FreshCallsWorkspace() {
             onClose={() => setDetailOpen(false)}
             selectedLead={selectedLead}
             setSelectedLead={setSelectedLead}
+            statusFilter={statusFilter}
           />
         }
       </Suspense>

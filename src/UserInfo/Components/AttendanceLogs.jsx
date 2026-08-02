@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Box, Typography, Grid, CircularProgress } from "@mui/joy";
+import { useThemeMode } from "../../Context/ThemeContext";
 
 const AttendanceLogs = ({
     attendanceDate,
@@ -7,14 +8,17 @@ const AttendanceLogs = ({
     loadingAttendance,
     attendanceData
 }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
+
     return (
         <Card
             sx={{
                 p: { xs: 2.5, sm: 3 },
                 borderRadius: "24px",
-                bgcolor: "white",
-                border: "1px solid rgba(0,0,0,0.02)",
-                boxShadow: "0 12px 36px rgba(15, 23, 42, 0.03)",
+                bgcolor: isDark ? "#1e293b" : "white",
+                border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0,0,0,0.02)",
+                boxShadow: isDark ? "0 12px 36px rgba(0, 0, 0, 0.4)" : "0 12px 36px rgba(15, 23, 42, 0.03)",
                 height: { xs: "auto", md: "390px" }
             }}
         >
@@ -29,7 +33,7 @@ const AttendanceLogs = ({
                 }}
             >
                 <Box>
-                    <Typography level="title-md" sx={{ fontWeight: 900, color: "#1e1b4b" }}>
+                    <Typography level="title-md" sx={{ fontWeight: 900, color: isDark ? "#f8fafc" : "#1e1b4b" }}>
                         Attendance Session
                     </Typography>
                 </Box>
@@ -39,13 +43,13 @@ const AttendanceLogs = ({
                         value={attendanceDate}
                         onChange={(e) => setAttendanceDate(e.target.value)}
                         style={{
-                            border: "1px solid rgba(0,0,0,0.08)",
-                            background: "#f8fafc",
+                            border: isDark ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(0,0,0,0.08)",
+                            background: isDark ? "#0f172a" : "#f8fafc",
                             fontSize: "12px",
                             fontWeight: 800,
                             padding: "6px 12px",
                             borderRadius: "8px",
-                            color: "#1e1b4b",
+                            color: isDark ? "#f8fafc" : "#1e1b4b",
                             fontFamily: "inherit",
                             outline: "none",
                             cursor: "pointer",
@@ -69,15 +73,15 @@ const AttendanceLogs = ({
                                 sx={{
                                     p: { xs: 1.5, sm: 2 },
                                     borderRadius: "16px",
-                                    bgcolor: "rgba(16, 185, 129, 0.04)",
-                                    border: "1px solid rgba(16, 185, 129, 0.12)",
+                                    bgcolor: isDark ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.04)",
+                                    border: isDark ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid rgba(16, 185, 129, 0.12)",
                                     textAlign: "center"
                                 }}
                             >
                                 <Typography
                                     level="body-xs"
                                     sx={{
-                                        color: "success.700",
+                                        color: isDark ? "#34d399" : "success.700",
                                         fontWeight: 800,
                                         textTransform: "uppercase",
                                         fontSize: { xs: "9px", sm: "10px" },
@@ -90,7 +94,7 @@ const AttendanceLogs = ({
                                     level="title-md"
                                     sx={{
                                         fontWeight: 900,
-                                        color: "#10b981",
+                                        color: isDark ? "#34d399" : "#10b981",
                                         fontFamily: "monospace",
                                         mt: 1,
                                         fontSize: { xs: "12px", sm: "14px" }
@@ -105,15 +109,15 @@ const AttendanceLogs = ({
                                 sx={{
                                     p: { xs: 1.5, sm: 2 },
                                     borderRadius: "16px",
-                                    bgcolor: "rgba(249, 115, 22, 0.04)",
-                                    border: "1px solid rgba(249, 115, 22, 0.12)",
+                                    bgcolor: isDark ? "rgba(249, 115, 22, 0.12)" : "rgba(249, 115, 22, 0.04)",
+                                    border: isDark ? "1px solid rgba(249, 115, 22, 0.25)" : "1px solid rgba(249, 115, 22, 0.12)",
                                     textAlign: "center"
                                 }}
                             >
                                 <Typography
                                     level="body-xs"
                                     sx={{
-                                        color: "orange.700",
+                                        color: isDark ? "#fb923c" : "orange.700",
                                         fontWeight: 800,
                                         textTransform: "uppercase",
                                         fontSize: { xs: "9px", sm: "10px" },
@@ -126,7 +130,7 @@ const AttendanceLogs = ({
                                     level="title-md"
                                     sx={{
                                         fontWeight: 900,
-                                        color: "#ea580c",
+                                        color: isDark ? "#fb923c" : "#ea580c",
                                         fontFamily: "monospace",
                                         mt: 1,
                                         fontSize: { xs: "12px", sm: "14px" }
@@ -143,8 +147,8 @@ const AttendanceLogs = ({
                         sx={{
                             p: { xs: 1.5, sm: 2 },
                             borderRadius: "16px",
-                            bgcolor: "rgba(59, 130, 246, 0.04)",
-                            border: "1px solid rgba(59, 130, 246, 0.12)",
+                            bgcolor: isDark ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.04)",
+                            border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid rgba(59, 130, 246, 0.12)",
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center"
@@ -154,7 +158,7 @@ const AttendanceLogs = ({
                             <Typography
                                 level="body-xs"
                                 sx={{
-                                    color: "primary.700",
+                                    color: isDark ? "#60a5fa" : "primary.700",
                                     fontWeight: 800,
                                     textTransform: "uppercase",
                                     fontSize: { xs: "9px", sm: "10px" },
@@ -167,7 +171,7 @@ const AttendanceLogs = ({
                                 level="title-sm"
                                 sx={{
                                     fontWeight: 800,
-                                    color: "#1e1b4b",
+                                    color: isDark ? "#f8fafc" : "#1e1b4b",
                                     mt: 0.5,
                                     fontSize: { xs: "11px", sm: "13px" }
                                 }}
@@ -179,7 +183,7 @@ const AttendanceLogs = ({
                             level="h3"
                             sx={{
                                 fontWeight: 900,
-                                color: "#2563eb",
+                                color: isDark ? "#60a5fa" : "#2563eb",
                                 fontFamily: "monospace",
                                 fontSize: { xs: "16px", sm: "18px" }
                             }}
@@ -193,12 +197,12 @@ const AttendanceLogs = ({
                     sx={{
                         p: 3,
                         borderRadius: "18px",
-                        bgcolor: "rgba(241, 245, 249, 0.5)",
-                        border: "1px dashed rgba(0,0,0,0.1)",
+                        bgcolor: isDark ? "rgba(15, 23, 42, 0.6)" : "rgba(241, 245, 249, 0.5)",
+                        border: isDark ? "1px dashed rgba(255,255,255,0.15)" : "1px dashed rgba(0,0,0,0.1)",
                         textAlign: "center"
                     }}
                 >
-                    <Typography level="body-xs" sx={{ color: "neutral.550", fontWeight: 700 }}>
+                    <Typography level="body-xs" sx={{ color: isDark ? "#94a3b8" : "neutral.550", fontWeight: 700 }}>
                         No attendance records found for this date.
                     </Typography>
                 </Box>

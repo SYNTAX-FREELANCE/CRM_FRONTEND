@@ -3,6 +3,7 @@ import {
     Box,
     Typography,
     Sheet,
+    Skeleton,
 } from "@mui/joy";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
@@ -11,15 +12,15 @@ import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
 import male from "../../assets/loginimages/male.png";
 import female from "../../assets/loginimages/female.png";
 import { axioslogin } from "../../Connection/axios";
-import { Skeleton } from "@mui/material";
+import { useThemeMode } from "../../Context/ThemeContext";
 
-const InfoRow = ({ icon, children }) => (
+const InfoRow = ({ icon, children, isDark }) => (
     <Box
         sx={{
             display: "flex",
             alignItems: "center",
             gap: 0.75,
-            color: "text.tertiary",
+            color: isDark ? "#94a3b8" : "text.tertiary",
             minWidth: 0,
         }}
     >
@@ -28,7 +29,7 @@ const InfoRow = ({ icon, children }) => (
             level="body-sm"
             noWrap
             sx={{
-                color: "text.secondary",
+                color: isDark ? "#cbd5e1" : "text.secondary",
                 minWidth: 0,
                 fontSize: { xs: "10px", sm: "12px" },
                 fontWeight: 600,
@@ -39,14 +40,13 @@ const InfoRow = ({ icon, children }) => (
     </Box>
 );
 
-const StatCard = ({ label, value, color, data }) => (
+const StatCard = ({ label, value, color, data, isDark }) => (
     <Box
         sx={{
             borderRadius: "8px",
             px: { xs: 0.75, sm: 1 },
-            // py: { xs: 0.6, sm: 0.75 },
-            border: `1px solid ${color}22`,
-            bgcolor: "#fff",
+            border: isDark ? `1px solid ${color}44` : `1px solid ${color}22`,
+            bgcolor: isDark ? "#0f172a" : "#fff",
             boxShadow: "sm",
             display: "flex",
             flexDirection: "column",
@@ -70,7 +70,7 @@ const StatCard = ({ label, value, color, data }) => (
             <Typography
                 level="title-sm"
                 sx={{
-                    color: "#0f172a",
+                    color: isDark ? "#f8fafc" : "#0f172a",
                     fontWeight: 800,
                     lineHeight: 1,
                     fontSize: { xs: "11px", sm: "13px" },
@@ -105,6 +105,8 @@ const StatCard = ({ label, value, color, data }) => (
 );
 
 const EmployeeCard = ({ emp, onClick }) => {
+    const { mode } = useThemeMode();
+    const isDark = mode === "dark";
     const [imageLoading, setImageLoading] = useState(true);
     const genderImage = emp?.gender === "F" ? female : male;
 
@@ -131,8 +133,8 @@ const EmployeeCard = ({ emp, onClick }) => {
             sx={{
                 borderRadius: "12px",
                 cursor: "pointer",
-                bgcolor: "background.surface",
-                borderColor: "divider",
+                bgcolor: isDark ? "#1e293b" : "background.surface",
+                borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : "divider",
                 transition: "all .2s ease",
                 p: { xs: 1.25, sm: 1.5 },
                 display: "flex",
@@ -140,13 +142,13 @@ const EmployeeCard = ({ emp, onClick }) => {
                 gap: { xs: 1.25, sm: 1.75 },
                 "&:hover": {
                     borderColor: "#ffa825",
-                    boxShadow: "sm",
+                    boxShadow: isDark ? "0 8px 24px rgba(0,0,0,0.4)" : "sm",
                     transform: { sm: "translateY(-2px)" },
                 },
                 "&:active": {
                     transform: "translateY(0)",
                 },
-                boxShadow:"md"
+                boxShadow: isDark ? "0 4px 16px rgba(0,0,0,0.3)" : "md"
             }}
         >
             <Box
@@ -207,22 +209,22 @@ const EmployeeCard = ({ emp, onClick }) => {
                     sx={{
                         fontSize: { xs: "12px", sm: "14px" },
                         fontWeight: 800,
-                        color: "#0f172a",
+                        color: isDark ? "#f8fafc" : "#0f172a",
                         textTransform: "capitalize",
                     }}
                 >
                     {emp?.name}
                 </Typography>
 
-                <InfoRow icon={<BadgeOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
+                <InfoRow isDark={isDark} icon={<BadgeOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
                     TSJK{emp?.employee_id}
                 </InfoRow>
 
-                <InfoRow icon={<BusinessOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
+                <InfoRow isDark={isDark} icon={<BusinessOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
                     {emp?.company_name || "No Company"}
                 </InfoRow>
 
-                <InfoRow icon={<PhoneOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
+                <InfoRow isDark={isDark} icon={<PhoneOutlinedIcon sx={{ fontSize: { xs: 11, sm: 12 } }} />}>
                     {emp?.mobile_number_1 || "No Phone"}
                 </InfoRow>
             </Box>
@@ -236,12 +238,14 @@ const EmployeeCard = ({ emp, onClick }) => {
                 }}
             >
                 <StatCard
+                    isDark={isDark}
                     label="Sold"
                     value={emp?.total_sold ?? 0}
                     color="#16a34a"
                     data={soldData}
                 />
                 <StatCard
+                    isDark={isDark}
                     label="Lost"
                     value={emp?.total_lost ?? 0}
                     color="#ea580c"
@@ -251,6 +255,5 @@ const EmployeeCard = ({ emp, onClick }) => {
         </Sheet>
     );
 };
-
 
 export default memo(EmployeeCard);

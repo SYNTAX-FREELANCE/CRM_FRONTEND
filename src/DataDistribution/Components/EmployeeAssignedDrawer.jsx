@@ -7,6 +7,7 @@ import {
     Stack,
     Typography,
     Chip,
+    useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
@@ -21,12 +22,13 @@ import Row from "../../FreshCall/Components/Row";
 const glassEffect = {
     backdropFilter: "blur(12px) saturate(1.5)",
     WebkitBackdropFilter: "blur(12px) saturate(1.5)",
-    border: "1px solid rgba(255, 255, 255, 0.18)",
 };
 
-const leadColor = "#2563eb";
-
 const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+    const leadColor = isDark ? "#3b82f6" : "#2563eb";
+
     const data = assigned || {};
 
     const initials = useMemo(() => {
@@ -56,9 +58,12 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                     maxWidth: "100%",
                     height: "100%",
                     ...glassEffect,
-                    bgcolor: "rgba(255, 255, 255, 0.9)",
-                    boxShadow:
-                        "0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(255, 255, 255, 0.5) inset",
+                    bgcolor: isDark ? "rgba(15, 23, 42, 0.95)" : "rgba(255, 255, 255, 0.9)",
+                    color: isDark ? "#f8fafc" : undefined,
+                    borderLeft: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.18)",
+                    boxShadow: isDark
+                        ? "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1) inset"
+                        : "0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(255, 255, 255, 0.5) inset",
                     overflow: "hidden",
                 },
             }}
@@ -67,7 +72,7 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                 <Box
                     sx={{
                         p: 2,
-                        borderBottom: "1px solid rgba(0,0,0,0.06)",
+                        borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)",
                         flex: "0 0 auto",
                     }}
                 >
@@ -95,7 +100,7 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                             </Avatar>
 
                             <Box sx={{ minWidth: 0, flex: 1 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.15 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.15, color: isDark ? "#f8fafc" : undefined }}>
                                     {data.employee_name || "Employee"}
                                 </Typography>
 
@@ -107,7 +112,7 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                                 >
                                     <Typography
                                         variant="body2"
-                                        sx={{ fontSize: "0.78rem", color: "text.secondary" }}
+                                        sx={{ fontSize: "0.78rem", color: isDark ? "#94a3b8" : "text.secondary" }}
                                     >
                                         {data.employee_mobile || "-"}
                                     </Typography>
@@ -118,9 +123,9 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                                         sx={{
                                             height: 24,
                                             fontWeight: 800,
-                                            bgcolor: "rgba(37, 99, 235, 0.12)",
-                                            color: "#2563eb",
-                                            border: "1px solid rgba(37, 99, 235, 0.18)",
+                                            bgcolor: isDark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.12)",
+                                            color: isDark ? "#60a5fa" : "#2563eb",
+                                            border: isDark ? "1px solid rgba(37, 99, 235, 0.3)" : "1px solid rgba(37, 99, 235, 0.18)",
                                             fontSize: "0.7rem",
                                         }}
                                     />
@@ -132,14 +137,18 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                             <IconButton
                                 onClick={onClose}
                                 size="small"
-                                sx={{ bgcolor: "rgba(255,255,255,0.55)" }}
+                                sx={{
+                                    bgcolor: isDark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.55)",
+                                    color: isDark ? "#f8fafc" : undefined,
+                                    "&:hover": {
+                                        bgcolor: isDark ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.8)",
+                                    },
+                                }}
                             >
                                 <CloseIcon fontSize="small" />
                             </IconButton>
                         </Stack>
                     </Stack>
-
-                    
                 </Box>
 
                 <Box
@@ -149,7 +158,7 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
                         overflowY: "auto",
                         px: 2,
                         py: 2,
-                        bgcolor: "rgba(255, 255, 255, 0.5)",
+                        bgcolor: isDark ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.5)",
                         scrollbarWidth: "none",
                         msOverflowStyle: "none",
                         "&::-webkit-scrollbar": { display: "none" },
@@ -324,4 +333,4 @@ const EmployeeAssignedDrawer = ({ open, onClose, assigned }) => {
     );
 };
 
-export default EmployeeAssignedDrawer;
+export default EmployeeAssignedDrawer;

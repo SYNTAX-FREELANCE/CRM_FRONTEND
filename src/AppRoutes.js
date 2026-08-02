@@ -68,6 +68,7 @@ const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
 const MyCustomers = lazy(() => import("./Customers/MyCustomers"));
 const CustomerDetail = lazy(() => import("./Customers/CustomerDetail"));
 const PolicyUploadDetails = lazy(() => import("./Customers/PolicyUploadDetails"));
+const EmployeeTargetCreation = lazy(() => import("./Masters/TargetMaster/EmployeeTargetCreation"));
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -119,6 +120,9 @@ const EmployeePerformanceReport = lazy(
 );
 const EmployeeLoginReport = lazy(
   () => import("./Reports/UserLogReports"),
+);
+const DetailedEmployeeLoginReport = lazy(
+  () => import("./Reports/DetailedUserLogReports"),
 );
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -305,7 +309,14 @@ const router = createBrowserRouter([
         path: "reports/UserLogReports",
         element: withSuspense(EmployeeLoginReport),
       },
-
+      {
+        path: "reports/DetailedUserLogReports",
+        element: withSuspense(DetailedEmployeeLoginReport),
+      },
+      {
+        path: "setting/targetmaster",
+        element: withSuspense(EmployeeTargetCreation),
+      },
 
       // {
       //   path: "*",
