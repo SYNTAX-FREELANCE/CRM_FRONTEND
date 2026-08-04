@@ -30,6 +30,18 @@ const CustomerAllocationTable = ({
                 header: "Registration No",
                 size: 150,
             },
+
+            {
+                accessorKey: "vehicle_class",
+                header: "Category",
+                size: 120,
+            },
+
+            {
+                accessorKey: "rto",
+                header: "location",
+                size: 120,
+            },
             {
                 accessorFn: (row) =>
                     new Date(row.registration_date).toLocaleDateString("en-GB"),
@@ -147,4 +159,4 @@ const CustomerAllocationTable = ({
     return <MaterialReactTable table={table} />;
 };
 
-export default CustomerAllocationTable;
+export default CustomerAllocationTable;

@@ -32,12 +32,12 @@ const UserSelectDropdown = ({
     const { user: authContextUser } = useAuth();
     const authUser = getAuthUser();
 
-    const userRole = (authContextUser?.role || authUser?.role || "").toLowerCase();
-    const isAdmin =
-        userRole === "admin" ||
-        authContextUser?.role_id === 1 ||
-        authUser?.role_id === 1 ||
-        authContextUser?.is_admin === 1;
+    const userRole = (authContextUser?.role || authUser?.role || "").trim().toLowerCase();
+
+    // If role is explicitly "employee", show only that logged-in employee.
+    // For any other role (Admin, Manager, Team Lead, HR, etc.), show all employees.
+    const isEmployeeOnly = userRole === "employee" && authContextUser?.is_admin !== 1 && authUser?.is_admin !== 1;
+    const canSeeAll = !isEmployeeOnly;
 
     useEffect(() => {
         if (usersList && Array.isArray(usersList)) {
@@ -62,7 +62,7 @@ const UserSelectDropdown = ({
     const displayUsers = useMemo(() => {
         if (!users || !Array.isArray(users)) return [];
 
-        if (isAdmin) {
+        if (canSeeAll) {
             return users;
         }
 
@@ -92,17 +92,17 @@ const UserSelectDropdown = ({
         }
 
         return users;
-    }, [users, isAdmin, authContextUser, authUser]);
+    }, [users, canSeeAll, authContextUser, authUser]);
 
     useEffect(() => {
-        if (!isAdmin && displayUsers.length > 0 && onChange) {
+        if (!canSeeAll && displayUsers.length > 0 && onChange) {
             const singleUser = displayUsers[0];
             const targetVal = singleUser[valueKey] || singleUser.employee_id || singleUser.user_id;
             if (targetVal && String(value) !== String(targetVal)) {
                 onChange(String(targetVal));
             }
         }
-    }, [isAdmin, displayUsers, valueKey, value, onChange]);
+    }, [canSeeAll, displayUsers, valueKey, value, onChange]);
 
     const handleChange = (e) => {
         const selectedVal = e.target.value;
@@ -126,8 +126,8 @@ const UserSelectDropdown = ({
                     width: "100%",
                     height: size === "small" || size === "sm" ? "36px" : "40px",
                     borderRadius: "12px",
-                    border: typeof borderColor === "string" && borderColor.includes("solid") 
-                        ? borderColor 
+                    border: typeof borderColor === "string" && borderColor.includes("solid")
+                        ? borderColor
                         : `1px solid ${borderColor}`,
                     backgroundColor: bgColor,
                     color: textColor,
@@ -139,7 +139,7 @@ const UserSelectDropdown = ({
                     transition: "all 0.2s ease-in-out",
                 }}
             >
-                {isAdmin && (
+                {canSeeAll && (
                     <option value="" style={{ backgroundColor: bgColor, color: textColor }}>
                         {loading ? "Loading employees..." : `-- ${placeholder} --`}
                     </option>

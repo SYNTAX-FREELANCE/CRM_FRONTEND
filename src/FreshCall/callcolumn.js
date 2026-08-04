@@ -75,6 +75,10 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "Customer Name",
       minWidth: 180,
       flex: 1,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.customer_name);
+        return val || "";
+      },
       renderCell: ({ row }) => (
         <Stack direction="row" alignItems="center" spacing={0.7}>
           {row.is_previous_customer === 1 && (
@@ -103,6 +107,10 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "Model",
       minWidth: 140,
       flex: 1,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.model);
+        return val || "";
+      },
       renderCell: (params) => (
         <Typography
           sx={{ fontSize: 12 }}
@@ -119,12 +127,12 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "Expiry Date",
       minWidth: 140,
       flex: 0.8,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.known_policy_expiry_date);
+        if (!val || !isValid(new Date(val))) return "-";
+        return format(new Date(val), "dd-MM-yyyy");
+      },
       renderCell: ({ value }) => {
-        const formattedDate =
-          value && isValid(new Date(value))
-            ? format(new Date(value), "MMMM d, yyyy")
-            : "-";
-
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -133,7 +141,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {formattedDate}
+              {value}
             </Typography>
           </Stack>
         );
@@ -144,12 +152,12 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "REGISTRATION DATE",
       minWidth: 140,
       flex: 0.8,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.registration_date);
+        if (!val || !isValid(new Date(val))) return "-";
+        return format(new Date(val), "dd-MM-yyyy");
+      },
       renderCell: ({ value }) => {
-        const formattedDate =
-          value && isValid(new Date(value))
-            ? format(new Date(value), "MMMM d, yyyy")
-            : "-";
-
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -158,7 +166,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {formattedDate}
+              {value}
             </Typography>
           </Stack>
         );
@@ -169,12 +177,12 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "REMINDER DATE",
       minWidth: 140,
       flex: 0.8,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.next_followup_date);
+        if (!val || !isValid(new Date(val))) return "-";
+        return format(new Date(val), "dd-MM-yyyy");
+      },
       renderCell: ({ value }) => {
-        const formattedDate =
-          value && isValid(new Date(value))
-            ? format(new Date(value), "MMMM d, yyyy")
-            : "-";
-
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -183,7 +191,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {formattedDate}
+              {value}
             </Typography>
           </Stack>
         );
@@ -194,6 +202,10 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "Vehicle Reg No",
       minWidth: 150,
       flex: 1,
+      valueGetter: (value, row) => {
+        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.registration_number);
+        return val || "";
+      },
       renderCell: (params) => (
         <Typography
           variant="body2"
