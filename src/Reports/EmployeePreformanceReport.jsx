@@ -30,6 +30,10 @@ import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 
 import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
@@ -162,11 +166,48 @@ const EmployeePreformanceReport = () => {
         if (!query) return reportData;
 
         return reportData.filter((row) => {
-            return Object.values(row).some((val) =>
+            const formattedAssignedDate = formatDate(row.assigned_date);
+            const formattedCreatedAt = formatDateTime(row.created_at);
+            const searchValues = [
+                ...Object.values(row),
+                formattedAssignedDate,
+                formattedCreatedAt,
+            ];
+            return searchValues.some((val) =>
                 val !== null && val !== undefined ? String(val).toLowerCase().includes(query) : false
             );
         });
     }, [reportData, searchQuery]);
+
+    // Calculate total count and counts for sold, appointment, quote, callback statuses
+    const stats = useMemo(() => {
+        let totalCount = reportData.length;
+        let soldCount = 0;
+        let appointmentCount = 0;
+        let quoteCount = 0;
+        let callbackCount = 0;
+
+        reportData.forEach((row) => {
+            const name = (row.status_name || "").toUpperCase();
+            if (name.includes("SOLD")) {
+                soldCount++;
+            } else if (name.includes("APPOINMENT") || name.includes("APPOINTMENT")) {
+                appointmentCount++;
+            } else if (name.includes("QUOTE")) {
+                quoteCount++;
+            } else if (name.includes("CALLBACK") || name.includes("CALL BACK")) {
+                callbackCount++;
+            }
+        });
+
+        return {
+            totalCount,
+            soldCount,
+            appointmentCount,
+            quoteCount,
+            callbackCount,
+        };
+    }, [reportData]);
 
     // Helpers to render clean badges
     const renderBooleanBadge = (val, trueText, falseText) => {
@@ -468,6 +509,40 @@ const EmployeePreformanceReport = () => {
                             </Box>
                         ) : (
                             <Box>
+                                {/* Metric / Stat Summary Table */}
+                                <TableContainer
+                                    component={Paper}
+                                    sx={{
+                                        mb: 3,
+                                        borderRadius: "16px",
+                                        boxShadow: "none",
+                                        border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
+                                        bgcolor: isDark ? "#0f172a" : "#fff",
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Total Data Count</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Sold Status</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Appointment Status</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Quote Status</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Callback Status</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#2563eb", py: 1.5 }}>{stats.totalCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#10b981", py: 1.5 }}>{stats.soldCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#8b5cf6", py: 1.5 }}>{stats.appointmentCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#f59e0b", py: 1.5 }}>{stats.quoteCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#06b6d4", py: 1.5 }}>{stats.callbackCount}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
                                 {/* Filter and Record stats bar */}
                                 <Box
                                     sx={{

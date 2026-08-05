@@ -48,7 +48,9 @@ import {
   getLeadUploadFiles,
   getFetTargetMaster,
   getEmployeeTargetDetails,
+  getCallsLeftCount,
 } from "./CommonFun";
+
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -469,3 +471,12 @@ export const useGetMyTargetDetail = (employeeid) => {
     enabled: !!employeeid
   });
 };
+
+export const useGetCallsLeft = (empid) => {
+  return useQuery({
+    queryKey: ["calls-left", empid],
+    queryFn: () => getCallsLeftCount(empid),
+    enabled: Boolean(empid),
+  });
+};
+
