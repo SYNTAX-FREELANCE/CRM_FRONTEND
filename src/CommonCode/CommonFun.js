@@ -768,3 +768,16 @@ export const getEmployeeTargetDetails = async (empid) => {
     return [];
   }
 };
+
+export const getCallsLeftCount = async (empid) => {
+  if (!empid) return 0;
+  try {
+    const response = await axioslogin.get(`/lead/get-calls-left/${empid}`);
+    const { success, count } = response.data;
+    if (success === 1) return count;
+    return 0;
+  } catch (error) {
+    console.error("getCallsLeftCount error:", error);
+    return 0;
+  }
+};

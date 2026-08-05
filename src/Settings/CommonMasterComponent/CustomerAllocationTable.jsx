@@ -33,7 +33,7 @@ const CustomerAllocationTable = ({
 
             {
                 accessorKey: "vehicle_class",
-                header: "Category",
+                header: "vehicle_class",
                 size: 120,
             },
 
