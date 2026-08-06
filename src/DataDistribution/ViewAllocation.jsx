@@ -15,6 +15,7 @@ import EmployeeSelect from "../CommonComponents/EmployeeSelect";
 import { errorNotify, getAuthUser, successNotify, warningNofity } from "../constant/Constant";
 import { axioslogin } from "../Connection/axios";
 import GlobalLoader from "../CommonComponents/GlobalLoader";
+import EmployeeMultiSelect from "../CommonComponents/EmployeeMultiSelect";
 
 const AllocationPreviewModal = lazy(() => import("./Components/AllocationPreviewModal"));
 
@@ -30,14 +31,22 @@ const ViewAllocation = () => {
     const [selectedEmployee, setSelectedEmployee] = useState("");
     const [previewOpen, setPreviewOpen] = useState(false);
     const [allocatedempid, setAllocateEmployeeId] = useState('');
+    const [availableEmployees, setAvailableEmployees] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const authUser = getAuthUser();
     const { id } = authUser ?? {};
 
     const { data: Employee_master = [] } = useAllEmployeeDetails();
 
+
+
+
     const { data: AssignDetails = [], isLoading: LoadingTableData, refetch: FechtAllocationDetail } =
         useEmployeeAssignDetails(allocatedempid);
+
+
+
 
     const isMobile = useMediaQuery("(max-width:600px)");
     const employees = Array.isArray(Employee_master) ? Employee_master : [];
@@ -128,7 +137,7 @@ const ViewAllocation = () => {
     const handleSelectAll = useCallback(
         (checked) => {
             if (checked) {
-                if (!selectedEmployee?.trim()) {
+                if (!selectedEmployee?.trim() && !availableEmployees?.length) {
                     return warningNofity("Select Employee First");
                 }
 
@@ -149,7 +158,7 @@ const ViewAllocation = () => {
                 setRowFullSelect([]);
             }
         },
-        [AssignDetails, selectedEmployee]
+        [AssignDetails, selectedEmployee, availableEmployees]
     );
 
     const columns = AllocationColumns(
@@ -185,6 +194,63 @@ const ViewAllocation = () => {
         setSelectedEmployee(value);
     };
 
+    const FinalMultipleReallocatedEmployee = employees ?
+        employees?.filter(item => Number(item.user_id) != Number(allocatedempid)) : [];
+
+
+    const handleMultiAllocate = useCallback(async (work_status, is_locked, remarks) => {
+
+        if (!availableEmployees || availableEmployees?.length === 0) {
+            return warningNofity("Select At Least One Employee");
+        }
+
+        if (!rowfullselect || rowfullselect.length === 0) {
+            return warningNofity("Please Select At Least One Lead");
+        }
+
+        const payload = {
+            selectedEmployees: availableEmployees,
+            remarks,
+            is_locked,
+            work_status,
+            assigned_by: id,
+            leads: rowfullselect,
+        };
+
+        try {
+            setLoading(true)
+            const response = await axioslogin.post(
+                "/lead/multi-reallocation",
+                payload
+            );
+
+            const { success, data, message } = response?.data ?? {};
+
+            if (success !== 1) {
+                return errorNotify(message || "API Error While Updating Leads");
+            }
+
+            successNotify(
+                data?.message || message || "Leads Allocated Successfully"
+            );
+
+            setPreviewOpen(false);
+            FechtAllocationDetail();
+            resetDetail();
+        } catch (error) {
+            console.error(error);
+            errorNotify("Error While Allocating Leads");
+        } finally {
+            setLoading(false)
+        }
+    }, [
+        availableEmployees,
+        rowfullselect,
+        id,
+        FechtAllocationDetail,
+        resetDetail,
+    ]);
+
     return (
         <Box
             sx={{
@@ -209,6 +275,7 @@ const ViewAllocation = () => {
         `,
             }}
         >
+            {loading && <GlobalLoader />}
             <Box
                 sx={{
                     px: { xs: 2, md: 3 },
@@ -314,11 +381,16 @@ const ViewAllocation = () => {
                 </Stack>
             </Box>
 
-            <Box sx={{ p: { xs: 1.5, md: 2.5 } }}>
+            <Box sx={{
+                p: { xs: 1.5, md: 2.5 },
+                display: 'flex',
+                gap: 1,
+                flexDirection: { xs: 'column', md: 'row' }
+            }}>
                 <Paper
                     elevation={0}
                     sx={{
-                        width: "100%",
+                        width: isReallocateMode ? {xs:'100%',md:"70%"} : '100%',
                         height: { xs: "calc(100vh - 170px)", md: "calc(100vh - 180px)" },
                         borderRadius: 4,
                         overflow: "hidden",
@@ -415,7 +487,30 @@ const ViewAllocation = () => {
                             },
                         }}
                     />
+
                 </Paper>
+                {
+                    isReallocateMode &&
+
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            width: isReallocateMode ? {xs:'100%',md:'30%'} : '0%',
+                            height: { xs: "calc(100vh - 170px)", md: "calc(100vh - 180px)" },
+                            borderRadius: 4,
+                            overflow: "hidden",
+                            border: isDark ? "1px solid rgba(255,255,255,.1)" : "1px solid rgba(255,255,255,.55)",
+                            background: isDark ? "rgba(15,23,42,.85)" : "rgba(255,255,255,.25)",
+                            backdropFilter: "blur(16px)",
+                            boxShadow: isDark ? "0 10px 30px rgba(0,0,0,.4)" : "0 10px 30px rgba(15,23,42,.05)",
+                        }}
+                    > <EmployeeMultiSelect
+                            employees={FinalMultipleReallocatedEmployee}
+                            value={availableEmployees}
+                            onChange={setAvailableEmployees}
+                            onMulitpleAllocate={handleMultiAllocate}
+                        /></Paper>
+                }
             </Box>
 
             <EmployeeAssignedDrawer
@@ -440,4 +535,4 @@ const ViewAllocation = () => {
     );
 };
 
-export default memo(ViewAllocation);
+export default memo(ViewAllocation);
