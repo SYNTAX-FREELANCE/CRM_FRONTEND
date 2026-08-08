@@ -266,6 +266,7 @@ const FollowUpForm = ({
                                 value={followUpDate ? dayjs(followUpDate) : null}
                                 onChange={(newValue) => setFollowUpDate(newValue)}
                                 minDateTime={dayjs()}
+                                format="DD/MM/YYYY hh:mm A"
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,

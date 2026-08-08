@@ -49,7 +49,7 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
                 mb: 0.5,
                 color: isDark ? "#ffffff" : "#1e293b",
                 letterSpacing: 1,
-                textShadow: isDark 
+                textShadow: isDark
                   ? "0px 4px 12px rgba(0,0,0,0.6)"
                   : `
                   1px 1px 0px #fff,
@@ -80,10 +80,10 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
                 item.key === "totalUploaded"
                   ? "Overall Leads"
                   : `${(
-                      ((Number(DashboardCount?.[item.key] || 0) /
-                        Number(DashboardCount?.totalUploaded || 1)) *
-                        100) || 0
-                    ).toFixed(0)}%`
+                    ((Number(DashboardCount?.[item.key] || 0) /
+                      Number(DashboardCount?.totalUploaded || 1)) *
+                      100) || 0
+                  ).toFixed(0)}%`
               }
               sx={{
                 bgcolor: item.bgColor,

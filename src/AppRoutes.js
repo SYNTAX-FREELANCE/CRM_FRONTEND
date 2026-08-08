@@ -118,6 +118,9 @@ const PolicyReport = lazy(
 const EmployeePerformanceReport = lazy(
   () => import("./Reports/EmployeePreformanceReport"),
 );
+const AllEmployeePerformanceReport = lazy(
+  () => import("./Reports/AllEmployeePerformanceReport"),
+);
 const EmployeeLoginReport = lazy(
   () => import("./Reports/UserLogReports"),
 );
@@ -304,6 +307,10 @@ const router = createBrowserRouter([
       {
         path: "reports/employeperformance",
         element: withSuspense(EmployeePerformanceReport),
+      },
+      {
+        path: "reports/allemployeeperformance",
+        element: withSuspense(AllEmployeePerformanceReport),
       },
       {
         path: "reports/UserLogReports",

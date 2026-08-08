@@ -75,7 +75,7 @@ const ExecutiveCard = ({
                     boxShadow: "0 16px 32px rgba(15,23,42,0.10)",
                 },
             }}
-            
+
         >
             <Box
                 sx={{
@@ -130,18 +130,18 @@ const ExecutiveCard = ({
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} />
-                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a" ,fontWeight:800 }}> <strong style={{ fontSize: 16 }}>{calls}</strong> Leads</Typography>
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}> <strong style={{ fontSize: 16 }}>{calls}</strong> Leads</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
-                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a" ,fontWeight:800 }}><strong style={{ fontSize: 16 }}>{sold}</strong> Captured</Typography>
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}><strong style={{ fontSize: 16 }}>{sold}</strong> Captured</Typography>
                             </Box>
                         </Stack>
                     </Box>
                     <EmojiEventsIcon sx={{ color: highlight ? colors.orange : colors.blue, fontSize: 24 }} />
                 </Stack>
 
-               
+
             </CardContent>
         </Card>
     );
