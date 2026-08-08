@@ -1,11 +1,28 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { Box, Typography } from "@mui/material";
+import { getOutcomeIcons } from "../../CommonCode/outcomeIcons";
 
 const OutcomeCard = ({
     item,
     active = false,
     onClick,
 }) => {
+
+    const OUTCOME_ICONS = getOutcomeIcons();
+
+    const iconMap = useMemo(() => {
+        return OUTCOME_ICONS?.reduce(
+            (acc, iconItem) => {
+                acc[iconItem.key] = iconItem.Icon;
+                return acc;
+            },
+            {}
+        );
+
+    }, [OUTCOME_ICONS]);
+
+    const SelectedIcon = iconMap?.[item?.icon_key];
+
 
     return (
         <Box
@@ -46,7 +63,9 @@ const OutcomeCard = ({
                     flexShrink: 0,
                 }}
             >
-                {item?.icon}
+                {SelectedIcon ? (
+                    <SelectedIcon sx={{ fontSize: 18 }} />
+                ) : null}
             </Box>
 
             <Box sx={{ minWidth: 0 }}>
@@ -57,7 +76,7 @@ const OutcomeCard = ({
                         fontSize: 8,
                     }}
                 >
-                    {item?.label}
+                    {item?.outcome_label}
                 </Typography>
             </Box>
         </Box>

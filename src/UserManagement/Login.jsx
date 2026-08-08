@@ -277,7 +277,7 @@ const Login = () => {
                                 WebkitTextFillColor: "transparent",
                             }}
                         >
-                            Nexus
+                            Policy POS
                         </Typography>
                         <Chip
                             label="PRO"
