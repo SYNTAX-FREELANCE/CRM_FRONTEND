@@ -127,6 +127,7 @@ const ExecutiveCard = ({
                         </Typography>
 
                         <Stack direction="row" spacing={1} sx={{ mt: 0.6, alignItems: "center", flexWrap: "wrap" }}>
+
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
                                 <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
                                 <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}><strong style={{ fontSize: 14 }}>{sold}</strong> Captured</Typography>

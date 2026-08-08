@@ -25,21 +25,16 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-// import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 
 import { useNavigate } from "react-router-dom";
 import { axioslogin } from "../Connection/axios";
 import { useThemeMode } from "../Context/ThemeContext";
-import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
-import UserSelectDropdown from "../CommonComponents/UserSelectDropdown";
+import { useAuth } from "../Context/AuthContext";
+import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
 
 const getFirstDayOfMonth = () => {
     const date = new Date();
@@ -56,12 +51,16 @@ const getTodayDate = () => {
     return `${year}-${month}-${day}`;
 };
 
-const EmployeePreformanceReport = () => {
+const AllEmployeePerformanceReport = () => {
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
 
-    const [employeeId, setEmployeeId] = useState("");
+    const { user: authContextUser } = useAuth();
+    const authUser = getAuthUser();
+    const userRole = (authContextUser?.role || authUser?.role || "").trim().toLowerCase();
+    const isEmployeeOnly = userRole === "employee" && authContextUser?.is_admin !== 1 && authUser?.is_admin !== 1;
+
     const [startDate, setStartDate] = useState(getFirstDayOfMonth());
     const [endDate, setEndDate] = useState(getTodayDate());
     const [loading, setLoading] = useState(false);
@@ -79,8 +78,8 @@ const EmployeePreformanceReport = () => {
     };
 
     const handleSearch = async () => {
-        if (!employeeId.trim()) {
-            warningNotify("Please enter a valid Employee ID");
+        if (!startDate || !endDate) {
+            warningNotify("Please select both Start Date and End Date");
             return;
         }
 
@@ -88,25 +87,28 @@ const EmployeePreformanceReport = () => {
             setLoading(true);
             setSearched(true);
 
-            let url = `/reports/employee-performance?employeeId=${encodeURIComponent(employeeId)}`;
-            if (startDate && endDate) {
-                url += `&fromDate=${startDate}&toDate=${endDate}`;
+            let url = `/reports/all-employee-performance?fromDate=${startDate}&toDate=${endDate}`;
+            if (isEmployeeOnly) {
+                const empCode = authUser?.emp_name || authContextUser?.username || authUser?.id || authContextUser?.id;
+                if (empCode) {
+                    url += `&employeeId=${encodeURIComponent(empCode)}`;
+                }
             }
 
             const response = await axioslogin.get(url);
 
             if (response.data?.success === 1) {
-                console.log(response.data.data);
                 setReportData(response.data.data || []);
                 setPage(0);
-                successNotify(`Retrieved ${response.data.data?.length || 0} performance records.`);
+                const count = response.data.data?.length || 0;
+                successNotify(isEmployeeOnly ? `Retrieved ${count} performance records.` : `Retrieved ${count} performance records for all employees.`);
             } else {
-                warningNotify(response.data?.message || "Failed to fetch performance data");
+                warningNotify(response.data?.message || "Failed to fetch all employee performance data");
                 setReportData([]);
             }
         } catch (error) {
-            console.error("Fetch report error:", error);
-            errorNotify("An error occurred while fetching the employee performance report");
+            console.error("Fetch all employee report error:", error);
+            errorNotify("An error occurred while fetching all employee performance report");
             setReportData([]);
         } finally {
             setLoading(false);
@@ -122,9 +124,12 @@ const EmployeePreformanceReport = () => {
         try {
             setExportLoading(true);
 
-            let url = `/reports/employee-performance/export?employeeId=${encodeURIComponent(employeeId)}`;
-            if (startDate && endDate) {
-                url += `&fromDate=${startDate}&toDate=${endDate}`;
+            let url = `/reports/all-employee-performance/export?fromDate=${startDate}&toDate=${endDate}`;
+            if (isEmployeeOnly) {
+                const empCode = authUser?.emp_name || authContextUser?.username || authUser?.id || authContextUser?.id;
+                if (empCode) {
+                    url += `&employeeId=${encodeURIComponent(empCode)}`;
+                }
             }
 
             const response = await axioslogin.get(url, { responseType: "blob" });
@@ -136,22 +141,21 @@ const EmployeePreformanceReport = () => {
             const urlBlob = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = urlBlob;
-            link.setAttribute("download", `employee_${employeeId}_performance_report.xlsx`);
+            link.setAttribute("download", `all_employee_performance_report_${startDate}_to_${endDate}.xlsx`);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(urlBlob);
-            successNotify("Performance report downloaded successfully!");
+            successNotify("All employee performance report downloaded successfully!");
         } catch (error) {
             console.error("Export Excel error:", error);
-            errorNotify("Failed to download performance report");
+            errorNotify("Failed to download all employee performance report");
         } finally {
             setExportLoading(false);
         }
     };
 
     const handleReset = () => {
-        setEmployeeId("");
         setStartDate(getFirstDayOfMonth());
         setEndDate(getTodayDate());
         setReportData([]);
@@ -179,50 +183,61 @@ const EmployeePreformanceReport = () => {
         });
     }, [reportData, searchQuery]);
 
-    // Calculate total count and counts for sold, appointment, quote, callback statuses
-    const stats = useMemo(() => {
-        let totalCount = reportData.length;
+    // Group reportData by employee for summary metrics breakdown
+    const employeeStats = useMemo(() => {
+        const statsMap = {};
+
+        reportData.forEach((row) => {
+            const empId = row.employee_id || row.assigned_to || "Unassigned";
+            const empName = row.employee_name ? `${row.employee_name} (${empId})` : (row.assigned_to ? `ID: ${row.assigned_to}` : "Unassigned");
+            const key = empId;
+
+            if (!statsMap[key]) {
+                statsMap[key] = {
+                    employeeId: empId,
+                    employeeName: empName,
+                    totalCount: 0,
+                    soldCount: 0,
+                    appointmentCount: 0,
+                    quoteCount: 0,
+                    callbackCount: 0,
+                };
+            }
+
+            statsMap[key].totalCount++;
+
+            const statusName = (row.status_name || "").toUpperCase();
+            if (statusName.includes("SOLD")) {
+                statsMap[key].soldCount++;
+            } else if (statusName.includes("APPOINMENT") || statusName.includes("APPOINTMENT")) {
+                statsMap[key].appointmentCount++;
+            } else if (statusName.includes("QUOTE")) {
+                statsMap[key].quoteCount++;
+            } else if (statusName.includes("CALLBACK") || statusName.includes("CALL BACK")) {
+                statsMap[key].callbackCount++;
+            }
+        });
+
+        return Object.values(statsMap);
+    }, [reportData]);
+
+    const overallStats = useMemo(() => {
+        let totalCount = 0;
         let soldCount = 0;
         let appointmentCount = 0;
         let quoteCount = 0;
         let callbackCount = 0;
 
-        reportData.forEach((row) => {
-            const name = (row.status_name || "").toUpperCase();
-            if (name.includes("SOLD")) {
-                soldCount++;
-            } else if (name.includes("APPOINMENT") || name.includes("APPOINTMENT")) {
-                appointmentCount++;
-            } else if (name.includes("QUOTE")) {
-                quoteCount++;
-            } else if (name.includes("CALLBACK") || name.includes("CALL BACK")) {
-                callbackCount++;
-            }
+        employeeStats.forEach((emp) => {
+            totalCount += emp.totalCount;
+            soldCount += emp.soldCount;
+            appointmentCount += emp.appointmentCount;
+            quoteCount += emp.quoteCount;
+            callbackCount += emp.callbackCount;
         });
 
-        return {
-            totalCount,
-            soldCount,
-            appointmentCount,
-            quoteCount,
-            callbackCount,
-        };
-    }, [reportData]);
-
-    // Helpers to render clean badges
-    const renderBooleanBadge = (val, trueText, falseText) => {
-        const isActive = val === 1 || val === true;
-        return (
-            <Chip
-                size="sm"
-                variant="soft"
-                color={isActive ? "success" : "neutral"}
-                sx={{ fontWeight: 600, fontSize: "11px", borderRadius: "8px" }}
-            >
-                {isActive ? trueText : falseText}
-            </Chip>
-        );
-    };
+        return { totalCount, soldCount, appointmentCount, quoteCount, callbackCount };
+    }, [employeeStats]);
 
     const renderWorkStatusBadge = (status) => {
         const text = (status || "").toUpperCase();
@@ -265,7 +280,6 @@ const EmployeePreformanceReport = () => {
     const tableRowEvenBg = isDark ? "#1e293b" : "#ffffff";
     const inputBg = isDark ? "#0f172a" : "#ffffff";
     const inputTextColor = isDark ? "#f8fafc" : "#0f172a";
-    const inputBorder = isDark ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid #cbd5e1";
 
     return (
         <Box
@@ -338,10 +352,12 @@ const EmployeePreformanceReport = () => {
                                 }}
                             >
                                 <BadgeOutlinedIcon sx={{ color: "#2563eb", fontSize: "2rem" }} />
-                                Employee Performance Report
+                                All Employee Performance Report
                             </Typography>
                             <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5, fontWeight: 500 }}>
-                                Enter an Employee ID and select optional dates to analyze workflow performance.
+                                {isEmployeeOnly
+                                    ? "Select a date range to analyze your performance."
+                                    : "Select a date range to analyze performance across all employees."}
                             </Typography>
                         </Box>
                     </Box>
@@ -351,26 +367,10 @@ const EmployeePreformanceReport = () => {
 
                 {/* Filter and Action Controls */}
                 <Grid container spacing={2.5} sx={{ mb: 4 }} alignItems="flex-end">
-                    <Grid xs={12} sm={4} md={3}>
+                    <Grid xs={12} sm={6} md={3.5}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Select Employee *
-                            </Typography>
-                            <UserSelectDropdown
-                                value={employeeId}
-                                onChange={(val) => setEmployeeId(val)}
-                                placeholder="Select Employee"
-                                isDark={isDark}
-                                inputBg={inputBg}
-                                inputTextColor={inputTextColor}
-                                inputBorder={inputBorder}
-                            />
-                        </Box>
-                    </Grid>
-                    <Grid xs={12} sm={4} md={2.5}>
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                            <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                Start Date (Optional)
+                                Start Date *
                             </Typography>
                             <TextField
                                 type="date"
@@ -395,10 +395,10 @@ const EmployeePreformanceReport = () => {
                             />
                         </Box>
                     </Grid>
-                    <Grid xs={12} sm={4} md={2.5}>
+                    <Grid xs={12} sm={6} md={3.5}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                             <Typography level="body-xs" sx={{ fontWeight: 700, color: textSecondaryColor }}>
-                                End Date (Optional)
+                                End Date *
                             </Typography>
                             <TextField
                                 type="date"
@@ -423,13 +423,13 @@ const EmployeePreformanceReport = () => {
                             />
                         </Box>
                     </Grid>
-                    <Grid xs={12} sm={12} md={4}>
+                    <Grid xs={12} sm={12} md={5}>
                         <Box
                             sx={{
                                 display: "flex",
                                 gap: 1.5,
                                 flexWrap: "wrap",
-                                justifyContent: { xs: "stretch", sm: "flex-end" },
+                                justifyContent: { xs: "stretch", md: "flex-end" },
                             }}
                         >
                             <Button
@@ -495,7 +495,7 @@ const EmployeePreformanceReport = () => {
                             <Box sx={{ display: "flex", justifyContent: "center", py: 8, flexDirection: "column", alignItems: "center", gap: 2 }}>
                                 <CircularProgress size="lg" />
                                 <Typography level="body-sm" sx={{ color: textSecondaryColor }}>
-                                    Compiling performance records...
+                                    Compiling performance records for all employees...
                                 </Typography>
                             </Box>
                         ) : filteredData.length === 0 ? (
@@ -504,12 +504,12 @@ const EmployeePreformanceReport = () => {
                                     No Records Found
                                 </Typography>
                                 <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1 }}>
-                                    No lead activities found for Employee ID: {employeeId} matching the selected dates.
+                                    No lead activities found for any employee matching the selected dates ({startDate} to {endDate}).
                                 </Typography>
                             </Box>
                         ) : (
                             <Box>
-                                {/* Metric / Stat Summary Table */}
+                                {/* Metric / Stat Summary Table (per Employee Breakdown) */}
                                 <TableContainer
                                     component={Paper}
                                     sx={{
@@ -518,12 +518,14 @@ const EmployeePreformanceReport = () => {
                                         boxShadow: "none",
                                         border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
                                         bgcolor: isDark ? "#0f172a" : "#fff",
-                                        overflow: "hidden",
+                                        overflow: "auto",
+                                        maxHeight: 320,
                                     }}
                                 >
-                                    <Table size="small">
+                                    <Table stickyHeader size="small">
                                         <TableHead>
                                             <TableRow>
+                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Employee</TableCell>
                                                 <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Total Data Count</TableCell>
                                                 <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Capture Status</TableCell>
                                                 <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Appointment Status</TableCell>
@@ -532,12 +534,24 @@ const EmployeePreformanceReport = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            <TableRow>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#2563eb", py: 1.5 }}>{stats.totalCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#10b981", py: 1.5 }}>{stats.soldCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#8b5cf6", py: 1.5 }}>{stats.appointmentCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#f59e0b", py: 1.5 }}>{stats.quoteCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#06b6d4", py: 1.5 }}>{stats.callbackCount}</TableCell>
+                                            {employeeStats.map((emp, idx) => (
+                                                <TableRow key={emp.employeeId || idx} hover sx={{ bgcolor: idx % 2 === 0 ? tableRowEvenBg : tableRowOddBg }}>
+                                                    <TableCell sx={{ fontWeight: 600, color: textPrimaryColor, py: 1.2 }}>{emp.employeeName}</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#2563eb", py: 1.2 }}>{emp.totalCount}</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#10b981", py: 1.2 }}>{emp.soldCount}</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#8b5cf6", py: 1.2 }}>{emp.appointmentCount}</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#f59e0b", py: 1.2 }}>{emp.quoteCount}</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#06b6d4", py: 1.2 }}>{emp.callbackCount}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                            {/* Overall Total Summary Row */}
+                                            <TableRow sx={{ bgcolor: isDark ? "#1e293b" : "#f1f5f9" }}>
+                                                <TableCell sx={{ fontWeight: 900, color: textPrimaryColor, py: 1.5 }}>Total / Summary</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 900, fontSize: "1.05rem", color: "#2563eb", py: 1.5 }}>{overallStats.totalCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 900, fontSize: "1.05rem", color: "#10b981", py: 1.5 }}>{overallStats.soldCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 900, fontSize: "1.05rem", color: "#8b5cf6", py: 1.5 }}>{overallStats.appointmentCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 900, fontSize: "1.05rem", color: "#f59e0b", py: 1.5 }}>{overallStats.quoteCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 900, fontSize: "1.05rem", color: "#06b6d4", py: 1.5 }}>{overallStats.callbackCount}</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
@@ -579,7 +593,7 @@ const EmployeePreformanceReport = () => {
                                             borderRadius: "12px",
                                             bgcolor: inputBg,
                                             color: inputTextColor,
-                                            border: inputBorder,
+                                            border: isDark ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid #cbd5e1",
                                             boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
                                         }}
                                     />
@@ -604,26 +618,12 @@ const EmployeePreformanceReport = () => {
                                     <Table stickyHeader size="small">
                                         <TableHead>
                                             <TableRow>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Vehicle ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell> */}
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer Name</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Capture Name</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned To</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned Date</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell> */}
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Work Status</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell> */}
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Remarks</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Active</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Requires Follow-up</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Call Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Follow-up Date Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created By</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -644,28 +644,14 @@ const EmployeePreformanceReport = () => {
                                                                 }
                                                             }}
                                                         >
-                                                            {/* <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.vehicle_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell> */}
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.customer_name || "N/A"}</TableCell>
                                                             <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.status_name || "N/A"}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{row.employee_name ? `${row.employee_name} (${row.employee_id})` : (row.assigned_to || "Unassigned")}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDate(row.assigned_date)}</TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell> */}
                                                             <TableCell>{renderWorkStatusBadge(row.work_status)}</TableCell>
-                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell> */}
                                                             <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: textPrimaryColor }}>
                                                                 {row.remarks || "—"}
                                                             </TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.status_is_active, "Active", "Inactive")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.requires_followup, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_call_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_policy_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_followup_date_required, "Yes", "No")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.created_by || "—"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell> */}
                                                         </TableRow>
                                                     );
                                                 })}
@@ -726,7 +712,9 @@ const EmployeePreformanceReport = () => {
                             Run Performance Query
                         </Typography>
                         <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 1, maxWidth: 400 }}>
-                            Enter an Employee ID and dates, then search to retrieve individual performance records.
+                            {isEmployeeOnly
+                                ? "Select Start Date and End Date, then search to retrieve your performance records."
+                                : "Select Start Date and End Date, then search to retrieve performance records for all employees."}
                         </Typography>
                     </Box>
                 )}
@@ -735,4 +723,4 @@ const EmployeePreformanceReport = () => {
     );
 };
 
-export default EmployeePreformanceReport;
+export default AllEmployeePerformanceReport;

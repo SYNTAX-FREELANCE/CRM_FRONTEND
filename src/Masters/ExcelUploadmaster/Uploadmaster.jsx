@@ -5,9 +5,11 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import StorageIcon from "@mui/icons-material/Storage";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
@@ -34,6 +36,17 @@ const formatDate = (dateStr) => {
   } catch (e) {
     return dateStr;
   }
+};
+
+const getRowVal = (data, synonymKeys) => {
+  if (!data || typeof data !== "object") return "";
+  for (const k of Object.keys(data)) {
+    const normK = k.trim().toLowerCase();
+    if (synonymKeys.some((syn) => normK === syn.toLowerCase())) {
+      return String(data[k]).trim();
+    }
+  }
+  return "";
 };
 
 const Uploadmaster = () => {
@@ -210,15 +223,16 @@ const Uploadmaster = () => {
         },
       });
 
-      const { success, message, fileType, stats, failedRows, insertedData } = response.data;
+      const { success, message, fileType, stats, failedRows, duplicateRows, insertedData } = response.data;
 
       if (success === 1) {
         successNotify(message || "File uploaded and processed successfully!");
         setUploadResult({
-          fileType,
-          stats,
-          failedRows,
-          insertedData
+          fileType: fileType || "excel",
+          stats: stats || { totalRows: 0, insertedCount: 0, duplicateCount: 0, failedCount: 0 },
+          failedRows: failedRows || [],
+          duplicateRows: duplicateRows || [],
+          insertedData: insertedData || []
         });
 
         // Refresh both customer and vehicle query caches
@@ -226,6 +240,15 @@ const Uploadmaster = () => {
         fetchVehicleMaster();
       } else {
         errorNotify(message || "Failed to process the uploaded file.");
+        if (response.data?.stats) {
+          setUploadResult({
+            fileType: fileType || "excel",
+            stats: response.data.stats,
+            failedRows: response.data.failedRows || [],
+            duplicateRows: response.data.duplicateRows || [],
+            insertedData: response.data.insertedData || []
+          });
+        }
       }
     } catch (error) {
       console.error("Upload error:", error);
@@ -238,6 +261,7 @@ const Uploadmaster = () => {
           fileType: "excel",
           stats: error.response.data.stats,
           failedRows: error.response.data.failedRows || [],
+          duplicateRows: error.response.data.duplicateRows || [],
           insertedData: []
         });
       }
@@ -388,6 +412,32 @@ const Uploadmaster = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "DummyData");
     XLSX.writeFile(workbook, "dummy_upload_format.xlsx");
+  };
+
+  const handleDownloadDuplicatesExcel = () => {
+    if (!uploadResult || !uploadResult.duplicateRows || uploadResult.duplicateRows.length === 0) {
+      warningNotify("No duplicate entries available to download.");
+      return;
+    }
+
+    const excelData = uploadResult.duplicateRows.map((dupRow) => {
+      const custName = dupRow.customer_name || getRowVal(dupRow.data, ["customer_name", "customer name", "name", "customer"]) || "";
+      const mobile = dupRow.mobile_number_1 || getRowVal(dupRow.data, ["mobile_number_1", "mobile number 1", "mobile", "mobile1", "phone"]) || "";
+      const regNo = dupRow.registration_number || getRowVal(dupRow.data, ["registration_number", "registration number", "reg_no", "reg no", "registration_no"]) || "";
+
+      return {
+        "Excel Row": `Row ${dupRow.row}`,
+        "Customer Name": custName,
+        "Primary Mobile": mobile,
+        "Registration Number": regNo,
+        "Reason / Status": dupRow.reason || "Duplicate Entry Skipped"
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Skipped Duplicates");
+    XLSX.writeFile(workbook, `skipped_duplicates_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const renderEditForm = () => {
@@ -842,19 +892,78 @@ const Uploadmaster = () => {
                 <Box sx={{ display: "flex", gap: 3, mb: 3, flexWrap: "wrap" }}>
                   <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe", textAlign: "center" }}>
                     <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>TOTAL ROWS PARSED</Typography>
-                    <Typography level="h3" sx={{ fontWeight: 800, color: "#2563eb", mt: 0.5 }}>{uploadResult.stats.totalRows}</Typography>
+                    <Typography level="h3" sx={{ fontWeight: 800, color: "#2563eb", mt: 0.5 }}>{uploadResult.stats?.totalRows || 0}</Typography>
                   </Box>
 
                   <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: "#f0fdf4", borderRadius: "12px", border: "1px solid #bbf7d0", textAlign: "center" }}>
                     <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>SUCCESSFULLY IMPORTED</Typography>
-                    <Typography level="h3" sx={{ fontWeight: 800, color: "#16a34a", mt: 0.5 }}>{uploadResult.stats.insertedCount}</Typography>
+                    <Typography level="h3" sx={{ fontWeight: 800, color: "#16a34a", mt: 0.5 }}>{uploadResult.stats?.insertedCount || 0}</Typography>
                   </Box>
 
-                  <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: uploadResult.stats.failedCount > 0 ? "#fef2f2" : "#f8fafc", borderRadius: "12px", border: uploadResult.stats.failedCount > 0 ? "#fecaca" : "#e2e8f0", textAlign: "center" }}>
+                  <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: (uploadResult.stats?.duplicateCount || 0) > 0 ? "#fffbe6" : "#f8fafc", borderRadius: "12px", border: (uploadResult.stats?.duplicateCount || 0) > 0 ? "1px solid #ffe58f" : "1px solid #e2e8f0", textAlign: "center" }}>
+                    <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>DUPLICATES SKIPPED</Typography>
+                    <Typography level="h3" sx={{ fontWeight: 800, color: (uploadResult.stats?.duplicateCount || 0) > 0 ? "#b45309" : "#64748b", mt: 0.5 }}>{uploadResult.stats?.duplicateCount || 0}</Typography>
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: "150px", p: 2, bgcolor: (uploadResult.stats?.failedCount || 0) > 0 ? "#fef2f2" : "#f8fafc", borderRadius: "12px", border: (uploadResult.stats?.failedCount || 0) > 0 ? "1px solid #fecaca" : "1px solid #e2e8f0", textAlign: "center" }}>
                     <Typography level="body-xs" textColor="neutral.500" sx={{ fontWeight: 600 }}>VALIDATION FAILURES</Typography>
-                    <Typography level="h3" sx={{ fontWeight: 800, color: uploadResult.stats.failedCount > 0 ? "#dc2626" : "#64748b", mt: 0.5 }}>{uploadResult.stats.failedCount}</Typography>
+                    <Typography level="h3" sx={{ fontWeight: 800, color: (uploadResult.stats?.failedCount || 0) > 0 ? "#dc2626" : "#64748b", mt: 0.5 }}>{uploadResult.stats?.failedCount || 0}</Typography>
                   </Box>
                 </Box>
+
+                {/* Detailed Duplicate Entries Section */}
+                {uploadResult.duplicateRows && uploadResult.duplicateRows.length > 0 && (
+                  <Box sx={{ mb: 4, p: 2, borderRadius: "12px", border: "1px solid #ffe58f", bgcolor: "#fffbe6" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#b45309" }}>
+                        <WarningAmberIcon />
+                        <Typography level="title-sm" sx={{ fontWeight: 700, color: "#b45309" }}>
+                          Duplicate Entries Skipped - Not Inserted ({uploadResult.duplicateRows.length})
+                        </Typography>
+                      </Box>
+                      <Button onClick={handleDownloadDuplicatesExcel}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <DownloadIcon sx={{ fontSize: 16 }} />
+                          Download Skipped Duplicates (.xlsx)
+                        </Box>
+                      </Button>
+                    </Box>
+                    <Typography level="body-xs" textColor="neutral.700" sx={{ mb: 2 }}>
+                      The following records were identified as duplicates (in the uploaded Excel file or already existing in the database) and were automatically skipped. Balance valid data has been inserted into the system.
+                    </Typography>
+
+                    <Box sx={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #fde047", borderRadius: "8px", bgcolor: "#fff" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px", textAlign: "left" }}>
+                        <thead>
+                          <tr style={{ background: "#fef9c3", borderBottom: "1px solid #fde047" }}>
+                            <th style={{ padding: "8px 12px", fontWeight: 700 }}>Excel Row</th>
+                            <th style={{ padding: "8px 12px", fontWeight: 700 }}>Customer Name</th>
+                            <th style={{ padding: "8px 12px", fontWeight: 700 }}>Primary Mobile</th>
+                            <th style={{ padding: "8px 12px", fontWeight: 700 }}>Reg Number</th>
+                            <th style={{ padding: "8px 12px", fontWeight: 700, color: "#b45309" }}>Reason / Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {uploadResult.duplicateRows.map((dupRow, idx) => (
+                            <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                              <td style={{ padding: "8px 12px", fontWeight: 600 }}>Row {dupRow.row}</td>
+                              <td style={{ padding: "8px 12px" }}>
+                                {dupRow.customer_name || getRowVal(dupRow.data, ["customer_name", "customer name", "name", "customer"]) || "-"}
+                              </td>
+                              <td style={{ padding: "8px 12px" }}>
+                                {dupRow.mobile_number_1 || getRowVal(dupRow.data, ["mobile_number_1", "mobile number 1", "mobile", "mobile1", "phone"]) || "-"}
+                              </td>
+                              <td style={{ padding: "8px 12px", fontWeight: 600, color: "#b45309" }}>
+                                {dupRow.registration_number || getRowVal(dupRow.data, ["registration_number", "registration number", "reg_no", "reg no", "registration_no"]) || "-"}
+                              </td>
+                              <td style={{ padding: "8px 12px", color: "#b45309", fontWeight: 500 }}>{dupRow.reason}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </Box>
+                  </Box>
+                )}
 
                 {/* Detailed Failures Section */}
                 {uploadResult.failedRows && uploadResult.failedRows.length > 0 && (
@@ -883,9 +992,15 @@ const Uploadmaster = () => {
                           {uploadResult.failedRows.map((errRow, idx) => (
                             <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
                               <td style={{ padding: "8px 12px", fontWeight: 600 }}>Row {errRow.row}</td>
-                              <td style={{ padding: "8px 12px" }}>{errRow.data.Name || errRow.data.customer_name || "(blank)"}</td>
-                              <td style={{ padding: "8px 12px" }}>{errRow.data.registration_number || errRow.data.reg_no || "(blank)"}</td>
-                              <td style={{ padding: "8px 12px", color: "#dc2626", fontWeight: 500 }}>{errRow.errors.join(" ")}</td>
+                              <td style={{ padding: "8px 12px" }}>
+                                {getRowVal(errRow.data, ["customer_name", "customer name", "name", "customer"]) || errRow.data?.Name || errRow.data?.customer_name || "(blank)"}
+                              </td>
+                              <td style={{ padding: "8px 12px" }}>
+                                {getRowVal(errRow.data, ["registration_number", "registration number", "reg_no", "reg no", "registration_no"]) || errRow.data?.registration_number || errRow.data?.reg_no || "(blank)"}
+                              </td>
+                              <td style={{ padding: "8px 12px", color: "#dc2626", fontWeight: 500 }}>
+                                {Array.isArray(errRow.errors) ? errRow.errors.join(" ") : String(errRow.errors || "")}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
