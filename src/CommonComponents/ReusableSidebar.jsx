@@ -259,7 +259,7 @@ const ReusableSidebar = ({
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                Nexus
+                pos
               </Typography>
 
               {/* Small badge */}

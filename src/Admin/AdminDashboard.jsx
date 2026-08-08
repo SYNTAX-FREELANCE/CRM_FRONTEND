@@ -188,7 +188,7 @@ const AdminDashboard = () => {
           display: "grid",
           gridTemplateColumns: {
             xs: "repeat(2, minmax(0, 1fr))",
-            sm: "repeat(4, minmax(0, 1fr))",
+            sm: "repeat(3, minmax(0, 1fr))",
             md: "repeat(4, minmax(0, 1fr))",
             lg: "repeat(5, minmax(0, 1fr))",
             xl: "repeat(7, minmax(0, 1fr))",
@@ -214,7 +214,7 @@ const AdminDashboard = () => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", lg: "row" },
+          flexDirection: { xs: "column", xl: "row" },
           gap: 2,
           mt: 2,
           height: {
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
         }}>
         <Box
           sx={{
-            flex: 3,
+            flex: 2,
             minWidth: 0,
             minHeight: {
               xs: 450,

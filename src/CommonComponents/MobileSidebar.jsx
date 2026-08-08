@@ -246,7 +246,7 @@ const MobileSidebar = ({ menuItems = [], user, onLogout }) => {
                                     WebkitTextFillColor: "transparent",
                                 }}
                             >
-                                Nexus
+                                pos
                             </Typography>
                             {/* Small badge */}
                             <Box
