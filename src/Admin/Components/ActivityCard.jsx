@@ -29,8 +29,8 @@ const ActivityCard = ({ activity, icon, color, bgcolor }) => {
       <Avatar
         sx={{
           bgcolor: color,
-          width: 44,
-          height: 44,
+          width: 36,
+          height: 36,
           mr: 2,
           borderRadius: '50%',
         }}
@@ -60,18 +60,18 @@ const ActivityCard = ({ activity, icon, color, bgcolor }) => {
               borderRadius: 2,
             }}
           >
-            <Typography fontSize={9} fontWeight={800}>
+            <Typography fontSize={8} fontWeight={800}>
               {activity?.status_name}
             </Typography>
           </Box>
         </Box>
 
-        <Typography fontSize={12} fontWeight={500} color={isDark ? "#cbd5e1" : "inherit"}>
+        <Typography fontSize={10} fontWeight={500} color={isDark ? "#cbd5e1" : "inherit"}>
           {activity?.remarks}
         </Typography>
 
         <Typography
-          fontSize={11}
+          fontSize={8}
           color={isDark ? "#94a3b8" : "text.secondary"}
           sx={{ mt: 0.5 }}
         >

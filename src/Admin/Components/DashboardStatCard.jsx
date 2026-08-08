@@ -35,7 +35,7 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
               sx={{
                 color: isDark ? "#f8fafc" : "text.secondary",
                 mb: 0.5,
-                fontSize: { xs: 9, sm: 10, md: 12 },
+                fontSize: { xs: 9, sm: 10, md: 10 },
                 fontWeight: 900,
               }}
             >
@@ -44,7 +44,7 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
 
             <Typography
               fontWeight={900}
-              fontSize={{ xs: 32, sm: 36, md: 42 }}
+              fontSize={{ xs: 32, sm: 36, md: 36 }}
               sx={{
                 mb: 0.5,
                 color: isDark ? "#ffffff" : "#1e293b",
@@ -98,8 +98,8 @@ const DashboardStatCard = ({ item, DashboardCount }) => {
           <Avatar
             sx={{
               bgcolor: item.color,
-              width: 56,
-              height: 56,
+              width: 40,
+              height: 40,
               ml: 2,
             }}
           >

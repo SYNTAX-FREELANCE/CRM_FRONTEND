@@ -67,6 +67,8 @@ const Settings = () => {
         { menuslno: 15, label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
         { menuslno: 16, label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
         { menuslno: 17, label: "Target Master", path: "/home/setting/targetmaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 18, label: "Call Outcome Master", path: "/home/setting/calloutcome", icon: <DirectionsCarIcon /> },
+        { menuslno: 19, label: "Call Outcome Map Master", path: "/home/setting/outcomemapmaster", icon: <DirectionsCarIcon /> },
       ],
     },
 
