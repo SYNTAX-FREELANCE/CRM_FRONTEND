@@ -547,143 +547,145 @@ const Login = () => {
                         Sign in to continue to your account.
                     </Typography>
 
-                    <TextField
-                        fullWidth
-                        label="Username"
-                        margin="normal"
-                        variant="outlined"
-                        size="small"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <PersonOutlineIcon
-                                        sx={{ color: "#3b82f6", fontSize: 20 }}
-                                    />
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: 3,
-                                backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
-                                height: { xs: 48, md: 46 },
-                            },
-                            "& .MuiInputBase-input": {
-                                fontSize: { xs: "0.9rem", md: "1rem" },
-                                py: { xs: 1.2, md: 1.5 },
-                            },
-                            "& .MuiInputLabel-root": {
-                                fontSize: { xs: "0.9rem", md: "1rem" },
-                            },
-                        }}
-                    />
-
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        margin="normal"
-                        variant="outlined"
-                        size="small"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <LockOutlinedIcon
-                                        sx={{ color: "#ff8f1f", fontSize: 20 }}
-                                    />
-                                </InputAdornment>
-                            ),
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Box
-                                        onClick={() =>
-                                            setShowPassword((prev) => !prev)
-                                        }
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            cursor: "pointer",
-                                            color: "#64748b",
-                                        }}
-                                    >
-                                        {showPassword ? (
-                                            <VisibilityOutlinedIcon
-                                                sx={{ fontSize: 20 }}
-                                            />
-                                        ) : (
-                                            <VisibilityOffOutlinedIcon
-                                                sx={{ fontSize: 20 }}
-                                            />
-                                        )}
-                                    </Box>
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: 3,
-                                backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
-                                height: { xs: 46, md: 46 },
-                            },
-                            "& .MuiInputBase-input": {
-                                fontSize: { xs: "0.9rem", md: "1rem" },
-                                py: { xs: 1.2, md: 1.5 },
-                            },
-                            "& .MuiInputLabel-root": {
-                                fontSize: { xs: "0.9rem", md: "1rem" },
-                            },
-                        }}
-                    />
-
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            mt: 1,
-                        }}
-                    >
-                        <Typography
-                            onClick={() => navigate('/forget-password')}
+                    <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+                        <TextField
+                            fullWidth
+                            label="Username"
+                            margin="normal"
+                            variant="outlined"
+                            size="small"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <PersonOutlineIcon
+                                            sx={{ color: "#3b82f6", fontSize: 20 }}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }}
                             sx={{
-                                cursor: "pointer",
-                                color: "#2563eb",
-                                fontWeight: 600,
-                                fontSize: { xs: "0.62rem", md: "0.65rem" },
-                                "&:hover": { textDecoration: "underline" },
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: 3,
+                                    backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                    height: { xs: 48, md: 46 },
+                                },
+                                "& .MuiInputBase-input": {
+                                    fontSize: { xs: "0.9rem", md: "1rem" },
+                                    py: { xs: 1.2, md: 1.5 },
+                                },
+                                "& .MuiInputLabel-root": {
+                                    fontSize: { xs: "0.9rem", md: "1rem" },
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            margin="normal"
+                            variant="outlined"
+                            size="small"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <LockOutlinedIcon
+                                            sx={{ color: "#ff8f1f", fontSize: 20 }}
+                                        />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Box
+                                            onClick={() =>
+                                                setShowPassword((prev) => !prev)
+                                            }
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer",
+                                                color: "#64748b",
+                                            }}
+                                        >
+                                            {showPassword ? (
+                                                <VisibilityOutlinedIcon
+                                                    sx={{ fontSize: 20 }}
+                                                />
+                                            ) : (
+                                                <VisibilityOffOutlinedIcon
+                                                    sx={{ fontSize: 20 }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: 3,
+                                    backgroundColor: isDark ? "rgba(15,23,42,0.5)" : "#fff",
+                                    height: { xs: 46, md: 46 },
+                                },
+                                "& .MuiInputBase-input": {
+                                    fontSize: { xs: "0.9rem", md: "1rem" },
+                                    py: { xs: 1.2, md: 1.5 },
+                                },
+                                "& .MuiInputLabel-root": {
+                                    fontSize: { xs: "0.9rem", md: "1rem" },
+                                },
+                            }}
+                        />
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                mt: 1,
                             }}
                         >
-                            Forgot Password?
-                        </Typography>
-                    </Box>
+                            <Typography
+                                onClick={() => navigate('/forget-password')}
+                                sx={{
+                                    cursor: "pointer",
+                                    color: "#2563eb",
+                                    fontWeight: 600,
+                                    fontSize: { xs: "0.62rem", md: "0.65rem" },
+                                    "&:hover": { textDecoration: "underline" },
+                                }}
+                            >
+                                Forgot Password?
+                            </Typography>
+                        </Box>
 
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        size="large"
-                        onClick={handleLogin}
-                        sx={{
-                            mt: { xs: 3, md: 4 },
-                            py: { xs: 1.2, md: 1.2 },
-                            borderRadius: 3,
-                            textTransform: "none",
-                            fontSize: { xs: "0.92rem", md: "1rem" },
-                            fontWeight: 800,
-                            minHeight: { xs: 40, md: 40 },
-                            color: '#ffff',
-                            background:
-                                "linear-gradient(90deg, #2563eb 0%, #ff8f1f 100%)",
-                            boxShadow: "0 14px 28px rgba(37,99,235,0.20)",
-                            "&:hover": {
+                        <Button
+                            fullWidth
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                            sx={{
+                                mt: { xs: 3, md: 4 },
+                                py: { xs: 1.2, md: 1.2 },
+                                borderRadius: 3,
+                                textTransform: "none",
+                                fontSize: { xs: "0.92rem", md: "1rem" },
+                                fontWeight: 800,
+                                minHeight: { xs: 40, md: 40 },
+                                color: '#ffff',
                                 background:
-                                    "linear-gradient(90deg, #1d4ed8 0%, #f97316 100%)",
-                            },
-                        }}>
-                        Sign In
-                    </Button>
+                                    "linear-gradient(90deg, #2563eb 0%, #ff8f1f 100%)",
+                                boxShadow: "0 14px 28px rgba(37,99,235,0.20)",
+                                "&&:hover": {
+                                    background:
+                                        "linear-gradient(90deg, #1d4ed8 0%, #f97316 100%)",
+                                },
+                            }}>
+                            Sign In
+                        </Button>
+                    </form>
                 </Paper>
             </Box>
 
