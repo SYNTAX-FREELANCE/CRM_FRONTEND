@@ -127,6 +127,17 @@ const EmployeeLoginReport = lazy(
 const DetailedEmployeeLoginReport = lazy(
   () => import("./Reports/DetailedUserLogReports"),
 );
+const CallOutcomeCreation = lazy(
+  () => import("./Masters/CallOutComeMaster/CallOutcomeCreation"),
+);
+
+
+const OutcomeStatusMappingCreation = lazy(
+  () => import("./Masters/CallOutcomeMapMaster/OutcomeStatusMappingCreation"),
+);
+
+
+
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -324,7 +335,16 @@ const router = createBrowserRouter([
         path: "setting/targetmaster",
         element: withSuspense(EmployeeTargetCreation),
       },
+      {
+        path: "setting/calloutcome",
+        element: withSuspense(CallOutcomeCreation),
+      },
+    {
+        path: "setting/outcomemapmaster",
+        element: withSuspense(OutcomeStatusMappingCreation),
+      },
 
+      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),

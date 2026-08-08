@@ -61,7 +61,7 @@ const InsuranceCompanyCreation = () => {
             email: "",
             isActive: "Active",
         });
-    },[]);
+    }, []);
 
     const validateInsuranceCompany = () => {
         if (!insurance.companyName.trim()) {
