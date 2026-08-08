@@ -242,25 +242,42 @@ const ReusableSidebar = ({
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 0.5,
+                gap: 1,
               }}
             >
-              <Typography
-                level="h5"
-                sx={{
-                  color: "#ea580c",
-                  fontWeight: 800,
-                  fontSize: "24px",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                pos
-              </Typography>
+              <Box>
+                <Typography
+                  level="h5"
+                  sx={{
+                    color: "#ea580c",
+                    fontWeight: 800,
+                    fontSize: "24px",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  pos
+                </Typography>
+                 <Typography
+                  sx={{
+                    color: "#020202",
+                    fontWeight: 800,
+                    fontSize: "6px",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    background: "linear-gradient(135deg, #030303 0%, #0c0c0c 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  POINT OF SALE
+                </Typography>
+              </Box>
 
               {/* Small badge */}
               <Box
@@ -429,7 +446,7 @@ const ReusableSidebar = ({
                   {role}
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: "flex", gap: 0.5 }}>
                 <Box
                   onClick={toggleTheme}
