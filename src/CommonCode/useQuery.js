@@ -49,6 +49,9 @@ import {
   getFetTargetMaster,
   getEmployeeTargetDetails,
   getCallsLeftCount,
+  FetchCallOutcomeMaster,
+  FetchOutcomeStatusMappingMaster,
+  FetchOutcomeByStatusId,
 } from "./CommonFun";
 
 
@@ -480,3 +483,29 @@ export const useGetCallsLeft = (empid) => {
   });
 };
 
+export const useCallOutcomeMaster = () => {
+  return useQuery({
+    queryKey: ["call-outcome-master"],
+    queryFn: FetchCallOutcomeMaster,
+  });
+
+};
+
+
+export const useOutcomeStatusMappingMaster = () => {
+  return useQuery({
+    queryKey: ["outcome-status-mapping-master"],
+    queryFn: FetchOutcomeStatusMappingMaster,
+  });
+};
+
+
+export const useOutcomeByStatusId = (statusId, enable) => {
+  return useQuery({
+    queryKey: ["outcomeByStatusId", statusId],
+    queryFn: () => FetchOutcomeByStatusId(statusId),
+    enabled: !!statusId && Boolean(enable),
+    staleTime: Infinity,
+  });
+
+};

@@ -18,6 +18,7 @@ const items = [
     { label: "Policy Report", path: "./policyreport", icon: <MenuIcon /> },
     // { label: "Sales Report", path: "/home/setting/modulemaster", icon: <ExtensionIcon /> },
     { label: "Employee Performance Report", path: "./employeperformance", icon: <BadgeIcon /> },
+    { label: "All Employee Performance Report", path: "./allemployeeperformance", icon: <BadgeIcon /> },
     { label: "Employee Login Report", path: "./UserLogReports", icon: <SecurityIcon /> },
     { label: "Detailed Employee Login Report", path: "./DetailedUserLogReports", icon: <SecurityIcon /> },
 ];

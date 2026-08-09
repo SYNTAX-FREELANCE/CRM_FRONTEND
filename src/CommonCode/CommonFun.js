@@ -780,4 +780,67 @@ export const getCallsLeftCount = async (empid) => {
     console.error("getCallsLeftCount error:", error);
     return 0;
   }
-};
+};
+
+export const FetchCallOutcomeMaster = async () => {
+  try {
+    const response = await axioslogin.get("/calloutcome/getall");
+    const { success, data } = response.data;
+    if (success !== 0) return data;
+    return [];
+  } catch (error) {
+    console.error(
+      "FetchCallOutcomeMaster error:",
+      error
+    )
+  }
+};
+
+
+export const FetchOutcomeStatusMappingMaster = async () => {
+  try {
+    const response = await axioslogin.get(
+      "/outcomestatusmapping/getall"
+    );
+    const {
+      success,
+      data,
+    } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+
+  } catch (error) {
+
+    console.error(
+      "FetchOutcomeStatusMappingMaster error:",
+      error
+    );
+  }
+};
+
+
+export const FetchOutcomeByStatusId = async (statusId) => {
+  try {
+    const response = await axioslogin.get(`/outcomestatusmapping/get-by-status/${statusId}`);
+
+    const {
+      success,
+      data,
+    } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+    return [];
+  } catch (error) {
+    console.error(
+      "FetchOutcomeByStatusId error:",
+      error
+    );
+    return [];
+  }
+};
