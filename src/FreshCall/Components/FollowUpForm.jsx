@@ -159,6 +159,9 @@ const FollowUpForm = ({
     const isDark = theme.palette.mode === 'dark';
     const isMobile = useMediaQuery("(max-width:600px)");
     const needsDate = statusName?.requires_followup === 1;
+    const isFollowupDateRequired = statusName?.is_followup_date_required === 1;
+
+
     const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
     const { data: OUTCOMES, isLoading: LoadingOutComes } = useOutcomeByStatusId(statusName?.status_id, needsDate);
 
@@ -256,7 +259,7 @@ const FollowUpForm = ({
                     }
                 </Box>
 
-                {needsDate && (
+                {isFollowupDateRequired && (
                     <Box>
                         <Typography sx={{ mb: 1, fontWeight: 800, color: "#334155" }}>
                             Next Follow-up Date
