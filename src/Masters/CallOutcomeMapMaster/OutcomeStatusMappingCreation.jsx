@@ -76,6 +76,8 @@ const OutcomeStatusMappingCreation = () => {
         refetch: FetchCallOutcomeMaster,
     } = useCallOutcomeMaster();
 
+
+
     const {
         data: FinalMapData = [],
         refetch: FetchStatusMaster,

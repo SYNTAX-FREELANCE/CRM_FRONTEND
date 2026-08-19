@@ -97,7 +97,7 @@ const UserSelectDropdown = ({
     useEffect(() => {
         if (!canSeeAll && displayUsers.length > 0 && onChange) {
             const singleUser = displayUsers[0];
-            const targetVal = singleUser[valueKey] || singleUser.employee_id || singleUser.user_id;
+            const targetVal = singleUser.user_id || singleUser.user_id;
             if (targetVal && String(value) !== String(targetVal)) {
                 onChange(String(targetVal));
             }
@@ -145,13 +145,13 @@ const UserSelectDropdown = ({
                     </option>
                 )}
                 {displayUsers.map((user) => {
-                    const optValue = user[valueKey] || user.employee_id || user.user_id;
-                    const empCode = user.employee_id ? ` (${user.employee_id})` : "";
+                    const optValue = user.user_id || user.user_id;
+                    const empCode = user?.employee_id ? ` (${user.employee_id})` : "";
                     const displayName = `${user.name || "Unknown"}${empCode}`;
 
                     return (
                         <option
-                            key={user.user_id || user.employee_id}
+                            key={user?.user_id}
                             value={optValue}
                             style={{ backgroundColor: bgColor, color: textColor }}
                         >

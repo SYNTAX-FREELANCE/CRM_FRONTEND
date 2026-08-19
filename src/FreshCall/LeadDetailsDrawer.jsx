@@ -82,7 +82,9 @@ const LeadDetailsDrawer = ({
   const isRenewalTab = Number(statusFilter) === -3;
   const leadId = lead?.lead_id;
   const statusId = lead?.status_id;
+
   const isCallAccess = lead?.is_call_required === 1 || isRenewalTab;
+
   const VehicleId = lead?.vehicle_id;
 
   const [callAnchorEl, setCallAnchorEl] = useState(null);
@@ -118,6 +120,33 @@ const LeadDetailsDrawer = ({
       }
       await queryClient.invalidateQueries({ queryKey: ["emp-mycalls", id], })
       successNotify("Expiry date updated");
+    } catch (err) {
+      errorNotify("Error updating expiry date");
+    }
+  }, [VehicleId, id]);
+
+
+  const handleRegistrationSave = useCallback(async (date) => {
+    // Instant update only for opened lead
+    setSelectedLead((prev) => ({
+      ...prev,
+      registration_date: date,
+    }));
+
+    try {
+      const { data } = await axioslogin.post("/lead/update-registration", {
+        vehicle_id: VehicleId,
+        edited_by: id,
+        registration_date: date
+          ? format(new Date(date), "yyyy-MM-dd")
+          : null,
+      });
+      if (data.success !== 1) {
+        warningNotify(data.message);
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["emp-mycalls", id], })
+      successNotify("Registartion date updated");
     } catch (err) {
       errorNotify("Error updating expiry date");
     }
@@ -467,6 +496,20 @@ const LeadDetailsDrawer = ({
                   />
                 }
               />
+              <Row
+                label="Registration Date"
+                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
+                accent="orange"
+                value={
+                  <EditableDateField
+                    value={lead?.registration_date}
+                    editable
+                    onSave={handleRegistrationSave}
+                  />
+                }
+              />
+
+
               <Row
                 label="Model"
                 value={lead.model || "-"}

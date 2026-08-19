@@ -133,6 +133,9 @@ const StatusActionCards = ({
                         item.status_id ===
                         selectedStatus?.status_id;
 
+
+                    const statusName = item.status_name === 'SOLD' ? 'CAPTURED' : item.status_name;
+
                     return (
                         <Box
                             key={item.status_id}
@@ -214,9 +217,8 @@ const StatusActionCards = ({
                                             fontWeight: 900,
                                             fontSize: active ? 15 : 10,
                                             color: "#0f172a",
-                                        }}
-                                    >
-                                        {item.status_name}
+                                        }} >
+                                        {statusName}
                                     </Typography>
 
                                     <Typography

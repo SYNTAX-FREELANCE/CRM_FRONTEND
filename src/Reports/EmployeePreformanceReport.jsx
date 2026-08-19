@@ -61,18 +61,20 @@ const EmployeePreformanceReport = () => {
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
 
+
+
     const [employeeId, setEmployeeId] = useState("");
     const [startDate, setStartDate] = useState(getFirstDayOfMonth());
     const [endDate, setEndDate] = useState(getTodayDate());
     const [loading, setLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
     const [reportData, setReportData] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
     const [searched, setSearched] = useState(false);
 
-    // Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const report = reportData ? reportData?.[0] : {};
+
+
 
     const handleBack = () => {
         navigate("/home/reports");
@@ -92,20 +94,15 @@ const EmployeePreformanceReport = () => {
             if (startDate && endDate) {
                 url += `&fromDate=${startDate}&toDate=${endDate}`;
             }
-
             const response = await axioslogin.get(url);
-
             if (response.data?.success === 1) {
-                console.log(response.data.data);
                 setReportData(response.data.data || []);
-                setPage(0);
                 successNotify(`Retrieved ${response.data.data?.length || 0} performance records.`);
             } else {
                 warningNotify(response.data?.message || "Failed to fetch performance data");
                 setReportData([]);
             }
         } catch (error) {
-            console.error("Fetch report error:", error);
             errorNotify("An error occurred while fetching the employee performance report");
             setReportData([]);
         } finally {
@@ -155,93 +152,9 @@ const EmployeePreformanceReport = () => {
         setStartDate(getFirstDayOfMonth());
         setEndDate(getTodayDate());
         setReportData([]);
-        setSearchQuery("");
         setSearched(false);
-        setPage(0);
     };
 
-    // Filter data in-memory based on search text box query
-    const filteredData = useMemo(() => {
-        const query = searchQuery.trim().toLowerCase();
-        if (!query) return reportData;
-
-        return reportData.filter((row) => {
-            const formattedAssignedDate = formatDate(row.assigned_date);
-            const formattedCreatedAt = formatDateTime(row.created_at);
-            const searchValues = [
-                ...Object.values(row),
-                formattedAssignedDate,
-                formattedCreatedAt,
-            ];
-            return searchValues.some((val) =>
-                val !== null && val !== undefined ? String(val).toLowerCase().includes(query) : false
-            );
-        });
-    }, [reportData, searchQuery]);
-
-    // Calculate total count and counts for sold, appointment, quote, callback statuses
-    const stats = useMemo(() => {
-        let totalCount = reportData.length;
-        let soldCount = 0;
-        let appointmentCount = 0;
-        let quoteCount = 0;
-        let callbackCount = 0;
-
-        reportData.forEach((row) => {
-            const name = (row.status_name || "").toUpperCase();
-            if (name.includes("SOLD")) {
-                soldCount++;
-            } else if (name.includes("APPOINMENT") || name.includes("APPOINTMENT")) {
-                appointmentCount++;
-            } else if (name.includes("QUOTE")) {
-                quoteCount++;
-            } else if (name.includes("CALLBACK") || name.includes("CALL BACK")) {
-                callbackCount++;
-            }
-        });
-
-        return {
-            totalCount,
-            soldCount,
-            appointmentCount,
-            quoteCount,
-            callbackCount,
-        };
-    }, [reportData]);
-
-    // Helpers to render clean badges
-    const renderBooleanBadge = (val, trueText, falseText) => {
-        const isActive = val === 1 || val === true;
-        return (
-            <Chip
-                size="sm"
-                variant="soft"
-                color={isActive ? "success" : "neutral"}
-                sx={{ fontWeight: 600, fontSize: "11px", borderRadius: "8px" }}
-            >
-                {isActive ? trueText : falseText}
-            </Chip>
-        );
-    };
-
-    const renderWorkStatusBadge = (status) => {
-        const text = (status || "").toUpperCase();
-        let color = "neutral";
-        if (text === "COMPLETED") color = "success";
-        else if (text === "PENDING") color = "warning";
-        else if (text === "IN_PROGRESS" || text === "PROCESSING") color = "primary";
-
-        return (
-            <Chip
-                size="sm"
-                variant="solid"
-                color={color}
-                sx={{ fontWeight: 700, fontSize: "11px", borderRadius: "8px" }}
-            >
-                {text || "N/A"}
-            </Chip>
-        );
-    };
 
     const formatDate = (dateStr) => {
         if (!dateStr) return "N/A";
@@ -498,7 +411,7 @@ const EmployeePreformanceReport = () => {
                                     Compiling performance records...
                                 </Typography>
                             </Box>
-                        ) : filteredData.length === 0 ? (
+                        ) : reportData.length === 0 ? (
                             <Box sx={{ textAlign: "center", py: 8, border: isDark ? "2px dashed rgba(255,255,255,0.15)" : "2px dashed #cbd5e1", borderRadius: "16px" }}>
                                 <Typography level="h4" sx={{ fontWeight: 800, color: textPrimaryColor }}>
                                     No Records Found
@@ -524,183 +437,27 @@ const EmployeePreformanceReport = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Total Data Count</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Capture Status</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Appointment Status</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Quote Status</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Callback Status</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Total Calls</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>CallBack Count</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Appointment Count</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Quote Count</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Capture Count</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, py: 1.5 }}>Lost Count</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             <TableRow>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#2563eb", py: 1.5 }}>{stats.totalCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#10b981", py: 1.5 }}>{stats.soldCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#8b5cf6", py: 1.5 }}>{stats.appointmentCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#f59e0b", py: 1.5 }}>{stats.quoteCount}</TableCell>
-                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#06b6d4", py: 1.5 }}>{stats.callbackCount}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#2563eb", py: 1.5 }}>{report?.total_calls}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#10b981", py: 1.5 }}>{report?.callback_count}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#8b5cf6", py: 1.5 }}>{report?.appointment_count}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#f59e0b", py: 1.5 }}>{report?.quote_count}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#06b6d4", py: 1.5 }}>{report?.captured_count}</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 800, fontSize: "1.1rem", color: "#06b6d4", py: 1.5 }}>{report?.lost_count}</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
 
-                                {/* Filter and Record stats bar */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: { xs: "column", sm: "row" },
-                                        justifyContent: "space-between",
-                                        alignItems: { xs: "stretch", sm: "center" },
-                                        gap: 2,
-                                        mb: 2,
-                                    }}
-                                >
-                                    <Typography level="body-sm" sx={{ fontWeight: 600, color: textSecondaryColor }}>
-                                        Showing {filteredData.length} records of {reportData.length} found.
-                                    </Typography>
-                                    <Input
-                                        placeholder="Search records in view..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        startDecorator={<FilterAltIcon sx={{ color: textSecondaryColor }} />}
-                                        endDecorator={
-                                            searchQuery && (
-                                                <Button
-                                                    variant="plain"
-                                                    color="neutral"
-                                                    onClick={() => setSearchQuery("")}
-                                                    sx={{ p: 0.5, minWidth: 0, borderRadius: "50%" }}
-                                                >
-                                                    <ClearIcon sx={{ fontSize: "14px", color: textSecondaryColor }} />
-                                                </Button>
-                                            )
-                                        }
-                                        sx={{
-                                            width: { xs: "100%", sm: 280 },
-                                            borderRadius: "12px",
-                                            bgcolor: inputBg,
-                                            color: inputTextColor,
-                                            border: inputBorder,
-                                            boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
-                                        }}
-                                    />
-                                </Box>
-
-                                {/* Table layout */}
-                                <TableContainer
-                                    component={Paper}
-                                    sx={{
-                                        maxHeight: 500,
-                                        borderRadius: "16px",
-                                        boxShadow: "none",
-                                        border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                                        bgcolor: isDark ? "#0f172a" : "#fff",
-                                        overflow: "auto",
-                                        "&::-webkit-scrollbar": { width: "8px", height: "8px" },
-                                        "&::-webkit-scrollbar-track": { background: isDark ? "#0f172a" : "#f1f5f9" },
-                                        "&::-webkit-scrollbar-thumb": { background: isDark ? "#334155" : "#cbd5e1", borderRadius: "4px" },
-                                        "&::-webkit-scrollbar-thumb:hover": { background: isDark ? "#475569" : "#94a3b8" },
-                                    }}
-                                >
-                                    <Table stickyHeader size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Vehicle ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Customer Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Capture Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned To</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Assigned Date</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Work Status</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Remarks</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Status Active</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Requires Follow-up</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Call Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Policy Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Follow-up Date Required</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Created By</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255, 255, 255, 0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell> */}
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {filteredData
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                                .map((row, index) => {
-                                                    const isEven = index % 2 === 0;
-                                                    const rowBg = isEven ? tableRowEvenBg : tableRowOddBg;
-                                                    return (
-                                                        <TableRow
-                                                            key={row.lead_id || index}
-                                                            hover
-                                                            sx={{
-                                                                bgcolor: rowBg,
-                                                                "& td": { borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid #f1f5f9" },
-                                                                "&:hover": {
-                                                                    bgcolor: isDark ? "#334155 !important" : "#f1f5f9 !important"
-                                                                }
-                                                            }}
-                                                        >
-                                                            {/* <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.vehicle_id}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell> */}
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_name || "N/A"}</TableCell>
-                                                            <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.status_name || "N/A"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.employee_name ? `${row.employee_name} (${row.employee_id})` : (row.assigned_to || "Unassigned")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDate(row.assigned_date)}</TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell> */}
-                                                            <TableCell>{renderWorkStatusBadge(row.work_status)}</TableCell>
-                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell> */}
-                                                            <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: textPrimaryColor }}>
-                                                                {row.remarks || "—"}
-                                                            </TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.status_is_active, "Active", "Inactive")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.requires_followup, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_call_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_policy_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_followup_date_required, "Yes", "No")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.created_by || "—"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell> */}
-                                                        </TableRow>
-                                                    );
-                                                })}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-
-                                {/* Pagination controls */}
-                                <TablePagination
-                                    rowsPerPageOptions={[5, 10, 25, 50]}
-                                    component="div"
-                                    count={filteredData.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    onPageChange={(e, newPage) => setPage(newPage)}
-                                    onRowsPerPageChange={(e) => {
-                                        setRowsPerPage(parseInt(e.target.value, 10));
-                                        setPage(0);
-                                    }}
-                                    sx={{
-                                        borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                                        color: textPrimaryColor,
-                                        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                                            fontSize: "13px",
-                                            fontWeight: 500,
-                                            color: textSecondaryColor,
-                                        },
-                                        "& .MuiTablePagination-select": {
-                                            fontSize: "13px",
-                                        },
-                                        "& .MuiTablePagination-actions svg": {
-                                            color: textPrimaryColor
-                                        }
-                                    }}
-                                />
                             </Box>
                         )}
                     </Box>

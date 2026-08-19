@@ -96,10 +96,9 @@ const EmployeeDashboard = () => {
 
     const { data: remindersData = [], isLoading: LoadingReminderData } = useFetchDashBoardReminders(id);
 
-
     const { data: ToSaleEmployees = [], isLoading: LoadingTopEmployees } = useTopEmployess();
 
- 
+  
 
     return (
         <Box
@@ -112,7 +111,7 @@ const EmployeeDashboard = () => {
                     display: "none",
                 },
                 pb: 2,
-                position:'relative'
+                position: 'relative'
             }}
         >
             <Card
@@ -178,7 +177,7 @@ const EmployeeDashboard = () => {
                 gap: 2.5,
                 flexDirection: { xs: "column", sm: 'column', lg: "row" },
                 alignItems: "stretch",
-                height:'80vh'
+                height: '80vh'
             }}>
                 <Box sx={{
                     flex: 3,
@@ -196,8 +195,7 @@ const EmployeeDashboard = () => {
                                 },
                                 gap: 2,
                                 width: '100%',
-                            }}
-                        >
+                            }}>
                             {
                                 LoadingTotalCount ? (
                                     Array.from({ length: 6 }).map((_, index) => (
@@ -214,10 +212,7 @@ const EmployeeDashboard = () => {
                                                 color={item.color}
                                             />
                                         </Suspense>
-                                    ))
-                                )
-                            }
-
+                                    )))}
                         </Box>
                     </Box>
                     <Box
@@ -228,13 +223,6 @@ const EmployeeDashboard = () => {
                             flexDirection: { xs: "column", lg: "row" },
                             alignItems: "stretch",
                         }} >
-                        {/* <Box
-                            sx={{
-                                flex: 1,
-                                minWidth: 0
-                            }}>
-                            <ReminderAreaChartCard reminders={remindersData} />
-                        </Box> */}
                         <Box
                             sx={{
                                 flex: 2, // ~33%
@@ -244,7 +232,9 @@ const EmployeeDashboard = () => {
                             {LoadingReminderData ? (
                                 <DashboardRemindersCardSkeleton />
                             ) : (
-                                <DashboardRemindersCard remindersData={remindersData} />
+                                <DashboardRemindersCard
+                                    remindersData={remindersData}
+                                />
                             )}
 
                         </Box>
@@ -259,8 +249,7 @@ const EmployeeDashboard = () => {
                         sx={{
                             flex: 1,
                             height: '100%'
-                        }}
-                    >
+                        }}>
                         {LoadingTopEmployees ? (
                             <TopSalesExecutivesSkeleton />
                         ) : (
@@ -269,8 +258,6 @@ const EmployeeDashboard = () => {
                     </Box>
                 </Box>
             </Box>
-
-
         </Box>
     );
 };
