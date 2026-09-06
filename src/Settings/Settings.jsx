@@ -50,8 +50,9 @@ const Settings = () => {
         { menuslno: 7, label: "Lead Master", path: "/home/setting/leadmaster", icon: <LeaderboardIcon /> },
         { menuslno: 8, label: "Vehicle Type Master", path: "/home/setting/vehicletypemaster", icon: <DirectionsCarIcon /> },
         { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
+        { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
         { menuslno: 10, label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
-        { menuslno: 11, label: "Vehicle Master", path: "/home/setting/vehiclemaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 20, label: "Policy Source Master", path: "/home/setting/policysource", icon: <DirectionsCarIcon /> },
 
       ],
     },

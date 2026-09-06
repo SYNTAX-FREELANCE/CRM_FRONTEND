@@ -44,110 +44,6 @@ import PolicyDetailsFormSkeleton from "../../SkeletonComponent/PolicyDetailsForm
 const PolicyDetailsForm = lazy(() => import('./PolicyDetailsForm'))
 
 
-// export const OUTCOMES = [
-//     {
-//         key: "ANSWERED",
-//         label: "Answered",
-//         icon: <CampaignIcon sx={{ fontSize: 18 }} />,
-//         color: "#2563eb",
-//     },
-//     {
-//         key: "NO_ANSWER",
-//         label: "No Answer",
-//         icon: <HelpOutlineIcon sx={{ fontSize: 18 }} />,
-//         color: "#f59e0b",
-//     },
-//     {
-//         key: "BUSY",
-//         label: "Busy",
-//         icon: <LocalPhoneIcon sx={{ fontSize: 18 }} />,
-//         color: "#ea580c",
-//     },
-//     {
-//         key: "SWITCHED_OFF",
-//         label: "Switched Off",
-//         icon: <PhoneDisabledIcon sx={{ fontSize: 18 }} />,
-//         color: "#64748b",
-//     },
-//     {
-//         key: "INVALID_NUMBER",
-//         label: "Invalid Number",
-//         icon: <BlockIcon sx={{ fontSize: 18 }} />,
-//         color: "#dc2626",
-//     },
-//     {
-//         key: "WRONG_NUMBER",
-//         label: "Wrong Number",
-//         icon: <BlockIcon sx={{ fontSize: 18 }} />,
-//         color: "#ef4444",
-//     },
-//     {
-//         key: "CALL_BACK_REQUESTED",
-//         label: "Call Back Requested",
-//         icon: <PhoneForwardedIcon sx={{ fontSize: 18 }} />,
-//         color: "#7c3aed",
-//     },
-//     {
-//         key: "INTERESTED",
-//         label: "Interested",
-//         icon: <ThumbUpIcon sx={{ fontSize: 18 }} />,
-//         color: "#16a34a",
-//     },
-//     {
-//         key: "NOT_INTERESTED",
-//         label: "Not Interested",
-//         icon: <ThumbDownIcon sx={{ fontSize: 18 }} />,
-//         color: "#dc2626",
-//     },
-//     {
-//         key: "QUOTE_REQUESTED",
-//         label: "Quote Requested",
-//         icon: <SellIcon sx={{ fontSize: 18 }} />,
-//         color: "#2563eb",
-//     },
-//     {
-//         key: "FOLLOW_UP_REQUIRED",
-//         label: "Follow Up Required",
-//         icon: <EventAvailableIcon sx={{ fontSize: 18 }} />,
-//         color: "#8b5cf6",
-//     },
-//     {
-//         key: "MEETING_SCHEDULED",
-//         label: "Meeting Scheduled",
-//         icon: <EventAvailableIcon sx={{ fontSize: 18 }} />,
-//         color: "#0ea5e9",
-//     },
-//     {
-//         key: "POLICY_RENEWED",
-//         label: "Policy Renewed",
-//         icon: <VerifiedIcon sx={{ fontSize: 18 }} />,
-//         color: "#16a34a",
-//     },
-//     {
-//         key: "POLICY_PURCHASED",
-//         label: "Policy Purchased",
-//         icon: <CheckCircleIcon sx={{ fontSize: 18 }} />,
-//         color: "#15803d",
-//     },
-//     {
-//         key: "ALREADY_INSURED",
-//         label: "Already Insured",
-//         icon: <SecurityIcon sx={{ fontSize: 18 }} />,
-//         color: "#0284c7",
-//     },
-//     {
-//         key: "DO_NOT_CALL",
-//         label: "Do Not Call",
-//         icon: <DoNotDisturbAltIcon sx={{ fontSize: 18 }} />,
-//         color: "#991b1b",
-//     },
-//     {
-//         key: "OTHER",
-//         label: "Other",
-//         icon: <MoreHorizIcon sx={{ fontSize: 18 }} />,
-//         color: "#64748b",
-//     },
-// ];
 
 const FollowUpForm = ({
     statusName,
@@ -181,6 +77,10 @@ const FollowUpForm = ({
         policy_number: "",
         renewal_cycle: "Annual",
         start_date: "",
+        sale_date: "",
+        paid_amount: "",
+        discount_amount: "",
+        source_id: "",
         expiry_date: "",
         premium_amount: "",
         insured_declared_value: "",
@@ -199,6 +99,10 @@ const FollowUpForm = ({
             policy_number: "",
             renewal_cycle: "Annual",
             start_date: "",
+            sale_date: "",
+            paid_amount: "",
+            discount_amount: "",
+            source_id: "",
             expiry_date: "",
             premium_amount: "",
             insured_declared_value: "",

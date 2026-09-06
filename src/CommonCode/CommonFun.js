@@ -404,7 +404,7 @@ export const FetchCallCenterPerformance = async (
     console.error("FetchCallCenterPerformance error:", error);
     throw new Error(
       error?.response?.data?.message ||
-      "Failed to fetch call center performance",
+        "Failed to fetch call center performance",
     );
   }
 };
@@ -710,9 +710,7 @@ export const getPolicyFilesDetails = async (policyId) => {
 export const getLeadUploadFiles = async (leadId) => {
   if (!leadId) return [];
   try {
-    const response = await axioslogin.get(
-      `/employee/lead-documents/${leadId}`,
-    );
+    const response = await axioslogin.get(`/employee/lead-documents/${leadId}`);
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -737,8 +735,6 @@ export const getUserAttendanceDetails = async (userId) => {
   }
 };
 
-
-
 export const getFetTargetMaster = async () => {
   try {
     const response = await axioslogin.get(`/target/getall`);
@@ -753,13 +749,10 @@ export const getFetTargetMaster = async () => {
   }
 };
 
-
 export const getEmployeeTargetDetails = async (empid) => {
   if (!empid) return [];
   try {
-    const response = await axioslogin.get(
-      `/target/current/${empid}`,
-    );
+    const response = await axioslogin.get(`/target/current/${empid}`);
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -789,58 +782,84 @@ export const FetchCallOutcomeMaster = async () => {
     if (success !== 0) return data;
     return [];
   } catch (error) {
-    console.error(
-      "FetchCallOutcomeMaster error:",
-      error
-    )
+    console.error("FetchCallOutcomeMaster error:", error);
   }
 };
-
 
 export const FetchOutcomeStatusMappingMaster = async () => {
   try {
-    const response = await axioslogin.get(
-      "/outcomestatusmapping/getall"
-    );
-    const {
-      success,
-      data,
-    } = response.data;
+    const response = await axioslogin.get("/outcomestatusmapping/getall");
+    const { success, data } = response.data;
 
     if (success !== 0) {
       return data;
     }
 
     return [];
-
   } catch (error) {
+    console.error("FetchOutcomeStatusMappingMaster error:", error);
+  }
+};
 
-    console.error(
-      "FetchOutcomeStatusMappingMaster error:",
-      error
+export const FetchOutcomeByStatusId = async (statusId) => {
+  try {
+    const response = await axioslogin.get(
+      `/outcomestatusmapping/get-by-status/${statusId}`,
     );
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+    return [];
+  } catch (error) {
+    console.error("FetchOutcomeByStatusId error:", error);
+    return [];
+  }
+};
+
+export const FetchPolicySourceMaster = async () => {
+  try {
+    const response = await axioslogin.get("/policysource/getall");
+    const { success, data } = response.data;
+    if (success !== 0) {
+      return data;
+    }
+    return [];
+  } catch (error) {
+    console.error("FetchPolicySourceMaster error:", error);
+    return [];
   }
 };
 
 
-export const FetchOutcomeByStatusId = async (statusId) => {
-  try {
-    const response = await axioslogin.get(`/outcomestatusmapping/get-by-status/${statusId}`);
 
-    const {
-      success,
-      data,
-    } = response.data;
+export const FetchActivePolicySourceMaster = async () => {
 
-    if (success !== 0) {
-      return data;
+    try {
+        const response = await axioslogin.get(
+            "/policysource/get-active"
+        );
+
+        const {
+            success,
+            data,
+        } = response.data;
+
+        if (success !== 0) {
+            return data;
+        }
+
+        return [];
+
+    } catch (error) {
+
+        console.error(
+            "FetchActivePolicySourceMaster error:",
+            error
+        );
+
+        return [];
     }
-    return [];
-  } catch (error) {
-    console.error(
-      "FetchOutcomeByStatusId error:",
-      error
-    );
-    return [];
-  }
 };

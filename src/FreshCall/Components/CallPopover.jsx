@@ -10,20 +10,52 @@ import {
 import PhoneIcon from "@mui/icons-material/Phone";
 import CallIcon from "@mui/icons-material/Call";
 import CloseIcon from "@mui/icons-material/Close";
+import { axioslogin } from "../../Connection/axios";
+import { getAuthUser } from "../../constant/Constant";
 
-const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2 }) => {
+const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2, lead }) => {
+
   const [calling, setCalling] = React.useState(null);
 
-  
+  console.log({
+    lead
+  });
+
+
+  const authUser = getAuthUser();
+  const { id } = authUser ?? {}
+
+
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
 
-  const handleCall = (number) => {
+  const handleCall = async (number) => {
     if (!number) return;
-    setCalling(number);
-    window.location.href = `tel:${number}`;
-    setTimeout(() => setCalling(null), 1800);
+
+    try {
+
+      const payload = {
+        leadId: lead?.lead_id,
+        customerName: lead?.customer_name,
+        phoneNumber: number,
+        registrationNumber: lead?.registration_number,
+        model: lead?.model,
+        user_id: id,
+      };
+      console.log("📤 Sending test push:", payload);
+      const response = await axioslogin.post(
+        "/notifications/test",
+        payload
+      );
+
+      console.log("✅ Push response:", response.data);
+    } catch (error) {
+      console.error(
+        "❌ Push test failed:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   const Item = ({ label, number }) => {
@@ -42,7 +74,7 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2 }) => {
           borderColor: active ? "success.main" : "rgba(37,99,235,.14)",
           // bgcolor: active ? "rgba(22,163,74,.08)" : "rgba(255,255,255,.95)",
           boxShadow: active ? "0 8px 24px rgba(22,163,74,.12)" : "0 6px 18px rgba(15,23,42,.06)",
-           bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
+          bgcolor: isDark ? "rgba(15,23,42,0.6)" : "#fff",
         }}
       >
         <Stack spacing={0.2} sx={{ minWidth: 0 }}>
@@ -52,7 +84,7 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2 }) => {
               fontWeight: 900,
               textTransform: "uppercase",
               letterSpacing: 0.7,
-               color: isDark ? "#ffffff" : "#1e293b",
+              color: isDark ? "#ffffff" : "#1e293b",
             }}
           >
             {label}
@@ -62,7 +94,7 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2 }) => {
             sx={{
               fontWeight: 700,
               fontSize: "0.82rem",
-               color: isDark ? "#ffffff" : "#1e293b",
+              color: isDark ? "#ffffff" : "#1e293b",
             }}
           >
             {number || "-"}
