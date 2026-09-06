@@ -285,7 +285,7 @@ const PolicyReport = () => {
                                 }}
                             >
                                 <CalendarTodayIcon sx={{ color: "#3b82f6", fontSize: "2rem" }} />
-                                Policy Workflow Report
+                                Policy  Report
                             </Typography>
                             <Typography level="body-sm" sx={{ color: textSecondaryColor, mt: 0.5, fontWeight: 500 }}>
                                 Select date ranges to filter lead statuses and download reports.
@@ -499,72 +499,301 @@ const PolicyReport = () => {
                                     }}
                                 >
                                     <Table stickyHeader size="small">
+
                                         <TableHead>
                                             <TableRow>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Lead ID</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Customer ID</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Vehicle ID</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Policy ID</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Status Name</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Assigned To</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Assigned Date</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Is Assigned</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Work Status</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Created At</TableCell> */}
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Remarks</TableCell>
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Is Locked</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Status Active</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Requires Follow-up</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Call Required</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Policy Required</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Follow-up Date Required</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Created By</TableCell> */}
-                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Edited By</TableCell> */}
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Customer
+                                                </TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Vehicle
+                                                </TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Employee
+                                                </TableCell>
+
+
+                                                {/* POLICY */}
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Policy Number
+                                                </TableCell>
+
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Premium
+                                                </TableCell>
+
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Paid Amount
+                                                </TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Discount
+                                                </TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Sale Date
+                                                </TableCell>
+
+
+
+                                                <TableCell
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        bgcolor: tableHeaderBg,
+                                                        color: tableHeaderTextColor,
+                                                        borderBottom: isDark
+                                                            ? "2px solid rgba(255,255,255,0.08)"
+                                                            : "2px solid #e2e8f0"
+                                                    }}
+                                                >
+                                                    Remarks
+                                                </TableCell>
+
                                             </TableRow>
                                         </TableHead>
+
+
+
                                         <TableBody>
                                             {filteredData
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                .slice(
+                                                    page * rowsPerPage,
+                                                    page * rowsPerPage + rowsPerPage
+                                                )
                                                 .map((row, index) => {
+
                                                     const isEven = index % 2 === 0;
-                                                    const rowBg = isEven ? tableRowEvenBg : tableRowOddBg;
+
+                                                    const rowBg = isEven
+                                                        ? tableRowEvenBg
+                                                        : tableRowOddBg;
+
                                                     return (
                                                         <TableRow
-                                                            key={row.lead_id || index}
+                                                            key={`${row.lead_id}-${row.policy_detail_id || "no-policy"}`}
                                                             hover
                                                             sx={{
                                                                 bgcolor: rowBg,
-                                                                "& td": { borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid #f1f5f9" },
+
+                                                                "& td": {
+                                                                    borderBottom: isDark
+                                                                        ? "1px solid rgba(255, 255, 255, 0.05)"
+                                                                        : "1px solid #f1f5f9",
+                                                                    whiteSpace: "nowrap",
+                                                                },
+
                                                                 "&:hover": {
-                                                                    bgcolor: isDark ? "#334155 !important" : "#f1f5f9 !important"
+                                                                    bgcolor: isDark
+                                                                        ? "#334155 !important"
+                                                                        : "#f1f5f9 !important"
                                                                 }
                                                             }}
                                                         >
-                                                            {/* <TableCell sx={{ fontWeight: 600, color: textPrimaryColor }}>{row.lead_id}</TableCell> */}
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.customer_name}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.vehicle_id}</TableCell>
-                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{row.policy_id || "N/A"}</TableCell> */}
-                                                            <TableCell sx={{ fontWeight: 550, color: "#2563eb" }}>{row.status_name || "N/A"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.assigned_to || "Unassigned"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{formatDate(row.assigned_date)}</TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_assigned, "Assigned", "Unassigned")}</TableCell> */}
-                                                            {/* <TableCell>{renderWorkStatusBadge(row.work_status)}</TableCell> */}
-                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.created_at)}</TableCell> */}
-                                                            <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: textPrimaryColor }}>
+
+                                                            {/* CUSTOMER */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: textPrimaryColor,
+                                                                    fontWeight: 600
+                                                                }}
+                                                            >
+                                                                {row.customer_name || "N/A"}
+                                                            </TableCell>
+
+
+                                                            {/* VEHICLE */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: textPrimaryColor
+                                                                }}
+                                                            >
+                                                                {row.registration_number || "N/A"}
+                                                            </TableCell>
+
+
+                                                            {/* EMPLOYEE */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    fontWeight: 600,
+                                                                    color: "#2563eb"
+                                                                }}
+                                                            >
+                                                                {row.employee_name || "N/A"}
+                                                            </TableCell>
+
+
+
+
+
+                                                            {/* POLICY NUMBER */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: textPrimaryColor,
+                                                                    fontWeight: 600
+                                                                }}
+                                                            >
+                                                                {row.policy_number || "N/A"}
+                                                            </TableCell>
+
+
+                                                            {/* PREMIUM */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: textPrimaryColor,
+                                                                    fontWeight: 600
+                                                                }}
+                                                            >
+                                                                ₹
+                                                                {row.premium_amount
+                                                                    ? Number(row.premium_amount).toLocaleString("en-IN")
+                                                                    : "0"}
+                                                            </TableCell>
+
+
+
+
+                                                            {/* PAID AMOUNT */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: "#16a34a",
+                                                                    fontWeight: 700
+                                                                }}
+                                                            >
+                                                                ₹
+                                                                {row.paid_amount
+                                                                    ? Number(row.paid_amount).toLocaleString("en-IN")
+                                                                    : "0"}
+                                                            </TableCell>
+
+
+                                                            {/* DISCOUNT */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: "#dc2626",
+                                                                    fontWeight: 600
+                                                                }}
+                                                            >
+                                                                ₹
+                                                                {row.discount_amount
+                                                                    ? Number(row.discount_amount).toLocaleString("en-IN")
+                                                                    : "0"}
+                                                            </TableCell>
+
+
+                                                            {/* SALE DATE */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    color: textPrimaryColor
+                                                                }}
+                                                            >
+                                                                {row.sale_date
+                                                                    ? formatDate(row.sale_date)
+                                                                    : "N/A"}
+                                                            </TableCell>
+
+
+
+
+
+
+
+
+                                                            {/* REMARKS */}
+                                                            <TableCell
+                                                                sx={{
+                                                                    maxWidth: 200,
+                                                                    overflow: "hidden",
+                                                                    textOverflow: "ellipsis",
+                                                                    whiteSpace: "nowrap",
+                                                                    color: textPrimaryColor
+                                                                }}
+                                                            >
                                                                 {row.remarks || "—"}
                                                             </TableCell>
-                                                            {/* <TableCell>{renderBooleanBadge(row.is_locked, "Locked", "Unlocked")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.status_is_active, "Active", "Inactive")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.requires_followup, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_call_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_policy_required, "Yes", "No")}</TableCell>
-                                                            <TableCell>{renderBooleanBadge(row.is_followup_date_required, "Yes", "No")}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.created_by || "—"}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.edited_by || "—"}</TableCell> */}
+
                                                         </TableRow>
                                                     );
                                                 })}
                                         </TableBody>
+
                                     </Table>
                                 </TableContainer>
 

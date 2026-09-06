@@ -12,6 +12,7 @@ import {
     useTheme,
 } from "@mui/material";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import { useActivePolicySourceMaster } from "../../CommonCode/useQuery";
 
 const compactInput = {
     "& .MuiOutlinedInput-root": {
@@ -32,18 +33,45 @@ const PolicyDetailsForm = ({
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-    const handleChange = (field) => (event) => {
-        setPolicyData((prev) => ({
-            ...prev,
-            [field]: event.target.value,
-        }));
+   
+
+     const handleChange = (field) => (event) => {
+        const value = event.target.value;
+        setPolicyData((prev) => {
+            const updatedData = {
+                ...prev,
+                [field]: value,
+            };
+
+            if (field === "premium_amount" || field === "paid_amount") {
+                const premiumAmount =
+                    field === "premium_amount"
+                        ? Number(value) || 0
+                        : Number(prev.premium_amount) || 0;
+
+                const paidAmount =
+                    field === "paid_amount"
+                        ? Number(value) || 0
+                        : Number(prev.paid_amount) || 0;
+
+                const discountAmount = premiumAmount - paidAmount;
+
+                updatedData.discount_amount =
+                    discountAmount >= 0 ? discountAmount : 0;
+            }
+
+            return updatedData;
+        });
     };
+
+
+    const { data: sourceType = [] } = useActivePolicySourceMaster()
 
     return (
         <Box
             sx={{
                 p: 2.5,
-                bgcolor:  isDark ? "#1e293b" : "#ffffff",
+                bgcolor: isDark ? "#1e293b" : "#ffffff",
                 borderRadius: 3,
             }}>
             <Divider sx={{ mb: 3 }}>
@@ -75,6 +103,41 @@ const PolicyDetailsForm = ({
                                 {company.company_name}
                             </MenuItem>
                         ))}
+                    </TextField>
+                </Grid>
+
+                {/* SOURCE TYPE */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        label="Source Type"
+                        value={
+                            policyData.source_id ||
+                            ""
+                        }
+                        onChange={handleChange(
+                            "source_id"
+                        )}
+                        sx={compactInput}
+                    >
+                        {sourceType?.map(
+                            (company) => (
+                                <MenuItem
+                                    key={
+                                        company?.source_id
+                                    }
+                                    value={
+                                        company?.source_id
+                                    }
+                                >
+                                    {
+                                        company?.source_name
+                                    }
+                                </MenuItem>
+                            )
+                        )}
                     </TextField>
                 </Grid>
 
@@ -121,6 +184,20 @@ const PolicyDetailsForm = ({
                         InputLabelProps={{ shrink: true }}
                         value={policyData.start_date || ""}
                         onChange={handleChange("start_date")}
+                        sx={compactInput}
+                    />
+                </Grid>
+
+                {/* Start Date */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        type="date"
+                        label="Sale Date"
+                        InputLabelProps={{ shrink: true }}
+                        value={policyData.sale_date || ""}
+                        onChange={handleChange("sale_date")}
                         sx={compactInput}
                     />
                 </Grid>
@@ -179,6 +256,44 @@ const PolicyDetailsForm = ({
                     />
                 </Grid>
 
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        type="number"
+                        label="Paid Amount"
+                        value={policyData.paid_amount || ""}
+                        onChange={handleChange("paid_amount")}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    ₹
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={compactInput}
+                    />
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        type="number"
+                        label="Discount Amount"
+                        value={policyData.discount_amount || ""}
+                        onChange={handleChange("discount_amount")}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    ₹
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={compactInput}
+                    />
+                </Grid>
+
                 {/* Reminder */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
@@ -210,6 +325,7 @@ const PolicyDetailsForm = ({
                         sx={compactInput}
                     />
                 </Grid>
+
                 <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                         fullWidth

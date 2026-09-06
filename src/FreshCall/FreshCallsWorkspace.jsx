@@ -41,14 +41,18 @@ export default function FreshCallsWorkspace() {
 
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState(1);
+  const [statusFilter, setStatusFilter] = useState(2);
   const [drawerLoaded, setDrawerLoaded] = useState(false);
 
   const isDark = theme.palette.mode === 'dark';
 
   const Status = state?.status
   const LeadId = state?.leadId
-  const { id } = authUser ?? {};
+  const { id, role } = authUser ?? {};
+
+
+  const isAdmin = role?.toUpperCase() === "ADMIN";
+  
 
 
   const { data: LeadMasterDetail = [] } = useLeadMaster();
@@ -132,11 +136,34 @@ export default function FreshCallsWorkspace() {
     }
   ];
 
+  // const DisplayStatus = useMemo(() => {
+  //   return [...(ActiveStatus || []), ...customStatuses].sort(
+  //     (a, b) => (a.display_order ?? 999) - (b.display_order ?? 999)
+  //   );
+  // }, [ActiveStatus]);
+
+
+
   const DisplayStatus = useMemo(() => {
-    return [...(ActiveStatus || []), ...customStatuses].sort(
-      (a, b) => (a.display_order ?? 999) - (b.display_order ?? 999)
-    );
-  }, [ActiveStatus]);
+    return [...(ActiveStatus || []), ...customStatuses]
+      .filter((status) => {
+        const statusName = status.status_name?.toUpperCase();
+        // Admin should NOT see NEW and PENDING
+        if (isAdmin) {
+          return statusName !== "NEW" && statusName !== "PENDING";
+        }
+
+        // Non-admin users can see all statuses
+        return true;
+      })
+      .sort(
+        (a, b) =>
+          (a.display_order ?? 999) -
+          (b.display_order ?? 999)
+      );
+  }, [ActiveStatus, isAdmin]);
+
+
 
   const groupedData = useMemo(
     () => groupLeadData(AllCallDetails, ActiveStatus),
@@ -246,8 +273,8 @@ export default function FreshCallsWorkspace() {
               flexDirection: { xs: "column", xl: "row" },
               gap: 1,
               width: { xs: "100%", lg: "70%" },
-              alignItems: { xs: "flex-start", md: "flex-end",xl:'center' },
-              justifyContent:'flex-end'
+              alignItems: { xs: "flex-start", md: "flex-end", xl: 'center' },
+              justifyContent: 'flex-end'
             }}>
               <EmployeeTargetCard data={EmployeeTargetDetails} />
 
@@ -262,7 +289,7 @@ export default function FreshCallsWorkspace() {
                   borderRadius: 2.5,
                   width: 200,
                   px: 1,
-                  py:1,
+                  py: 1,
                   boxShadow: "0 8px 20px rgba(37,99,235,0.18)",
                   "&:hover": {
                     transform: "translateY(-1px)",
