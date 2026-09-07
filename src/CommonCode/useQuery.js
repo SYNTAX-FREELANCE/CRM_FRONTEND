@@ -52,6 +52,8 @@ import {
   FetchCallOutcomeMaster,
   FetchOutcomeStatusMappingMaster,
   FetchOutcomeByStatusId,
+  FetchPolicySourceMaster,
+  FetchActivePolicySourceMaster,
 } from "./CommonFun";
 
 
@@ -509,3 +511,21 @@ export const useOutcomeByStatusId = (statusId, enable) => {
   });
 
 };
+
+
+export const usePolicySourceMaster = () => {
+    return useQuery({
+        queryKey: ["policy-source-master"],
+        queryFn: FetchPolicySourceMaster,
+
+    });
+
+};
+
+export const useActivePolicySourceMaster = () => {
+    return useQuery({
+        queryKey: ["active-policy-source-master"],
+        queryFn: FetchActivePolicySourceMaster,
+    });
+};
+

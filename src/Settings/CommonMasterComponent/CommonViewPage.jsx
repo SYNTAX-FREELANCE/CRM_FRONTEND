@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
 
-import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster, useCustomerMaster, useVehicleMaster, useTargetMaster, useCallOutcomeMaster, useOutcomeStatusMappingMaster } from "../../CommonCode/useQuery";
+import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster, useCustomerMaster, useVehicleMaster, useTargetMaster, useCallOutcomeMaster, useOutcomeStatusMappingMaster, usePolicySourceMaster } from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -47,7 +47,7 @@ const CommonViewPage = () => {
     const { data: TargetDetailMaster } = useTargetMaster();
     const { data: calloutcomemaster } = useCallOutcomeMaster();
     const { data: OutcomeStatusMappingMaster } = useOutcomeStatusMappingMaster();
-
+    const { data: policySourceMaster = [] } = usePolicySourceMaster();
 
 
     const dataMap = {
@@ -66,7 +66,8 @@ const CommonViewPage = () => {
         vehicle: VehicleMasterDetail,
         employeeTarget: TargetDetailMaster,
         calloutcome: calloutcomemaster,
-        outcomestatusmapping: OutcomeStatusMappingMaster
+        outcomestatusmapping: OutcomeStatusMappingMaster,
+        policySource:policySourceMaster
     };
 
 

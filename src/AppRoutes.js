@@ -6,7 +6,6 @@ import ProtectedRoute from "./utils/Protected/ProtectedRoute";
 import PublicRoute from "./utils/Protected/PublicRoute";
 import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
 
-
 // Lazy imports
 const Intro = lazy(() => import("./pages/Intro"));
 const Login = lazy(() => import("./UserManagement/Login"));
@@ -40,25 +39,13 @@ const EmployeeBatchControl = lazy(
   () => import("./EmployeeBatchControl/EmployeeBatchControl"),
 );
 
-const MyProfilePage = lazy(
-  () => import("./MyProfile/MyProfilePage"),
-);
+const MyProfilePage = lazy(() => import("./MyProfile/MyProfilePage"));
 
+const HomePage = lazy(() => import("./pages/HomePage"));
 
-const HomePage = lazy(
-  () => import("./pages/HomePage"),
-);
+const ReportSetting = lazy(() => import("./Reports/ReportSetting"));
 
-const ReportSetting = lazy(
-  () => import("./Reports/ReportSetting"),
-);
-
-
-const ForgetPassword = lazy(
-  () => import("./UserManagement/ForgetPassword"),
-);
-
-
+const ForgetPassword = lazy(() => import("./UserManagement/ForgetPassword"));
 
 // Masters imports
 const MenuCreation = lazy(() => import("./Masters/MenuMaster/MenuCreation"));
@@ -67,8 +54,12 @@ const UserInfo = lazy(() => import("./UserInfo/UserInfo"));
 const EmployeeDetails = lazy(() => import("./UserInfo/EmployeeDetails"));
 const MyCustomers = lazy(() => import("./Customers/MyCustomers"));
 const CustomerDetail = lazy(() => import("./Customers/CustomerDetail"));
-const PolicyUploadDetails = lazy(() => import("./Customers/PolicyUploadDetails"));
-const EmployeeTargetCreation = lazy(() => import("./Masters/TargetMaster/EmployeeTargetCreation"));
+const PolicyUploadDetails = lazy(
+  () => import("./Customers/PolicyUploadDetails"),
+);
+const EmployeeTargetCreation = lazy(
+  () => import("./Masters/TargetMaster/EmployeeTargetCreation"),
+);
 
 const ModuleCreation = lazy(
   () => import("./Masters/ModuleMaster/ModuleCreation"),
@@ -111,9 +102,7 @@ const CustomerCreation = lazy(
 const VehicleCreation = lazy(
   () => import("./Masters/VehicleMaster/VehicleCreation"),
 );
-const PolicyReport = lazy(
-  () => import("./Reports/PolicyReport"),
-);
+const PolicyReport = lazy(() => import("./Reports/PolicyReport"));
 
 const EmployeePerformanceReport = lazy(
   () => import("./Reports/EmployeePreformanceReport"),
@@ -121,9 +110,7 @@ const EmployeePerformanceReport = lazy(
 const AllEmployeePerformanceReport = lazy(
   () => import("./Reports/AllEmployeePerformanceReport"),
 );
-const EmployeeLoginReport = lazy(
-  () => import("./Reports/UserLogReports"),
-);
+const EmployeeLoginReport = lazy(() => import("./Reports/UserLogReports"));
 const DetailedEmployeeLoginReport = lazy(
   () => import("./Reports/DetailedUserLogReports"),
 );
@@ -131,12 +118,17 @@ const CallOutcomeCreation = lazy(
   () => import("./Masters/CallOutComeMaster/CallOutcomeCreation"),
 );
 
-
 const OutcomeStatusMappingCreation = lazy(
   () => import("./Masters/CallOutcomeMapMaster/OutcomeStatusMappingCreation"),
 );
 
+const FullLeadDetailUpadate = lazy(
+  () => import("../src/LegacySale/FullLeadDetailUpadate"),
+);
 
+const PolicySourceCreation = lazy(
+  () => import("../src/Masters/SourceMaster/PolicySourceCreation"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -203,7 +195,8 @@ const router = createBrowserRouter([
       {
         path: "allocation",
         element: withSuspense(CustomerAllocation),
-      }, {
+      },
+      {
         path: "view-allocation",
         element: withSuspense(ViewAllocation),
       },
@@ -218,6 +211,10 @@ const router = createBrowserRouter([
       {
         path: "reports",
         element: withSuspense(ReportSetting),
+      },
+      {
+        path: "legacy",
+        element: withSuspense(FullLeadDetailUpadate),
       },
       {
         path: "setting/menumaster",
@@ -255,6 +252,11 @@ const router = createBrowserRouter([
         path: "setting/leadmaster",
         element: withSuspense(LeadCreation),
       },
+      {
+        path: "setting/policysource",
+        element: withSuspense(PolicySourceCreation),
+      },
+
       {
         path: "setting/vehicletypemaster",
         element: withSuspense(VehicleTypeCreation),
@@ -339,18 +341,16 @@ const router = createBrowserRouter([
         path: "setting/calloutcome",
         element: withSuspense(CallOutcomeCreation),
       },
-    {
+      {
         path: "setting/outcomemapmaster",
         element: withSuspense(OutcomeStatusMappingCreation),
       },
 
-      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),
       // },
     ],
-
   },
   {
     path: "/notfound",

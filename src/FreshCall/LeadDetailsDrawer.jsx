@@ -68,8 +68,8 @@ const LeadDetailsDrawer = ({
 }) => {
 
   const authUser = getAuthUser();
-  const { id } = authUser ?? {};
-
+  const { id, role } = authUser ?? {};
+  const isAdmin = role?.toUpperCase() === "ADMIN";
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
@@ -221,62 +221,204 @@ const LeadDetailsDrawer = ({
 
 
   const validatePolicy = (policyData) => {
+    // Insurance Company
     if (!policyData.insurance_company_id) {
       warningNotify("Please select the insurance company.");
       return false;
     }
 
+    // Policy Number
     if (!policyData.policy_number?.trim()) {
       warningNotify("Please enter the policy number.");
       return false;
     }
 
-
+    // Renewal Cycle
     if (!policyData.renewal_cycle) {
       warningNotify("Please select the renewal cycle.");
       return false;
     }
 
+    // Start Date
     if (!policyData.start_date) {
       warningNotify("Please select the policy start date.");
       return false;
     }
 
+    // Expiry Date
     if (!policyData.expiry_date) {
       warningNotify("Please select the policy expiry date.");
       return false;
     }
 
-    if (new Date(policyData.start_date) >= new Date(policyData.expiry_date)) {
+    if (
+      new Date(policyData.start_date) >=
+      new Date(policyData.expiry_date)
+    ) {
       warningNotify("Expiry date must be greater than the start date.");
       return false;
     }
 
-    if (!policyData.premium_amount || Number(policyData.premium_amount) <= 0) {
-      warningNotify("Please enter a valid premium amount.");
-      return false;
-    }
-
+    // Source
     if (
-      !policyData.insured_declared_value ||
-      Number(policyData.insured_declared_value) <= 0
+      policyData.source_id === "" ||
+      policyData.source_id === null ||
+      policyData.source_id === undefined
     ) {
-      warningNotify("Please enter a valid Net amount.");
+      warningNotify("Source is required");
       return false;
     }
 
-    if (!policyData.renewal_year) {
-      warningNotify("Please enter the renewal year.");
+    // Premium
+    if (
+      policyData.premium_amount === "" ||
+      policyData.premium_amount === null ||
+      policyData.premium_amount === undefined
+    ) {
+      warningNotify("Premium Amount is required");
       return false;
     }
 
-    if (!policyData.reminder_days) {
-      warningNotify("Please select reminder days.");
+    const premiumAmount = Number(policyData.premium_amount);
+
+    if (!Number.isFinite(premiumAmount)) {
+      warningNotify("Premium Amount must be a valid number");
+      return false;
+    }
+
+    if (premiumAmount <= 0) {
+      warningNotify("Premium Amount must be greater than 0");
+      return false;
+    }
+
+    // Net Amount
+    if (
+      policyData.insured_declared_value === "" ||
+      policyData.insured_declared_value === null ||
+      policyData.insured_declared_value === undefined
+    ) {
+      warningNotify("Net Amount is required");
+      return false;
+    }
+
+    const insuredDeclaredValue = Number(
+      policyData.insured_declared_value
+    );
+
+    if (!Number.isFinite(insuredDeclaredValue)) {
+      warningNotify("Net Amount must be a valid number");
+      return false;
+    }
+
+    if (insuredDeclaredValue <= 0) {
+      warningNotify("Net Amount must be greater than 0");
+      return false;
+    }
+
+    // Paid Amount
+    if (
+      policyData.paid_amount === "" ||
+      policyData.paid_amount === null ||
+      policyData.paid_amount === undefined
+    ) {
+      warningNotify("Paid Amount is required");
+      return false;
+    }
+
+    const paidAmount = Number(policyData.paid_amount);
+
+    if (!Number.isFinite(paidAmount)) {
+      warningNotify("Paid Amount must be a valid number");
+      return false;
+    }
+
+    if (paidAmount < 0) {
+      warningNotify("Paid Amount cannot be negative");
+      return false;
+    }
+
+    if (paidAmount > premiumAmount) {
+      warningNotify(
+        "Paid Amount cannot be greater than Premium Amount"
+      );
+      return false;
+    }
+
+    // Discount Amount
+    if (
+      policyData.discount_amount === "" ||
+      policyData.discount_amount === null ||
+      policyData.discount_amount === undefined
+    ) {
+      warningNotify("Discount Amount is required");
+      return false;
+    }
+
+    const discountAmount = Number(policyData.discount_amount);
+
+    if (!Number.isFinite(discountAmount)) {
+      warningNotify("Discount Amount must be a valid number");
+      return false;
+    }
+
+    if (discountAmount < 0) {
+      warningNotify("Discount Amount cannot be negative");
+      return false;
+    }
+
+    // Compare using 2 decimal places
+    const calculatedDiscount = Number(
+      (premiumAmount - paidAmount).toFixed(2)
+    );
+
+    if (Number(discountAmount.toFixed(2)) !== calculatedDiscount) {
+      warningNotify(
+        "Discount Amount is not matching Premium Amount and Paid Amount"
+      );
+      return false;
+    }
+
+    // Reminder Days
+    const allowedReminderDays = [7, 15, 30, 45, 60];
+
+    const reminderDays = Number(policyData.reminder_days);
+
+    if (!allowedReminderDays.includes(reminderDays)) {
+      warningNotify("Please select a valid Reminder");
+      return false;
+    }
+
+    // Renewal Year
+    if (
+      policyData.renewal_year === "" ||
+      policyData.renewal_year === null ||
+      policyData.renewal_year === undefined
+    ) {
+      warningNotify("Renewal Year is required");
+      return false;
+    }
+
+    const renewalYear = Number(policyData.renewal_year);
+
+    if (!Number.isInteger(renewalYear)) {
+      warningNotify("Renewal Year must be a valid year");
+      return false;
+    }
+
+    if (renewalYear < 2000 || renewalYear > 2100) {
+      warningNotify("Renewal Year must be between 2000 and 2100");
+      return false;
+    }
+
+    // Remarks
+    if (policyData.remarks?.trim().length > 500) {
+      warningNotify("Remarks cannot exceed 500 characters");
       return false;
     }
 
     return true;
   };
+
 
   const handleCallClick = (event) => setCallAnchorEl(event.currentTarget);
   const handleCallClose = () => setCallAnchorEl(null);
@@ -381,6 +523,10 @@ const LeadDetailsDrawer = ({
           insured_declared_value: policyData.insured_declared_value,
           reminder_days: policyData.reminder_days,
           remarks: policyData.remarks,
+          sale_date: policyData.sale_date,
+          paid_amount: policyData.paid_amount,
+          discount_amount: policyData.discount_amount,
+          source_id: policyData.source_id,
         },
       }),
     };
@@ -530,118 +676,7 @@ const LeadDetailsDrawer = ({
               />
             </Section>
 
-            {/* <Section
-              title="Upload Details"
-              icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
-              accent="blue"
-              defaultExpanded={true}
-            >
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: 4,
-                  border: `1px solid ${themeColors.border}`,
-                  // width: { xs: "100%", lg: "50%" },
-                  width: '100%'
-                }}
-              >
-                <Box sx={{
-                  display: "flex",
-                  gap: 1
-                }}>
-                  <EditDocumentIcon sx={{
-                    color: '#fb3e05'
-                  }} />
-                  <Typography
-                    sx={{
-                      fontSize: { xs: 15, sm: 20 },
-                      fontWeight: 600,
-                      color: themeColors.textDark,
-                      mb: 3,
-                    }}>
-                    POLICY DOCUMENT UPLOADS
-                  </Typography>
-                </Box>
 
-
-
-                <Stack spacing={2}>
-
-                  <UploadBox
-                    title="Registration Certificate (RC)"
-                    subtitle="Upload the vehicle Registration Certificate (Smart Card or RC Book)."
-                    multiple
-                    loading={loading}
-                    onChange={(e) => handleUpload(e, setRcFiles)}
-                    onAdd={() => uploadFiles(rcFiles, "RC")}
-                  />
-
-                  <UploadPreview
-                    files={[
-                      ...(uploadedRC ?? []),
-                      ...rcFiles
-                    ]}
-                    LoadingPolicyFiles={LoadingPolicyFiles}
-                    onRemove={(item) => removeFile(item, setRcFiles)}
-                  />
-
-                  <UploadBox
-                    title="Previous Insurance Policy"
-                    subtitle="Upload the latest insurance policy document for renewal verification."
-                    multiple
-                    loading={loading}
-                    onChange={(e) => handleUpload(e, setPolicyFiles)}
-                    onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
-                  />
-                  <UploadPreview
-                    files={[
-                      ...(uploadedPolicy ?? []),
-                      ...policyFiles
-                    ]}
-                    LoadingPolicyFiles={LoadingPolicyFiles}
-                    onRemove={(item) => removeFile(item, setPolicyFiles)}
-                  />
-
-                  <UploadBox
-                    title="Customer KYC Documents"
-                    subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
-                    multiple
-                    loading={loading}
-                    onChange={(e) => handleUpload(e, setKycFiles)}
-                    onAdd={() => uploadFiles(kycFiles, "KYC")}
-                  />
-
-                  <UploadPreview
-                    files={[
-                      ...(uploadedKYC ?? []),
-                      ...kycFiles
-                    ]}
-                    LoadingPolicyFiles={LoadingPolicyFiles}
-                    onRemove={(item) => removeFile(item, setKycFiles)}
-                  />
-
-                  <UploadBox
-                    title="Vehicle Inspection Images"
-                    subtitle="Upload clear photos of the Front, Rear, Left Side, Right Side and any existing damages if applicable."
-                    multiple
-                    loading={loading}
-                    onChange={(e) => handleUpload(e, setVehicleImages)}
-                    onAdd={() => uploadFiles(vehicleImages, "VEHICLE_IMAGE")}
-                  />
-
-                  <UploadPreview
-                    LoadingPolicyFiles={LoadingPolicyFiles}
-                    files={[
-                      ...(uploadedVehicle ?? []),
-                      ...vehicleImages
-                    ]}
-                    onRemove={(item) => removeFile(item, setVehicleImages)}
-                  />
-
-                </Stack>
-              </Paper>
-            </Section> */}
             <Section
               title="Upload Details"
               icon={<DirectionsCarIcon sx={{ fontSize: 16 }} />}
@@ -729,7 +764,7 @@ const LeadDetailsDrawer = ({
             )}
 
             {
-              isCallAccess && (
+              isCallAccess && !isAdmin && (
                 <Box
                   sx={{
                     mt: 0.5,

@@ -70,8 +70,18 @@ const AllEmployeePerformanceReport = () => {
 
     // Pagination
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    // const [rowsPerPage, setRowsPerPage] = useState(10);
 
+
+
+    const filteredEmployees = reportData?.filter((employee) =>
+    Number(employee.total_calls) > 0 ||
+    Number(employee.callback_count) > 0 ||
+    Number(employee.quote_count) > 0 ||
+    Number(employee.appointment_count) > 0 ||
+    Number(employee.captured_count) > 0 ||
+    Number(employee.lost_count) > 0
+);
 
 
 
@@ -118,7 +128,7 @@ const AllEmployeePerformanceReport = () => {
     };
 
     const handleExportExcel = async () => {
-        if (reportData.length === 0) {
+        if (filteredEmployees.length === 0) {
             warningNotify("No data available to export. Please run a search first.");
             return;
         }
@@ -372,7 +382,7 @@ const AllEmployeePerformanceReport = () => {
                             >
                                 Search Report
                             </Button>
-                            {reportData.length > 0 && (
+                            {filteredEmployees?.length > 0 && (
                                 <Button
                                     startDecorator={exportLoading ? <CircularProgress size="sm" color="success" /> : <FileDownloadIcon />}
                                     variant="solid"
@@ -443,7 +453,7 @@ const AllEmployeePerformanceReport = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {reportData.map((emp, idx) => (
+                                            {filteredEmployees.map((emp, idx) => (
                                                 <TableRow key={emp.user_id || idx} hover sx={{ bgcolor: idx % 2 === 0 ? tableRowEvenBg : tableRowOddBg }}>
                                                     <TableCell sx={{ fontWeight: 600, color: textPrimaryColor, py: 1.2 }}>{emp.employee_name}</TableCell>
                                                     <TableCell align="center" sx={{ fontWeight: 700, color: "#2563eb", py: 1.2 }}>{emp.total_calls}</TableCell>

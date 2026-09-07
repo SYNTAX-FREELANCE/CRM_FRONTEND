@@ -3,18 +3,13 @@ import {
     Paper,
     Typography,
     Card,
-    CardContent,
-    Chip,
-    Button,
-    Stack,
     useMediaQuery,
     useTheme,
     Grid,
 } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import React, { memo, Suspense, useState } from 'react'
+import React, { memo, Suspense, useCallback, } from 'react'
 import { useNavigate } from "react-router-dom";
-import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
+// import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
 import { getAuthUser } from "../constant/Constant";
 import { format, subDays } from "date-fns";
 import { RenewalCustomerColumns } from "./RenewalCustomerColumns";
@@ -22,6 +17,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useGetEmployeePolicyDetails, useGetMyEmployeeActiveCalls } from "../CommonCode/useQuery";
 import DashboardStatCard from "./CustomersComponents/DashboardStatCard";
 import StatusCountCardSkeleton from "../SkeletonComponent/StatusCountCardSkeleton";
+import { DownloadPdf } from "../CommonCode/Reusable";
 
 const MyCustomers = () => {
     const navigate = useNavigate();
@@ -40,29 +36,30 @@ const MyCustomers = () => {
         });
     };
 
-    const columns = RenewalCustomerColumns(openCustomer, isMobile, isDark);
+
+ 
+    const columns = RenewalCustomerColumns(openCustomer, DownloadPdf, isMobile, isDark);
 
     const { id } = authUser ?? {};
-    const today = new Date();
+    // const today = new Date();
 
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-    const [dateFilter, setDateFilter] = useState("7days");
+    // const [dateFilter, setDateFilter] = useState("7days");
 
-    const [fromDate, setFromDate] = useState(format(subDays(today, 6), "yyyy-MM-dd"));
+    // const [fromDate, setFromDate] = useState(format(subDays(today, 6), "yyyy-MM-dd"));
 
-    const [toDate, setToDate] = useState(format(today, "yyyy-MM-dd"));
+    // const [toDate, setToDate] = useState(format(today, "yyyy-MM-dd"));
 
     const {
         data: AllCallDetails = [],
         isLoading: LoadingTableData,
-        refetch
+        // refetch
     } = useGetMyEmployeeActiveCalls(id);
 
     const {
         data: DashBoardPolicyDetails = [],
         isLoading: LoadingDashboardDetails,
-        refetch: FetchDashboardCountDetails
+        // refetch: FetchDashboardCountDetails
     } = useGetEmployeePolicyDetails(id);
 
     const rows = Array.isArray(AllCallDetails) ?
@@ -98,6 +95,9 @@ const MyCustomers = () => {
             count: DashBoardPolicyDetails?.expired ?? 0,
         },
     ];
+
+
+   
 
     return (
         <Box
@@ -193,7 +193,7 @@ const MyCustomers = () => {
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={4}>
+                            {/* <Grid item xs={12} md={4}>
                                 <DashboardDateFilter
                                     value={dateFilter}
                                     onChange={setDateFilter}
@@ -202,7 +202,7 @@ const MyCustomers = () => {
                                     onFromDateChange={setFromDate}
                                     onToDateChange={setToDate}
                                 />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Card>
                     <Box
@@ -221,7 +221,8 @@ const MyCustomers = () => {
                     >
                         {
                             LoadingDashboardDetails ? (
-                                Array.from({ length: 6 }).map((_, index) => (
+                                Array.from({ length: 6 })
+                                ?.map((_, index) => (
                                     <StatusCountCardSkeleton key={index} />
                                 ))
                             ) : (
@@ -259,8 +260,9 @@ const MyCustomers = () => {
                     <DataGrid
                         rows={rows}
                         columns={columns}
+                        loading={LoadingTableData}
                         disableRowSelectionOnClick
-                        getRowId={(row) => row.lead_id}
+                         getRowId={(row) => `${row.lead_id}-${row.policy_id || "no-policy"}`}
                         onRowClick={(params) => openCustomer(params.row)}
                         pageSizeOptions={[5, 10, 25, 50]}
                         rowHeight={36}

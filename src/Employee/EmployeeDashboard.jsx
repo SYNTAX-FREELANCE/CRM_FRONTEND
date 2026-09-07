@@ -1,94 +1,69 @@
-import React, { Suspense, useMemo, useState } from "react";
+import React, { Suspense, } from "react";
 import {
     Box,
     Typography,
     Grid,
     Card,
-    CardContent,
-    Avatar,
-    Chip,
-    Stack,
-    Divider,
-    useTheme,
-    LinearProgress,
 } from "@mui/material";
-import {
-    People,
-    Phone,
-    EventAvailable,
-    TrendingUp,
-    UploadFile,
-    Settings,
-    ArrowUpward,
-    CalendarToday,
-    Email,
-    AssignmentTurnedIn,
-    AccessTime,
-    NotificationsActive,
-    Refresh,
-    CheckCircle,
-    History,
-    BarChart,
-} from "@mui/icons-material";
-import { LineChart } from "@mui/x-charts/LineChart";
+// import { LineChart } from "@mui/x-charts/LineChart";
 import { getAuthUser } from "../constant/Constant";
 import { useFetchDashBoardCounts, useFetchDashBoardReminders, useTopEmployess } from "../CommonCode/useQuery";
 import StatusCountCard from "../Admin/Components/StatusCountCard";
-import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
+// import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
 import DashboardRemindersCard from "../Admin/Components/DashboardRemindersCard";
 
-import ReminderBarChartCard from "../Admin/Components/ReminderBarChartCard";
-import ReminderAreaChartCard from "../Admin/Components/ReminderAreaChartCard";
+// import ReminderBarChartCard from "../Admin/Components/ReminderBarChartCard";
+// import ReminderAreaChartCard from "../Admin/Components/ReminderAreaChartCard";
 import TopSalesExecutives from "../Admin/Components/TopSalesExecutives";
 import StatusCountCardSkeleton from "../SkeletonComponent/StatusCountCardSkeleton";
 import DashboardRemindersCardSkeleton from "../SkeletonComponent/DashboardRemindersCardSkeleton";
 import TopSalesExecutivesSkeleton from "../SkeletonComponent/TopSalesExecutivesSkeleton";
 
-const summaryData = [
-    { label: "New Calls", value: 24, color: "#2563eb" },
-    { label: "Today's Follow-ups", value: 12, color: "#f59e0b" },
-    { label: "Pending Quotes", value: 8, color: "#2563eb" },
-    { label: "Appointments", value: 5, color: "#10b981" },
-    { label: "Converted Leads", value: 18, color: "#7c3aed" },
-    { label: "Renewals", value: 14, color: "#ef4444" },
-];
+// const summaryData = [
+//     { label: "New Calls", value: 24, color: "#2563eb" },
+//     { label: "Today's Follow-ups", value: 12, color: "#f59e0b" },
+//     { label: "Pending Quotes", value: 8, color: "#2563eb" },
+//     { label: "Appointments", value: 5, color: "#10b981" },
+//     { label: "Converted Leads", value: 18, color: "#7c3aed" },
+//     { label: "Renewals", value: 14, color: "#ef4444" },
+// ];
 
-const reminders = [
-    {
-        title: "Callback",
-        count: 7,
-        note: "Due today",
-        icon: <Phone />,
-        color: "#2563eb",
-        bgColor: "rgba(37, 99, 235, 0.1)",
-    },
-    {
-        title: "Appointment",
-        count: 5,
-        note: "Scheduled today",
-        icon: <CalendarToday />,
-        color: "#10b981",
-        bgColor: "rgba(16, 185, 129, 0.1)",
-    },
-    {
-        title: "Quote Follow-up",
-        count: 9,
-        note: "Needs action",
-        icon: <AssignmentTurnedIn />,
-        color: "#f59e0b",
-        bgColor: "rgba(245, 158, 11, 0.1)",
-    },
-];
+// const reminders = [
+//     {
+//         title: "Callback",
+//         count: 7,
+//         note: "Due today",
+//         icon: <Phone />,
+//         color: "#2563eb",
+//         bgColor: "rgba(37, 99, 235, 0.1)",
+//     },
+//     {
+//         title: "Appointment",
+//         count: 5,
+//         note: "Scheduled today",
+//         icon: <CalendarToday />,
+//         color: "#10b981",
+//         bgColor: "rgba(16, 185, 129, 0.1)",
+//     },
+//     {
+//         title: "Quote Follow-up",
+//         count: 9,
+//         note: "Needs action",
+//         icon: <AssignmentTurnedIn />,
+//         color: "#f59e0b",
+//         bgColor: "rgba(245, 158, 11, 0.1)",
+//     },
+// ];
 
 const EmployeeDashboard = () => {
 
     const authUser = getAuthUser();
 
-    const theme = useTheme();
+    // const theme = useTheme();
 
-    const [dateFilter, setDateFilter] = useState("7days");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
+    // const [dateFilter, setDateFilter] = useState("7days");
+    // const [fromDate, setFromDate] = useState("");
+    // const [toDate, setToDate] = useState("");
 
     const { id } = authUser ?? {}
 
@@ -97,8 +72,6 @@ const EmployeeDashboard = () => {
     const { data: remindersData = [], isLoading: LoadingReminderData } = useFetchDashBoardReminders(id);
 
     const { data: ToSaleEmployees = [], isLoading: LoadingTopEmployees } = useTopEmployess();
-
-  
 
     return (
         <Box
@@ -159,7 +132,7 @@ const EmployeeDashboard = () => {
                         </Typography>
                     </Grid>
 
-                    <Grid item xs={12} md={4}>
+                    {/* <Grid item xs={12} md={4}>
                         <DashboardDateFilter
                             value={dateFilter}
                             onChange={setDateFilter}
@@ -168,7 +141,7 @@ const EmployeeDashboard = () => {
                             onFromDateChange={setFromDate}
                             onToDateChange={setToDate}
                         />
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </Card>
             <Box sx={{

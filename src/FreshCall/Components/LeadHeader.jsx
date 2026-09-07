@@ -172,6 +172,7 @@ const LeadHeader = ({
             <CallPopover
                 anchorEl={callAnchorEl}
                 open={callMenuOpen}
+                lead={lead}
                 onClose={handleCallClose}
                 mobile1={lead?.mobile_number_1}
                 mobile2={lead?.mobile_number_2}

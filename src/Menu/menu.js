@@ -9,7 +9,7 @@ import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
-
+import CopyrightIcon from '@mui/icons-material/Copyright';
 
 export const MENU = [
   {
@@ -78,12 +78,17 @@ export const MENU = [
     icon: MilitaryTechIcon,
     path: "/home/mycustomer",
   }, {
-    module_id: 11,
+    module_id: 14,
     label: "Reports",
     icon: AssessmentIcon,
     path: "/home/reports",
   },
-
+ {
+    module_id: 13,
+    label: "Legacy Sales",
+    icon: CopyrightIcon,
+    path: "/home/legacy",
+  },
 
 
 ];
