@@ -1,155 +1,1285 @@
-// src/components/PolicyInfoCard.jsx
-import React, { memo } from "react";
-import { Box, Typography, Paper, Chip, Stack } from "@mui/material";
-import LocationCityIcon from "@mui/icons-material/LocationCity";
-import TextsmsIcon from "@mui/icons-material/Textsms";
+import React, { memo, useEffect, useState } from "react";
+import {
+    Box,
+    Grid,
+    MenuItem,
+    TextField,
+    Typography,
+    Divider,
+    Chip,
+    InputAdornment,
+    Button,
+    Stack,
+} from "@mui/material";
+
+import VerifiedIcon from "@mui/icons-material/Verified";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import PersonIcon from "@mui/icons-material/Person";
+
+import {
+    useActivePolicySourceMaster,
+    useCustomerPaytype,
+    usePaymentMethodMaster,
+} from "../../CommonCode/useQuery";
+
+import { axioslogin } from "../../Connection/axios";
+import {
+    successNotify,
+    warningNotify,
+} from "../../constant/Constant";
 import DetailLine from "./DetailLine";
 
-const themeColors = {
-    orange: "#F57C00",
-    orangeLight: "#FFF3E0",
-    blue: "#1565C0",
-    blueLight: "#E3F2FD",
-    border: "#DCE8F7",
-    textDark: "#1E293B",
-    textLight: "#64748B",
+const compactInput = {
+    "& .MuiOutlinedInput-root": {
+        borderRadius: 2,
+        fontSize: 13,
+    },
+
+    "& .MuiInputLabel-root": {
+        fontSize: 13,
+    },
 };
 
-const formatDate = (isoString) => {
-    if (!isoString) return "-";
-    const d = new Date(isoString);
-    return d.toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
+
+const formatDate = (date) => {
+
+    if (!date) return "";
+
+    return new Date(date).toISOString().split("T")[0];
+
+};
+
+
+const PolicyInfoCard = ({
+    policy,
+    isDark,
+    onPolicyUpdated,
+}) => {
+
+    console.log({
+        policy
     });
-};
+    
 
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-const PolicyInfoCard = ({ policy ,isDark}) => {
+    const [policyData, setPolicyData] = useState({});
+
+
+    const { data: sourceType = [] } =
+        useActivePolicySourceMaster();
+
+    const { data: CustomerPayType = [] } =
+        useCustomerPaytype();
+
+    const { data: PaymentMethod = [] } =
+        usePaymentMethodMaster();
+
+
+    const ActiveCustomerPayType =
+        CustomerPayType?.filter(
+            item => item?.is_active === 1
+        );
+
+    const ActivePaymentMethod =
+        PaymentMethod?.filter(
+            item => item?.is_active === 1
+        );
+
+    const ActiveSourceType =
+        sourceType?.filter(
+            item => item?.is_active === 1
+        );
+
+
+    // ==================== LOAD POLICY ====================
+
+    useEffect(() => {
+
+        if (!policy) return;
+
+        setPolicyData({
+
+            insurance_company_id:
+                policy.insurance_company_id || "",
+
+            policy_number:
+                policy.policy_number || "",
+
+            renewal_cycle:
+                policy.renewal_cycle || "Annual",
+
+            sale_date:
+                formatDate(policy.sale_date),
+
+            start_date:
+                formatDate(policy.start_date),
+
+            expiry_date:
+                formatDate(policy.expiry_date),
+
+            source_id:
+                policy.source_id || "",
+
+            premium_amount:
+                policy.premium_amount || "",
+
+            insured_declared_value:
+                policy.insured_declared_value || "",
+
+            paid_amount:
+                policy.paid_amount || "",
+
+            discount_amount:
+                policy.discount_amount || "",
+
+            reminder_days:
+                policy.reminder_days || 30,
+
+            customer_pay_type_id:
+                policy.customer_pay_type_id || "",
+
+            cp_reference_no:
+                policy.cp_reference_no || "",
+
+            payment_method_id:
+                policy.payment_method_id || "",
+
+            pm_reference_no:
+                policy.pm_reference_no || "",
+
+            renewal_year:
+                policy.renewal_year || "",
+
+            remarks:
+                policy.remarks || "",
+
+        });
+
+    }, [policy]);
+
+
+    // ==================== HANDLE CHANGE ====================
+
+    const handleChange = (field) => (event) => {
+
+        const value = event.target.value;
+
+        setPolicyData((prev) => {
+
+            const updatedData = {
+                ...prev,
+                [field]: value,
+            };
+
+
+            if (
+                field === "premium_amount" ||
+                field === "paid_amount"
+            ) {
+
+                const premiumAmount =
+                    field === "premium_amount"
+                        ? Number(value) || 0
+                        : Number(prev.premium_amount) || 0;
+
+                const paidAmount =
+                    field === "paid_amount"
+                        ? Number(value) || 0
+                        : Number(prev.paid_amount) || 0;
+
+                const discountAmount =
+                    premiumAmount - paidAmount;
+
+                updatedData.discount_amount =
+                    discountAmount >= 0
+                        ? discountAmount
+                        : 0;
+
+            }
+
+
+            return updatedData;
+
+        });
+
+    };
+
+
+    // ==================== SAVE ====================
+
+    const handleSave = async () => {
+
+        setLoading(true);
+
+        try {
+
+            const data = {
+
+                insurance_company_id:
+                    policyData.insurance_company_id,
+
+                policy_number:
+                    policyData.policy_number,
+
+                renewal_cycle:
+                    policyData.renewal_cycle,
+
+                sale_date:
+                    policyData.sale_date || null,
+
+                start_date:
+                    policyData.start_date,
+
+                expiry_date:
+                    policyData.expiry_date,
+
+                source_id:
+                    policyData.source_id || null,
+
+                premium_amount:
+                    policyData.premium_amount || 0,
+
+                insured_declared_value:
+                    policyData.insured_declared_value || 0,
+
+                paid_amount:
+                    policyData.paid_amount || 0,
+
+                discount_amount:
+                    policyData.discount_amount || 0,
+
+                reminder_days:
+                    policyData.reminder_days || 30,
+
+                customer_pay_type_id:
+                    policyData.customer_pay_type_id || null,
+
+                cp_reference_no:
+                    policyData.cp_reference_no || null,
+
+                payment_method_id:
+                    policyData.payment_method_id || null,
+
+                pm_reference_no:
+                    policyData.pm_reference_no || null,
+
+                renewal_year:
+                    policyData.renewal_year,
+
+                remarks:
+                    policyData.remarks || null,
+
+            };
+
+
+            const response = await axioslogin.patch(
+                `/policy/update/${policy.policy_id}`,
+                data
+            );
+
+
+            if (response?.data?.success === 1) {
+
+                successNotify(
+                    "Policy updated successfully"
+                );
+
+                setIsEditing(false);
+
+                if (onPolicyUpdated) {
+                    onPolicyUpdated();
+                }
+
+            } else {
+
+                warningNotify(
+                    response?.data?.message ||
+                    "Failed to update policy"
+                );
+
+            }
+
+        } catch (error) {
+
+            warningNotify(
+                error?.response?.data?.message ||
+                "Failed to update policy"
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    // ==================== CANCEL ====================
+
+    const handleCancel = () => {
+
+        setPolicyData({
+
+            insurance_company_id:
+                policy.insurance_company_id || "",
+
+            policy_number:
+                policy.policy_number || "",
+
+            renewal_cycle:
+                policy.renewal_cycle || "Annual",
+
+            sale_date:
+                formatDate(policy.sale_date),
+
+            start_date:
+                formatDate(policy.start_date),
+
+            expiry_date:
+                formatDate(policy.expiry_date),
+
+            source_id:
+                policy.source_id || "",
+
+            premium_amount:
+                policy.premium_amount || "",
+
+            insured_declared_value:
+                policy.insured_declared_value || "",
+
+            paid_amount:
+                policy.paid_amount || "",
+
+            discount_amount:
+                policy.discount_amount || "",
+
+            reminder_days:
+                policy.reminder_days || 30,
+
+            customer_pay_type_id:
+                policy.customer_pay_type_id || "",
+
+            cp_reference_no:
+                policy.cp_reference_no || "",
+
+            payment_method_id:
+                policy.payment_method_id || "",
+
+            pm_reference_no:
+                policy.pm_reference_no || "",
+
+            renewal_year:
+                policy.renewal_year || "",
+
+            remarks:
+                policy.remarks || "",
+
+        });
+
+        setIsEditing(false);
+
+    };
+
+
     if (!policy) return null;
 
 
-
     return (
-        <Paper
-            elevation={0}
-            sx={{
-                p: 1,
-                borderRadius: 4,
-                border: `1px solid ${themeColors.border}`,
-                my: 1,
-                // width: { xs: "100%", lg: "50%" },
-                width:'100%'
-            }}
-        >
-            <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="flex-start"
-                spacing={2}
-                sx={{ mb: 2, borderBottom: "2px solid #c1b8b856", py: 1 }}
-            >
-                <Box>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 1,
-                        }}
-                    >
-                        <LocationCityIcon sx={{ color: "#ef410c" }} />
-                        <Typography
-                            sx={{
-                                fontWeight: 700,
-                                color: isDark ? "#ffffff" : "#1e293b",
-                                lineHeight: 1,
-                                fontSize: { xs: 15, sm: 20 },
-                            }}
-                        >
-                            {policy?.company_name?.toUpperCase() || "Insurer"}
-                        </Typography>
-                    </Box>
-                    <Typography
-                        sx={{
-                            color: themeColors.textLight,
-                            fontSize: { xs: 8, sm: 10 },
-                            fontWeight: 800,
-                        }}
-                    >
-                        POLICY NO : {policy?.policy_number}
-                    </Typography>
-                </Box>
-                <Chip
-                    label={policy?.policy_status || "UNKNOWN"}
-                    sx={{
-                        bgcolor:
-                            policy?.policy_status === "ACTIVE"
-                                ? "rgba(21, 101, 192, 0.1)"
-                                : "rgba(245, 124, 0, 0.12)",
-                        color:
-                            policy?.policy_status === "ACTIVE"
-                                ? themeColors.blue
-                                : themeColors.orange,
-                        fontWeight: 800,
-                        fontSize: 10,
-                    }}
-                />
-            </Stack>
 
-            <Stack spacing={1.25}>
-                <DetailLine isDark={isDark}
-                    label="Vehicle"
-                    value={`${policy.vehicle_maker} ${policy.model}`}
-                />
-                <DetailLine isDark={isDark} label="Reg No" value={policy.registration_number} />
-                <DetailLine isDark={isDark}  label="Engine No" value={policy.engine_number || "-"} />
-                <DetailLine isDark={isDark} label="Chassis No" value={policy.chassis_number || "-"} />
-                <DetailLine isDark={isDark} label="Start Date" value={formatDate(policy.start_date)} />
-                <DetailLine isDark={isDark} label="Expiry Date" value={formatDate(policy.expiry_date)} />
-                <DetailLine isDark={isDark}  label="Premium" value={`₹${policy.premium_amount}`} />
-                <DetailLine
-                isDark={isDark}
-                    label="IDV"
-                    value={`₹${policy.insured_declared_value}`}
-                />
-                <DetailLine isDark={isDark} label="Sold By" value={policy.sold_by || "-"} />
-            </Stack>
+        <Stack spacing={1.5}>
+
+
+            {/* ================================================= */}
+            {/* POLICY DETAILS */}
+            {/* ================================================= */}
 
             <Box
                 sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
+                    border: "1px solid #DCE8F7",
+                    borderRadius: 3,
+                    p: 1.5,
                 }}
             >
-                <TextsmsIcon fontSize="10" />
-                <Typography
-                    variant="subtitle2"
-                    sx={{
-                        color: themeColors.textLight,
-                        mb: 1,
-                        fontSize: { xs: 12, sm: 14 },
-                    }}
+
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ mb: 1 }}
                 >
-                    Remarks
-                </Typography>
+
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
+                    >
+
+                        <VerifiedIcon
+                            sx={{
+                                color: "#16a34a"
+                            }}
+                        />
+
+                        <Typography
+                            sx={{
+                                fontWeight: 800,
+                                fontSize: {
+                                    xs: 16,
+                                    sm: 19
+                                }
+                            }}
+                        >
+                            Policy Details
+                        </Typography>
+
+                    </Stack>
+
+
+                    {!isEditing && (
+
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={
+                                <EditRoundedIcon />
+                            }
+                            onClick={() =>
+                                setIsEditing(true)
+                            }
+                            sx={{
+                                textTransform: "none",
+                                borderRadius: 2,
+                            }}
+                        >
+                            Edit
+                        </Button>
+
+                    )}
+
+                </Stack>
+
+
+                <Divider sx={{ mb: 2 }} />
+
+
+                {/* ================================================= */}
+                {/* EDIT FORM */}
+                {/* ================================================= */}
+
+                {isEditing ? (
+
+                    <Grid container spacing={2}>
+
+
+                        {/* INSURANCE COMPANY */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Insurance Company"
+                                value={
+                                    policy.company_name || ""
+                                }
+                                disabled
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* POLICY NUMBER */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Policy Number"
+                                value={
+                                    policyData.policy_number
+                                }
+                                onChange={handleChange(
+                                    "policy_number"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* RENEWAL CYCLE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Renewal Cycle"
+                                value={
+                                    policyData.renewal_cycle
+                                }
+                                onChange={handleChange(
+                                    "renewal_cycle"
+                                )}
+                                sx={compactInput}
+                            >
+
+                                <MenuItem value="Annual">
+                                    Annual
+                                </MenuItem>
+
+                                <MenuItem value="Half Yearly">
+                                    Half Yearly
+                                </MenuItem>
+
+                                <MenuItem value="Quarterly">
+                                    Quarterly
+                                </MenuItem>
+
+                                <MenuItem value="Monthly">
+                                    Monthly
+                                </MenuItem>
+
+                            </TextField>
+
+                        </Grid>
+
+
+                        {/* SALE DATE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="date"
+                                label="Sale Date"
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
+                                value={
+                                    policyData.sale_date
+                                }
+                                onChange={handleChange(
+                                    "sale_date"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* START DATE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="date"
+                                label="Start Date"
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
+                                value={
+                                    policyData.start_date
+                                }
+                                onChange={handleChange(
+                                    "start_date"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* EXPIRY DATE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="date"
+                                label="Expiry Date"
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
+                                value={
+                                    policyData.expiry_date
+                                }
+                                onChange={handleChange(
+                                    "expiry_date"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* SOURCE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Source Type"
+                                value={
+                                    policyData.source_id
+                                }
+                                onChange={handleChange(
+                                    "source_id"
+                                )}
+                                sx={compactInput}
+                            >
+
+                                {ActiveSourceType?.map(
+                                    (item) => (
+
+                                        <MenuItem
+                                            key={
+                                                item.source_id
+                                            }
+                                            value={
+                                                item.source_id
+                                            }
+                                        >
+                                            {
+                                                item.source_name
+                                            }
+                                        </MenuItem>
+
+                                    )
+                                )}
+
+                            </TextField>
+
+                        </Grid>
+
+
+                        {/* PREMIUM */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="number"
+                                label="Premium Amount"
+                                value={
+                                    policyData.premium_amount
+                                }
+                                onChange={handleChange(
+                                    "premium_amount"
+                                )}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            ₹
+                                        </InputAdornment>
+                                    )
+                                }}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* IDV */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="number"
+                                label="IDV"
+                                value={
+                                    policyData.insured_declared_value
+                                }
+                                onChange={handleChange(
+                                    "insured_declared_value"
+                                )}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            ₹
+                                        </InputAdornment>
+                                    )
+                                }}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* PAID */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="number"
+                                label="Paid Amount"
+                                value={
+                                    policyData.paid_amount
+                                }
+                                onChange={handleChange(
+                                    "paid_amount"
+                                )}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            ₹
+                                        </InputAdornment>
+                                    )
+                                }}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* DISCOUNT */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="number"
+                                label="Discount Amount"
+                                value={
+                                    policyData.discount_amount
+                                }
+                                disabled
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            ₹
+                                        </InputAdornment>
+                                    )
+                                }}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* CUSTOMER PAY TYPE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Customer Pay Type"
+                                value={
+                                    policyData.customer_pay_type_id
+                                }
+                                onChange={handleChange(
+                                    "customer_pay_type_id"
+                                )}
+                                sx={compactInput}
+                            >
+
+                                {ActiveCustomerPayType?.map(
+                                    (item) => (
+
+                                        <MenuItem
+                                            key={
+                                                item.customer_pay_type_id
+                                            }
+                                            value={
+                                                item.customer_pay_type_id
+                                            }
+                                        >
+                                            {
+                                                item.pay_type_name
+                                            }
+                                        </MenuItem>
+
+                                    )
+                                )}
+
+                            </TextField>
+
+                        </Grid>
+
+
+                        {/* CUSTOMER REFERENCE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Customer Reference Number"
+                                value={
+                                    policyData.cp_reference_no
+                                }
+                                onChange={handleChange(
+                                    "cp_reference_no"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* PAYMENT METHOD */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Payment Method"
+                                value={
+                                    policyData.payment_method_id
+                                }
+                                onChange={handleChange(
+                                    "payment_method_id"
+                                )}
+                                sx={compactInput}
+                            >
+
+                                {ActivePaymentMethod?.map(
+                                    (item) => (
+
+                                        <MenuItem
+                                            key={
+                                                item.payment_method_id
+                                            }
+                                            value={
+                                                item.payment_method_id
+                                            }
+                                        >
+                                            {
+                                                item.payment_method_name
+                                            }
+                                        </MenuItem>
+
+                                    )
+                                )}
+
+                            </TextField>
+
+                        </Grid>
+
+
+                        {/* PAYMENT REFERENCE */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Payment Reference Number"
+                                value={
+                                    policyData.pm_reference_no
+                                }
+                                onChange={handleChange(
+                                    "pm_reference_no"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* RENEWAL YEAR */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                fullWidth
+                                size="small"
+                                type="number"
+                                label="Renewal Year"
+                                value={
+                                    policyData.renewal_year
+                                }
+                                onChange={handleChange(
+                                    "renewal_year"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* REMINDER */}
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Reminder"
+                                value={
+                                    policyData.reminder_days
+                                }
+                                onChange={handleChange(
+                                    "reminder_days"
+                                )}
+                                sx={compactInput}
+                            >
+
+                                <MenuItem value={7}>
+                                    7 Days
+                                </MenuItem>
+
+                                <MenuItem value={15}>
+                                    15 Days
+                                </MenuItem>
+
+                                <MenuItem value={30}>
+                                    30 Days
+                                </MenuItem>
+
+                                <MenuItem value={45}>
+                                    45 Days
+                                </MenuItem>
+
+                                <MenuItem value={60}>
+                                    60 Days
+                                </MenuItem>
+
+                            </TextField>
+
+                        </Grid>
+
+
+                        {/* REMARKS */}
+
+                        <Grid size={{ xs: 12 }}>
+
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                size="small"
+                                label="Remarks"
+                                value={
+                                    policyData.remarks
+                                }
+                                onChange={handleChange(
+                                    "remarks"
+                                )}
+                                sx={compactInput}
+                            />
+
+                        </Grid>
+
+
+                        {/* BUTTONS */}
+
+                        <Grid size={{ xs: 12 }}>
+
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                justifyContent="flex-end"
+                            >
+
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleCancel}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                >
+                                    {loading
+                                        ? "Saving..."
+                                        : "Save"}
+                                </Button>
+
+                            </Stack>
+
+                        </Grid>
+
+                    </Grid>
+
+                ) : (
+
+                    /* ================================================= */
+                    /* DISPLAY MODE */
+                    /* ================================================= */
+
+                    <Stack spacing={1.1}>
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Insurance Company"
+                            value={
+                                policy.company_name || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Policy Number"
+                            value={
+                                policy.policy_number || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Renewal Cycle"
+                            value={
+                                policy.renewal_cycle || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Sale Date"
+                            value={
+                                formatDate(policy.sale_date)
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Start Date"
+                            value={
+                                formatDate(policy.start_date)
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Expiry Date"
+                            value={
+                                formatDate(policy.expiry_date)
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Premium"
+                            value={`₹${policy.premium_amount || "0.00"}`}
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Paid Amount"
+                            value={`₹${policy.paid_amount || "0.00"}`}
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Discount"
+                            value={`₹${policy.discount_amount || "0.00"}`}
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="IDV"
+                            value={`₹${policy.insured_declared_value || "0.00"}`}
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Customer Pay Type"
+                            value={
+                                policy.pay_type_name || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Customer Reference"
+                            value={
+                                policy.cp_reference_no || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Payment Method"
+                            value={
+                                policy.payment_method_name || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Payment Reference"
+                            value={
+                                policy.pm_reference_no || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Source"
+                            value={
+                                policy.source_name || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Renewal Year"
+                            value={
+                                policy.renewal_year || "-"
+                            }
+                        />
+
+                        <DetailLine
+                            isDark={isDark}
+                            label="Remarks"
+                            value={
+                                policy.remarks || "-"
+                            }
+                        />
+
+                    </Stack>
+
+                )}
+
             </Box>
 
-            <Typography
-                variant="body2"
+
+            {/* ================================================= */}
+            {/* VEHICLE DETAILS */}
+            {/* ================================================= */}
+
+            <Box
                 sx={{
-                    color: themeColors.textDark,
-                    fontSize: { xs: 10, sm: 14 },
-                    fontWeight: 800,
+                    border: "1px solid #DCE8F7",
+                    borderRadius: 3,
+                    p: 1.5,
                 }}
             >
-                {policy.remarks || "-"}
-            </Typography>
-        </Paper>
+
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 1 }}
+                >
+
+                    <DirectionsCarIcon
+                        sx={{
+                            color: "#1565C0"
+                        }}
+                    />
+
+                    <Typography
+                        sx={{
+                            fontWeight: 800,
+                            fontSize: {
+                                xs: 16,
+                                sm: 19
+                            }
+                        }}
+                    >
+                        Vehicle Details
+                    </Typography>
+
+                </Stack>
+
+                <Divider sx={{ mb: 2 }} />
+
+                <Stack spacing={1.1}>
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Registration No"
+                        value={
+                            policy.registration_number || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Vehicle"
+                        value={`${policy.vehicle_maker || ""} ${policy.model || ""}`}
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Engine No"
+                        value={
+                            policy.engine_number || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Chassis No"
+                        value={
+                            policy.chassis_number || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="RTO"
+                        value={
+                            policy.rto || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Vehicle Class"
+                        value={
+                            policy.vehicle_class || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Category"
+                        value={
+                            policy.vehicle_category || "-"
+                        }
+                    />
+
+                    <DetailLine
+                        isDark={isDark}
+                        label="Fuel Type"
+                        value={
+                            policy.fuel_type || "-"
+                        }
+                    />
+
+                </Stack>
+
+            </Box>
+
+
+            
+
+        </Stack>
+
     );
+
 };
 
 export default memo(PolicyInfoCard);

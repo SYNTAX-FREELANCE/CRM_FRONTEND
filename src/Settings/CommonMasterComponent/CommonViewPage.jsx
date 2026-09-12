@@ -2,7 +2,9 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonDataGrid from "./CommonDataGrid";
 
-import { useCompanyMaster, useEmployeeMaster, useQualificationMaster, useRoleMaster, useStatusMaster, useModuleMaster, useSubmoduleMaster, useMenuMaster, useLeadMaster, useVehicleTypeMaster, useInsuranceCompanyMaster, useCustomerMaster, useVehicleMaster, useTargetMaster, useCallOutcomeMaster, useOutcomeStatusMappingMaster, usePolicySourceMaster } from "../../CommonCode/useQuery";
+import {
+    useCommonMaster
+} from "../../CommonCode/useQuery";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -20,6 +22,7 @@ const CommonViewPage = () => {
         navigateback
     } = location.state || {};
 
+    const { data = [] } = useCommonMaster(type);
 
     const handleEdit = (row) => {
         const recordId = row[idField] || row.id;
@@ -31,48 +34,8 @@ const CommonViewPage = () => {
             }
         });
     };
-    const { data: RoleMasterDetil } = useRoleMaster();
-    const { data: ModuleMasterDetail } = useModuleMaster();
-    const { data: CompnayMasterDetail } = useCompanyMaster();
-    const { data: StuatuMaster } = useStatusMaster();
-    const { data: QualificationMaster } = useQualificationMaster();
-    const { data: Employee_master } = useEmployeeMaster();
-    const { data: SubmoduleMasterDetail } = useSubmoduleMaster();
-    const { data: MenuMasterDetail } = useMenuMaster();
-    const { data: LeadMasterDetail } = useLeadMaster();
-    const { data: VehicleTypeMasterDetail } = useVehicleTypeMaster();
-    const { data: InsuranceCompanyMasterDetail } = useInsuranceCompanyMaster();
-    const { data: CustomerMasterDetail } = useCustomerMaster();
-    const { data: VehicleMasterDetail } = useVehicleMaster();
-    const { data: TargetDetailMaster } = useTargetMaster();
-    const { data: calloutcomemaster } = useCallOutcomeMaster();
-    const { data: OutcomeStatusMappingMaster } = useOutcomeStatusMappingMaster();
-    const { data: policySourceMaster = [] } = usePolicySourceMaster();
 
-
-    const dataMap = {
-        role: RoleMasterDetil,
-        company: CompnayMasterDetail,
-        status: StuatuMaster,
-        qualification: QualificationMaster,
-        employee: Employee_master,
-        module: ModuleMasterDetail,
-        submodule: SubmoduleMasterDetail,
-        menu: MenuMasterDetail,
-        lead: LeadMasterDetail,
-        vehicletype: VehicleTypeMasterDetail,
-        insurancecompany: InsuranceCompanyMasterDetail,
-        customer: CustomerMasterDetail,
-        vehicle: VehicleMasterDetail,
-        employeeTarget: TargetDetailMaster,
-        calloutcome: calloutcomemaster,
-        outcomestatusmapping: OutcomeStatusMappingMaster,
-        policySource:policySourceMaster
-    };
-
-
-    const data = dataMap[type] || [];
-
+   
     const handleGoBack = () => {
         if (navigateback) {
             navigate(navigateback)

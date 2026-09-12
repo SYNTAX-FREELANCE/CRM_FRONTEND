@@ -20,7 +20,7 @@ import {
     IconButton,
     useTheme,
 } from '@mui/material';
-import { useGetCustomerPolicyDetails, useGetPolicyFiles } from '../CommonCode/useQuery';
+import { useGetCustomerPolicyDetails, useGetPolicyFiles, usePolicyDetiails } from '../CommonCode/useQuery';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import TextsmsIcon from '@mui/icons-material/Textsms';
@@ -61,7 +61,11 @@ const PolicyUploadDetails = () => {
     const [loading, setLoading] = useState(false)
 
     const { data: policyDetails = [], isLoading, isError, refetch } = useGetCustomerPolicyDetails(customerid);
+    const { data: DetiledPolicyDetails = [] } = usePolicyDetiails(customerid, policyid);
     const { data: PolicyFiles = [], refetch: refetchPolicyFiles, isLoading: LoadingPolicyFiles } = useGetPolicyFiles(policyid);
+
+
+
 
 
     const uploadedFiles = PolicyFiles ?? {};
@@ -93,6 +97,7 @@ const PolicyUploadDetails = () => {
             is_previous_customer: p.is_previous_customer,
         };
     }, [policyDetails]);
+
 
     const resetDetails = useCallback(() => {
         setRcFiles([])
@@ -216,7 +221,7 @@ const PolicyUploadDetails = () => {
         );
     }
 
-    if (!policy) {
+    if (!DetiledPolicyDetails || DetiledPolicyDetails?.length === 0) {
         return (
             <Box sx={{ p: 3 }}>
                 <Alert severity="warning">Policy not found.</Alert>
@@ -278,7 +283,7 @@ const PolicyUploadDetails = () => {
                     }}
                 >
 
-                    <PolicyInfoCard isDark={isDark} policy={policy} />
+                    <PolicyInfoCard isDark={isDark} policy={DetiledPolicyDetails[0]} />
 
                     <Paper
                         elevation={0}
@@ -301,7 +306,7 @@ const PolicyUploadDetails = () => {
                                 sx={{
                                     fontSize: { xs: 15, sm: 20 },
                                     fontWeight: 600,
-                                    color:isDark ? "#f8fafc" : "text.secondary",
+                                    color: isDark ? "#f8fafc" : "text.secondary",
                                     mb: 3,
                                 }}>
                                 POLICY DOCUMENT UPLOADS

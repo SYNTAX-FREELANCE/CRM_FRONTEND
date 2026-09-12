@@ -1,34 +1,29 @@
 import React, { lazy, Suspense, useState } from "react";
 import {
-    Autocomplete,
     Box,
     Button,
-    Chip,
-    Divider,
     Grid,
-    InputAdornment,
-    MenuItem,
     Stack,
     TextField,
     Typography,
-    useMediaQuery,
+    // useMediaQuery,
     useTheme,
 } from "@mui/material";
-import CampaignIcon from "@mui/icons-material/Campaign";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
-import BlockIcon from "@mui/icons-material/Block";
-import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import SellIcon from "@mui/icons-material/Sell";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import SecurityIcon from "@mui/icons-material/Security";
-import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+// import CampaignIcon from "@mui/icons-material/Campaign";
+// import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+// import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+// import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
+// import BlockIcon from "@mui/icons-material/Block";
+// import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
+// import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+// import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+// import SellIcon from "@mui/icons-material/Sell";
+// import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+// import VerifiedIcon from "@mui/icons-material/Verified";
+// import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+// import SecurityIcon from "@mui/icons-material/Security";
+// import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
+// import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useInsuranceCompanyMaster, useOutcomeByStatusId } from "../../CommonCode/useQuery";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -53,7 +48,7 @@ const FollowUpForm = ({
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-    const isMobile = useMediaQuery("(max-width:600px)");
+    // const isMobile = useMediaQuery("(max-width:600px)");
     const needsDate = statusName?.requires_followup === 1;
     const isFollowupDateRequired = statusName?.is_followup_date_required === 1;
 
@@ -87,6 +82,10 @@ const FollowUpForm = ({
         reminder_days: 30,
         renewal_year: new Date().getFullYear(),
         remarks: "",
+        customer_pay_type_id: "",
+        payment_method_id: '',
+        cp_reference_no: '',
+        pm_reference_no: ''
     });
 
 
@@ -109,6 +108,10 @@ const FollowUpForm = ({
             reminder_days: 30,
             renewal_year: new Date().getFullYear(),
             remarks: "",
+            customer_pay_type_id: "",
+            payment_method_id: '',
+            cp_reference_no: '',
+            pm_reference_no: '',
         });
     };
 

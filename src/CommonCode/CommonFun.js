@@ -757,7 +757,7 @@ export const getEmployeeTargetDetails = async (empid) => {
     if (success === 1) return data;
     return [];
   } catch (error) {
-    console.error("getEmployeeTargetDetails error:", error);
+    console.error("getEmployeeTargetDetails error", error);
     return [];
   }
 };
@@ -833,33 +833,185 @@ export const FetchPolicySourceMaster = async () => {
   }
 };
 
-
-
 export const FetchActivePolicySourceMaster = async () => {
+  try {
+    const response = await axioslogin.get("/policysource/get-active");
 
-    try {
-        const response = await axioslogin.get(
-            "/policysource/get-active"
-        );
+    const { success, data } = response.data;
 
-        const {
-            success,
-            data,
-        } = response.data;
-
-        if (success !== 0) {
-            return data;
-        }
-
-        return [];
-
-    } catch (error) {
-
-        console.error(
-            "FetchActivePolicySourceMaster error:",
-            error
-        );
-
-        return [];
+    if (success !== 0) {
+      return data;
     }
+
+    return [];
+  } catch (error) {
+    console.error("FetchActivePolicySourceMaster error:", error);
+
+    return [];
+  }
+};
+
+export const FetchEmployeeLevelMasterDetails = async () => {
+  try {
+    const response = await axioslogin.get("/employeelevel/getall");
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchActivePolicySourceMaster error:", error);
+
+    return [];
+  }
+};
+
+export const FetchIncentiveSchmaMaster = async () => {
+  try {
+    const response = await axioslogin.get("/incentivescheme/getall");
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchIncentiveSchmaMaster error:", error);
+
+    return [];
+  }
+};
+
+export const FetchIncentiveSlabMaster = async () => {
+  try {
+    const response = await axioslogin.get("/incentiveslab/getall");
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchIncentiveSlabMaster error:", error);
+
+    return [];
+  }
+};
+
+export const FetchIncentiveSlabEmployeeDetial = async (empid) => {
+  try {
+    const response = await axioslogin.get(
+      `/incentiveslab/get-by-employee/${empid}`,
+    );
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchIncentiveSlabEmployeeDetial error:", error);
+
+    return [];
+  }
+};
+
+export const FetchEmployeeCaptureCount = async (empid) => {
+  try {
+    const response = await axioslogin.get(`/lead/get-capture-count/${empid}`);
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchEmployeeCaptureCount error:", error);
+
+    return [];
+  }
+};
+
+export const FetchEmployeeCurrentIncentiveAmount = async (empid, capture) => {
+  try {
+    const response = await axioslogin.post(`/incentiveslab/calculate`, {
+      employee_id: empid,
+      capture,
+      capture_count: capture,
+    });
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchEmployeeCurrentIncentiveAmount error:", error);
+
+    return [];
+  }
+};
+
+export const FetchCustomerPayType = async () => {
+  try {
+    const response = await axioslogin.get("/customerpaytype/getall");
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchCustomerPayType error:", error);
+
+    return [];
+  }
+};
+
+export const FetchPaymentMethod = async () => {
+  try {
+    const response = await axioslogin.get("/paymentmethod/getall");
+
+    const { success, data } = response.data;
+
+    if (success !== 0) {
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("FetchPaymentMethod error:", error);
+
+    return [];
+  }
+};
+
+export const getPolicyDetails = async (customerid, policyId) => {
+  if (!customerid) return [];
+  try {
+    const response = await axioslogin.get(
+      `/lead/get-details/${policyId}/${customerid}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getEmployeePolicyDetail error:", error);
+    return [];
+  }
 };
