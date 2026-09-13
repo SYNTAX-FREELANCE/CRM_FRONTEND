@@ -6,7 +6,6 @@ import {
     TextField,
     Typography,
     Divider,
-    Chip,
     InputAdornment,
     Button,
     Stack,
@@ -15,7 +14,8 @@ import {
 import VerifiedIcon from "@mui/icons-material/Verified";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-import PersonIcon from "@mui/icons-material/Person";
+import AssignmentTurnedInRoundedIcon from "@mui/icons-material/AssignmentTurnedInRounded";
+
 
 import {
     useActivePolicySourceMaster,
@@ -54,13 +54,11 @@ const formatDate = (date) => {
 const PolicyInfoCard = ({
     policy,
     isDark,
-    onPolicyUpdated,
+    refetch,
+    setOpen
 }) => {
 
-    console.log({
-        policy
-    });
-    
+
 
 
     const [isEditing, setIsEditing] = useState(false);
@@ -277,23 +275,15 @@ const PolicyInfoCard = ({
 
 
             const response = await axioslogin.patch(
-                `/policy/update/${policy.policy_id}`,
+                `/customer/update-policydetail/${policy.policy_id}`,
                 data
             );
 
 
             if (response?.data?.success === 1) {
-
-                successNotify(
-                    "Policy updated successfully"
-                );
-
+                successNotify("Policy updated successfully");
                 setIsEditing(false);
-
-                if (onPolicyUpdated) {
-                    onPolicyUpdated();
-                }
-
+                refetch()
             } else {
 
                 warningNotify(
@@ -304,6 +294,9 @@ const PolicyInfoCard = ({
             }
 
         } catch (error) {
+            console.log({
+                error
+            });
 
             warningNotify(
                 error?.response?.data?.message ||
@@ -412,13 +405,12 @@ const PolicyInfoCard = ({
                     justifyContent="space-between"
                     sx={{ mb: 1 }}
                 >
-
+                    {/* LEFT */}
                     <Stack
                         direction="row"
                         alignItems="center"
                         spacing={1}
                     >
-
                         <VerifiedIcon
                             sx={{
                                 color: "#16a34a"
@@ -436,30 +428,76 @@ const PolicyInfoCard = ({
                         >
                             Policy Details
                         </Typography>
-
                     </Stack>
 
 
-                    {!isEditing && (
+                    {/* RIGHT */}
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
+                    >
 
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={
-                                <EditRoundedIcon />
-                            }
-                            onClick={() =>
-                                setIsEditing(true)
-                            }
-                            sx={{
-                                textTransform: "none",
-                                borderRadius: 2,
-                            }}
-                        >
-                            Edit
-                        </Button>
+                        {/* CLAIM BUTTON */}
+                        {
+                            !isEditing &&
+                            <Button
+                                size="small"
+                                variant="contained"
+                                startIcon={
+                                    <AssignmentTurnedInRoundedIcon sx={{
+                                        fontSize: { xs: 8, sm: 12 }
+                                    }} />
+                                }
+                                onClick={() => setOpen(true)}
+                                sx={{
+                                    textTransform: "none",
+                                    borderRadius: 2,
+                                    fontWeight: 700,
+                                    fontSize: { xs: 10, sm: 12 },
+                                    px: 2,
+                                    py: 0.7,
 
-                    )}
+                                    background:
+                                        "linear-gradient(135deg, #f7991d 0%, #eeb124 100%)",
+
+                                    boxShadow:
+                                        "0 4px 10px rgba(163, 142, 22, 0.25)",
+
+                                    "&:hover": {
+                                        background:
+                                            "linear-gradient(135deg, #d0a348 0%, #d38c34 100%)",
+
+                                        boxShadow:
+                                            "0 6px 14px rgba(163, 97, 22, 0.35)"
+                                    }
+                                }}
+                            >
+                                Claim
+                            </Button>
+                        }
+
+                        {/* EDIT BUTTON */}
+                        {!isEditing && (
+                            <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={
+                                    <EditRoundedIcon />
+                                }
+                                onClick={() =>
+                                    setIsEditing(true)
+                                }
+                                sx={{
+                                    textTransform: "none",
+                                    borderRadius: 2,
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        )}
+
+                    </Stack>
 
                 </Stack>
 
@@ -1274,7 +1312,7 @@ const PolicyInfoCard = ({
             </Box>
 
 
-            
+
 
         </Stack>
 

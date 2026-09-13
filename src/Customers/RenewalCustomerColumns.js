@@ -113,8 +113,8 @@ export const RenewalCustomerColumns = (
   const desktopColumns = [
     {
       field: "customer_name",
-      headerName: "Customer Name",
-      minWidth: 200,
+      headerName: "Customer",
+      minWidth: 150,
       flex: 1,
       renderCell: ({ row }) => (
         <Stack direction="row" alignItems="center" spacing={0.6}>
@@ -143,7 +143,7 @@ export const RenewalCustomerColumns = (
     {
       field: "registration_number",
       headerName: "Registration No",
-      minWidth: 150,
+      minWidth: 100,
       flex: 0.9,
       renderCell: ({ value }) => (
         <Typography
@@ -174,8 +174,8 @@ export const RenewalCustomerColumns = (
     },
     {
       field: "premium_amount",
-      headerName: "Premium Paid",
-      minWidth: 150,
+      headerName: "Premium",
+      minWidth: 100,
       flex: 0.9,
       renderCell: ({ value }) => (
         <Typography
@@ -190,8 +190,8 @@ export const RenewalCustomerColumns = (
     },
     {
       field: "paid_amount",
-      headerName: "Total Paid",
-      minWidth: 150,
+      headerName: "Paid",
+      minWidth: 100,
       flex: 0.9,
       renderCell: ({ value }) => (
         <Typography
@@ -206,8 +206,8 @@ export const RenewalCustomerColumns = (
     },
     {
       field: "discount_amount",
-      headerName: "Discount Amount",
-      minWidth: 150,
+      headerName: "Discount",
+      minWidth: 100,
       flex: 0.9,
       renderCell: ({ value }) => (
         <Typography
@@ -240,8 +240,8 @@ export const RenewalCustomerColumns = (
       ? [
           {
             field: "employee_name",
-            headerName: "Captured Employee",
-            minWidth: 150,
+            headerName: "Agent",
+            minWidth: 100,
             flex: 0.9,
             renderCell: ({ value }) => (
               <Typography
