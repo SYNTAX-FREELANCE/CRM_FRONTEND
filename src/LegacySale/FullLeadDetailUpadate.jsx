@@ -103,6 +103,14 @@ const FullLeadDetailUpadate = () => {
         reminder_days: 30,
         renewal_year: "",
 
+        customer_pay_type_id: "",
+
+        payment_method_id: '',
+
+        cp_reference_no: '',
+
+        pm_reference_no: '',
+
         remarks: "",
     });
 
@@ -186,6 +194,10 @@ const FullLeadDetailUpadate = () => {
             reminder_days: 30,
             renewal_year: "",
             remarks: "",
+            customer_pay_type_id: "",
+            payment_method_id: '',
+            cp_reference_no: '',
+            pm_reference_no: '',
         });;
     };
 
@@ -783,6 +795,14 @@ const FullLeadDetailUpadate = () => {
                     status: "SOLD",
 
                     is_previous_customer: isPreviousCustomer,
+
+                    customer_pay_type_id: saleData.customer_pay_type_id,
+
+                    payment_method_id: saleData.payment_method_id,
+
+                    cp_reference_no: saleData.cp_reference_no,
+
+                    pm_reference_no: saleData.pm_reference_no,
                 },
                 lead: {
                     assigned_to: selectedEmployee,

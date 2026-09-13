@@ -23,7 +23,8 @@ import {
     useCompanyMaster,
     useStatusMaster,
     useQualificationMaster,
-    useEmployeeMaster
+    useEmployeeMaster,
+    useEmployeeLevelMaster
 } from "../../CommonCode/useQuery";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -45,7 +46,8 @@ const UserCreation = () => {
         isActive: 'Active',
         dob: "",
         email: "",
-        address: ""
+        address: "",
+        employeelevel: ""
     });
 
     const navigate = useNavigate();
@@ -53,20 +55,18 @@ const UserCreation = () => {
 
     const { id, mode } = location.state || {};
 
-    const [toast, setToast] = useState("");
-    const [savedData, setSavedData] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
 
     const set = (field) => (e) =>
         setEmployee((prev) => ({ ...prev, [field]: e.target.value }));
 
 
     // ==================== MASTER DATA ====================
-    const { data: RoleMasterDetail } = useRoleMaster();
-    const { data: CompanyMasterDetail } = useCompanyMaster();
-    const { data: StatusMaster } = useStatusMaster();
-    const { data: QualificationMaster } = useQualificationMaster();
+    const { data: RoleMasterDetail = [] } = useRoleMaster();
+    const { data: CompanyMasterDetail = [] } = useCompanyMaster();
+    const { data: StatusMaster = [] } = useStatusMaster();
+    const { data: QualificationMaster = [] } = useQualificationMaster();
+    const { data: employeelevelmaster = [] } = useEmployeeLevelMaster();
 
     const { refetch: FetchEmployeeMaster } = useEmployeeMaster();
 
@@ -99,6 +99,16 @@ const UserCreation = () => {
             label: item.status_name
         })) : [];
 
+    const employeelevelOption = Array.isArray(employeelevelmaster) ? employeelevelmaster
+        ?.filter(item => item.is_active === 1)
+        ?.map(item => ({
+            id: item.employee_level_id,
+            label: item.level_name
+        })) : [];
+
+
+
+
     // ==================== FETCH BY ID ====================
     const getEmployeeById = async (id) => {
         try {
@@ -123,7 +133,8 @@ const UserCreation = () => {
                 isActive: data.is_active === 1 ? "Active" : "Inactive",
                 dob: data.dob ? data.dob.split("T")[0] : "",
                 email: data.email || "",
-                address: data.address || ""
+                address: data.address || "",
+                employeelevel: data.employee_level_id || ""
             });
         } catch (error) {
             warningNotify("Failed to load employee details");
@@ -284,6 +295,11 @@ const UserCreation = () => {
             return false;
         }
 
+        if (!employee.employeelevel && employee.employeelevel.trim() === "") {
+            warningNotify("Please Select Employee Level");
+            return false;
+        }
+
         return true;
     };
     // ==================== HANDLERS ====================
@@ -303,32 +319,12 @@ const UserCreation = () => {
             userStatus: "Active",
             dob: "",
             email: "",
-            address: ""
+            address: "",
+            employeelevel: ""
         });
     };
 
-    const handleCancel = () => {
-        setEmployee({
-            name: "",
-            age: "",
-            gender: "",
-            qualification: "",
-            dateOfJoin: "",
-            experience: "",
-            mobileNumber1: "",
-            mobileNumber2: "",
-            aadharNumber: "",
-            company: "",
-            role: "",
-            userStatus: "",
-            isActive: 'Active',
-            dob: "",
-            email: "",
-            address: ""
-        });
-        setSavedData(null);
 
-    };
 
     const handleSave = async () => {
         if (!validateEmployee()) {
@@ -354,7 +350,8 @@ const UserCreation = () => {
                 is_active: employee.isActive === "Active" ? 1 : 0,
                 dob: employee.dob || null,
                 email: employee.email ? employee.email.trim() : null,
-                address: employee.address ? employee.address.trim() : null
+                address: employee.address ? employee.address.trim() : null,
+                employee_level_id: employee.employeelevel ? employee.employeelevel : null
 
             };
 
@@ -397,15 +394,6 @@ const UserCreation = () => {
     };
 
     const handleView = () => {
-        // commonview
-        // navigate("/home/setting/commonview", {
-        //     state: {
-        //         title: "Employee Master",
-        //         type: 'employee',
-        //         idField: 'user_id',
-        //         editRoute: "/employeemaster",  // Update to your actual route
-        //         columns: [
-
         navigate("/home/setting/commonview", {
             state: {
                 title: "Employee Master",
@@ -508,6 +496,12 @@ const UserCreation = () => {
                     {
                         field: "status_name",
                         headerName: "Status",
+                        width: 120,
+                        flex: 0.6,
+                    },
+                    {
+                        field: "level_name",
+                        headerName: "Level",
                         width: 120,
                         flex: 0.6,
                     },
@@ -660,6 +654,16 @@ const UserCreation = () => {
                             />
                         </FormRow>
 
+                        <FormRow label="Employee Level" required>
+                            <SelectLg
+                                value={employee.employeelevel}
+                                onChange={set("employeelevel")}
+                                options={employeelevelOption}
+                            />
+                        </FormRow>
+
+
+
                         <FormRow label="Active Status">
                             <Checkbox
                                 value={employee.isActive}
@@ -676,7 +680,7 @@ const UserCreation = () => {
 
                 <ButtonWrapper>
                     <Button onClick={handleSave} disabled={loading}>Save</Button>
-                    <Button onClick={handleCancel}>Cancel</Button>
+                    <Button onClick={handleReset}>Cancel</Button>
                     <Button onClick={handleView}>View</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </ButtonWrapper>

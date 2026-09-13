@@ -527,6 +527,11 @@ const LeadDetailsDrawer = ({
           paid_amount: policyData.paid_amount,
           discount_amount: policyData.discount_amount,
           source_id: policyData.source_id,
+          customer_pay_type_id: policyData.customer_pay_type_id,
+          payment_method_id: policyData.payment_method_id,
+          cp_reference_no: policyData.cp_reference_no,
+          pm_reference_no: policyData.pm_reference_no,
+          created_by: id,
         },
       }),
     };

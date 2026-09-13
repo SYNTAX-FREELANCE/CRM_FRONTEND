@@ -129,6 +129,26 @@ const FullLeadDetailUpadate = lazy(
 const PolicySourceCreation = lazy(
   () => import("../src/Masters/SourceMaster/PolicySourceCreation"),
 );
+const LegacySaleMaster = lazy(
+  () => import("../src/Masters/LegacySaleUploadMaster/LegacySaleMaster"),
+);
+const EmployeeLevelMaster = lazy(
+  () => import("../src/Masters/EmployeeLevelMaster/EmployeeLevelMaster"),
+);
+
+const IncentiveSchemeMaster = lazy(
+  () => import("../src/Masters/IncentiveSchemeMaster/IncentiveSchemeMaster"),
+);
+const Incentiveschemaslab = lazy(
+  () => import("../src/Masters/IncentiveSchemaSlab/Incentiveschemaslab"),
+);
+
+const CustomerPayTypeMaster = lazy(
+  () => import("../src/Masters/CustomerPayTypeMaster/CustomerPayTypeMaster"),
+);
+const PaymentMethodMaster = lazy(
+  () => import("../src/Masters/PaymentMethodMaster/PaymentMethodMaster"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -344,6 +364,30 @@ const router = createBrowserRouter([
       {
         path: "setting/outcomemapmaster",
         element: withSuspense(OutcomeStatusMappingCreation),
+      },
+      {
+        path: "setting/legacysalemaster",
+        element: withSuspense(LegacySaleMaster),
+      },
+      {
+        path: "setting/employeelevel",
+        element: withSuspense(EmployeeLevelMaster),
+      },
+      {
+        path: "setting/incentiveschema",
+        element: withSuspense(IncentiveSchemeMaster),
+      },
+      {
+        path: "setting/incentiveschemaslab",
+        element: withSuspense(Incentiveschemaslab),
+      },
+      {
+        path: "setting/customerpaytype",
+        element: withSuspense(CustomerPayTypeMaster),
+      },
+        {
+        path: "setting/paymentmethod",
+        element: withSuspense(PaymentMethodMaster),
       },
 
       // {
