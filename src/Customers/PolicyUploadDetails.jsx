@@ -6,25 +6,15 @@ import {
     Typography,
     CircularProgress,
     Alert,
-    Grid,
     Paper,
-    Chip,
     Button,
-    Divider,
     Stack,
-    TextField,
-    MenuItem,
-    Select,
-    FormControl,
-    InputLabel,
-    IconButton,
+
     useTheme,
 } from '@mui/material';
-import { useGetCustomerPolicyDetails, useGetPolicyFiles } from '../CommonCode/useQuery';
+import { useGetCustomerPolicyDetails, useGetPolicyFiles, usePolicyDetiails } from '../CommonCode/useQuery';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import TextsmsIcon from '@mui/icons-material/Textsms';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import UploadPreview from './CustomersComponents/UploadPreview';
 import { axioslogin } from '../Connection/axios';
 import { errorNotify, getAuthUser, successNotify, warningNofity } from '../constant/Constant';
@@ -32,6 +22,7 @@ import UploadBox from './CustomersComponents/UploadBox';
 import PolicyInfoCard from './CustomersComponents/PolicyInfoCard';
 import EditDocumentIcon from '@mui/icons-material/EditDocument';
 import FloatingBackButton from '../CommonComponents/FloatingBackButton';
+import PolicyDetails from './CustomersComponents/PolicyDetails';
 
 const themeColors = {
     orange: '#F57C00',
@@ -46,7 +37,6 @@ const themeColors = {
 
 const PolicyUploadDetails = () => {
     const { customerid, policyid } = useParams();
-    const navigate = useNavigate();
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
@@ -58,9 +48,11 @@ const PolicyUploadDetails = () => {
     const [policyFiles, setPolicyFiles] = useState([]);
     const [kycFiles, setKycFiles] = useState([]);
     const [vehicleImages, setVehicleImages] = useState([]);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const { data: policyDetails = [], isLoading, isError, refetch } = useGetCustomerPolicyDetails(customerid);
+    const { data: DetiledPolicyDetails = [], refetch: RefetchPolicyDetails } = usePolicyDetiails(customerid, policyid);
     const { data: PolicyFiles = [], refetch: refetchPolicyFiles, isLoading: LoadingPolicyFiles } = useGetPolicyFiles(policyid);
 
 
@@ -93,6 +85,7 @@ const PolicyUploadDetails = () => {
             is_previous_customer: p.is_previous_customer,
         };
     }, [policyDetails]);
+
 
     const resetDetails = useCallback(() => {
         setRcFiles([])
@@ -216,7 +209,7 @@ const PolicyUploadDetails = () => {
         );
     }
 
-    if (!policy) {
+    if (!DetiledPolicyDetails || DetiledPolicyDetails?.length === 0) {
         return (
             <Box sx={{ p: 3 }}>
                 <Alert severity="warning">Policy not found.</Alert>
@@ -278,7 +271,12 @@ const PolicyUploadDetails = () => {
                     }}
                 >
 
-                    <PolicyInfoCard isDark={isDark} policy={policy} />
+                    <PolicyInfoCard
+                        isDark={isDark}
+                        policy={DetiledPolicyDetails[0]}
+                        refetch={RefetchPolicyDetails}
+                        setOpen={setOpen}
+                    />
 
                     <Paper
                         elevation={0}
@@ -287,7 +285,8 @@ const PolicyUploadDetails = () => {
                             borderRadius: 4,
                             border: `1px solid ${themeColors.border}`,
                             // width: { xs: "100%", lg: "50%" },
-                            width: '100%'
+                            width: '100%',
+                            mt: 2
                         }}
                     >
                         <Box sx={{
@@ -301,7 +300,7 @@ const PolicyUploadDetails = () => {
                                 sx={{
                                     fontSize: { xs: 15, sm: 20 },
                                     fontWeight: 600,
-                                    color:isDark ? "#f8fafc" : "text.secondary",
+                                    color: isDark ? "#f8fafc" : "text.secondary",
                                     mb: 3,
                                 }}>
                                 POLICY DOCUMENT UPLOADS
@@ -387,6 +386,12 @@ const PolicyUploadDetails = () => {
                     </Paper>
                 </Box>
             </Paper>
+
+            <PolicyDetails
+                open={open}
+                setOpen={setOpen}
+                policyData={DetiledPolicyDetails[0]}
+            />
             <FloatingBackButton />
         </Box >
     );

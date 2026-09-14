@@ -22,7 +22,14 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useGetEmployeeMenuRights } from "../CommonCode/useQuery";
 import { getAuthUser } from "../constant/Constant";
-
+import PaymentIcon from '@mui/icons-material/Payment';
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
+import StairsIcon from '@mui/icons-material/Stairs';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import RealEstateAgentIcon from '@mui/icons-material/RealEstateAgent';
+import AddCallIcon from '@mui/icons-material/AddCall';
+import TrackChangesIcon from '@mui/icons-material/TrackChanges';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -52,7 +59,12 @@ const Settings = () => {
         { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
         { menuslno: 9, label: "Insurance Company Master", path: "/home/setting/insurancecompany", icon: <ShieldIcon /> },
         { menuslno: 10, label: "Customer Master", path: "/home/setting/customermaster", icon: <PeopleIcon /> },
-        { menuslno: 20, label: "Policy Source Master", path: "/home/setting/policysource", icon: <DirectionsCarIcon /> },
+        { menuslno: 20, label: "Policy Source Master", path: "/home/setting/policysource", icon: <LocalPoliceIcon /> },
+        { menuslno: 22, label: "Employee Level Master", path: "/home/setting/employeelevel", icon: <StairsIcon /> },
+        { menuslno: 23, label: "Incentive Master", path: "/home/setting/incentiveschema", icon: <AddShoppingCartIcon /> },
+        { menuslno: 24, label: "Incentive Slab Master", path: "/home/setting/incentiveschemaslab", icon: <CurrencyRupeeIcon /> },
+        { menuslno: 25, label: "Customer Pay Type", path: "/home/setting/customerpaytype", icon: <PaymentIcon /> },
+        { menuslno: 26, label: "Payment Method Master", path: "/home/setting/paymentmethod", icon: <PaymentIcon /> },
 
       ],
     },
@@ -67,12 +79,12 @@ const Settings = () => {
         { menuslno: 14, label: "User Right Master", path: "/home/setting/userrightmaster", icon: <VpnKeyIcon /> },
         { menuslno: 15, label: "Data Upload Master", path: "/home/setting/Uploadmaster", icon: <CloudUploadIcon /> },
         { menuslno: 16, label: "User Module Rights", path: "/home/setting/usermodulerightmaster", icon: <VpnKeyIcon /> },
-        { menuslno: 17, label: "Target Master", path: "/home/setting/targetmaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 17, label: "Target Master", path: "/home/setting/targetmaster", icon: <TrackChangesIcon /> },
         { menuslno: 18, label: "Call Outcome Master", path: "/home/setting/calloutcome", icon: <DirectionsCarIcon /> },
-        { menuslno: 19, label: "Call Outcome Map Master", path: "/home/setting/outcomemapmaster", icon: <DirectionsCarIcon /> },
+        { menuslno: 19, label: "Call Outcome Map Master", path: "/home/setting/outcomemapmaster", icon: <AddCallIcon /> },
+        { menuslno: 21, label: "Legacy Sale Upload Master", path: "/home/setting/legacysalemaster", icon: <RealEstateAgentIcon /> },
       ],
     },
-
   ];
 
   const allowedMenuIds = new Set(
@@ -101,10 +113,14 @@ const Settings = () => {
         backdropFilter: "blur(24px)",
         border: "1px solid rgba(255, 255, 255, 0.35)",
         boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.05)",
-        p: { xs: 2.5, md: 4 },
         position: "relative",
-        overflow: "hidden",
-        minHeight: "calc(100vh - 40px)",
+        overflowY: "scroll",
+        overflowX: "hidden",
+
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
       }}>
 
       {/* Background Glow Blobs */}
@@ -232,7 +248,7 @@ const Settings = () => {
           zIndex: 1,
         }}
       >
-        {filteredMaster.map((section, index) => {
+        {filteredMaster?.map((section, index) => {
           const isExpanded = expandedIndex === index;
           const themeColor = section.colorTheme === "blue" ? "#2563eb" : "#ea580c";
           const themeColorLight = section.bgGlow;

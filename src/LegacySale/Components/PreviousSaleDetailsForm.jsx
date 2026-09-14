@@ -13,7 +13,7 @@ import {
 
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { useActivePolicySourceMaster } from "../../CommonCode/useQuery";
+import { useActivePolicySourceMaster, useCustomerPaytype, usePaymentMethodMaster } from "../../CommonCode/useQuery";
 
 const compactInput = {
     "& .MuiOutlinedInput-root": {
@@ -35,7 +35,17 @@ const PreviousSaleDetailsForm = ({
     const isDark = theme.palette.mode === "dark";
 
 
-    const { data: sourceType = [] } = useActivePolicySourceMaster()
+    const { data: sourceType = [] } = useActivePolicySourceMaster();
+    const { data: CustomerPayType = [] } = useCustomerPaytype();
+    const { data: PaymentMethod = [] } = usePaymentMethodMaster();
+
+
+    const ActiveInsurenceCompanies = InsuranceCompanyMasterDetail?.filter(item => item?.is_active === 1);
+    const ActiveCustomerPayType = CustomerPayType?.filter(item => item?.is_active === 1);
+    const ActivePaymentMethod = PaymentMethod?.filter(item => item?.is_active === 1);
+    const ActivesourceType = sourceType?.filter(item => item?.is_active === 1);
+
+
 
     const handleChange = (field) => (event) => {
         const value = event.target.value;
@@ -180,7 +190,7 @@ const PreviousSaleDetailsForm = ({
                         )}
                         sx={compactInput}
                     >
-                        {InsuranceCompanyMasterDetail?.map(
+                        {ActiveInsurenceCompanies?.map(
                             (company) => (
                                 <MenuItem
                                     key={
@@ -321,7 +331,7 @@ const PreviousSaleDetailsForm = ({
                         )}
                         sx={compactInput}
                     >
-                        {sourceType?.map(
+                        {ActivesourceType?.map(
                             (company) => (
                                 <MenuItem
                                     key={
@@ -474,6 +484,107 @@ const PreviousSaleDetailsForm = ({
                         </MenuItem>
                     </TextField>
                 </Grid>
+                {/* CUSTOMER PAY TYPE */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        label="Customer Pay Type"
+                        value={
+                            saleData.customer_pay_type_id ||
+                            ""
+                        }
+                        onChange={handleChange(
+                            "customer_pay_type_id"
+                        )}
+                        sx={compactInput}
+                    >
+                        {ActiveCustomerPayType?.map(
+                            (company) => (
+                                <MenuItem
+                                    key={
+                                        company?.customer_pay_type_id
+                                    }
+                                    value={
+                                        company?.customer_pay_type_id
+                                    }
+                                >
+                                    {
+                                        company?.pay_type_name
+                                    }
+                                </MenuItem>
+                            )
+                        )}
+                    </TextField>
+                </Grid>
+                {/* CUSTOMER REFERENCE NUMBER */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        label="Customer Reference Number"
+                        value={
+                            saleData.cp_reference_no || ""
+                        }
+                        onChange={handleChange(
+                            "cp_reference_no"
+                        )}
+                        sx={compactInput}
+                    />
+                </Grid>
+
+                {/* PAYMENT METHOD TYPE */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        label="Payemnt Method"
+                        value={
+                            saleData.payment_method_id ||
+                            ""
+                        }
+                        onChange={handleChange(
+                            "payment_method_id"
+                        )}
+                        sx={compactInput}
+                    >
+                        {ActivePaymentMethod?.map(
+                            (company) => (
+                                <MenuItem
+                                    key={
+                                        company?.payment_method_id
+                                    }
+                                    value={
+                                        company?.payment_method_id
+                                    }
+                                >
+                                    {
+                                        company?.payment_method_name
+                                    }
+                                </MenuItem>
+                            )
+                        )}
+                    </TextField>
+                </Grid>
+
+                {/* PAYMENT REFRENCE NUMBER */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        label="Payment Reference Number"
+                        value={
+                            saleData.pm_reference_no || ""
+                        }
+                        onChange={handleChange(
+                            "pm_reference_no"
+                        )}
+                        sx={compactInput}
+                    />
+                </Grid>
+
 
                 {/* RENEWAL YEAR */}
                 <Grid size={{ xs: 12, md: 6 }}>

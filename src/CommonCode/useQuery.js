@@ -54,8 +54,16 @@ import {
   FetchOutcomeByStatusId,
   FetchPolicySourceMaster,
   FetchActivePolicySourceMaster,
+  FetchEmployeeLevelMasterDetails,
+  FetchIncentiveSchmaMaster,
+  FetchIncentiveSlabMaster,
+  FetchIncentiveSlabEmployeeDetial,
+  FetchEmployeeCaptureCount,
+  FetchEmployeeCurrentIncentiveAmount,
+  FetchCustomerPayType,
+  FetchPaymentMethod,
+  getPolicyDetails,
 } from "./CommonFun";
-
 
 export const useRoleMaster = () => {
   return useQuery({
@@ -436,7 +444,6 @@ export const useGetPolicyFiles = (policyId) => {
   });
 };
 
-
 export const useGetUserAttendance = (userId) => {
   return useQuery({
     queryKey: ["user-attendance", userId],
@@ -444,10 +451,7 @@ export const useGetUserAttendance = (userId) => {
     enabled: Boolean(userId),
     staleTime: Infinity,
   });
-
 };
-
-
 
 export const useGetLeadFiles = (leadId) => {
   return useQuery({
@@ -455,10 +459,9 @@ export const useGetLeadFiles = (leadId) => {
     queryFn: () => getLeadUploadFiles(leadId),
     enabled: Boolean(leadId),
     staleTime: Infinity,
-    enabled: !!leadId
+    enabled: !!leadId,
   });
 };
-
 
 export const useTargetMaster = () => {
   return useQuery({
@@ -473,7 +476,7 @@ export const useGetMyTargetDetail = (employeeid) => {
     queryFn: () => getEmployeeTargetDetails(employeeid),
     enabled: Boolean(employeeid),
     staleTime: Infinity,
-    enabled: !!employeeid
+    enabled: !!employeeid,
   });
 };
 
@@ -490,9 +493,7 @@ export const useCallOutcomeMaster = () => {
     queryKey: ["call-outcome-master"],
     queryFn: FetchCallOutcomeMaster,
   });
-
 };
-
 
 export const useOutcomeStatusMappingMaster = () => {
   return useQuery({
@@ -501,7 +502,6 @@ export const useOutcomeStatusMappingMaster = () => {
   });
 };
 
-
 export const useOutcomeByStatusId = (statusId, enable) => {
   return useQuery({
     queryKey: ["outcomeByStatusId", statusId],
@@ -509,23 +509,213 @@ export const useOutcomeByStatusId = (statusId, enable) => {
     enabled: !!statusId && Boolean(enable),
     staleTime: Infinity,
   });
-
 };
 
-
 export const usePolicySourceMaster = () => {
-    return useQuery({
-        queryKey: ["policy-source-master"],
-        queryFn: FetchPolicySourceMaster,
-
-    });
-
+  return useQuery({
+    queryKey: ["policy-source-master"],
+    queryFn: FetchPolicySourceMaster,
+    staleTime: Infinity,
+  });
 };
 
 export const useActivePolicySourceMaster = () => {
-    return useQuery({
-        queryKey: ["active-policy-source-master"],
-        queryFn: FetchActivePolicySourceMaster,
-    });
+  return useQuery({
+    queryKey: ["active-policy-source-master"],
+    queryFn: FetchActivePolicySourceMaster,
+  });
 };
 
+export const useEmployeeLevelMaster = () => {
+  return useQuery({
+    queryKey: ["employeelevel-master"],
+    queryFn: FetchEmployeeLevelMasterDetails,
+    staleTime: 0,
+  });
+};
+
+export const useIncentiveSchemaMaster = () => {
+  return useQuery({
+    queryKey: ["incentive-master"],
+    queryFn: FetchIncentiveSchmaMaster,
+    staleTime: 0,
+  });
+};
+
+export const useIncentiveSlabMaster = () => {
+  return useQuery({
+    queryKey: ["incentiveslab-master"],
+    queryFn: FetchIncentiveSlabMaster,
+    staleTime: 0,
+  });
+};
+
+export const useEmployeeIncentiveSlab = (empid) => {
+  return useQuery({
+    queryKey: ["incentiveslab-master", empid],
+    queryFn: () => FetchIncentiveSlabEmployeeDetial(empid),
+    staleTime: 0,
+    enabled: !!empid,
+  });
+};
+
+export const useEmployeeCaptureCount = (empid) => {
+  return useQuery({
+    queryKey: ["employee-capture-count", empid],
+    queryFn: () => FetchEmployeeCaptureCount(empid),
+    enabled: !!empid,
+    staleTime: 0,
+  });
+};
+
+export const useEmployeeCurrentIncentiveAmount = (empid, capture) => {
+  return useQuery({
+    queryKey: ["incentive-employee-capture-count", empid, capture],
+    queryFn: () => FetchEmployeeCurrentIncentiveAmount(empid, capture),
+    enabled: !!empid && !!capture,
+    staleTime: Infinity,
+  });
+};
+
+export const useCustomerPaytype = () => {
+  return useQuery({
+    queryKey: ["customer-pay-type-master"],
+    queryFn: FetchCustomerPayType,
+    staleTime: 0,
+  });
+};
+
+export const usePaymentMethodMaster = () => {
+  return useQuery({
+    queryKey: ["pay-type-master"],
+    queryFn: FetchPaymentMethod,
+  });
+};
+
+export const usePolicyDetiails = (customer, policy) => {
+  return useQuery({
+    queryKey: ["policy-cust-detial", customer, policy],
+    queryFn: () => getPolicyDetails(customer, policy),
+    enabled: !!customer && !!policy,
+  });
+};
+
+export const useCommonMaster = (type) => {
+  const masterMap = {
+    role: {
+      queryKey: ["role-master"],
+      queryFn: FetchRolemaster,
+    },
+
+    company: {
+      queryKey: ["company-master"],
+      queryFn: FechCompanyMaster,
+    },
+
+    status: {
+      queryKey: ["status-master"],
+      queryFn: FetchStatusMaster,
+    },
+
+    qualification: {
+      queryKey: ["quali-mast"],
+      queryFn: FetchAllQualificationMaster,
+    },
+
+    employee: {
+      queryKey: ["employee-master"],
+      queryFn: FetchAllEmployeeMaster,
+    },
+
+    module: {
+      queryKey: ["module-master"],
+      queryFn: FetchAllModuleMaster,
+    },
+
+    submodule: {
+      queryKey: ["submodule-master"],
+      queryFn: FetchAllSubmoduleMaster,
+    },
+
+    menu: {
+      queryKey: ["menu-master"],
+      queryFn: FetchAllMenuMaster,
+    },
+
+    lead: {
+      queryKey: ["lead-master"],
+      queryFn: FetchLeadMaster,
+    },
+
+    vehicletype: {
+      queryKey: ["vehicle-type-master"],
+      queryFn: FetchVehicleTypeMaster,
+    },
+
+    insurancecompany: {
+      queryKey: ["insurance-company-master"],
+      queryFn: FetchInsuranceCompanyMaster,
+    },
+
+    customer: {
+      queryKey: ["customer-master"],
+      queryFn: FetchAllCustomers,
+    },
+
+    vehicle: {
+      queryKey: ["vehicle-master"],
+      queryFn: FetchAllVehicles,
+    },
+
+    employeeTarget: {
+      queryKey: ["target-master"],
+      queryFn: getFetTargetMaster,
+    },
+
+    calloutcome: {
+      queryKey: ["call-outcome-master"],
+      queryFn: FetchCallOutcomeMaster,
+    },
+
+    outcomestatusmapping: {
+      queryKey: ["outcome-status-mapping-master"],
+      queryFn: FetchOutcomeStatusMappingMaster,
+    },
+
+    policySource: {
+      queryKey: ["policy-source-master"],
+      queryFn: FetchPolicySourceMaster,
+    },
+
+    employeeLevel: {
+      queryKey: ["employeelevel-master"],
+      queryFn: FetchEmployeeLevelMasterDetails,
+    },
+
+    incentiveScheme: {
+      queryKey: ["incentive-master"],
+      queryFn: FetchIncentiveSchmaMaster,
+    },
+    incentiveSlab: {
+      queryKey: ["incentiveslab-master"],
+      queryFn: FetchIncentiveSlabMaster,
+    },
+    customerPayType: {
+      queryKey: ["customer-pay-type-master"],
+      queryFn: FetchCustomerPayType,
+    },
+    paymentMethod: {
+      queryKey: ["pay-type-master"],
+      queryFn: FetchPaymentMethod,
+    },
+  };
+
+  const config = masterMap[type];
+
+  return useQuery({
+    queryKey: config?.queryKey || ["common-master", type],
+    queryFn: config?.queryFn || (() => Promise.resolve([])),
+    enabled: !!config,
+    staleTime: Infinity,
+  });
+};
