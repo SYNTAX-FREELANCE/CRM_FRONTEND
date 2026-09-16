@@ -183,6 +183,11 @@ export default function FreshCallsWorkspace() {
     return groupedData[statusFilter] || [];
   }, [groupedData, statusFilter]);
 
+  console.log({
+    filteredRows
+  });
+  
+
   useEffect(() => {
     if (Status) setStatusFilter(Status);
     if (openedRef.current) return;

@@ -172,6 +172,22 @@ export const RenewalCustomerColumns = (
         </Typography>
       ),
     },
+     {
+      field: "insured_declared_value",
+      headerName: "Net Premium",
+      minWidth: 100,
+      flex: 0.9,
+      renderCell: ({ value }) => (
+        <Typography
+          variant="body2"
+          fontWeight={900}
+          sx={{ fontSize: 12 }}
+          color={isDark ? "#cbd5e1" : "#475569"}
+        >
+          {value}
+        </Typography>
+      ),
+    },
     {
       field: "premium_amount",
       headerName: "Premium",

@@ -29,6 +29,7 @@ import {
     warningNotify,
 } from "../../constant/Constant";
 import DetailLine from "./DetailLine";
+import { format, parseISO } from "date-fns";
 
 const compactInput = {
     "& .MuiOutlinedInput-root": {
@@ -43,11 +44,9 @@ const compactInput = {
 
 
 const formatDate = (date) => {
-
     if (!date) return "";
 
-    return new Date(date).toISOString().split("T")[0];
-
+    return format(parseISO(date), "yyyy-MM-dd");
 };
 
 
@@ -741,7 +740,7 @@ const PolicyInfoCard = ({
                                 fullWidth
                                 size="small"
                                 type="number"
-                                label="IDV"
+                                label="Net Premium"
                                 value={
                                     policyData.insured_declared_value
                                 }
@@ -1135,7 +1134,7 @@ const PolicyInfoCard = ({
 
                         <DetailLine
                             isDark={isDark}
-                            label="IDV"
+                            label="Net Premium"
                             value={`₹${policy.insured_declared_value || "0.00"}`}
                         />
 
