@@ -11,10 +11,13 @@ import React, { memo, Suspense, useCallback, } from 'react'
 import { useNavigate } from "react-router-dom";
 // import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
 import { getAuthUser } from "../constant/Constant";
-import { format, subDays } from "date-fns";
+// import { format, subDays } from "date-fns";
 import { RenewalCustomerColumns } from "./RenewalCustomerColumns";
 import { DataGrid } from "@mui/x-data-grid";
-import { useGetEmployeePolicyDetails, useGetMyEmployeeActiveCalls } from "../CommonCode/useQuery";
+import {
+    useGetEmployeePolicyDetails, useGetMyActiveCalls,
+    //  useGetMyEmployeeActiveCalls
+} from "../CommonCode/useQuery";
 import DashboardStatCard from "./CustomersComponents/DashboardStatCard";
 import StatusCountCardSkeleton from "../SkeletonComponent/StatusCountCardSkeleton";
 import { DownloadPdf } from "../CommonCode/Reusable";
@@ -37,7 +40,7 @@ const MyCustomers = () => {
     };
 
 
- 
+
     const columns = RenewalCustomerColumns(openCustomer, DownloadPdf, isMobile, isDark);
 
     const { id } = authUser ?? {};
@@ -50,11 +53,15 @@ const MyCustomers = () => {
 
     // const [toDate, setToDate] = useState(format(today, "yyyy-MM-dd"));
 
-    const {
-        data: AllCallDetails = [],
-        isLoading: LoadingTableData,
-        // refetch
-    } = useGetMyEmployeeActiveCalls(id);
+    // const {
+    //     data: AllCallDetails = [],
+    //     isLoading: LoadingTableData,
+    //     // refetch
+    // } = useGetMyEmployeeActiveCalls(id);
+
+
+    const { data: rows = [], isLoading: LoadingTableData } = useGetMyActiveCalls(id, 5);
+
 
     const {
         data: DashBoardPolicyDetails = [],
@@ -62,10 +69,7 @@ const MyCustomers = () => {
         // refetch: FetchDashboardCountDetails
     } = useGetEmployeePolicyDetails(id);
 
-    const rows = Array.isArray(AllCallDetails) ?
-        AllCallDetails?.filter(item => Number(item.status_id) === 5) :
-        [];
-
+  
     const dashboardStats = [
         {
             title: "Total Sold",
@@ -96,8 +100,6 @@ const MyCustomers = () => {
         },
     ];
 
-
-   
 
     return (
         <Box
@@ -222,9 +224,9 @@ const MyCustomers = () => {
                         {
                             LoadingDashboardDetails ? (
                                 Array.from({ length: 6 })
-                                ?.map((_, index) => (
-                                    <StatusCountCardSkeleton key={index} />
-                                ))
+                                    ?.map((_, index) => (
+                                        <StatusCountCardSkeleton key={index} />
+                                    ))
                             ) : (
                                 dashboardStats?.map((item, index) => (
                                     <Suspense fallback={<StatusCountCardSkeleton />} key={index}>
@@ -262,7 +264,7 @@ const MyCustomers = () => {
                         columns={columns}
                         loading={LoadingTableData}
                         disableRowSelectionOnClick
-                         getRowId={(row) => `${row.lead_id}-${row.policy_id || "no-policy"}`}
+                        getRowId={(row) => `${row.lead_id}-${row.policy_id || "no-policy"}`}
                         onRowClick={(params) => openCustomer(params.row)}
                         pageSizeOptions={[5, 10, 25, 50]}
                         rowHeight={36}
