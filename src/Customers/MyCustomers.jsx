@@ -7,27 +7,25 @@ import {
     useTheme,
     Grid,
 } from "@mui/material";
-import React, { memo, Suspense, useCallback, } from 'react'
+import React, { memo, Suspense, useCallback, useMemo, useState, } from 'react'
 import { useNavigate } from "react-router-dom";
-// import DashboardDateFilter from "../Admin/Components/DashboardDateFilter";
 import { getAuthUser } from "../constant/Constant";
-// import { format, subDays } from "date-fns";
 import { RenewalCustomerColumns } from "./RenewalCustomerColumns";
 import { DataGrid } from "@mui/x-data-grid";
 import {
     useGetEmployeePolicyDetails, useGetMyActiveCalls,
-    //  useGetMyEmployeeActiveCalls
 } from "../CommonCode/useQuery";
 import DashboardStatCard from "./CustomersComponents/DashboardStatCard";
 import StatusCountCardSkeleton from "../SkeletonComponent/StatusCountCardSkeleton";
-import { DownloadPdf } from "../CommonCode/Reusable";
+import { DownloadPdf, exportPolicyExcel } from "../CommonCode/Reusable";
+import { CaptureListToolbar } from "../FreshCall/Components/CustomToolbar";
 
 const MyCustomers = () => {
     const navigate = useNavigate();
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-
+    const [selectedMonth, setSelectedMonth] = useState("");
     const authUser = getAuthUser();
 
 
@@ -44,20 +42,6 @@ const MyCustomers = () => {
     const columns = RenewalCustomerColumns(openCustomer, DownloadPdf, isMobile, isDark);
 
     const { id } = authUser ?? {};
-    // const today = new Date();
-
-
-    // const [dateFilter, setDateFilter] = useState("7days");
-
-    // const [fromDate, setFromDate] = useState(format(subDays(today, 6), "yyyy-MM-dd"));
-
-    // const [toDate, setToDate] = useState(format(today, "yyyy-MM-dd"));
-
-    // const {
-    //     data: AllCallDetails = [],
-    //     isLoading: LoadingTableData,
-    //     // refetch
-    // } = useGetMyEmployeeActiveCalls(id);
 
 
     const { data: rows = [], isLoading: LoadingTableData } = useGetMyActiveCalls(id, 5);
@@ -69,7 +53,7 @@ const MyCustomers = () => {
         // refetch: FetchDashboardCountDetails
     } = useGetEmployeePolicyDetails(id);
 
-  
+
     const dashboardStats = [
         {
             title: "Total Sold",
@@ -99,6 +83,30 @@ const MyCustomers = () => {
             count: DashBoardPolicyDetails?.expired ?? 0,
         },
     ];
+
+
+
+    const filteredRows = useMemo(() => {
+        if (!selectedMonth) {
+            return rows;
+        }
+
+        return rows.filter((row) => {
+            if (!row.sale_date) return false;
+
+            const date = new Date(row.sale_date);
+
+            if (isNaN(date.getTime())) return false;
+
+            const rowMonth = `${date.getFullYear()}-${String(
+                date.getMonth() + 1
+            ).padStart(2, "0")}`;
+
+            return rowMonth === selectedMonth;
+        });
+    }, [rows, selectedMonth]);
+
+
 
 
     return (
@@ -260,8 +268,13 @@ const MyCustomers = () => {
                     }}
                 >
                     <DataGrid
-                        rows={rows}
+                        rows={filteredRows}
                         columns={columns}
+                        showToolbar
+                        slots={{
+                            toolbar: CaptureListToolbar,
+                        }}
+
                         loading={LoadingTableData}
                         disableRowSelectionOnClick
                         getRowId={(row) => `${row.lead_id}-${row.policy_id || "no-policy"}`}
@@ -272,6 +285,11 @@ const MyCustomers = () => {
                             loadingOverlay: {
                                 variant: "skeleton",
                                 noRowsVariant: "skeleton",
+                            },
+                            toolbar: {
+                                selectedMonth,
+                                setSelectedMonth,
+                                onExportExcel: () => exportPolicyExcel(filteredRows, selectedMonth),
                             },
                         }}
                         columnHeaderHeight={44}
