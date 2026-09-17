@@ -12,9 +12,9 @@ import {
 
     useTheme,
 } from '@mui/material';
-import { useGetCustomerPolicyDetails, useGetPolicyFiles, usePolicyDetiails } from '../CommonCode/useQuery';
+import { useGetCustomerPolicyDetails, useGetPolicyFiles, usePolicyClaimDetail, usePolicyDetiails } from '../CommonCode/useQuery';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
-
+import SwipeRightIcon from '@mui/icons-material/SwipeRight';
 import UploadPreview from './CustomersComponents/UploadPreview';
 import { axioslogin } from '../Connection/axios';
 import { errorNotify, getAuthUser, successNotify, warningNofity } from '../constant/Constant';
@@ -23,6 +23,9 @@ import PolicyInfoCard from './CustomersComponents/PolicyInfoCard';
 import EditDocumentIcon from '@mui/icons-material/EditDocument';
 import FloatingBackButton from '../CommonComponents/FloatingBackButton';
 import PolicyDetails from './CustomersComponents/PolicyDetails';
+import ExpandableSectionHeader from './CustomersComponents/ExpandableSectionHeader';
+import PolicyClaimDetails from './PolicyClaimDetails';
+import PolicyClaimDetailsSkeleton from './CustomersComponents/PolicyClaimDetailsSkeleton';
 
 const themeColors = {
     orange: '#F57C00',
@@ -50,11 +53,13 @@ const PolicyUploadDetails = () => {
     const [vehicleImages, setVehicleImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [claimExpanded, setClaimExpanded] = useState(true);
 
     const { data: policyDetails = [], isLoading, isError, refetch } = useGetCustomerPolicyDetails(customerid);
     const { data: DetiledPolicyDetails = [], refetch: RefetchPolicyDetails } = usePolicyDetiails(customerid, policyid);
     const { data: PolicyFiles = [], refetch: refetchPolicyFiles, isLoading: LoadingPolicyFiles } = useGetPolicyFiles(policyid);
 
+    const { data: ClaimDetails = [], isLoading: LoadingClaimDetails } = usePolicyClaimDetail(policyid);
 
     const uploadedFiles = PolicyFiles ?? {};
 
@@ -278,111 +283,155 @@ const PolicyUploadDetails = () => {
                         setOpen={setOpen}
                     />
 
+
+
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             borderRadius: 4,
                             border: `1px solid ${themeColors.border}`,
-                            // width: { xs: "100%", lg: "50%" },
-                            width: '100%',
-                            mt: 2
+                            width: "100%",
+                            mt: 2,
                         }}
                     >
-                        <Box sx={{
-                            display: "flex",
-                            gap: 1
-                        }}>
-                            <EditDocumentIcon sx={{
-                                color: '#fb3e05'
-                            }} />
-                            <Typography
-                                sx={{
-                                    fontSize: { xs: 15, sm: 20 },
-                                    fontWeight: 600,
-                                    color: isDark ? "#f8fafc" : "text.secondary",
-                                    mb: 3,
-                                }}>
-                                POLICY DOCUMENT UPLOADS
-                            </Typography>
-                        </Box>
+                        <ExpandableSectionHeader
+                            icon={
+                                <SwipeRightIcon
+                                    sx={{
+                                        color: "#fb3e05",
+                                    }}
+                                />
+                            }
+                            heading="POLICY CLAIM DETAILS"
+                            expanded={claimExpanded}
+                            onToggle={() =>
+                                setClaimExpanded((prev) => !prev)
+                            }
+                            isDark={isDark}
+                        >
+                            <Box>
+                                {LoadingClaimDetails ? (
+                                    <PolicyClaimDetailsSkeleton
+                                        isDark={isDark}
+                                        count={1}
+                                    />
+                                ) : (
+                                    <PolicyClaimDetails
+                                        claims={ClaimDetails}
+                                        isDark={isDark}
+                                    />
+                                )}
+                            </Box>
+                        </ExpandableSectionHeader>
+                    </Paper>
+
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            border: `1px solid ${themeColors.border}`,
+                            width: "100%",
+                            mt: 2,
+                        }}
+                    >
+
+                        <ExpandableSectionHeader
+                            icon={
+                                <EditDocumentIcon
+                                    sx={{
+                                        color: "#fb3e05",
+                                    }}
+                                />
+                            }
+                            heading="POLICY DOCUMENT UPLOADS"
+                            expanded={claimExpanded}
+                            onToggle={() =>
+                                setClaimExpanded((prev) => !prev)
+                            }
+                            isDark={isDark}
+                        >
+                            <Box>
+
+                                <Stack spacing={2}>
+
+                                    <UploadBox
+                                        title="Registration Certificate (RC)"
+                                        subtitle="Upload the vehicle Registration Certificate (Smart Card or RC Book)."
+                                        multiple
+                                        loading={loading}
+                                        onChange={(e) => handleUpload(e, setRcFiles)}
+                                        onAdd={() => uploadFiles(rcFiles, "RC")}
+                                    />
+
+                                    <UploadPreview
+                                        files={[
+                                            ...(uploadedRC ?? []),
+                                            ...rcFiles
+                                        ]}
+                                        LoadingPolicyFiles={LoadingPolicyFiles}
+                                        onRemove={(item) => removeFile(item, setRcFiles)}
+                                    />
+
+                                    <UploadBox
+                                        title="Previous Insurance Policy"
+                                        subtitle="Upload the latest insurance policy document for renewal verification."
+                                        multiple
+                                        loading={loading}
+                                        onChange={(e) => handleUpload(e, setPolicyFiles)}
+                                        onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
+                                    />
+                                    <UploadPreview
+                                        files={[
+                                            ...(uploadedPolicy ?? []),
+                                            ...policyFiles
+                                        ]}
+                                        LoadingPolicyFiles={LoadingPolicyFiles}
+                                        onRemove={(item) => removeFile(item, setPolicyFiles)}
+                                    />
+
+                                    <UploadBox
+                                        title="Customer KYC Documents"
+                                        subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
+                                        multiple
+                                        loading={loading}
+                                        onChange={(e) => handleUpload(e, setKycFiles)}
+                                        onAdd={() => uploadFiles(kycFiles, "KYC")}
+                                    />
+
+                                    <UploadPreview
+                                        files={[
+                                            ...(uploadedKYC ?? []),
+                                            ...kycFiles
+                                        ]}
+                                        LoadingPolicyFiles={LoadingPolicyFiles}
+                                        onRemove={(item) => removeFile(item, setKycFiles)}
+                                    />
+
+                                    <UploadBox
+                                        title="Vehicle Inspection Images"
+                                        subtitle="Upload clear photos of the Front, Rear, Left Side, Right Side and any existing damages if applicable."
+                                        multiple
+                                        loading={loading}
+                                        onChange={(e) => handleUpload(e, setVehicleImages)}
+                                        onAdd={() => uploadFiles(vehicleImages, "VEHICLE_IMAGE")}
+                                    />
+
+                                    <UploadPreview
+                                        LoadingPolicyFiles={LoadingPolicyFiles}
+                                        files={[
+                                            ...(uploadedVehicle ?? []),
+                                            ...vehicleImages
+                                        ]}
+                                        onRemove={(item) => removeFile(item, setVehicleImages)}
+                                    />
+
+                                </Stack>
+                            </Box>
+                        </ExpandableSectionHeader>
 
 
-
-                        <Stack spacing={2}>
-
-                            <UploadBox
-                                title="Registration Certificate (RC)"
-                                subtitle="Upload the vehicle Registration Certificate (Smart Card or RC Book)."
-                                multiple
-                                loading={loading}
-                                onChange={(e) => handleUpload(e, setRcFiles)}
-                                onAdd={() => uploadFiles(rcFiles, "RC")}
-                            />
-
-                            <UploadPreview
-                                files={[
-                                    ...(uploadedRC ?? []),
-                                    ...rcFiles
-                                ]}
-                                LoadingPolicyFiles={LoadingPolicyFiles}
-                                onRemove={(item) => removeFile(item, setRcFiles)}
-                            />
-
-                            <UploadBox
-                                title="Previous Insurance Policy"
-                                subtitle="Upload the latest insurance policy document for renewal verification."
-                                multiple
-                                loading={loading}
-                                onChange={(e) => handleUpload(e, setPolicyFiles)}
-                                onAdd={() => uploadFiles(policyFiles, "PREVIOUS_POLICY")}
-                            />
-                            <UploadPreview
-                                files={[
-                                    ...(uploadedPolicy ?? []),
-                                    ...policyFiles
-                                ]}
-                                LoadingPolicyFiles={LoadingPolicyFiles}
-                                onRemove={(item) => removeFile(item, setPolicyFiles)}
-                            />
-
-                            <UploadBox
-                                title="Customer KYC Documents"
-                                subtitle="Upload Aadhaar Card, PAN Card, Driving Licence, Passport or other valid identity/address proof."
-                                multiple
-                                loading={loading}
-                                onChange={(e) => handleUpload(e, setKycFiles)}
-                                onAdd={() => uploadFiles(kycFiles, "KYC")}
-                            />
-
-                            <UploadPreview
-                                files={[
-                                    ...(uploadedKYC ?? []),
-                                    ...kycFiles
-                                ]}
-                                LoadingPolicyFiles={LoadingPolicyFiles}
-                                onRemove={(item) => removeFile(item, setKycFiles)}
-                            />
-
-                            <UploadBox
-                                title="Vehicle Inspection Images"
-                                subtitle="Upload clear photos of the Front, Rear, Left Side, Right Side and any existing damages if applicable."
-                                multiple
-                                loading={loading}
-                                onChange={(e) => handleUpload(e, setVehicleImages)}
-                                onAdd={() => uploadFiles(vehicleImages, "VEHICLE_IMAGE")}
-                            />
-
-                            <UploadPreview
-                                LoadingPolicyFiles={LoadingPolicyFiles}
-                                files={[
-                                    ...(uploadedVehicle ?? []),
-                                    ...vehicleImages
-                                ]}
-                                onRemove={(item) => removeFile(item, setVehicleImages)}
-                            />
-
-                        </Stack>
                     </Paper>
                 </Box>
             </Paper>

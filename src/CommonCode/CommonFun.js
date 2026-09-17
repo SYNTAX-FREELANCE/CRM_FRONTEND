@@ -1015,3 +1015,19 @@ export const getPolicyDetails = async (customerid, policyId) => {
     return [];
   }
 };
+
+export const getPolicyClaimDetails = async ( policyId) => {
+  if (!policyId) return [];
+  try {
+    const response = await axioslogin.get(
+      `/policyclaim/getbypolicy/${policyId}`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getPolicyClaimDetails error:", error);
+    return [];
+  }
+};
+

@@ -6,9 +6,9 @@ import { format, isValid } from "date-fns";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import Tooltip from "@mui/material/Tooltip";
 
+
+
 export const TastkColumns = (openLead, isMobile = false, isDark) => {
-
-
   const mobileColumns = [
     {
       field: "customer_name",
@@ -76,7 +76,10 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       minWidth: 180,
       flex: 1,
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.customer_name);
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.customer_name);
         return val || "";
       },
       renderCell: ({ row }) => (
@@ -86,7 +89,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               <SupportAgentIcon
                 sx={{
                   fontSize: 18,
-                  color: isDark ? "#f8fafc" : "#0f172a"
+                  color: isDark ? "#f8fafc" : "#0f172a",
                 }}
               />
             </Tooltip>
@@ -108,7 +111,10 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       minWidth: 140,
       flex: 1,
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.model);
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.model);
         return val || "";
       },
       renderCell: (params) => (
@@ -127,12 +133,21 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "Expiry Date",
       minWidth: 140,
       flex: 0.8,
+
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.known_policy_expiry_date);
-        if (!val || !isValid(new Date(val))) return "-";
-        return format(new Date(val), "dd-MM-yyyy");
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.known_policy_expiry_date);
+
+        return val || null;
       },
+
       renderCell: ({ value }) => {
+        if (!value || !isValid(new Date(value))) {
+          return "-";
+        }
+
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -141,7 +156,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {value}
+              {format(new Date(value), "dd-MM-yyyy")}
             </Typography>
           </Stack>
         );
@@ -152,12 +167,21 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       headerName: "REGISTRATION DATE",
       minWidth: 140,
       flex: 0.8,
+
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.registration_date);
-        if (!val || !isValid(new Date(val))) return "-";
-        return format(new Date(val), "dd-MM-yyyy");
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.registration_date);
+
+        return val || null;
       },
+
       renderCell: ({ value }) => {
+        if (!value || !isValid(new Date(value))) {
+          return "-";
+        }
+
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -166,23 +190,32 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {value}
+              {format(new Date(value), "dd-MM-yyyy")}
             </Typography>
           </Stack>
         );
       },
     },
     {
-      field: "next_followup_date",
-      headerName: "REMINDER DATE",
+      field: "sale_date",
+      headerName: "SALE DATE",
       minWidth: 140,
       flex: 0.8,
+
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.next_followup_date);
-        if (!val || !isValid(new Date(val))) return "-";
-        return format(new Date(val), "dd-MM-yyyy");
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.sale_date);
+
+        return val || null;
       },
+
       renderCell: ({ value }) => {
+        if (!value || !isValid(new Date(value))) {
+          return "-";
+        }
+
         return (
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
@@ -191,19 +224,58 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {value}
+              {format(new Date(value), "dd-MM-yyyy")}
             </Typography>
           </Stack>
         );
       },
     },
+    
+    {
+      field: "next_followup_date",
+      headerName: "REMINDER DATE",
+      minWidth: 140,
+      flex: 0.8,
+
+      valueGetter: (value, row) => {
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.next_followup_date);
+
+        return val || null;
+      },
+
+      renderCell: ({ value }) => {
+        if (!value || !isValid(new Date(value))) {
+          return "-";
+        }
+
+        return (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: 12 }}
+              fontWeight={600}
+              color={isDark ? "#f8fafc" : "#0f172a"}
+            >
+              {format(new Date(value), "dd-MM-yyyy")}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    ,
     {
       field: "registration_number",
       headerName: "Vehicle Reg No",
       minWidth: 150,
       flex: 1,
       valueGetter: (value, row) => {
-        const val = typeof value === "object" && value !== null && "value" in value ? value.value : (value ?? row?.registration_number);
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.registration_number);
         return val || "";
       },
       renderCell: (params) => (
@@ -240,7 +312,11 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           }}
         >
           <CallIcon sx={{ fontSize: 16 }} />
-          <Typography variant="body2" fontWeight={700} color={isDark ? "#f8fafc" : "#0f172a"}>
+          <Typography
+            variant="body2"
+            fontWeight={700}
+            color={isDark ? "#f8fafc" : "#0f172a"}
+          >
             Call
           </Typography>
         </Box>
