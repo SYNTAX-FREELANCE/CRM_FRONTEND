@@ -7,16 +7,10 @@ import {
   FiberNew,
   Person,
 } from "@mui/icons-material";
-import { bgcolor } from "@mui/system";
-import {
-  addMonths,
-  endOfMonth,
-  isWithinInterval,
-  parseISO,
-  startOfMonth,
-} from "date-fns";
+import { addMonths, parseISO } from "date-fns";
 import jsPDF from "jspdf";
-import { useMemo } from "react";
+
+import * as XLSX from "xlsx";
 
 export const isValidEmail = (email) => {
   if (!email) return false;
@@ -461,7 +455,6 @@ export const themeColors = {
 };
 
 export const DownloadPdf = (row) => {
-  console.log("PDF ROW:", row);
 
   const doc = new jsPDF("p", "mm", "a4");
 
@@ -717,4 +710,352 @@ export const DownloadPdf = (row) => {
   // =========================
 
   doc.save(`Policy-POS-${row.policy_number || row.policy_id}.pdf`);
+};
+
+export const parseDateValue = (value) => {
+  if (!value) return null;
+
+  if (value instanceof Date) {
+    return isNaN(value.getTime()) ? null : value;
+  }
+
+  const str = String(value);
+
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (match) {
+    const [, year, month, day] = match;
+
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  const date = new Date(str);
+
+  return isNaN(date.getTime()) ? null : date;
+};
+
+export const exportPolicyExcel = (filteredRows, selectedMonth) => {
+  if (!filteredRows?.length) {
+    return;
+  }
+
+  const formatDate = (date) => {
+    if (!date) return "";
+
+    const parsedDate = new Date(date);
+
+    if (isNaN(parsedDate.getTime())) return "";
+
+    return parsedDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const getMonthYear = () => {
+    if (!selectedMonth) {
+      return "All Policy Holders";
+    }
+
+    const [year, month] = selectedMonth.split("-");
+
+    const date = new Date(Number(year), Number(month) - 1, 1);
+
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const monthYear = getMonthYear();
+
+  const excelData = [];
+
+  // =====================================================
+  // REPORT HEADER
+  // =====================================================
+
+  excelData.push(["THEJASWI POLICY HOLDERS"]);
+
+  excelData.push(["POLICY REPORT"]);
+
+  excelData.push([monthYear]);
+
+  excelData.push([`Generated Date: ${formatDate(new Date())}`]);
+
+  excelData.push([]);
+
+  // =====================================================
+  // TABLE HEADER
+  // =====================================================
+
+  excelData.push([
+    "CUSTOMER DETAILS",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "VEHICLE DETAILS",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "POLICY DETAILS",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
+
+  excelData.push([
+    "Customer Name",
+    "Mobile Number",
+    "Mobile Number 2",
+    "Email",
+    "Address",
+    "City",
+    "District",
+    "State",
+    "Previous Customer",
+
+    "Registration Number",
+    "Model",
+    "Vehicle Maker",
+    "Engine Number",
+    "Chassis Number",
+    "Known Policy Expiry",
+    "Registration Date",
+
+    "Policy Number",
+    "Policy Type",
+    "Start Date",
+    "Expiry Date",
+    "Policy Status",
+    "Premium Amount",
+    "Paid Amount",
+    "Discount Amount",
+    "Insured Declared Value",
+    "Renewal Cycle",
+    "Sale Date",
+    "Insurance Company",
+    "Insurance Company Contact",
+    "Insurance Company Email",
+    "Source",
+    "Customer Pay Type",
+    "Payment Method",
+    "Payment Type",
+    "Customer Reference No",
+    "Payment Reference No",
+    "Created By",
+    "Employee Code",
+  ]);
+
+  // =====================================================
+  // DATA
+  // =====================================================
+
+  filteredRows.forEach((row) => {
+    excelData.push([
+      // CUSTOMER
+      row.customer_name || "",
+      row.mobile_number_1 || "",
+      row.mobile_number_2 || "",
+      row.email || "",
+      row.address || "",
+      row.city || "",
+      row.district || "",
+      row.state || "",
+      row.is_previous_customer === 1 ? "Yes" : "No",
+
+      // VEHICLE
+      row.registration_number || "",
+      row.model || "",
+      row.vehicle_maker || "",
+      row.engine_number || "",
+      row.chassis_number || "",
+      formatDate(row.known_policy_expiry_date),
+      formatDate(row.registration_date),
+
+      // POLICY
+      row.policy_number || "",
+      row.policy_type || "",
+      formatDate(row.start_date),
+      formatDate(row.policy_expiry_date),
+      row.policy_status || "",
+      row.premium_amount || 0,
+      row.paid_amount || 0,
+      row.discount_amount || 0,
+      row.insured_declared_value || 0,
+      row.renewal_cycle || "",
+      formatDate(row.sale_date),
+
+      // INSURANCE COMPANY
+      row.insurance_company_name || "",
+      row.insurance_company_contact || "",
+      row.insurance_company_email || "",
+
+      // SOURCE
+      row.source_name || "",
+
+      // PAYMENT
+      row.pay_type_name || "",
+      row.payment_method_name || "",
+      row.payment_type || "",
+      row.cp_reference_no || "",
+      row.pm_reference_no || "",
+
+      // EMPLOYEE
+      row.created_by_name || "",
+      row.employee_id || "",
+    ]);
+  });
+
+  // =====================================================
+  // CREATE WORKBOOK
+  // =====================================================
+
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Policy Holders");
+
+  // =====================================================
+  // MERGE REPORT TITLE
+  // =====================================================
+
+  worksheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: 37 },
+    },
+    {
+      s: { r: 1, c: 0 },
+      e: { r: 1, c: 37 },
+    },
+    {
+      s: { r: 2, c: 0 },
+      e: { r: 2, c: 37 },
+    },
+    {
+      s: { r: 3, c: 0 },
+      e: { r: 3, c: 37 },
+    },
+
+    // Customer Details
+    {
+      s: { r: 5, c: 0 },
+      e: { r: 5, c: 8 },
+    },
+
+    // Vehicle Details
+    {
+      s: { r: 5, c: 9 },
+      e: { r: 5, c: 15 },
+    },
+
+    // Policy Details
+    {
+      s: { r: 5, c: 16 },
+      e: { r: 5, c: 37 },
+    },
+  ];
+
+  // =====================================================
+  // COLUMN WIDTHS
+  // =====================================================
+
+  worksheet["!cols"] = [
+    { wch: 24 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 28 },
+    { wch: 40 },
+    { wch: 18 },
+    { wch: 18 },
+    { wch: 15 },
+    { wch: 16 },
+
+    { wch: 20 },
+    { wch: 24 },
+    { wch: 24 },
+    { wch: 22 },
+    { wch: 25 },
+    { wch: 20 },
+    { wch: 18 },
+
+    { wch: 28 },
+    { wch: 18 },
+    { wch: 16 },
+    { wch: 18 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 20 },
+    { wch: 16 },
+    { wch: 16 },
+    { wch: 32 },
+    { wch: 22 },
+    { wch: 30 },
+    { wch: 25 },
+    { wch: 22 },
+    { wch: 28 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 22 },
+  ];
+
+  // =====================================================
+  // FREEZE HEADER
+  // =====================================================
+
+  worksheet["!freeze"] = {
+    xSplit: 0,
+    ySplit: 7,
+  };
+
+  // =====================================================
+  // AUTO FILTER
+  // =====================================================
+
+  worksheet["!autofilter"] = {
+    ref: `A7:AL${excelData.length}`,
+  };
+
+  // =====================================================
+  // DOWNLOAD
+  // =====================================================
+
+  const fileMonth = selectedMonth ? selectedMonth : "all";
+
+  XLSX.writeFile(workbook, `Thejaswi_Policy_Holders_${fileMonth}.xlsx`);
 };

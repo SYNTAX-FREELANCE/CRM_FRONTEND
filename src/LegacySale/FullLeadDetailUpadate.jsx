@@ -30,7 +30,7 @@ const FullLeadDetailUpadate = () => {
     const isDark = theme.palette.mode === "dark";
 
     const [loading, setLoading] = useState(false);
-    const [isPreviousCustomer, setIsPreviousCustomer] = useState(true);
+    const [isPreviousCustomer, setIsPreviousCustomer] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState('')
     const { data: InsuranceCompanyMasterDetail } =
         useInsuranceCompanyMaster();
@@ -708,7 +708,7 @@ const FullLeadDetailUpadate = () => {
                     pincode: customer.pincode.trim() || null,
                     is_active: 1,
                     // This page is ONLY for previous customers
-                    is_previous_customer: 1,
+                    is_previous_customer: isPreviousCustomer ? 1 : 0,
                     created_by: id
                 },
                 vehicle: {
@@ -794,7 +794,7 @@ const FullLeadDetailUpadate = () => {
 
                     status: "SOLD",
 
-                    is_previous_customer: isPreviousCustomer,
+                    is_previous_customer: isPreviousCustomer ? 1 : 0,
 
                     customer_pay_type_id: saleData.customer_pay_type_id,
 

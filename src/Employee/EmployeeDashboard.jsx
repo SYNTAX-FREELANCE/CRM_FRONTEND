@@ -36,10 +36,7 @@ const EmployeeDashboard = () => {
 
     const { data: incentiveAmount = [] } = useEmployeeCurrentIncentiveAmount(id, CaptureCount);
 
-    console.log({
-        incentiveAmount
-    });
-
+    
 
 
 

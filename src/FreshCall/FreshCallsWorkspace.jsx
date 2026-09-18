@@ -10,11 +10,11 @@ import {
   Stack,
   useMediaQuery,
   useTheme,
+  TextField,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
-import { DataGrid } from "@mui/x-data-grid";
-import DetailRow from "./DetailRow";
-import { groupLeadData } from "../CommonCode/Reusable";
+import { DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
+import { groupLeadData, parseDateValue } from "../CommonCode/Reusable";
 import { useGetMyEmployeeActiveCalls, useGetMyTargetDetail, useLeadMaster } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from "../constant/Constant";
 import { TastkColumns } from "./callcolumn";
@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatusFilterCard from "./Components/StatusFilterCard";
 import EmployeeTargetCard from "./Components/EmployeeTargetCard";
+import { CustomToolbar } from "./Components/CustomToolbar";
 
 
 const LeadDetailsDrawer = lazy(() =>
@@ -38,6 +39,10 @@ export default function FreshCallsWorkspace() {
   const openedRef = useRef(false);
   const queryClient = useQueryClient();
   const isMobile = useMediaQuery("(max-width:600px)");
+  const [selectedDateType, setSelectedDateType] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+
 
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
@@ -52,7 +57,7 @@ export default function FreshCallsWorkspace() {
 
 
   const isAdmin = role?.toUpperCase() === "ADMIN";
-  
+
 
 
   const { data: LeadMasterDetail = [] } = useLeadMaster();
@@ -136,11 +141,6 @@ export default function FreshCallsWorkspace() {
     }
   ];
 
-  // const DisplayStatus = useMemo(() => {
-  //   return [...(ActiveStatus || []), ...customStatuses].sort(
-  //     (a, b) => (a.display_order ?? 999) - (b.display_order ?? 999)
-  //   );
-  // }, [ActiveStatus]);
 
 
 
@@ -179,14 +179,33 @@ export default function FreshCallsWorkspace() {
   }, [groupedData]);
 
 
-  const filteredRows = useMemo(() => {
-    return groupedData[statusFilter] || [];
-  }, [groupedData, statusFilter]);
+  // const filteredRows = useMemo(() => {
+  //   return groupedData[statusFilter] || [];
+  // }, [groupedData, statusFilter]);
 
-  console.log({
-    filteredRows
-  });
-  
+  const filteredRows = useMemo(() => {
+    const statusRows = groupedData[statusFilter] || [];
+
+    if (!selectedDateType || !selectedMonth) {
+      return statusRows;
+    }
+
+    return statusRows.filter((row) => {
+      const date = parseDateValue(row[selectedDateType]);
+
+      if (!date) return false;
+
+      const rowMonth = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}`;
+
+      return rowMonth === selectedMonth;
+    });
+  }, [groupedData, statusFilter, selectedDateType, selectedMonth]);
+
+
+
+
 
   useEffect(() => {
     if (Status) setStatusFilter(Status);
@@ -211,6 +230,7 @@ export default function FreshCallsWorkspace() {
       navigate(".", { replace: true, state: null });
     }
   }, [LeadId, Status, filteredRows, navigate]);
+
 
 
   return (
@@ -362,6 +382,10 @@ export default function FreshCallsWorkspace() {
             <DataGrid
               rows={filteredRows}
               columns={columns}
+              showToolbar
+              slots={{
+                toolbar: CustomToolbar,
+              }}
               disableRowSelectionOnClick
               getRowId={(row) => row.lead_id}
               onRowClick={(params) => openLead(params.row)}
@@ -373,6 +397,12 @@ export default function FreshCallsWorkspace() {
                   variant: "skeleton",
                   noRowsVariant: "skeleton",
                 },
+                toolbar: {
+                  selectedDateType,
+                  setSelectedDateType,
+                  selectedMonth,
+                  setSelectedMonth,
+                }
               }}
               columnHeaderHeight={44}
               initialState={{

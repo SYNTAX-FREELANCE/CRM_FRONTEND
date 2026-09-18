@@ -34,7 +34,8 @@ const Incentiveschemaslab = () => {
     const [slab, setSlab] = useState({
         incentiveSchemeId: "",
         minimumCapture: "",
-        incentiveAmount: ""
+        incentiveAmount: "",
+        ratepercapture: ""
     });
 
 
@@ -42,7 +43,7 @@ const Incentiveschemaslab = () => {
 
 
     const authUser = getAuthUser();
-    
+
     const { id: EmployeeId } = authUser ?? {}
 
     const navigate = useNavigate();
@@ -118,6 +119,31 @@ const Incentiveschemaslab = () => {
 
 
         if (
+            slab.ratepercapture === "" ||
+            slab.ratepercapture === null
+        ) {
+
+            warningNotify(
+                "Rate Per Capture is required."
+            );
+
+            return false;
+        }
+
+        if (
+            !Number.isInteger(
+                Number(slab.ratepercapture)
+            )
+        ) {
+
+            warningNotify(
+                "Rate Per Capture must be a valid number."
+            );
+
+            return false;
+        }
+
+        if (
             !Number.isInteger(
                 Number(slab.minimumCapture)
             )
@@ -141,7 +167,16 @@ const Incentiveschemaslab = () => {
 
             return false;
         }
+        if (
+            Number(slab.ratepercapture) < 0
+        ) {
 
+            warningNotify(
+                "Rate Per Capture must cannot be negative."
+            );
+
+            return false;
+        }
 
         if (
             slab.incentiveAmount === "" ||
@@ -222,7 +257,11 @@ const Incentiveschemaslab = () => {
                     data.minimum_capture ?? "",
 
                 incentiveAmount:
-                    data.incentive_amount ?? ""
+                    data.incentive_amount ?? "",
+
+                ratepercapture:
+                    data.rate_per_capture ?? "",
+
 
             });
 
@@ -266,7 +305,9 @@ const Incentiveschemaslab = () => {
 
             minimumCapture: "",
 
-            incentiveAmount: ""
+            incentiveAmount: "",
+
+            ratepercapture: ""
 
         });
 
@@ -308,6 +349,12 @@ const Incentiveschemaslab = () => {
                     Number(
                         slab.incentiveAmount
                     ),
+
+                rate_per_capture:
+                    Number(
+                        slab.ratepercapture
+                    ),
+
 
                 created_by: EmployeeId
 
@@ -453,7 +500,16 @@ const Incentiveschemaslab = () => {
 
                             headerName:
                                 "Incentive Amount"
+                        },
+
+                        {
+                            field:
+                                "rate_per_capture",
+
+                            headerName:
+                                "Rate Per Capture"
                         }
+
 
                     ]
 
@@ -568,6 +624,29 @@ const Incentiveschemaslab = () => {
                             />
 
                         </FormRow>
+
+                        <FormRow
+                            label="Rate per Capture"
+                            required
+                        >
+
+                            <InputLg
+                                value={
+                                    slab.ratepercapture
+                                }
+
+                                onChange={
+                                    set(
+                                        "ratepercapture"
+                                    )
+                                }
+
+                                placeholder="Enter Rate Per Capture"
+
+                            />
+
+                        </FormRow>
+
 
 
                     </Box>

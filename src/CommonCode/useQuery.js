@@ -63,6 +63,7 @@ import {
   FetchCustomerPayType,
   FetchPaymentMethod,
   getPolicyDetails,
+  getPolicyClaimDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -597,6 +598,14 @@ export const usePolicyDetiails = (customer, policy) => {
     queryKey: ["policy-cust-detial", customer, policy],
     queryFn: () => getPolicyDetails(customer, policy),
     enabled: !!customer && !!policy,
+  });
+};
+
+export const usePolicyClaimDetail = (policy) => {
+  return useQuery({
+    queryKey: ["policy-claim", policy],
+    queryFn: () => getPolicyClaimDetails(policy),
+    enabled: !!policy,
   });
 };
 
