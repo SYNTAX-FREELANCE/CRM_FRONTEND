@@ -108,15 +108,61 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     };
 
     return (
-        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%", }}>
-            <Paper
-                elevation={0}
+        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%", mb:2}}>
+            <Box
                 sx={{
-                    p: 1,
-                    borderRadius: 3,
-                    border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(226,232,240,0.95)",
-                    bgcolor: isDark ? "#1e293b" : "#fff",
-                    boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.4)" : "0 10px 30px rgba(15,23,42,0.06)",
+                    p: 1.5,
+                    borderRadius: 4,
+                    border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.95)",
+                    bgcolor: isDark ? "rgba(30, 41, 59, 0.7)" : "rgba(255, 255, 255, 0.35)",
+                    backdropFilter: "blur(24px) saturate(200%)",
+                    WebkitBackdropFilter: "blur(24px) saturate(200%)",
+                    boxShadow: isDark
+                        ? "0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.12) inset, 0 2px 8px rgba(0,0,0,0.2)"
+                        : "0 16px 48px rgba(15,23,42,0.15), 0 0 0 1px rgba(255,255,255,0.7) inset, 0 2px 8px rgba(31,38,135,0.08)",
+                    position: "relative",
+                    overflow: "hidden",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                        boxShadow: isDark
+                            ? "0 20px 56px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.15) inset, 0 4px 12px rgba(0,0,0,0.25)"
+                            : "0 20px 56px rgba(15,23,42,0.18), 0 0 0 1px rgba(255,255,255,0.8) inset, 0 4px 12px rgba(31,38,135,0.12)",
+                        bgcolor: isDark ? "rgba(30, 41, 59, 0.75)" : "rgba(255, 255, 255, 0.4)",
+                    },
+                    "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: isDark
+                            ? `
+          linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.04) 100%),
+          radial-gradient(at 30% 20%, rgba(96,165,250,0.08) 0%, transparent 50%),
+          radial-gradient(at 80% 80%, rgba(139,92,246,0.06) 0%, transparent 50%)
+        `
+                            : `
+          linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.3) 100%),
+          radial-gradient(at 30% 20%, rgba(37,99,235,0.08) 0%, transparent 50%),
+          radial-gradient(at 80% 80%, rgba(167,139,250,0.06) 0%, transparent 50%)
+        `,
+                        pointerEvents: "none",
+                        zIndex: 0,
+                    },
+                    "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: "1px",
+                        background: isDark
+                            ? "linear-gradient(90deg, transparent, rgba(255,255,255,0.25), rgba(255,255,255,0.4), rgba(255,255,255,0.25), transparent)"
+                            : "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), rgba(255,255,255,1), rgba(255,255,255,0.9), transparent)",
+                        pointerEvents: "none",
+                        zIndex: 1,
+                    },
                 }}
             >
                 <TextField
@@ -134,34 +180,67 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                     onFocus={() => {
                         if (options.length > 0) setOpen(true);
                     }}
-                    placeholder="Vehicle Number / Mobile / Customer Name"
+                    placeholder="Search vehicle, mobile or customer..."
                     variant="standard"
                     InputProps={{
                         disableUnderline: true,
                         startAdornment: (
                             <InputAdornment position="start">
-                                <SearchIcon sx={{ color: isDark ? "#60a5fa" : "#2563eb" }} />
+                                <Box
+                                    sx={{
+                                        display: "grid",
+                                        placeItems: "center",
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: 2.5,
+                                        bgcolor: isDark ? "rgba(96,165,250,0.15)" : "rgba(37,99,235,0.12)",
+                                        backdropFilter: "blur(12px)",
+                                        ml: 0.5,
+                                    }}
+                                >
+                                    <SearchIcon sx={{ color: isDark ? "#60a5fa" : "#2563eb", fontSize: 20 }} />
+                                </Box>
                             </InputAdornment>
                         ),
                         endAdornment: (
                             <InputAdornment position="end">
-                                <Stack direction="row" spacing={0.5} alignItems="center">
-                                    {loading && <CircularProgress size={18} thickness={5} />}
+                                <Stack direction="row" spacing={0.75} alignItems="center">
+                                    {loading && (
+                                        <CircularProgress
+                                            size={20}
+                                            thickness={5}
+                                            sx={{
+                                                color: isDark ? "#60a5fa" : "#2563eb",
+                                                mr: 0.5,
+                                            }}
+                                        />
+                                    )}
                                     {inputValue && (
                                         <Box
                                             onClick={clearSearch}
                                             sx={{
                                                 display: "grid",
                                                 placeItems: "center",
-                                                width: 30,
-                                                height: 30,
+                                                width: 32,
+                                                height: 32,
                                                 borderRadius: "50%",
                                                 cursor: "pointer",
                                                 color: isDark ? "#94a3b8" : "#64748b",
-                                                "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.08)" : "rgba(148,163,184,0.12)" },
+                                                bgcolor: isDark ? "rgba(148,163,184,0.1)" : "rgba(100,116,139,0.08)",
+                                                backdropFilter: "blur(8px)",
+                                                transition: "all 0.2s ease",
+                                                "&:hover": {
+                                                    bgcolor: isDark ? "rgba(255,255,255,0.15)" : "rgba(148,163,184,0.2)",
+                                                    transform: "scale(1.05)",
+                                                    boxShadow: isDark
+                                                        ? "0 4px 12px rgba(0,0,0,0.3)"
+                                                        : "0 4px 12px rgba(31,38,135,0.15)",
+                                                },
+                                                position: "relative",
+                                                zIndex: 2,
                                             }}
                                         >
-                                            <CloseIcon sx={{ fontSize: 18 }} />
+                                            <CloseIcon sx={{ fontSize: 17 }} />
                                         </Box>
                                     )}
                                 </Stack>
@@ -171,14 +250,20 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                     sx={{
                         "& .MuiInputBase-root": {
                             fontSize: 15,
-                            fontWeight: 600,
-                            px: 0.5,
-                            py: 1,
+                            fontWeight: 500,
+                            px: 1,
+                            py: 1.25,
+                            position: "relative",
+                            zIndex: 2,
+                            color: isDark ? "#f1f5f9" : "#1e293b",
+                            "&::placeholder": {
+                                color: isDark ? "#64748b" : "#94a3b8",
+                                opacity: 1,
+                            },
                         },
                     }}
                 />
-            </Paper>
-
+            </Box>
             {open && (
                 <Paper
                     elevation={0}
@@ -265,11 +350,11 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                     </Avatar>
 
                                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                                        <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a", fontSize: { xs: 12, sm: 14, md: 16 } }} noWrap>
+                                        <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a", fontSize: { xs: 12, } }} noWrap>
                                             {option.customer_name || "-"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 13, color: isDark ? "#60a5fa" : "#2563eb", mt: 0.2, fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
+                                        <Typography sx={{ fontSize: 13, color: isDark ? "#60a5fa" : "#2563eb", mt: 0.2, fontSize: { xs: 10, } }} noWrap>
                                             {option.registration_number
                                                 ? `${option.registration_number}`
                                                 : option.mobile_number_1
@@ -277,7 +362,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
                                                     : " Customer"}
                                         </Typography>
 
-                                        <Typography sx={{ fontSize: 12, color: isDark ? "#94a3b8" : "#64748b", fontSize: { xs: 10, sm: 12, md: 14 } }} noWrap>
+                                        <Typography sx={{ fontSize: 12, color: isDark ? "#94a3b8" : "#64748b", fontSize: { xs: 10, } }} noWrap>
                                             {getSubtitle(option) || "Search result"}
                                         </Typography>
                                     </Box>

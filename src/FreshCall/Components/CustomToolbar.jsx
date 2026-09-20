@@ -8,6 +8,8 @@ export const CustomToolbar = ({
     setSelectedDateType,
     selectedMonth,
     setSelectedMonth,
+    setSearchText,
+    searchText
 }) => {
     const dateOptions = [
         {
@@ -41,6 +43,14 @@ export const CustomToolbar = ({
                 borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
             }}
         >
+
+            <TextField
+                size="small"
+                placeholder="Search registration / customer"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                sx={{ width: 230, "& .MuiInputBase-root": { height: 36, fontSize: 12, }, "& .MuiOutlinedInput-input": { py: 0.5, }, "& .MuiInputBase-input::placeholder": { fontSize: 12, opacity: 0.7, }, }}
+            />
             {/* DATE TYPE */}
             <TextField
                 select

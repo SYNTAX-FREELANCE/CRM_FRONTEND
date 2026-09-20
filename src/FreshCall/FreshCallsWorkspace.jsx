@@ -41,8 +41,8 @@ export default function FreshCallsWorkspace() {
   const isMobile = useMediaQuery("(max-width:600px)");
   const [selectedDateType, setSelectedDateType] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-
-
+  const [searchText, setSearchText] = useState("");
+  const [debouncedSearchText, setDebouncedSearchText] = useState("");
 
   const [selectedLead, setSelectedLead] = useState({});
   const [detailOpen, setDetailOpen] = useState(false);
@@ -178,12 +178,68 @@ export default function FreshCallsWorkspace() {
     return counts;
   }, [groupedData]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
 
   // const filteredRows = useMemo(() => {
   //   return groupedData[statusFilter] || [];
   // }, [groupedData, statusFilter]);
 
+  // const filteredRows = useMemo(() => {
+  //   const statusRows = groupedData[statusFilter] || [];
+
+  //   if (!selectedDateType || !selectedMonth) {
+  //     return statusRows;
+  //   }
+
+  //   return statusRows.filter((row) => {
+  //     const date = parseDateValue(row[selectedDateType]);
+
+  //     if (!date) return false;
+
+  //     const rowMonth = `${date.getFullYear()}-${String(
+  //       date.getMonth() + 1
+  //     ).padStart(2, "0")}`;
+
+  //     return rowMonth === selectedMonth;
+  //   });
+  // }, [groupedData, statusFilter, selectedDateType, selectedMonth]);
+
+
   const filteredRows = useMemo(() => {
+    const search = debouncedSearchText.trim().toLowerCase();
+
+
+    // --------------------------------------------------
+    // SEARCH MODE
+    // Search regardless of selected status
+    // --------------------------------------------------
+    if (search) {
+      return AllCallDetails?.filter((row) => {
+        const registrationNumber = String(
+          row.registration_number || ""
+        ).toLowerCase();
+
+        const customerName = String(
+          row.customer_name || ""
+        ).toLowerCase();
+
+        return (
+          registrationNumber.includes(search) ||
+          customerName.includes(search)
+        );
+      });
+    }
+
+    // --------------------------------------------------
+    // NORMAL STATUS + DATE FILTER
+    // --------------------------------------------------
     const statusRows = groupedData[statusFilter] || [];
 
     if (!selectedDateType || !selectedMonth) {
@@ -201,8 +257,14 @@ export default function FreshCallsWorkspace() {
 
       return rowMonth === selectedMonth;
     });
-  }, [groupedData, statusFilter, selectedDateType, selectedMonth]);
-
+  }, [
+    AllCallDetails,
+    groupedData,
+    statusFilter,
+    selectedDateType,
+    selectedMonth,
+    searchText,
+  ]);
 
 
 
@@ -402,6 +464,8 @@ export default function FreshCallsWorkspace() {
                   setSelectedDateType,
                   selectedMonth,
                   setSelectedMonth,
+                  setSearchText,
+                  searchText,
                 }
               }}
               columnHeaderHeight={44}
