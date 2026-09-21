@@ -1059,3 +1059,42 @@ export const exportPolicyExcel = (filteredRows, selectedMonth) => {
 
   XLSX.writeFile(workbook, `Thejaswi_Policy_Holders_${fileMonth}.xlsx`);
 };
+
+
+// utils/glassStyles.js
+export const glassStyles = (isDark) => ({
+  bgcolor: isDark ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.25)',
+  backdropFilter: 'blur(20px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+  border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(255, 255, 255, 0.8)',
+  boxShadow: isDark 
+    ? '0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+    : '0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: isDark
+      ? 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.03) 100%)'
+      : 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.2) 100%)',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '1px',
+    background: isDark
+      ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)'
+      : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
+    pointerEvents: 'none',
+    zIndex: 1,
+  },
+});

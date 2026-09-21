@@ -12,9 +12,8 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import SearchIcon from "@mui/icons-material/Search";
-import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
-import DescriptionIcon from "@mui/icons-material/Description";
 import ShieldIcon from "@mui/icons-material/Shield";
+import { glassStyles } from "../CommonCode/Reusable";
 
 const EmptyCustomerState = () => {
     const theme = useTheme();
@@ -25,13 +24,7 @@ const EmptyCustomerState = () => {
             elevation={0}
             sx={{
                 p: { xs: 3, sm: 4, md: 5 },
-                borderRadius: 4,
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.95)",
-                bgcolor: isDark ? "rgba(15,23,42,0.95)" : "rgba(255,255,255,0.95)",
-                backdropFilter: "blur(10px)",
-                boxShadow: isDark ? "0 18px 45px rgba(0,0,0,0.4)" : "0 18px 45px rgba(15,23,42,0.08)",
-                overflow: "hidden",
-                position: "relative",
+                ...glassStyles(isDark),
                 minHeight: { xs: 420, md: 500 },
             }}
         >
@@ -155,7 +148,7 @@ const EmptyCustomerState = () => {
 
                     <Typography
                         sx={{
-                            fontSize: { xs: 24, sm: 28, md: 34 },
+                            fontSize: { xs: 24, sm: 26, md: 28 },
                             fontWeight: 900,
                             color: isDark ? "#f8fafc" : "#0f172a",
                             lineHeight: 1.05,
@@ -168,7 +161,7 @@ const EmptyCustomerState = () => {
                         sx={{
                             mt: 1.2,
                             color: isDark ? "#94a3b8" : "#64748b",
-                            fontSize: { xs: 14, sm: 15, md: 16 },
+                            fontSize: { xs: 14 },
                             maxWidth: 620,
                             mx: { xs: "auto", md: 0 },
                             lineHeight: 1.7,
@@ -267,4 +260,4 @@ const EmptyCustomerState = () => {
     );
 };
 
-export default EmptyCustomerState;
+export default EmptyCustomerState;
