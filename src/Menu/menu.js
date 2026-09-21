@@ -10,6 +10,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import CopyrightIcon from '@mui/icons-material/Copyright';
+import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 
 export const MENU = [
   {
@@ -89,7 +90,12 @@ export const MENU = [
     icon: CopyrightIcon,
     path: "/home/legacy",
   },
-
+{
+    module_id: 15,
+    label: "Lead Transfer",
+    icon: TransferWithinAStationIcon,
+    path: "/home/transfer",
+  },
 
 ];
 

@@ -150,6 +150,8 @@ const PaymentMethodMaster = lazy(
   () => import("../src/Masters/PaymentMethodMaster/PaymentMethodMaster"),
 );
 
+const LeadTransfer = lazy(() => import("../src/LeadTransfer/LeadTransfer"));
+
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -385,9 +387,13 @@ const router = createBrowserRouter([
         path: "setting/customerpaytype",
         element: withSuspense(CustomerPayTypeMaster),
       },
-        {
+      {
         path: "setting/paymentmethod",
         element: withSuspense(PaymentMethodMaster),
+      },
+      {
+        path: "transfer",
+        element: withSuspense(LeadTransfer),
       },
 
       // {

@@ -1,11 +1,9 @@
 import React, { useState, memo, useEffect, useMemo, useCallback } from "react";
-import { Box, Typography, Modal, Button, Avatar, Divider, Menu, MenuItem } from "@mui/joy";
+import { Box, Typography,  Avatar, Divider, Menu, MenuItem } from "@mui/joy";
 import { useLocation, useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { color } from "@mui/system";
-import { axiosApi } from "../Connection/axios";
 import { getAuthUser } from "../constant/Constant";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutModal from "./LogoutModal";
@@ -171,16 +169,38 @@ const ReusableSidebar = ({
         sx={{
           width: open ? 280 : 72,
           height: "95vh",
-          bgcolor: mode === 'dark' ? '#0f172a' : "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(12px)",
+          bgcolor: mode === 'dark'
+            ? 'rgba(15, 23, 42, 0.6)'
+            : 'rgba(255, 255, 255, 0.25)',
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
           color: mode === 'dark' ? '#f8fafc' : "#1f2937",
           display: "flex",
           flexDirection: "column",
           transition: "all 0.25s ease",
           overflow: "hidden",
           borderRadius: 20,
-          boxShadow: mode === 'dark' ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset" : "0 20px 60px rgba(86, 137, 255, 0.15), 0 0 0 1px rgba(255, 209, 153, 0.5) inset",
-          border: mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.6)",
+          boxShadow: mode === 'dark'
+            ? '0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+            : '0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset',
+          border: mode === 'dark'
+            ? '1px solid rgba(255, 255, 255, 0.12)'
+            : '1px solid rgba(255, 255, 255, 0.8)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: -1,
+            right: -1,
+            bottom: 0,
+            borderRadius: 3,
+            background: mode === 'dark'
+              ? 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.03) 100%)'
+              : 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.2) 100%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          },
         }}
       >
         <Box
@@ -262,7 +282,7 @@ const ReusableSidebar = ({
                 >
                   pos
                 </Typography>
-                 <Typography
+                <Typography
                   sx={{
                     color: "#020202",
                     fontWeight: 800,
@@ -317,7 +337,7 @@ const ReusableSidebar = ({
           }}
         >
           {menuItems?.map((item) => (
-            <Box key={item.label} sx={{ mb: item.groupLabel ? 1.5 : 0 }}>
+            <Box key={item.label} >
 
               <Box
                 role="button"
@@ -337,12 +357,12 @@ const ReusableSidebar = ({
                       color: activeMenu === item.label || hoveredItem === item.label ? "#ea580c" : (mode === 'dark' ? '#cbd5e1' : '#0a0f17'),
                     }}
                   >
-                    <item.icon sx={{ fontSize: 18 }} />
+                    <item.icon sx={{ fontSize: 16 }} />
                   </Box>
                 )}
 
                 {open && (
-                  <Typography level="body-sm" sx={{ flex: 1, color: "inherit", fontWeight: 600 }}>
+                  <Typography level="body-sm" sx={{ flex: 1, color: "inherit", fontWeight: 600, fontSize: 12 }}>
                     {item.label}
                   </Typography>
                 )}
@@ -350,7 +370,7 @@ const ReusableSidebar = ({
                 {open && item.nested && (
                   <ExpandMoreIcon
                     sx={{
-                      fontSize: 18,
+                      fontSize: 16,
                       color: hoveredItem === item.label ? "#ea580c" : (mode === 'dark' ? '#cbd5e1' : '#0e0f11'),
                       transform: openMenu === item.label ? "rotate(180deg)" : "rotate(0deg)",
                       transition: "0.2s",
@@ -377,7 +397,7 @@ const ReusableSidebar = ({
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
-                          minHeight: 40,
+                          minHeight: 30,
                           px: 1.4,
                           borderRadius: 12,
                           cursor: "pointer",
@@ -394,7 +414,7 @@ const ReusableSidebar = ({
                             color: isSubActive || isSubHover ? "#ea580c" : (mode === 'dark' ? '#64748b' : '#9ca3af'),
                           }}
                         />
-                        <Typography level="body-sm" sx={{ color: "inherit", fontWeight: 600 }}>
+                        <Typography level="body-sm" sx={{ color: "inherit", fontWeight: 600, fontSize: 12 }}>
                           {sub.label}
                         </Typography>
                       </Box>
