@@ -238,7 +238,7 @@ const StatusActionCards = ({
                 })}
             </Box>
         </Stack>
-    );
+    );  
 };
 
 export default memo(StatusActionCards);
