@@ -22,8 +22,15 @@ const CommonViewPage = () => {
         navigateback
     } = location.state || {};
 
+    console.log(location.state);
+    
+
     const { data = [] } = useCommonMaster(type);
 
+    console.log("Common Data:",data);
+    
+
+   
     const handleEdit = (row) => {
         const recordId = row[idField] || row.id;
         navigate(`/home/setting/${editRoute}`, {
@@ -35,7 +42,7 @@ const CommonViewPage = () => {
         });
     };
 
-   
+
     const handleGoBack = () => {
         if (navigateback) {
             navigate(navigateback)

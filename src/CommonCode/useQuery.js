@@ -64,6 +64,35 @@ import {
   FetchPaymentMethod,
   getPolicyDetails,
   getPolicyClaimDetails,
+  getVehicleCategory,
+  getVehicleClass,
+  getMotorFuelType,
+  getMotorVehicleUsage,
+  getMotorEngineCCSlab,
+  getMotorGVWSlab,
+  getMotorProduct,
+  getMotorPolicyType,
+  getMotorBusinessType,
+  getMotorPolicyTerm,
+  getMotorAddon,
+  getMotorCover,
+  getMotorTax,
+  getMotorODRate,
+  getMotorODAgeSlab,
+  getMotorODDepreciation,
+  getMotorTPRate,
+  getMotorTPRateSlab,
+  getMotorNCBRule,
+  getMotorNCBClaimRule,
+  getMotorDiscountRule,
+  getMotorDiscountCondition,
+  getMotorZDRate,
+  getMotorAddonRule,
+  getMotorAddonCondition,
+  getMotorCoverRate,
+  getMotorCoverUnitRate,
+  getMotorCommissionRule,
+  getMotorCashbackRule,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -609,6 +638,240 @@ export const usePolicyClaimDetail = (policy) => {
   });
 };
 
+// MOTOR CALCULATOR
+
+export const useMotorVehicleCategoryMaster = () => {
+  return useQuery({
+    queryKey: ["vehicle-category"],
+    queryFn: getVehicleCategory,
+  });
+};
+
+export const useMotorVehicleClassMaster = () => {
+  return useQuery({
+    queryKey: ["vehicle-class"],
+    queryFn: getVehicleClass,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorFuelTypeMaster = () => {
+  return useQuery({
+    queryKey: ["motor-fuel-type"],
+    queryFn: getMotorFuelType,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorVehicleUsageMaster = () => {
+  return useQuery({
+    queryKey: ["motor-vehicle-usage"],
+    queryFn: getMotorVehicleUsage,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorEngineCCSlabMaster = () => {
+  return useQuery({
+    queryKey: ["motor-engine-cc-slab"],
+    queryFn: getMotorEngineCCSlab,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorGVWSlabMaster = () => {
+  return useQuery({
+    queryKey: ["motor-gvw-slab"],
+    queryFn: getMotorGVWSlab,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorProductMaster = () => {
+  return useQuery({
+    queryKey: ["motor-product"],
+    queryFn: getMotorProduct,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorPolicyTypeMaster = () => {
+  return useQuery({
+    queryKey: ["motor-policy-type"],
+    queryFn: getMotorPolicyType,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorBusinessTypeMaster = () => {
+  return useQuery({
+    queryKey: ["motor-business-type"],
+    queryFn: getMotorBusinessType,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorPolicyTermMaster = () => {
+  return useQuery({
+    queryKey: ["motor-policy-term"],
+    queryFn: getMotorPolicyTerm,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorODRateMaster = () => {
+  return useQuery({
+    queryKey: ["motor-od-rate"],
+    queryFn: getMotorODRate,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorODAgeSlabMaster = () => {
+  return useQuery({
+    queryKey: ["motor-od-age-slab"],
+    queryFn: getMotorODAgeSlab,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorODDepreciationMaster = () => {
+  return useQuery({
+    queryKey: ["motor-od-depreciation"],
+    queryFn: getMotorODDepreciation,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorTPRateMaster = () => {
+  return useQuery({
+    queryKey: ["motor-tp-rate"],
+    queryFn: getMotorTPRate,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorTPRateSlabMaster = () => {
+  return useQuery({
+    queryKey: ["motor-tp-rate-slab"],
+    queryFn: getMotorTPRateSlab,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorNCBRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-ncb-rule"],
+    queryFn: getMotorNCBRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorNCBClaimRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-ncb-claim-rule"],
+    queryFn: getMotorNCBClaimRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorDiscountRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-discount-rule"],
+    queryFn: getMotorDiscountRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorDiscountConditionMaster = () => {
+  return useQuery({
+    queryKey: ["motor-discount-condition"],
+    queryFn: getMotorDiscountCondition,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorZDRateMaster = () => {
+  return useQuery({
+    queryKey: ["motor-zd-rate"],
+    queryFn: getMotorZDRate,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorAddonMaster = () => {
+  return useQuery({
+    queryKey: ["motor-addon"],
+    queryFn: getMotorAddon,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorAddonRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-addon-rule"],
+    queryFn: getMotorAddonRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorAddonConditionMaster = () => {
+  return useQuery({
+    queryKey: ["motor-addon-condition"],
+    queryFn: getMotorAddonCondition,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorCoverMaster = () => {
+  return useQuery({
+    queryKey: ["motor-cover"],
+    queryFn: getMotorCover,
+    staleTime: Infinity,
+  });
+};
+export const useMotorCoverRateMaster = () => {
+  return useQuery({
+    queryKey: ["motor-cover-rate"],
+    queryFn: getMotorCoverRate,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorCoverUnitRateMaster = () => {
+  return useQuery({
+    queryKey: ["motor-cover-unit-rate"],
+    queryFn: getMotorCoverUnitRate,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorCommissionRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-commission-rule"],
+    queryFn: getMotorCommissionRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorCashbackRuleMaster = () => {
+  return useQuery({
+    queryKey: ["motor-cashback-rule"],
+    queryFn: getMotorCashbackRule,
+    staleTime: Infinity,
+  });
+};
+
+export const useMotorTaxMaster = () => {
+  return useQuery({
+    queryKey: ["motor-tax"],
+    queryFn: getMotorTax,
+    staleTime: Infinity,
+  });
+};
+
+// ==================================
+
 export const useCommonMaster = (type) => {
   const masterMap = {
     role: {
@@ -716,6 +979,155 @@ export const useCommonMaster = (type) => {
     paymentMethod: {
       queryKey: ["pay-type-master"],
       queryFn: FetchPaymentMethod,
+    },
+
+    // =========================
+    // MOTOR CALCULATOR MASTERS
+    // =========================
+
+    motorvehiclecategory: {
+      queryKey: ["vehicle-category"],
+      queryFn: getVehicleCategory,
+    },
+
+    motorVehicleClass: {
+      queryKey: ["vehicle-class"],
+      queryFn: getVehicleClass,
+    },
+
+    motorFuelType: {
+      queryKey: ["motor-fuel-type"],
+      queryFn: getMotorFuelType,
+    },
+
+    motorVehicleUsage: {
+      queryKey: ["motor-vehicle-usage"],
+      queryFn: getMotorVehicleUsage,
+    },
+
+    motorEngineCCSlab: {
+      queryKey: ["motor-engine-cc-slab"],
+      queryFn: getMotorEngineCCSlab,
+    },
+
+    motorGVWSlab: {
+      queryKey: ["motor-gvw-slab"],
+      queryFn: getMotorGVWSlab,
+    },
+
+    motorProduct: {
+      queryKey: ["motor-product"],
+      queryFn: getMotorProduct,
+    },
+
+    motorPolicyType: {
+      queryKey: ["motor-policy-type"],
+      queryFn: getMotorPolicyType,
+    },
+
+    motorBusinessType: {
+      queryKey: ["motor-business-type"],
+      queryFn: getMotorBusinessType,
+    },
+
+    motorPolicyTerm: {
+      queryKey: ["motor-policy-term"],
+      queryFn: getMotorPolicyTerm,
+    },
+
+    motorODRate: {
+      queryKey: ["motor-od-rate"],
+      queryFn: getMotorODRate,
+    },
+
+    motorODAgeSlab: {
+      queryKey: ["motor-od-age-slab"],
+      queryFn: getMotorODAgeSlab,
+    },
+
+    motorODDepreciation: {
+      queryKey: ["motor-od-depreciation"],
+      queryFn: getMotorODDepreciation,
+    },
+
+    motorTPRate: {
+      queryKey: ["motor-tp-rate"],
+      queryFn: getMotorTPRate,
+    },
+
+    motorTPRateSlab: {
+      queryKey: ["motor-tp-rate-slab"],
+      queryFn: getMotorTPRateSlab,
+    },
+
+    motorNCBRule: {
+      queryKey: ["motor-ncb-rule"],
+      queryFn: getMotorNCBRule,
+    },
+
+    motorNCBClaimRule: {
+      queryKey: ["motor-ncb-claim-rule"],
+      queryFn: getMotorNCBClaimRule,
+    },
+
+    motorDiscountRule: {
+      queryKey: ["motor-discount-rule"],
+      queryFn: getMotorDiscountRule,
+    },
+
+    motorDiscountCondition: {
+      queryKey: ["motor-discount-condition"],
+      queryFn: getMotorDiscountCondition,
+    },
+
+    motorZDRate: {
+      queryKey: ["motor-zd-rate"],
+      queryFn: getMotorZDRate,
+    },
+
+    motorAddon: {
+      queryKey: ["motor-addon"],
+      queryFn: getMotorAddon,
+    },
+
+    motorAddonRule: {
+      queryKey: ["motor-addon-rule"],
+      queryFn: getMotorAddonRule,
+    },
+
+    motorAddonCondition: {
+      queryKey: ["motor-addon-condition"],
+      queryFn: getMotorAddonCondition,
+    },
+
+    motorCover: {
+      queryKey: ["motor-cover"],
+      queryFn: getMotorCover,
+    },
+
+    motorCoverRate: {
+      queryKey: ["motor-cover-rate"],
+      queryFn: getMotorCoverRate,
+    },
+
+    motorCoverUnitRate: {
+      queryKey: ["motor-cover-unit-rate"],
+      queryFn: getMotorCoverUnitRate,
+    },
+
+    motorCommissionRule: {
+      queryKey: ["motor-commission-rule"],
+      queryFn: getMotorCommissionRule,
+    },
+
+    motorCashbackRule: {
+      queryKey: ["motor-cashback-rule"],
+      queryFn: getMotorCashbackRule,
+    },
+
+    motorTax: {
+      queryKey: ["motor-tax"],
+      queryFn: getMotorTax,
     },
   };
 
