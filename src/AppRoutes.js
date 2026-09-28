@@ -149,8 +149,11 @@ const CustomerPayTypeMaster = lazy(
 const PaymentMethodMaster = lazy(
   () => import("../src/Masters/PaymentMethodMaster/PaymentMethodMaster"),
 );
-
 const LeadTransfer = lazy(() => import("../src/LeadTransfer/LeadTransfer"));
+
+const MotorVehicleCategoryCreation = lazy(
+  () => import("../src/Masters/MotorCalculator/MotorVehicleCategoryCreation"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -394,6 +397,10 @@ const router = createBrowserRouter([
       {
         path: "transfer",
         element: withSuspense(LeadTransfer),
+      },
+      {
+        path: "setting/motorvehiclecategory",
+        element: withSuspense(MotorVehicleCategoryCreation),
       },
 
       // {

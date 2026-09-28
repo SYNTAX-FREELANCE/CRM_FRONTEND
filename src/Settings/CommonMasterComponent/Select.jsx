@@ -8,7 +8,7 @@ const Select = ({ value, onChange, options }) => (
         value={value}
         onChange={onChange}
     >
-        {options.map((o) => (
+        {options?.map((o) => (
             <option key={o} value={o === "-- Select --" ? "" : o}>{o}</option>
         ))}
     </select>
