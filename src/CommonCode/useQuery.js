@@ -659,7 +659,6 @@ export const useMotorFuelTypeMaster = () => {
   return useQuery({
     queryKey: ["motor-fuel-type"],
     queryFn: getMotorFuelType,
-    staleTime: Infinity,
   });
 };
 
@@ -667,7 +666,6 @@ export const useMotorVehicleUsageMaster = () => {
   return useQuery({
     queryKey: ["motor-vehicle-usage"],
     queryFn: getMotorVehicleUsage,
-    staleTime: Infinity,
   });
 };
 
@@ -675,7 +673,6 @@ export const useMotorEngineCCSlabMaster = () => {
   return useQuery({
     queryKey: ["motor-engine-cc-slab"],
     queryFn: getMotorEngineCCSlab,
-    staleTime: Infinity,
   });
 };
 
@@ -683,7 +680,6 @@ export const useMotorGVWSlabMaster = () => {
   return useQuery({
     queryKey: ["motor-gvw-slab"],
     queryFn: getMotorGVWSlab,
-    staleTime: Infinity,
   });
 };
 
@@ -691,7 +687,6 @@ export const useMotorProductMaster = () => {
   return useQuery({
     queryKey: ["motor-product"],
     queryFn: getMotorProduct,
-    staleTime: Infinity,
   });
 };
 
@@ -990,82 +985,82 @@ export const useCommonMaster = (type) => {
       queryFn: getVehicleCategory,
     },
 
-    motorVehicleClass: {
+    motorvehicleclass: {
       queryKey: ["vehicle-class"],
       queryFn: getVehicleClass,
     },
 
-    motorFuelType: {
+    motorfueltype: {
       queryKey: ["motor-fuel-type"],
       queryFn: getMotorFuelType,
     },
 
-    motorVehicleUsage: {
+    motorvehicleusage: {
       queryKey: ["motor-vehicle-usage"],
       queryFn: getMotorVehicleUsage,
     },
 
-    motorEngineCCSlab: {
+    motorengineccslab: {
       queryKey: ["motor-engine-cc-slab"],
       queryFn: getMotorEngineCCSlab,
     },
 
-    motorGVWSlab: {
+    motorgvwslab: {
       queryKey: ["motor-gvw-slab"],
       queryFn: getMotorGVWSlab,
     },
 
-    motorProduct: {
+    motorproduct: {
       queryKey: ["motor-product"],
       queryFn: getMotorProduct,
     },
 
-    motorPolicyType: {
+    motorpolicytype: {
       queryKey: ["motor-policy-type"],
       queryFn: getMotorPolicyType,
     },
 
-    motorBusinessType: {
+    motorbusinesstype: {
       queryKey: ["motor-business-type"],
       queryFn: getMotorBusinessType,
     },
 
-    motorPolicyTerm: {
+    motorpolicyterm: {
       queryKey: ["motor-policy-term"],
       queryFn: getMotorPolicyTerm,
     },
 
-    motorODRate: {
+    motorodrate: {
       queryKey: ["motor-od-rate"],
       queryFn: getMotorODRate,
     },
 
-    motorODAgeSlab: {
+    motorodageslab: {
       queryKey: ["motor-od-age-slab"],
       queryFn: getMotorODAgeSlab,
     },
 
-    motorODDepreciation: {
+    motoroddepreciation: {
       queryKey: ["motor-od-depreciation"],
       queryFn: getMotorODDepreciation,
     },
 
-    motorTPRate: {
+    motortprate: {
       queryKey: ["motor-tp-rate"],
       queryFn: getMotorTPRate,
     },
 
-    motorTPRateSlab: {
+    motortprateslab: {
       queryKey: ["motor-tp-rate-slab"],
       queryFn: getMotorTPRateSlab,
     },
 
-    motorNCBRule: {
+    motorncbrule: {
       queryKey: ["motor-ncb-rule"],
       queryFn: getMotorNCBRule,
     },
 
-    motorNCBClaimRule: {
+    motorncbclaimrule: {
       queryKey: ["motor-ncb-claim-rule"],
       queryFn: getMotorNCBClaimRule,
     },

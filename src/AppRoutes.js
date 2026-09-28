@@ -155,6 +155,28 @@ const MotorVehicleCategoryCreation = lazy(
   () => import("../src/Masters/MotorCalculator/MotorVehicleCategoryCreation"),
 );
 
+
+
+
+const MotorVehicleClassCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorVehicleClassCreation"));
+const MotorFuelTypeCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorFuelTypeCreation"));
+const MotorVehicleUsageCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorVehicleUsageCreation"));
+const MotorEngineCCSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorEngineCCSlabCreation"));
+const MotorGVWSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorGVWSlabCreation"));
+const MotorProductCreation = lazy(() => import("./Masters/MotorCalculator/MotorProductCreation"));
+const MotorPolicyTypeCreation = lazy(() => import("./Masters/MotorCalculator/MotorPolicyTypeCreation"));
+const MotorBusinessTypeCreation = lazy(() => import("./Masters/MotorCalculator/MotorBusinessTypeCreation"));
+const MotorPolicyTermCreation = lazy(() => import("./Masters/MotorCalculator/MotorPolicyTermCreation"));
+const MotorOdRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdRateCreation"));
+const MotorOdAgeSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdAgeSlabCreation"));
+const MotorOdDepreciationCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdDepreciationCreation"));
+const MotorTpRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorTpRateCreation"));
+const MotorTpRateSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorTpRateSlabCreation"));
+const MotorNcbRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbRuleCreation"));
+const MotorNcbClaimRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbClaimRuleCreation"));
+
+
+
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -402,7 +424,74 @@ const router = createBrowserRouter([
         path: "setting/motorvehiclecategory",
         element: withSuspense(MotorVehicleCategoryCreation),
       },
+      {
+        path: "setting/motorvehicleclass",
+        element: withSuspense(MotorVehicleClassCreation),
+      },
+      {
+        path: "setting/motorfueltype",
+        element: withSuspense(MotorFuelTypeCreation),
+      },
+      {
+        path: "setting/motorvehicleusage",
+        element: withSuspense(MotorVehicleUsageCreation),
+      },
+      {
+        path: "setting/motorengineccslab",
+        element: withSuspense(MotorEngineCCSlabCreation),
+      },
+      {
+        path: "setting/motorgvwslab",
+        element: withSuspense(MotorGVWSlabCreation),
+      },
+      {
+        path: "setting/motorproduct",
+        element: withSuspense(MotorProductCreation),
+      },
+      {
+        path: "setting/motorpolicytype",
+        element: withSuspense(MotorPolicyTypeCreation),
+      },
+      {
+        path: "setting/motorbusinesstype",
+        element: withSuspense(MotorBusinessTypeCreation),
+      },
 
+      {
+        path: "setting/motorpolicyterm",
+        element: withSuspense(MotorPolicyTermCreation),
+      },
+      {
+        path: "setting/motorodrate",
+        element: withSuspense(MotorOdRateCreation),
+      },
+      {
+        path: "setting/motorodageslab",
+        element: withSuspense(MotorOdAgeSlabCreation),
+      },
+   {
+        path: "setting/motoroddepreciation",
+        element: withSuspense(MotorOdDepreciationCreation),
+      },
+{
+        path: "setting/mortprate",
+        element: withSuspense(MotorTpRateCreation),
+      },
+      {
+        path: "setting/motortprateslab",
+        element: withSuspense(MotorTpRateSlabCreation),
+      },
+      {
+        path: "setting/motorncbrule",
+        element: withSuspense(MotorNcbRuleCreation),
+      },
+{
+        path: "setting/motorncbclaimrule",
+        element: withSuspense(MotorNcbClaimRuleCreation),
+      },
+
+
+      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),
