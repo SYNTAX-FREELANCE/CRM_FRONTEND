@@ -58,6 +58,8 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 
 import { useGetEmployeeMenuRights } from "../CommonCode/useQuery";
 import { getAuthUser } from "../constant/Constant";
+import { useTheme } from "@mui/material";
+import { glassStyles } from "../CommonCode/Reusable";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -65,6 +67,9 @@ const Settings = () => {
 
   const authUser = getAuthUser();
   const { role_id } = authUser ?? {};
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const { data: EmployeeMenuRights = [] } =
     useGetEmployeeMenuRights(role_id);
@@ -444,10 +449,13 @@ const Settings = () => {
   return (
     <PageWrapper
       sx={{
-        bgcolor: "rgba(255, 255, 255, 0.15)",
+        //  boxShadow: isDark ? "0 8px 30px rgba(0,0,0,0.5)" : "0 8px 30px rgba(0,0,0,0.06)",
+        // border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.8)",
+        // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
         backdropFilter: "blur(24px)",
-        border: "1px solid rgba(255, 255, 255, 0.35)",
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.05)",
+        // border: "1px solid rgba(255, 255, 255, 0.35)",
+        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.05)",
+        ...glassStyles(isDark),
         position: "relative",
         overflowY: "scroll",
         overflowX: "hidden",
@@ -525,8 +533,9 @@ const Settings = () => {
               fontSize: { xs: "1.35rem", md: "1.7rem" },
               lineHeight: 1.1,
               letterSpacing: "-0.4px",
-              background:
-                "linear-gradient(90deg, #1e40af 0%, #2563eb 45%, #ea580c 100%)",
+              // background:
+              //   "linear-gradient(90deg, #1e40af 0%, #2563eb 45%, #ea580c 100%)",
+              bgcolor: isDark ? "rgb(250, 250, 250)" : "#0c0b0b",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -571,25 +580,23 @@ const Settings = () => {
               key={index}
               sx={{
                 width: "100%",
-                background: "rgba(255, 255, 255, 0.48)",
+                background: isDark ? 'rgba(15, 23, 42, 0.6)' : "rgba(255, 255, 255, 0.48)",
                 backdropFilter: "blur(16px)",
                 borderRadius: "14px",
                 border: "1px solid rgba(255, 255, 255, 0.65)",
                 boxShadow: isExpanded
-                  ? `0 10px 24px -12px ${
-                      section.colorTheme === "blue"
-                        ? "rgba(30, 64, 175, 0.15)"
-                        : "rgba(234, 88, 12, 0.15)"
-                    }`
+                  ? `0 10px 24px -12px ${section.colorTheme === "blue"
+                    ? "rgba(30, 64, 175, 0.15)"
+                    : "rgba(234, 88, 12, 0.15)"
+                  }`
                   : "0 4px 15px -8px rgba(31, 38, 135, 0.06)",
                 overflow: "hidden",
                 transition: "all 0.25s ease",
                 "&:hover": {
-                  boxShadow: `0 10px 22px -10px ${
-                    section.colorTheme === "blue"
-                      ? "rgba(30, 64, 175, 0.14)"
-                      : "rgba(234, 88, 12, 0.14)"
-                  }`,
+                  boxShadow: `0 10px 22px -10px ${section.colorTheme === "blue"
+                    ? "rgba(30, 64, 175, 0.14)"
+                    : "rgba(234, 88, 12, 0.14)"
+                    }`,
                 },
               }}
             >
@@ -627,11 +634,10 @@ const Settings = () => {
                       borderRadius: "9px",
                       bgcolor: "rgba(255,255,255,0.8)",
                       color: themeColor,
-                      border: `1px solid ${
-                        isExpanded
-                          ? themeColor
-                          : "rgba(255,255,255,0.9)"
-                      }`,
+                      border: `1px solid ${isExpanded
+                        ? themeColor
+                        : "rgba(255,255,255,0.9)"
+                        }`,
                       transition: "all 0.25s ease",
                     }}
                   >
@@ -647,7 +653,7 @@ const Settings = () => {
                   <Box>
                     <Typography
                       sx={{
-                        color: "#0f172a",
+                        color: isDark ? "#fff" : "#0f172a",
                         fontWeight: 700,
                         fontSize: "0.9rem",
                         lineHeight: 1.2,
@@ -741,7 +747,7 @@ const Settings = () => {
                         py: 1,
                         cursor: "pointer",
                         borderRadius: "10px",
-                        background: "rgba(255,255,255,0.58)",
+                        background: isDark ? 'rgba(15, 23, 42, 0.6)' : "rgba(255,255,255,0.58)",
                         border: "1px solid rgba(255,255,255,0.7)",
                         boxShadow:
                           "0 2px 8px -5px rgba(31,38,135,0.08)",
@@ -763,13 +769,12 @@ const Settings = () => {
 
                         "&:hover": {
                           transform: "translateY(-1px)",
-                          background: "#ffffff",
+                          background: isDark ? "#fad2b7" : "#ffffff",
                           border: `1px solid ${themeColor}`,
-                          boxShadow: `0 5px 14px -8px ${
-                            section.colorTheme === "blue"
-                              ? "rgba(59,130,246,0.3)"
-                              : "rgba(249,115,22,0.3)"
-                          }`,
+                          boxShadow: `0 5px 14px -8px ${section.colorTheme === "blue"
+                            ? "rgba(59,130,246,0.3)"
+                            : "rgba(249,115,22,0.3)"
+                            }`,
 
                           "&::before": {
                             width: "4px",
@@ -823,7 +828,7 @@ const Settings = () => {
                       >
                         <Typography
                           sx={{
-                            color: "#0f172a",
+                            color: isDark ? "#fff" : "#0f172a",
                             fontWeight: 650,
                             fontSize: "0.76rem",
                             lineHeight: 1.2,

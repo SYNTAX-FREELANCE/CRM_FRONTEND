@@ -143,7 +143,9 @@ const MotorVehicleCategoryCreation = () => {
             description: "",
             isActive: "Active",
         });
-    }, []);
+         navigate(".", { replace: true, state: null });
+
+    }, [navigate]);
 
     const handleSave = async () => {
 
