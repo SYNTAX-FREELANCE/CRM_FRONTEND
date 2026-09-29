@@ -782,7 +782,6 @@ export const useMotorDiscountConditionMaster = () => {
   return useQuery({
     queryKey: ["motor-discount-condition"],
     queryFn: getMotorDiscountCondition,
-    staleTime: Infinity,
   });
 };
 
@@ -1065,62 +1064,62 @@ export const useCommonMaster = (type) => {
       queryFn: getMotorNCBClaimRule,
     },
 
-    motorDiscountRule: {
+    motordiscountrule: {
       queryKey: ["motor-discount-rule"],
       queryFn: getMotorDiscountRule,
     },
 
-    motorDiscountCondition: {
+    motordiscountcondition: {
       queryKey: ["motor-discount-condition"],
       queryFn: getMotorDiscountCondition,
     },
 
-    motorZDRate: {
+    motorzdrate: {
       queryKey: ["motor-zd-rate"],
       queryFn: getMotorZDRate,
     },
 
-    motorAddon: {
+    motoraddon: {
       queryKey: ["motor-addon"],
       queryFn: getMotorAddon,
     },
 
-    motorAddonRule: {
+    motoraddonrule: {
       queryKey: ["motor-addon-rule"],
       queryFn: getMotorAddonRule,
     },
 
-    motorAddonCondition: {
+    motoraddoncondition: {
       queryKey: ["motor-addon-condition"],
       queryFn: getMotorAddonCondition,
     },
 
-    motorCover: {
+    motorcover: {
       queryKey: ["motor-cover"],
       queryFn: getMotorCover,
     },
 
-    motorCoverRate: {
+    motorcoverrate: {
       queryKey: ["motor-cover-rate"],
       queryFn: getMotorCoverRate,
     },
 
-    motorCoverUnitRate: {
+    motorcoverunitrate: {
       queryKey: ["motor-cover-unit-rate"],
       queryFn: getMotorCoverUnitRate,
     },
 
-    motorCommissionRule: {
+    motorcommissionrule: {
       queryKey: ["motor-commission-rule"],
       queryFn: getMotorCommissionRule,
     },
 
-    motorCashbackRule: {
+    motorcashbackrule: {
       queryKey: ["motor-cashback-rule"],
       queryFn: getMotorCashbackRule,
     },
 
-    motorTax: {
+    motortax: {
       queryKey: ["motor-tax"],
       queryFn: getMotorTax,
     },
