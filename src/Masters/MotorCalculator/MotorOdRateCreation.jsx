@@ -556,13 +556,15 @@ const MotorOdRateCreation = () => {
                                         field:
                                             "effective_from",
                                         headerName:
-                                            "Effective From"
+                                            "Effective From",
+                                               type: "date"
                                     },
                                     {
                                         field:
                                             "effective_to",
                                         headerName:
-                                            "Effective To"
+                                            "Effective To",
+                                               type: "date"
                                     },
                                     {
                                         field:

@@ -174,6 +174,18 @@ const MotorTpRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorTp
 const MotorTpRateSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorTpRateSlabCreation"));
 const MotorNcbRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbRuleCreation"));
 const MotorNcbClaimRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbClaimRuleCreation"));
+const MotorDiscountRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorDiscountRuleCreation"));
+const MotorDiscountConditionCreation = lazy(() => import("./Masters/MotorCalculator/MotorDiscountConditionCreation"));
+const MotorZdRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorZdRateCreation"));
+const MotorAddonCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonCreation"));
+const MotorAddonRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonRuleCreation"));
+const MotorAddonConditionCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonConditionCreation"));
+const MotorCoverCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverCreation"));
+const MotorCoverRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverRateCreation"));
+const MotorCoverUnitRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverUnitRateCreation"));
+const MotorCommissionRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorCommissionRuleCreation"));
+const MotorCashbackRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorCashbackRuleCreation"));
+const MotorTaxCreation = lazy(() => import("./Masters/MotorCalculator/MotorTaxCreation"));
 
 
 
@@ -469,11 +481,11 @@ const router = createBrowserRouter([
         path: "setting/motorodageslab",
         element: withSuspense(MotorOdAgeSlabCreation),
       },
-   {
+      {
         path: "setting/motoroddepreciation",
         element: withSuspense(MotorOdDepreciationCreation),
       },
-{
+      {
         path: "setting/mortprate",
         element: withSuspense(MotorTpRateCreation),
       },
@@ -485,13 +497,62 @@ const router = createBrowserRouter([
         path: "setting/motorncbrule",
         element: withSuspense(MotorNcbRuleCreation),
       },
-{
+      {
         path: "setting/motorncbclaimrule",
         element: withSuspense(MotorNcbClaimRuleCreation),
       },
+      {
+        path: "setting/motordiscountrule",
+        element: withSuspense(MotorDiscountRuleCreation),
+      },
 
+      {
+        path: "setting/motordiscountcondition",
+        element: withSuspense(MotorDiscountConditionCreation),
+      },
 
-      
+      {
+        path: "setting/motorzdrate",
+        element: withSuspense(MotorZdRateCreation),
+      },
+
+      {
+        path: "setting/motoraddon",
+        element: withSuspense(MotorAddonCreation),
+      },
+      {
+        path: "setting/motoraddonrule",
+        element: withSuspense(MotorAddonRuleCreation),
+      },
+      {
+        path: "setting/motoraddoncondition",
+        element: withSuspense(MotorAddonConditionCreation),
+      },
+      {
+        path: "setting/motorcover",
+        element: withSuspense(MotorCoverCreation),
+      },
+
+      {
+        path: "setting/motorcoverrate",
+        element: withSuspense(MotorCoverRateCreation),
+      },
+      {
+        path: "setting/motorcoverunitrate",
+        element: withSuspense(MotorCoverUnitRateCreation),
+      },
+      {
+        path: "setting/motorcommissionrule",
+        element: withSuspense(MotorCommissionRuleCreation),
+      },
+      {
+        path: "setting/motorcashbackrule",
+        element: withSuspense(MotorCashbackRuleCreation),
+      },
+      {
+        path: "setting/motortax",
+        element: withSuspense(MotorTaxCreation),
+      }
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),

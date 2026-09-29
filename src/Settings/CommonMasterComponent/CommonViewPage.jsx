@@ -27,10 +27,12 @@ const CommonViewPage = () => {
 
     const { data = [] } = useCommonMaster(type);
 
-    console.log("Common Data:",data);
-    
+    console.log({
+        data,
+        columns
+    });
 
-   
+
     const handleEdit = (row) => {
         const recordId = row[idField] || row.id;
         navigate(`/home/setting/${editRoute}`, {
