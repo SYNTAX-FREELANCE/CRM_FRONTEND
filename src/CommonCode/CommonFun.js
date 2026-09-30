@@ -1016,7 +1016,7 @@ export const getPolicyDetails = async (customerid, policyId) => {
   }
 };
 
-export const getPolicyClaimDetails = async ( policyId) => {
+export const getPolicyClaimDetails = async (policyId) => {
   if (!policyId) return [];
   try {
     const response = await axioslogin.get(
@@ -1027,6 +1027,574 @@ export const getPolicyClaimDetails = async ( policyId) => {
     return [];
   } catch (error) {
     console.error("getPolicyClaimDetails error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// VEHICLE CATEGORY
+// =====================================================
+
+export const getVehicleCategory = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/vehicle-category/getall`);
+    const { success, data } = response.data;
+
+   console.log(response.data);
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getVehicleCategory error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// VEHICLE CLASS
+// =====================================================
+
+export const getVehicleClass = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/vehicle-class/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getVehicleClass error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// FUEL TYPE
+// =====================================================
+
+export const getMotorFuelType = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/fuel-type/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorFuelType error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// VEHICLE USAGE
+// =====================================================
+
+export const getMotorVehicleUsage = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/vehicle-usage/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorVehicleUsage error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// ENGINE CC SLAB
+// =====================================================
+
+export const getMotorEngineCCSlab = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/engine-cc-slab/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorEngineCCSlab error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// GVW SLAB
+// =====================================================
+
+export const getMotorGVWSlab = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/gvw-slab/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorGVWSlab error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// PRODUCT
+// =====================================================
+
+export const getMotorProduct = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/product/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorProduct error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// POLICY TYPE
+// =====================================================
+
+export const getMotorPolicyType = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/policy-type/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorPolicyType error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// BUSINESS TYPE
+// =====================================================
+
+export const getMotorBusinessType = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/business-type/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorBusinessType error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// POLICY TERM
+// =====================================================
+
+export const getMotorPolicyTerm = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/policy-term/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorPolicyTerm error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// OD RATE
+// =====================================================
+
+export const getMotorODRate = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/od-rate/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorODRate error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// OD AGE SLAB
+// =====================================================
+
+export const getMotorODAgeSlab = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/od-age-slab/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorODAgeSlab error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// OD DEPRECIATION
+// =====================================================
+
+export const getMotorODDepreciation = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/od-depreciation/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorODDepreciation error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// TP RATE
+// =====================================================
+
+export const getMotorTPRate = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/tp-rate/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTPRate error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// TP RATE SLAB
+// =====================================================
+
+export const getMotorTPRateSlab = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/tp-rate-slab/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTPRateSlab error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// NCB RULE
+// =====================================================
+
+export const getMotorNCBRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/ncb-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorNCBRule error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// NCB CLAIM RULE
+// =====================================================
+
+export const getMotorNCBClaimRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/ncb-claim-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorNCBClaimRule error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// DISCOUNT RULE
+// =====================================================
+
+export const getMotorDiscountRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/discount-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorDiscountRule error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// DISCOUNT CONDITION
+// =====================================================
+
+export const getMotorDiscountCondition = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/discount-condition/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorDiscountCondition error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// ZD RATE
+// =====================================================
+
+export const getMotorZDRate = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/zd-rate/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorZDRate error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// ADDON
+// =====================================================
+
+export const getMotorAddon = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/addon/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorAddon error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// ADDON RULE
+// =====================================================
+
+export const getMotorAddonRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/addon-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorAddonRule error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// ADDON CONDITION
+// =====================================================
+
+export const getMotorAddonCondition = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/addon-condition/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorAddonCondition error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// COVER
+// =====================================================
+
+export const getMotorCover = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/cover/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorCover error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// COVER RATE
+// =====================================================
+
+export const getMotorCoverRate = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/cover-rate/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorCoverRate error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// COVER UNIT RATE
+// =====================================================
+
+export const getMotorCoverUnitRate = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/cover-unit-rate/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorCoverUnitRate error:", error);
+    return [];
+  }
+};
+
+
+
+
+// =====================================================
+// COMMISSION RULE
+// =====================================================
+
+export const getMotorCommissionRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/commission-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorCommissionRule error:", error);
+    return [];
+  }
+};
+
+
+
+// =====================================================
+// CASHBACK RULE
+// =====================================================
+
+export const getMotorCashbackRule = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/cashback-rule/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorCashbackRule error:", error);
+    return [];
+  }
+};
+
+
+// =====================================================
+// TAX
+// =====================================================
+
+export const getMotorTax = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/tax/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
     return [];
   }
 };

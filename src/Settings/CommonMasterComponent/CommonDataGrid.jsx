@@ -41,7 +41,7 @@ const CommonDataGrid = ({
                 renderCell:
                     type === "status"
                         ? (params) =>
-                            params.value === 1
+                            Number(params.value) === 1
                                 ? "Active"
                                 : "Inactive"
                         : type === "date"
