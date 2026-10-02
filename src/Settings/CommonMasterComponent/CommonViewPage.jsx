@@ -22,15 +22,10 @@ const CommonViewPage = () => {
         navigateback
     } = location.state || {};
 
-    console.log(location.state);
+
     
 
     const { data = [] } = useCommonMaster(type);
-
-    console.log({
-        data,
-        columns
-    });
 
 
     const handleEdit = (row) => {

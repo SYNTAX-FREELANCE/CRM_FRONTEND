@@ -4,7 +4,7 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import EventRepeatOutlinedIcon from "@mui/icons-material/EventRepeatOutlined";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { getAuthUser } from "../constant/Constant";
 
 export const RenewalCustomerColumns = (
@@ -17,6 +17,24 @@ export const RenewalCustomerColumns = (
   const { role } = authuser;
 
   const isEmployee = role?.toUpperCase() === "EMPLOYEE";
+
+
+  const formatDateOnly = (value) => {
+    if (!value) return "-";
+
+    const dateString = String(value).slice(0, 10);
+
+    const date = parse(dateString, "yyyy-MM-dd", new Date());
+
+    return isValid(date) ? format(date, "dd-MM-yyyy") : "-";
+  };
+
+
+  const getDateOnly = (value) => {
+    if (!value) return "";
+
+    return String(value).slice(0, 10);
+  };
 
   const mobileColumns = [
     {
@@ -79,11 +97,11 @@ export const RenewalCustomerColumns = (
             color: isDark ? "#60a5fa" : "#2563eb",
           }}
         >
-          <VisibilityOutlinedIcon sx={{ fontSize: 17 ,color:"#ff632f"}} />
+          <VisibilityOutlinedIcon sx={{ fontSize: 17, color: "#ff632f" }} />
         </Box>
       ),
     },
-       {
+    {
       field: "download",
       headerName: "Save",
       width: 120,
@@ -104,7 +122,7 @@ export const RenewalCustomerColumns = (
             color: isDark ? "#60a5fa" : "#2563eb",
           }}
         >
-          <PictureAsPdfIcon sx={{ fontSize: 18,color:"#ff632f" }} />
+          <PictureAsPdfIcon sx={{ fontSize: 18, color: "#ff632f" }} />
         </Box>
       ),
     },
@@ -172,7 +190,7 @@ export const RenewalCustomerColumns = (
         </Typography>
       ),
     },
-     {
+    {
       field: "insured_declared_value",
       headerName: "Net Premium",
       minWidth: 100,
@@ -241,19 +259,36 @@ export const RenewalCustomerColumns = (
       headerName: "Sale Date",
       minWidth: 150,
       flex: 0.9,
-      renderCell: ({ value }) => (
-        <Typography
-          variant="body2"
-          fontWeight={900}
-          sx={{ fontSize: 12 }}
-          color={isDark ? "#cbd5e1" : "#475569"}
-        >
-          {value ? format(new Date(value), "dd/MM/yyyy") : "-"}
-        </Typography>
-      ),
-    },
-    ...(!isEmployee
-      ? [
+
+      valueGetter: (value, row) => {
+        const val =
+          typeof value === "object" && value !== null && "value" in value
+            ? value.value
+            : (value ?? row?.known_policy_expiry_date);
+
+        return getDateOnly(val);
+      },
+
+      renderCell: ({ value }) => {
+        if (!value || !isValid(new Date(value))) {
+          return "-";
+        }
+
+        return (
+          <Typography
+            variant="body2"
+            fontWeight={900}
+            sx={{ fontSize: 12 }}
+            color={isDark ? "#cbd5e1" : "#475569"}
+          >
+            {formatDateOnly(value)}
+          </Typography>
+        );
+
+
+      },
+      ...(!isEmployee
+        ? [
           {
             field: "employee_name",
             headerName: "Agent",
@@ -271,7 +306,8 @@ export const RenewalCustomerColumns = (
             ),
           },
         ]
-      : []),
+        : []),
+    },
 
     {
       field: "action",
@@ -294,11 +330,11 @@ export const RenewalCustomerColumns = (
             color: isDark ? "#60a5fa" : "#2563eb",
           }}
         >
-          <EventRepeatOutlinedIcon sx={{ fontSize: 18 ,color:"#ff632f"}} />
+          <EventRepeatOutlinedIcon sx={{ fontSize: 18, color: "#ff632f" }} />
         </Box>
       ),
     },
-      {
+    {
       field: "download",
       headerName: "Save",
       width: 120,
@@ -319,7 +355,7 @@ export const RenewalCustomerColumns = (
             color: isDark ? "#60a5fa" : "#2563eb",
           }}
         >
-          <PictureAsPdfIcon sx={{ fontSize: 18,color:"#ff632f" }} />
+          <PictureAsPdfIcon sx={{ fontSize: 18, color: "#ff632f" }} />
         </Box>
       ),
     },
