@@ -1,16 +1,16 @@
 import React from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import GridViewIcon from "@mui/icons-material/GridView";
+import CalculateIcon from '@mui/icons-material/Calculate';
 import DataThresholdingIcon from "@mui/icons-material/DataThresholding";
 import SavedSearchIcon from "@mui/icons-material/SavedSearch";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PersonIcon from "@mui/icons-material/Person";
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
-import CopyrightIcon from '@mui/icons-material/Copyright';
-import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
+import CopyrightIcon from "@mui/icons-material/Copyright";
+import TransferWithinAStationIcon from "@mui/icons-material/TransferWithinAStation";
 
 export const MENU = [
   {
@@ -67,59 +67,64 @@ export const MENU = [
     path: "/home/userinfo",
   },
   {
-
     module_id: 12,
     label: "Employee Info",
     icon: PersonIcon,
     path: "/home/userinfo/:employeeId",
     alwaysShow: true,
-  }, {
+  },
+  {
     module_id: 11,
     label: "Customers",
     icon: MilitaryTechIcon,
     path: "/home/mycustomer",
-  }, {
+  },
+  {
+    module_id: 16,
+    label: "Motor Calculator",
+    icon: CalculateIcon,
+    path: "/home/calculator",
+  },
+  {
     module_id: 14,
     label: "Reports",
     icon: AssessmentIcon,
     path: "/home/reports",
   },
- {
+  {
     module_id: 13,
     label: "Legacy Sales",
     icon: CopyrightIcon,
     path: "/home/legacy",
   },
-{
+  {
     module_id: 15,
     label: "Lead Transfer",
     icon: TransferWithinAStationIcon,
     path: "/home/transfer",
   },
-
 ];
 
 export const getMenu = (RoleRights = [], userId, role) => {
   const allowed = new Set(RoleRights?.map((item) => item.module_id));
   const isAdmin = role?.toLowerCase() === "admin";
 
-  return MENU
-    .filter((item) => {
-      // Userinfo (module_id: 8) only for admin
-      if (item.module_id === 8 && !isAdmin) return false;
+  return MENU.filter((item) => {
+    // Userinfo (module_id: 8) only for admin
+    if (item.module_id === 8 && !isAdmin) return false;
 
-      // Employee Info (module_id: 8.5) only for employee (non-admin)
-      if (item.module_id === 12 && isAdmin) return false;
+    // Employee Info (module_id: 8.5) only for employee (non-admin)
+    if (item.module_id === 12 && isAdmin) return false;
 
-      if (item.alwaysShow) return true;
-      if (!item.nested) return allowed.has(item.module_id);
+    if (item.alwaysShow) return true;
+    if (!item.nested) return allowed.has(item.module_id);
 
-      const nested = item.nested
-        .filter((sub) => allowed.has(sub.module_id))
-        .sort((a, b) => a.module_id - b.module_id);
+    const nested = item.nested
+      .filter((sub) => allowed.has(sub.module_id))
+      .sort((a, b) => a.module_id - b.module_id);
 
-      return allowed.has(item.module_id) && nested.length > 0;
-    })
+    return allowed.has(item.module_id) && nested.length > 0;
+  })
     .map((item) => {
       let resolvedItem = item;
       if (item.path && item.path.includes(":employeeId")) {
