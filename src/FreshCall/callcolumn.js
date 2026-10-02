@@ -2,11 +2,28 @@ import { useMemo } from "react";
 import { Chip, Stack, Typography, useTheme } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import { Box } from "@mui/joy";
-import { format, isValid } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import Tooltip from "@mui/material/Tooltip";
 
 
+
+const formatDateOnly = (value) => {
+  if (!value) return "-";
+
+  const dateString = String(value).slice(0, 10);
+
+  const date = parse(dateString, "yyyy-MM-dd", new Date());
+
+  return isValid(date) ? format(date, "dd-MM-yyyy") : "-";
+};
+
+
+const getDateOnly = (value) => {
+  if (!value) return "";
+
+  return String(value).slice(0, 10);
+};
 
 export const TastkColumns = (openLead, isMobile = false, isDark) => {
   const mobileColumns = [
@@ -140,7 +157,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             ? value.value
             : (value ?? row?.known_policy_expiry_date);
 
-        return val || null;
+        return getDateOnly(val);
       },
 
       renderCell: ({ value }) => {
@@ -156,7 +173,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {format(new Date(value), "dd-MM-yyyy")}
+              {formatDateOnly(value)}
             </Typography>
           </Stack>
         );
@@ -174,7 +191,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             ? value.value
             : (value ?? row?.registration_date);
 
-        return val || null;
+        return getDateOnly(val);
       },
 
       renderCell: ({ value }) => {
@@ -190,7 +207,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {format(new Date(value), "dd-MM-yyyy")}
+              {formatDateOnly(value)}
             </Typography>
           </Stack>
         );
@@ -208,7 +225,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             ? value.value
             : (value ?? row?.sale_date);
 
-        return val || null;
+        return getDateOnly(val);
       },
 
       renderCell: ({ value }) => {
@@ -224,13 +241,13 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {format(new Date(value), "dd-MM-yyyy")}
+              {formatDateOnly(value)}
             </Typography>
           </Stack>
         );
       },
     },
-    
+
     {
       field: "next_followup_date",
       headerName: "REMINDER DATE",
@@ -243,7 +260,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             ? value.value
             : (value ?? row?.next_followup_date);
 
-        return val || null;
+        return getDateOnly(val);
       },
 
       renderCell: ({ value }) => {
@@ -259,7 +276,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
-              {format(new Date(value), "dd-MM-yyyy")}
+              {formatDateOnly(value)}
             </Typography>
           </Stack>
         );

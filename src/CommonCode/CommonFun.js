@@ -1042,8 +1042,6 @@ export const getVehicleCategory = async () => {
   try {
     const response = await axioslogin.get(`/motor/vehicle-category/getall`);
     const { success, data } = response.data;
-
-   console.log(response.data);
     if (success === 1) return data;
     return [];
   } catch (error) {

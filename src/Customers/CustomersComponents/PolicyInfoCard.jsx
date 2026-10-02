@@ -293,10 +293,7 @@ const PolicyInfoCard = ({
             }
 
         } catch (error) {
-            console.log({
-                error
-            });
-
+            
             warningNotify(
                 error?.response?.data?.message ||
                 "Failed to update policy"

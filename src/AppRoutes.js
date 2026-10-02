@@ -244,6 +244,11 @@ const MotorCalculatorContainer = lazy(
   () => import("./MotorCalculator/MotorCalculatorContainer"),
 );
 
+const MotorVehicleCalculator = lazy(
+  () => import("./MotorCalculator/MotorVehicleCalculator"),
+);
+
+
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -611,6 +616,10 @@ const router = createBrowserRouter([
       {
         path: "calculator",
         element: withSuspense(MotorCalculatorContainer),
+      },
+      {
+        path: "motor-calculator/category/:categoryId",
+        element: withSuspense(MotorVehicleCalculator),
       },
 
       // {
