@@ -19,16 +19,16 @@ const InsuranceDetails = ({
     const ActiveInsuranceCompanyMaster =
         Array.isArray(InsuranceCompanyMaster)
             ? InsuranceCompanyMaster
-                  .filter(
-                      (item) => item.is_active === 1
-                  )
-                  .map((item) => ({
-                      id:
-                          item.insurance_company_id,
-                      label:
-                          item.company_name ||
-                          item.insurance_company_name,
-                  }))
+                .filter(
+                    (item) => item.is_active === 1
+                )
+                .map((item) => ({
+                    id:
+                        item.insurance_company_id,
+                    label:
+                        item.company_name ||
+                        item.insurance_company_name,
+                }))
             : [];
 
     return (
@@ -147,10 +147,10 @@ const InsuranceDetails = ({
                                         "all 0.15s ease",
 
                                     "&:hover":
-                                        {
-                                            borderColor:
-                                                "primary.400",
-                                        },
+                                    {
+                                        borderColor:
+                                            "primary.400",
+                                    },
                                 }}
                             >
                                 {/* ICON */}
@@ -233,66 +233,7 @@ const InsuranceDetails = ({
                 )}
             </Box>
 
-            {/* SELECTED */}
 
-            {value && (
-                <Box
-                    sx={{
-                        mt: 1,
-
-                        px: 1,
-
-                        py: 0.6,
-
-                        display:
-                            "flex",
-
-                        alignItems:
-                            "center",
-
-                        gap: 0.7,
-
-                        borderRadius:
-                            "8px",
-
-                        backgroundColor:
-                            "success.softBg",
-
-                        border: "1px solid",
-
-                        borderColor:
-                            "success.200",
-                    }}
-                >
-                    <CheckCircleRoundedIcon
-                        sx={{
-                            fontSize: 16,
-
-                            color:
-                                "success.500",
-                        }}
-                    />
-
-                    <Typography
-                        level="body-xs"
-                        fontWeight={600}
-                        sx={{
-                            flex: 1,
-                        }}
-                    >
-                        {value.label}
-                    </Typography>
-
-                    <ArrowForwardRoundedIcon
-                        sx={{
-                            fontSize: 16,
-
-                            color:
-                                "success.500",
-                        }}
-                    />
-                </Box>
-            )}
 
             {/* CONFIRM */}
 

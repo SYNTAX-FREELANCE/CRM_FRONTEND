@@ -17,10 +17,7 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2, lead }) => {
 
   const [calling, setCalling] = React.useState(null);
 
-  console.log({
-    lead
-  });
-
+ 
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {}

@@ -1,5 +1,8 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import {
+    Box,
+    Typography,
+} from "@mui/material";
 
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 
@@ -9,7 +12,10 @@ const CalculatorStep = ({
     completed,
     active,
     children,
+    onClick,
 }) => {
+    const canGoBack = completed && !active;
+
     return (
         <Box
             sx={{
@@ -23,17 +29,21 @@ const CalculatorStep = ({
 
                 borderRadius: 1.5,
 
-                // overflow: "hidden",
-
                 backgroundColor:
                     "background.paper",
 
-                transition: "all 0.2s ease",
+                transition:
+                    "all 0.2s ease",
             }}
         >
             {/* STEP HEADER */}
 
             <Box
+                onClick={
+                    canGoBack
+                        ? onClick
+                        : undefined
+                }
                 sx={{
                     minHeight: 48,
 
@@ -44,6 +54,17 @@ const CalculatorStep = ({
                     alignItems: "center",
 
                     gap: 1,
+
+                    cursor: canGoBack
+                        ? "pointer"
+                        : "default",
+
+                    "&:hover": canGoBack
+                        ? {
+                              backgroundColor:
+                                  "action.hover",
+                          }
+                        : {},
                 }}
             >
                 {/* NUMBER / CHECK */}
@@ -63,11 +84,12 @@ const CalculatorStep = ({
 
                         flexShrink: 0,
 
-                        backgroundColor: completed
-                            ? "success.main"
-                            : active
-                            ? "primary.main"
-                            : "action.hover",
+                        backgroundColor:
+                            completed
+                                ? "success.main"
+                                : active
+                                ? "primary.main"
+                                : "action.hover",
 
                         color:
                             completed || active
@@ -114,12 +136,15 @@ const CalculatorStep = ({
                         sx={{
                             fontSize: 10,
 
-                            color: "success.main",
+                            color:
+                                "success.main",
 
                             fontWeight: 600,
                         }}
                     >
-                        Completed
+                        {active
+                            ? "Editing"
+                            : "Completed"}
                     </Typography>
                 )}
 
@@ -128,7 +153,8 @@ const CalculatorStep = ({
                         sx={{
                             fontSize: 10,
 
-                            color: "primary.main",
+                            color:
+                                "primary.main",
 
                             fontWeight: 600,
                         }}
@@ -151,7 +177,8 @@ const CalculatorStep = ({
 
                         borderTop: "1px solid",
 
-                        borderColor: "divider",
+                        borderColor:
+                            "divider",
                     }}
                 >
                     {children}
