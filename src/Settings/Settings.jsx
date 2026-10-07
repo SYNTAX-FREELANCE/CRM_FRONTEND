@@ -142,6 +142,12 @@ const Settings = () => {
           icon: <PeopleIcon />,
         },
         {
+          menuslno: 11,
+          label: "Vehicle Master",
+          path: "/home/setting/vehiclemaster",
+          icon: <PeopleIcon />,
+        },
+        {
           menuslno: 20,
           label: "Policy Source Master",
           path: "/home/setting/policysource",

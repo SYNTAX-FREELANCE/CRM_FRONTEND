@@ -32,9 +32,6 @@ const VehicleSelection = ({
         onChange(data);
     };
 
-    console.log({
-        selectedCustomer
-    });
     
 
     const selectedVehicle =
