@@ -248,6 +248,11 @@ const MotorVehicleCalculator = lazy(
   () => import("./MotorCalculator/MotorVehicleCalculator"),
 );
 
+const MotorVehicleInputFieldCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorVehicleInputFieldCreation"),
+);
+
+
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -621,7 +626,12 @@ const router = createBrowserRouter([
         path: "motor-calculator/category/:categoryId",
         element: withSuspense(MotorVehicleCalculator),
       },
+   {
+        path: "setting/motorvehicleinputfield",
+        element: withSuspense(MotorVehicleInputFieldCreation),
+      },
 
+      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),
