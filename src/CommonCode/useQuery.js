@@ -93,6 +93,8 @@ import {
   getMotorCoverUnitRate,
   getMotorCommissionRule,
   getMotorCashbackRule,
+  getVehicleInputFields,
+  getVehicleInputByCategoires,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -864,6 +866,22 @@ export const useMotorTaxMaster = () => {
   });
 };
 
+export const useMotorInputFields = () => {
+  return useQuery({
+    queryKey: ["motor-input"],
+    queryFn: getVehicleInputFields,
+    staleTime: Infinity,
+  });
+};
+
+export const useVehicleCategoryInputFields = (catId) => {
+  return useQuery({
+    queryKey: ["motor-input-categoires"],
+    queryFn: () => getVehicleInputByCategoires(catId),
+    enabled: !!catId,
+  });
+};
+
 // ==================================
 
 export const useCommonMaster = (type) => {
@@ -1122,6 +1140,10 @@ export const useCommonMaster = (type) => {
     motortax: {
       queryKey: ["motor-tax"],
       queryFn: getMotorTax,
+    },
+    motorvehicleinputfield: {
+      queryKey: ["motor-input"],
+      queryFn: getVehicleInputFields,
     },
   };
 

@@ -1,5 +1,5 @@
 import { axioslogin } from "../Connection/axios";
-import { errorNotify, infoNotify, successNotify } from "../constant/Constant";
+import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
 
 export const FetchRolemaster = async () => {
   try {
@@ -1031,9 +1031,6 @@ export const getPolicyClaimDetails = async (policyId) => {
   }
 };
 
-
-
-
 // =====================================================
 // VEHICLE CATEGORY
 // =====================================================
@@ -1049,9 +1046,6 @@ export const getVehicleCategory = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // VEHICLE CLASS
@@ -1070,8 +1064,6 @@ export const getVehicleClass = async () => {
   }
 };
 
-
-
 // =====================================================
 // FUEL TYPE
 // =====================================================
@@ -1088,9 +1080,6 @@ export const getMotorFuelType = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // VEHICLE USAGE
@@ -1109,8 +1098,6 @@ export const getMotorVehicleUsage = async () => {
   }
 };
 
-
-
 // =====================================================
 // ENGINE CC SLAB
 // =====================================================
@@ -1127,9 +1114,6 @@ export const getMotorEngineCCSlab = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // GVW SLAB
@@ -1148,9 +1132,6 @@ export const getMotorGVWSlab = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // PRODUCT
 // =====================================================
@@ -1167,9 +1148,6 @@ export const getMotorProduct = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // POLICY TYPE
@@ -1188,9 +1166,6 @@ export const getMotorPolicyType = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // BUSINESS TYPE
 // =====================================================
@@ -1207,9 +1182,6 @@ export const getMotorBusinessType = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // POLICY TERM
@@ -1228,9 +1200,6 @@ export const getMotorPolicyTerm = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // OD RATE
 // =====================================================
@@ -1247,8 +1216,6 @@ export const getMotorODRate = async () => {
     return [];
   }
 };
-
-
 
 // =====================================================
 // OD AGE SLAB
@@ -1267,9 +1234,6 @@ export const getMotorODAgeSlab = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // OD DEPRECIATION
 // =====================================================
@@ -1286,8 +1250,6 @@ export const getMotorODDepreciation = async () => {
     return [];
   }
 };
-
-
 
 // =====================================================
 // TP RATE
@@ -1306,8 +1268,6 @@ export const getMotorTPRate = async () => {
   }
 };
 
-
-
 // =====================================================
 // TP RATE SLAB
 // =====================================================
@@ -1324,9 +1284,6 @@ export const getMotorTPRateSlab = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // NCB RULE
@@ -1345,8 +1302,6 @@ export const getMotorNCBRule = async () => {
   }
 };
 
-
-
 // =====================================================
 // NCB CLAIM RULE
 // =====================================================
@@ -1363,9 +1318,6 @@ export const getMotorNCBClaimRule = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // DISCOUNT RULE
@@ -1384,8 +1336,6 @@ export const getMotorDiscountRule = async () => {
   }
 };
 
-
-
 // =====================================================
 // DISCOUNT CONDITION
 // =====================================================
@@ -1402,8 +1352,6 @@ export const getMotorDiscountCondition = async () => {
     return [];
   }
 };
-
-
 
 // =====================================================
 // ZD RATE
@@ -1422,9 +1370,6 @@ export const getMotorZDRate = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // ADDON
 // =====================================================
@@ -1441,9 +1386,6 @@ export const getMotorAddon = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // ADDON RULE
@@ -1462,8 +1404,6 @@ export const getMotorAddonRule = async () => {
   }
 };
 
-
-
 // =====================================================
 // ADDON CONDITION
 // =====================================================
@@ -1480,8 +1420,6 @@ export const getMotorAddonCondition = async () => {
     return [];
   }
 };
-
-
 
 // =====================================================
 // COVER
@@ -1500,9 +1438,6 @@ export const getMotorCover = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // COVER RATE
 // =====================================================
@@ -1519,9 +1454,6 @@ export const getMotorCoverRate = async () => {
     return [];
   }
 };
-
-
-
 
 // =====================================================
 // COVER UNIT RATE
@@ -1540,9 +1472,6 @@ export const getMotorCoverUnitRate = async () => {
   }
 };
 
-
-
-
 // =====================================================
 // COMMISSION RULE
 // =====================================================
@@ -1559,8 +1488,6 @@ export const getMotorCommissionRule = async () => {
     return [];
   }
 };
-
-
 
 // =====================================================
 // CASHBACK RULE
@@ -1579,7 +1506,6 @@ export const getMotorCashbackRule = async () => {
   }
 };
 
-
 // =====================================================
 // TAX
 // =====================================================
@@ -1597,3 +1523,28 @@ export const getMotorTax = async () => {
   }
 };
 
+export const getVehicleInputFields = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/vehicle-input-field/getall`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};
+
+export const getVehicleInputByCategoires = async (categoryId) => {
+  if(!categoryId) return warningNofity("CategoryId is Missing")
+  try {
+    const response = await axioslogin.get(`/motor/vehicle-input-field/getbycategory/${categoryId}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};

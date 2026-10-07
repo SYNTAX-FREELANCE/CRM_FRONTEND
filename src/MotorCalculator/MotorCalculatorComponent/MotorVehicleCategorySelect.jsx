@@ -10,8 +10,9 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import DirectionsCarRoundedIcon from "@mui/icons-material/DirectionsCarRounded";
 
 import { useMotorVehicleCategoryMaster } from "../../CommonCode/useQuery";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
-const BACKEND_IMAGE = "http://localhost:7000";
+
 
 const MotorVehicleCategorySelect = ({
     value,
@@ -111,18 +112,6 @@ const MotorVehicleCategorySelect = ({
                     lg: 8,
                 },
 
-                pt: {
-                    xs: 3,
-                    sm: 4,
-                    md: 5,
-                },
-
-                pb: {
-                    xs: 4,
-                    sm: 5,
-                    md: 6,
-                },
-
                 overflow: "hidden",
 
                 /* Very subtle background */
@@ -164,9 +153,9 @@ const MotorVehicleCategorySelect = ({
                 },
             }}
         >
-            {/* ================================================= */}
+            
             {/* HEADER */}
-            {/* ================================================= */}
+            
 
             <Box
                 sx={{
@@ -274,9 +263,9 @@ const MotorVehicleCategorySelect = ({
                 </Typography>
             </Box>
 
-            {/* ================================================= */}
+            
             {/* VEHICLE GALLERY */}
-            {/* ================================================= */}
+            
 
             <Box
                 sx={{
@@ -306,8 +295,7 @@ const MotorVehicleCategorySelect = ({
                         sm: 6,
                         md: 7,
                     },
-                }}
-            >
+                }}>
                 {activeVehicleCategoryMaster.map(
                     category => {
                         const isSelected =
@@ -351,9 +339,9 @@ const MotorVehicleCategorySelect = ({
 
                                     textAlign: "center",
 
-                                    /* -------------------------------- */
+                                    
                                     /* HOVER */
-                                    /* -------------------------------- */
+                                    
 
                                     "&:hover": {
                                         "& .vehicle-image": {
@@ -379,9 +367,9 @@ const MotorVehicleCategorySelect = ({
                                     },
                                 }}
                             >
-                                {/* ================================= */}
+                                
                                 {/* IMAGE AREA */}
-                                {/* ================================= */}
+                                
 
                                 <Box
                                     sx={{
@@ -619,9 +607,9 @@ const MotorVehicleCategorySelect = ({
                                     )}
                                 </Box>
 
-                                {/* ================================= */}
+                                
                                 {/* VEHICLE TYPE */}
-                                {/* ================================= */}
+                                
 
                                 <Typography
                                     className="vehicle-type"
@@ -657,9 +645,9 @@ const MotorVehicleCategorySelect = ({
                                     }
                                 </Typography>
 
-                                {/* ================================= */}
+                                
                                 {/* CATEGORY NAME */}
-                                {/* ================================= */}
+                                
 
                                 <Typography
                                     className="vehicle-name"
@@ -691,9 +679,9 @@ const MotorVehicleCategorySelect = ({
                                     }
                                 </Typography>
 
-                                {/* ================================= */}
+                                
                                 {/* ACTIVE LINE */}
-                                {/* ================================= */}
+                                
 
                                 <Box
                                     sx={{

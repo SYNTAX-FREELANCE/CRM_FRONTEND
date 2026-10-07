@@ -28,7 +28,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RealEstateAgentIcon from "@mui/icons-material/RealEstateAgent";
 import AddCallIcon from "@mui/icons-material/AddCall";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
-
+import KeyboardIcon from '@mui/icons-material/Keyboard';
 import CategoryIcon from "@mui/icons-material/Category";
 import ClassIcon from "@mui/icons-material/Class";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
@@ -423,6 +423,13 @@ const Settings = () => {
           path: "/home/setting/motortax",
           icon: <PercentIcon />,
         },
+        {
+          menuslno: 56,
+          label: "Vehicle Category Input Fields",
+          path: "/home/setting/motorvehicleinputfield",
+          icon: <KeyboardIcon />,
+        },
+
       ],
     },
   ];
