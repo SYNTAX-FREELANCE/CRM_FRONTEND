@@ -95,6 +95,7 @@ import {
   getMotorCashbackRule,
   getVehicleInputFields,
   getVehicleInputByCategoires,
+  getOdRateSLabMaster,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -882,6 +883,13 @@ export const useVehicleCategoryInputFields = (catId) => {
   });
 };
 
+export const useMotorODRateSlabMaster = () => {
+  return useQuery({
+    queryKey: ["motor-od-rate-slab"],
+    queryFn: getOdRateSLabMaster,
+  });
+};
+
 // ==================================
 
 export const useCommonMaster = (type) => {
@@ -1144,6 +1152,10 @@ export const useCommonMaster = (type) => {
     motorvehicleinputfield: {
       queryKey: ["motor-input"],
       queryFn: getVehicleInputFields,
+    },
+    motorodrateslab: {
+      queryKey: ["motor-od-rate-slab"],
+      queryFn: getOdRateSLabMaster,
     },
   };
 

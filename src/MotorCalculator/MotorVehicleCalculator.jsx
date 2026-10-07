@@ -42,6 +42,7 @@ import VehicleCategoryHeader from "./MotorCalculatorComponent/VehicleCategoryHea
 import AddonsSection from "./MotorCalculatorComponent/AddonsSection";
 import AdditionalCoversSection from "./MotorCalculatorComponent/AdditionalCoversSection";
 import PremiumCalculationSummary from "./MotorCalculatorComponent/PremiumCalculationSummary";
+import { warningNofity } from "../constant/Constant";
 
 
 const MotorVehicleCalculator = () => {
@@ -738,6 +739,7 @@ const MotorVehicleCalculator = () => {
                     data
                 );
 
+                if (success === 0) return warningNofity(message)
 
                 setCalculationData(
                     data || null
