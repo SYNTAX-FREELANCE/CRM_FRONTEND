@@ -155,37 +155,102 @@ const MotorVehicleCategoryCreation = lazy(
   () => import("../src/Masters/MotorCalculator/MotorVehicleCategoryCreation"),
 );
 
+const MotorVehicleClassCreation = lazy(
+  () => import("../src/Masters/MotorCalculator/MotorVehicleClassCreation"),
+);
+const MotorFuelTypeCreation = lazy(
+  () => import("../src/Masters/MotorCalculator/MotorFuelTypeCreation"),
+);
+const MotorVehicleUsageCreation = lazy(
+  () => import("../src/Masters/MotorCalculator/MotorVehicleUsageCreation"),
+);
+const MotorEngineCCSlabCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorEngineCCSlabCreation"),
+);
+const MotorGVWSlabCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorGVWSlabCreation"),
+);
+const MotorProductCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorProductCreation"),
+);
+const MotorPolicyTypeCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorPolicyTypeCreation"),
+);
+const MotorBusinessTypeCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorBusinessTypeCreation"),
+);
+const MotorPolicyTermCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorPolicyTermCreation"),
+);
+const MotorOdRateCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorOdRateCreation"),
+);
+const MotorOdAgeSlabCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorOdAgeSlabCreation"),
+);
+const MotorOdDepreciationCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorOdDepreciationCreation"),
+);
+const MotorTpRateCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorTpRateCreation"),
+);
+const MotorTpRateSlabCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorTpRateSlabCreation"),
+);
+const MotorNcbRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorNcbRuleCreation"),
+);
+const MotorNcbClaimRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorNcbClaimRuleCreation"),
+);
+const MotorDiscountRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorDiscountRuleCreation"),
+);
+const MotorDiscountConditionCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorDiscountConditionCreation"),
+);
+const MotorZdRateCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorZdRateCreation"),
+);
+const MotorAddonCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorAddonCreation"),
+);
+const MotorAddonRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorAddonRuleCreation"),
+);
+const MotorAddonConditionCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorAddonConditionCreation"),
+);
+const MotorCoverCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorCoverCreation"),
+);
+const MotorCoverRateCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorCoverRateCreation"),
+);
+const MotorCoverUnitRateCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorCoverUnitRateCreation"),
+);
+const MotorCommissionRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorCommissionRuleCreation"),
+);
+const MotorCashbackRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorCashbackRuleCreation"),
+);
+const MotorTaxCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorTaxCreation"),
+);
 
+const MotorCalculatorContainer = lazy(
+  () => import("./MotorCalculator/MotorCalculatorContainer"),
+);
 
+const MotorVehicleCalculator = lazy(
+  () => import("./MotorCalculator/MotorVehicleCalculator"),
+);
 
-const MotorVehicleClassCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorVehicleClassCreation"));
-const MotorFuelTypeCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorFuelTypeCreation"));
-const MotorVehicleUsageCreation = lazy(() => import("../src/Masters/MotorCalculator/MotorVehicleUsageCreation"));
-const MotorEngineCCSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorEngineCCSlabCreation"));
-const MotorGVWSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorGVWSlabCreation"));
-const MotorProductCreation = lazy(() => import("./Masters/MotorCalculator/MotorProductCreation"));
-const MotorPolicyTypeCreation = lazy(() => import("./Masters/MotorCalculator/MotorPolicyTypeCreation"));
-const MotorBusinessTypeCreation = lazy(() => import("./Masters/MotorCalculator/MotorBusinessTypeCreation"));
-const MotorPolicyTermCreation = lazy(() => import("./Masters/MotorCalculator/MotorPolicyTermCreation"));
-const MotorOdRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdRateCreation"));
-const MotorOdAgeSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdAgeSlabCreation"));
-const MotorOdDepreciationCreation = lazy(() => import("./Masters/MotorCalculator/MotorOdDepreciationCreation"));
-const MotorTpRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorTpRateCreation"));
-const MotorTpRateSlabCreation = lazy(() => import("./Masters/MotorCalculator/MotorTpRateSlabCreation"));
-const MotorNcbRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbRuleCreation"));
-const MotorNcbClaimRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorNcbClaimRuleCreation"));
-const MotorDiscountRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorDiscountRuleCreation"));
-const MotorDiscountConditionCreation = lazy(() => import("./Masters/MotorCalculator/MotorDiscountConditionCreation"));
-const MotorZdRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorZdRateCreation"));
-const MotorAddonCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonCreation"));
-const MotorAddonRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonRuleCreation"));
-const MotorAddonConditionCreation = lazy(() => import("./Masters/MotorCalculator/MotorAddonConditionCreation"));
-const MotorCoverCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverCreation"));
-const MotorCoverRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverRateCreation"));
-const MotorCoverUnitRateCreation = lazy(() => import("./Masters/MotorCalculator/MotorCoverUnitRateCreation"));
-const MotorCommissionRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorCommissionRuleCreation"));
-const MotorCashbackRuleCreation = lazy(() => import("./Masters/MotorCalculator/MotorCashbackRuleCreation"));
-const MotorTaxCreation = lazy(() => import("./Masters/MotorCalculator/MotorTaxCreation"));
+const MotorVehicleInputFieldCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorVehicleInputFieldCreation"),
+);
 
 
 
@@ -552,7 +617,21 @@ const router = createBrowserRouter([
       {
         path: "setting/motortax",
         element: withSuspense(MotorTaxCreation),
-      }
+      },
+      {
+        path: "calculator",
+        element: withSuspense(MotorCalculatorContainer),
+      },
+      {
+        path: "motor-calculator/category/:categoryId",
+        element: withSuspense(MotorVehicleCalculator),
+      },
+   {
+        path: "setting/motorvehicleinputfield",
+        element: withSuspense(MotorVehicleInputFieldCreation),
+      },
+
+      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),

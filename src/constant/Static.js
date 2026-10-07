@@ -9,7 +9,7 @@
 // export const BACKEND_IMAGE = "http://192.168.1.3:7000";
 
 
-
 export const BACKEND_API = "http://localhost:7000/api";
-
 export const BACKEND_IMAGE = "http://localhost:7000";
+
+
