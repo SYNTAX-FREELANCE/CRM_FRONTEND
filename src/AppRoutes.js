@@ -252,7 +252,9 @@ const MotorVehicleInputFieldCreation = lazy(
   () => import("./Masters/MotorCalculator/MotorVehicleInputFieldCreation"),
 );
 
-
+const MotorOdRateSlabCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorOdRateSlabCreation"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -626,12 +628,15 @@ const router = createBrowserRouter([
         path: "motor-calculator/category/:categoryId",
         element: withSuspense(MotorVehicleCalculator),
       },
-   {
+      {
         path: "setting/motorvehicleinputfield",
         element: withSuspense(MotorVehicleInputFieldCreation),
       },
+      {
+        path: "setting/motorodrateslab",
+        element: withSuspense(MotorOdRateSlabCreation),
+      },
 
-      
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),

@@ -1548,3 +1548,16 @@ export const getVehicleInputByCategoires = async (categoryId) => {
     return [];
   }
 };
+
+
+export const getOdRateSLabMaster = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/od-rate-slab/getall`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};

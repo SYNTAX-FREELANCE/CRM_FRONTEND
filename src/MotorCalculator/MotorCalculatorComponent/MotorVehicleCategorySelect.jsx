@@ -296,7 +296,7 @@ const MotorVehicleCategorySelect = ({
                         md: 7,
                     },
                 }}>
-                {activeVehicleCategoryMaster.map(
+                {activeVehicleCategoryMaster?.map(
                     category => {
                         const isSelected =
                             Number(selectedCategory) ===

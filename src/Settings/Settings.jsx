@@ -436,6 +436,13 @@ const Settings = () => {
           icon: <KeyboardIcon />,
         },
 
+        {
+          menuslno: 57,
+          label: "Motor Od Rate Slab",
+          path: "/home/setting/motorodrateslab",
+          icon: <AccessTimeIcon />,
+        },
+
       ],
     },
   ];
