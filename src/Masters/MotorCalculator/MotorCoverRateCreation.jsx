@@ -50,82 +50,83 @@ const MotorCoverRateCreation = () => {
         isActive: "Active",
     });
 
-const { data: InsuranceCompanyMaster = [] } =
-    useInsuranceCompanyMaster();
+    const { data: InsuranceCompanyMaster = [] } =
+        useInsuranceCompanyMaster();
 
-const { data: ProductMaster = [] } =
-    useMotorProductMaster();
+    const { data: ProductMaster = [] } =
+        useMotorProductMaster();
 
-const { data: PolicyTypeMaster = [] } =
-    useMotorPolicyTypeMaster();
+    const { data: PolicyTypeMaster = [] } =
+        useMotorPolicyTypeMaster();
 
-const { data: VehicleCategoryMaster = [] } =
-    useMotorVehicleCategoryMaster();
+    const { data: VehicleCategoryMaster = [] } =
+        useMotorVehicleCategoryMaster();
 
-const { data: VehicleClassMaster = [] } =
-    useMotorVehicleClassMaster();
+    const { data: VehicleClassMaster = [] } =
+        useMotorVehicleClassMaster();
 
-const { data: CoverMaster = [] } =
-    useMotorCoverMaster();
+    const { data: CoverMaster = [] } =
+        useMotorCoverMaster();
 
 
     const ActiveCoverMaster =
-    CoverMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.cover_id,
-            label:
-                `${item?.cover_code || ""} - ` +
-                `${item?.cover_name || ""}`,
-        })) || [];
+        CoverMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1)
+            ?.map(item => ({
+                id: item.cover_id,
+                label:
+                    `${item?.cover_code || ""} - ` +
+                    `${item?.cover_name || ""}`,
+            })) || [];
 
-const ActiveInsuranceCompanyMaster =
-    InsuranceCompanyMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.insurance_company_id,
-            label: item.company_name,
-        })) || [];
+    const ActiveInsuranceCompanyMaster =
+        InsuranceCompanyMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1)
+            ?.map(item => ({
+                id: item.insurance_company_id,
+                label: item.company_name,
+            })) || [];
 
-const ActiveProductMaster =
-    ProductMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.product_id,
-            label:
-                `${item?.product_code || ""} - ` +
-                `${item?.product_name || ""}`,
-        })) || [];
+    const ActiveProductMaster =
+        ProductMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1)
+            ?.map(item => ({
+                id: item.product_id,
+                label:
+                    `${item?.product_code || ""} - ` +
+                    `${item?.product_name || ""}`,
+            })) || [];
 
-const ActivePolicyTypeMaster =
-    PolicyTypeMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.policy_type_id,
-            label:
-                `${item?.policy_type_code || ""} - ` +
-                `${item?.policy_type_name || ""}`,
-        })) || [];
+    const ActivePolicyTypeMaster =
+        PolicyTypeMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1)
+            ?.map(item => ({
+                id: item.policy_type_id,
+                label:
+                    `${item?.policy_type_code || ""} - ` +
+                    `${item?.policy_type_name || ""}`,
+            })) || [];
 
-const ActiveVehicleCategoryMaster =
-    VehicleCategoryMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.vehicle_category_id,
-            label:
-                `${item?.category_code || ""} - ` +
-                `${item?.category_name || ""}`,
-        })) || [];
+    const ActiveVehicleCategoryMaster =
+        VehicleCategoryMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1)
+            ?.map(item => ({
+                id: item.vehicle_category_id,
+                label:
+                    `${item?.category_code || ""} - ` +
+                    `${item?.category_name || ""}`,
+            })) || [];
 
-const ActiveVehicleClassMaster =
-    VehicleClassMaster
-        ?.filter(item => Number(item?.is_active ?? 1) === 1)
-        ?.map(item => ({
-            id: item.vehicle_class_id,
-            label:
-                `${item?.class_code || ""} - ` +
-                `${item?.class_name || ""}`,
-        })) || [];
+    const ActiveVehicleClassMaster =
+        VehicleClassMaster
+            ?.filter(item => Number(item?.is_active ?? 1) === 1 &&
+                Number(coverRate?.vehicleCategoryId === item.vehicle_category_id))
+            ?.map(item => ({
+                id: item.vehicle_class_id,
+                label:
+                    `${item?.class_code || ""} - ` +
+                    `${item?.class_name || ""}`,
+            })) || [];
 
     const RateTypeOptions = [
         {
@@ -319,7 +320,7 @@ const ActiveVehicleClassMaster =
         if (
             coverRate.effectiveTo &&
             coverRate.effectiveTo <
-                coverRate.effectiveFrom
+            coverRate.effectiveFrom
         ) {
             errorNotify(
                 "Effective to date cannot be before effective from date"
@@ -462,8 +463,8 @@ const ActiveVehicleClassMaster =
                 insurance_company_id:
                     coverRate.insuranceCompanyId
                         ? Number(
-                              coverRate.insuranceCompanyId
-                          )
+                            coverRate.insuranceCompanyId
+                        )
                         : null,
 
                 product_id: Number(
@@ -473,22 +474,22 @@ const ActiveVehicleClassMaster =
                 policy_type_id:
                     coverRate.policyTypeId
                         ? Number(
-                              coverRate.policyTypeId
-                          )
+                            coverRate.policyTypeId
+                        )
                         : null,
 
                 vehicle_category_id:
                     coverRate.vehicleCategoryId
                         ? Number(
-                              coverRate.vehicleCategoryId
-                          )
+                            coverRate.vehicleCategoryId
+                        )
                         : null,
 
                 vehicle_class_id:
                     coverRate.vehicleClassId
                         ? Number(
-                              coverRate.vehicleClassId
-                          )
+                            coverRate.vehicleClassId
+                        )
                         : null,
 
                 rate_type:
@@ -541,11 +542,10 @@ const ActiveVehicleClassMaster =
             ) {
                 successNotify(
                     response?.data?.message ||
-                        `Cover rate ${
-                            mode === "edit"
-                                ? "updated"
-                                : "created"
-                        } successfully`
+                    `Cover rate ${mode === "edit"
+                        ? "updated"
+                        : "created"
+                    } successfully`
                 );
 
                 handleCancel();
@@ -556,7 +556,7 @@ const ActiveVehicleClassMaster =
             } else {
                 errorNotify(
                     response?.data?.message ||
-                        "Failed to save cover rate"
+                    "Failed to save cover rate"
                 );
             }
         } catch (error) {
@@ -564,7 +564,7 @@ const ActiveVehicleClassMaster =
 
             errorNotify(
                 error?.response?.data?.message ||
-                    "Failed to save cover rate"
+                "Failed to save cover rate"
             );
         } finally {
             setLoading(false);

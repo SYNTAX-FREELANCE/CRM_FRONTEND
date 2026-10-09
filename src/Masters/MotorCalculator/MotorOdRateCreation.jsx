@@ -49,6 +49,11 @@ const MotorOdRateCreation = () => {
         isActive: "Active"
     });
 
+    console.log(
+        odRate?.vehicleCategoryId
+    );
+
+
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -126,6 +131,13 @@ const MotorOdRateCreation = () => {
             : [];
 
 
+    console.log(odRate?.vehicleCategoryId);
+
+    console.log({
+        VehicleClassMaster
+    });
+
+
     const ActiveVehicleCategoryMaster =
         Array.isArray(VehicleCategoryMaster)
             ? VehicleCategoryMaster
@@ -140,7 +152,8 @@ const MotorOdRateCreation = () => {
     const ActiveVehicleClassMaster =
         Array.isArray(VehicleClassMaster)
             ? VehicleClassMaster
-                .filter(item => item.is_active === 1)
+                .filter(item => item.is_active === 1 &&
+                    Number(item.vehicle_category_id) === Number(odRate?.vehicleCategoryId))
                 .map(item => ({
                     id: item.vehicle_class_id,
                     label: item.class_name
@@ -438,7 +451,9 @@ const MotorOdRateCreation = () => {
                     odRate.effectiveTo || null,
 
                 description:
-                    odRate.description?.trim() || null
+                    odRate.description?.trim() || null,
+
+                isactive: odRate.isActive === 'Active' ? 1 : 0
             };
 
 
@@ -557,14 +572,14 @@ const MotorOdRateCreation = () => {
                                             "effective_from",
                                         headerName:
                                             "Effective From",
-                                               type: "date"
+                                        type: "date"
                                     },
                                     {
                                         field:
                                             "effective_to",
                                         headerName:
                                             "Effective To",
-                                               type: "date"
+                                        type: "date"
                                     },
                                     {
                                         field:

@@ -504,7 +504,7 @@ const MotorOdRateSlabCreation = () => {
                 field: "min_age_months",
                 headerName: "Min Age (Months)"
             },
-            
+
             {
                 field: "max_age_months",
                 headerName: "Max Age (Months)"
@@ -523,7 +523,8 @@ const MotorOdRateSlabCreation = () => {
             {
                 field: "is_active",
                 headerName: "Status",
-                type: "status"
+                type:
+                    "status"
             }
 
         ]
@@ -591,7 +592,9 @@ const MotorOdRateSlabCreation = () => {
                     Number(odRateSlab.rateValue),
 
                 description:
-                    odRateSlab.description?.trim() || null
+                    odRateSlab.description?.trim() || null,
+
+                is_active: odRateSlab.isActive === "Active" ? 1 : 0
 
             };
 
