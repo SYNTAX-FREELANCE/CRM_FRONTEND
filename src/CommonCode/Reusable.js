@@ -1098,3 +1098,24 @@ export const glassStyles = (isDark) => ({
     zIndex: 1,
   },
 });
+
+
+export const FieldCodeMaster = [
+    { id: "product_id", label: "Product", type: "SELECT", placeholder: "Select product" },
+    { id: "policy_type_id", label: "Policy Type", type: "SELECT", placeholder: "Select policy type" },
+    { id: "business_type_id", label: "Business Type", type: "SELECT", placeholder: "Select business type" },
+    { id: "policy_term_id", label: "Policy Term", type: "SELECT", placeholder: "Select policy term" },
+    { id: "vehicle_class_id", label: "Vehicle Class", type: "SELECT", placeholder: "Select vehicle class" },
+    { id: "registration_date", label: "Registration Date", type: "DATE", placeholder: "Select registration date" },
+    { id: "policy_start_date", label: "Policy Start Date", type: "DATE", placeholder: "Select policy start date" },
+    { id: "claim_status", label: "Claim in Previous Policy", type: "CHECKBOX", placeholder: "" },
+    { id: "previous_ncb_percentage", label: "Previous Year NCB (%)", type: "DECIMAL", placeholder: "Enter previous NCB percentage" },
+    { id: "idv", label: "IDV", type: "DECIMAL", placeholder: "Enter IDV" },
+    { id: "engine_cc", label: "Engine Capacity (CC)", type: "NUMBER", placeholder: "Enter engine capacity in CC" },
+    { id: "previous_policy_type_id", label: "Previous Policy Type", type: "SELECT", placeholder: "Select previous policy type" },
+    { id: "gvw", label: "Gross Vehicle Weight (KG)", type: "NUMBER", placeholder: "Enter gross vehicle weight in KG" },
+    { id: "seating_capacity", label: "Seating Capacity", type: "NUMBER", placeholder: "Enter seating capacity" },
+    { id: "discount_percentage", label: "Discount (%)", type: "DECIMAL", placeholder: "Enter discount percentage" },
+    { id: "max_cashback", label: "Maximum Cashback", type: "DECIMAL", placeholder: "Enter maximum cashback" },
+    { id: "cashback_amount", label: "Cashback Amount", type: "DECIMAL", placeholder: "Enter cashback amount" },
+];

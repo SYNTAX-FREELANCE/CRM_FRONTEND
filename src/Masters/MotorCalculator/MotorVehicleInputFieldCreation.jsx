@@ -19,6 +19,7 @@ import {
 
 import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 import { useMotorVehicleCategoryMaster, useMotorVehicleClassMaster } from "../../CommonCode/useQuery";
+import { FieldCodeMaster } from "../../CommonCode/Reusable";
 
 const MotorVehicleInputFieldCreation = () => {
 
@@ -63,7 +64,23 @@ const MotorVehicleInputFieldCreation = () => {
     });
 
 
-    
+    const handleFieldCodeChange = (value) => {
+        const fieldCode = value?.target?.value ?? value;
+
+        const selectedField = FieldCodeMaster.find(
+            item => item.id === fieldCode
+        );
+
+        if (!selectedField) return;
+
+        setInputField(prev => ({
+            ...prev,
+            fieldCode: selectedField.id,
+            fieldLabel: selectedField.label,
+            fieldType: selectedField.type,
+            placeholder: selectedField.placeholder,
+        }));
+    };
 
 
     const categoryMaster =
@@ -902,22 +919,15 @@ const MotorVehicleInputFieldCreation = () => {
                         </FormRow>
 
 
-                        <FormRow
-                            label="Field Code"
-                            required
-                        >
-
-                            <InputLg
-                                value={
-                                    inputField.fieldCode
-                                }
-                                onChange={
-                                    set(
-                                        "fieldCode"
-                                    )
-                                }
+                        <FormRow label="Field Code" required>
+                            <SelectLg
+                                options={FieldCodeMaster?.map(item => ({
+                                    id: item.id,
+                                    label: `${item.id} - ${item.label}`,
+                                }))}
+                                value={inputField.fieldCode}
+                                onChange={handleFieldCodeChange}
                             />
-
                         </FormRow>
 
 

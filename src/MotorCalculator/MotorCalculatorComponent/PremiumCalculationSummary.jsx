@@ -1,5 +1,3 @@
-
-
 import React, { useMemo } from "react";
 import {
     Box,
@@ -23,6 +21,11 @@ const PremiumCalculationSummary = ({
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
 
+    console.log({
+        formData
+    });
+    
+
     const money = (value) => {
         const number = Number(value || 0);
 
@@ -33,11 +36,21 @@ const PremiumCalculationSummary = ({
         const idv = Number(formData?.idv || 0);
 
         /*
-         * 1. OWN DAMAGE
+         * STEP 01: IDV
+         */
+
+        /*
+         * STEP 02: BASIC OWN DAMAGE PREMIUM
+         *
+         * Prefer the backend OD calculation when available.
+         * Otherwise calculate using the applicable OD rate.
          */
 
         const odRule = calculationData?.od_rate?.[0];
-        const odRateType = odRule?.rate_type || "PERCENTAGE";
+
+        const odRateType = String(
+            odRule?.rate_type || "PERCENTAGE"
+        ).toUpperCase();
 
         const odRateValue = Number(
             odRule?.slab_rate_value ??
@@ -46,19 +59,28 @@ const PremiumCalculationSummary = ({
             0
         );
 
-        let odPremium = 0;
+        const backendOD = calculationData?.od_calculation;
+
+        let calculatedBasicOD = 0;
         let odFormula = "";
 
         if (odRateType === "PERCENTAGE") {
-            odPremium = (idv * odRateValue) / 100;
+            calculatedBasicOD = (idv * odRateValue) / 100;
             odFormula = `${money(idv)} × ${odRateValue}%`;
         } else if (odRateType === "FIXED") {
-            odPremium = odRateValue;
+            calculatedBasicOD = odRateValue;
             odFormula = "Fixed OD amount";
         }
 
+        const odPremium = Number(
+            backendOD?.basic_od_premium ?? calculatedBasicOD
+        );
+
         /*
-         * 2. NCB
+         * STEP 03: NCB
+         *
+         * Use the backend NCB amount when available so that
+         * the displayed result matches the backend calculation.
          */
 
         const ncbRule = calculationData?.ncb_rule?.[0];
@@ -66,6 +88,7 @@ const PremiumCalculationSummary = ({
         const ncbPercentage = Math.min(
             Math.max(
                 Number(
+                    backendOD?.ncb_percentage ??
                     ncbRule?.calculated_ncb_percentage ??
                     ncbRule?.ncb_percentage ??
                     0
@@ -75,31 +98,103 @@ const PremiumCalculationSummary = ({
             100
         );
 
-        const ncbAmount = (odPremium * ncbPercentage) / 100;
-        const netOD = Math.max(0, odPremium - ncbAmount);
+        const calculatedNCBAmount =
+            (odPremium * ncbPercentage) / 100;
+
+        const ncbAmount = Math.min(
+            odPremium,
+            Math.max(
+                0,
+                Number(
+                    backendOD?.ncb_amount ?? calculatedNCBAmount
+                )
+            )
+        );
+
+        const premiumAfterNCB = Math.max(
+            0,
+            odPremium - ncbAmount
+        );
 
         /*
-         * 3. ADD-ONS
+         * CONFIGURED OD DISCOUNT
+         *
+         * The backend's final_od_premium already includes
+         * the configured OD discount when that calculation
+         * is returned by the API.
+         *
+         * Do not apply the same configured discount twice.
+         */
+
+        const discountRule =
+            calculationData?.discount_rule?.[0];
+
+        const configuredDiscountPercentage = Number(
+            backendOD?.discount_percentage ??
+            discountRule?.discount_percentage ??
+            discountRule?.rate_value ??
+            discountRule?.discount_rate ??
+            0
+        );
+
+        const calculatedConfiguredDiscount =
+            (premiumAfterNCB *
+                Math.max(0, configuredDiscountPercentage)) /
+            100;
+
+        const configuredDiscountAmount = Math.max(
+            0,
+            Number(
+                backendOD?.discount_amount ??
+                calculatedConfiguredDiscount
+            )
+        );
+
+        const calculatedFinalOD = Math.max(
+            0,
+            premiumAfterNCB - configuredDiscountAmount
+        );
+
+        /*
+         * This is the final OD premium after NCB and the
+         * configured OD discount.
+         */
+
+        const netOD = Math.max(
+            0,
+            Number(
+                backendOD?.final_od_premium ?? calculatedFinalOD
+            )
+        );
+
+        /*
+         * STEP 04: ADD-ONS
          */
 
         const selectedAddonIds = Array.isArray(formData?.addon_ids)
             ? formData.addon_ids.map(Number)
             : [];
 
-        const selectedAddons = (calculationData?.addons || []).filter(
-            (item) => selectedAddonIds.includes(Number(item.addon_id))
+        const selectedAddons = (
+            calculationData?.addons || []
+        ).filter((item) =>
+            selectedAddonIds.includes(Number(item.addon_id))
         );
 
         const addonDetails = selectedAddons.map((item) => {
+            const rateType = String(
+                item.rate_type || "PERCENTAGE"
+            ).toUpperCase();
+
             const rateValue = Number(item.rate_value || 0);
 
             let amount = 0;
             let formula = "";
 
-            if (item.rate_type === "PERCENTAGE") {
+            if (rateType === "PERCENTAGE") {
                 amount = (idv * rateValue) / 100;
                 formula = `${money(idv)} × ${rateValue}%`;
-            } else if (item.rate_type === "FIXED") {
+            } else if (rateType === "FIXED") {
                 amount = rateValue;
                 formula = "Fixed amount";
             }
@@ -112,16 +207,20 @@ const PremiumCalculationSummary = ({
         });
 
         const addonTotal = addonDetails.reduce(
-            (total, item) => total + Number(item.calculated_amount || 0),
+            (total, item) =>
+                total + Number(item.calculated_amount || 0),
             0
         );
 
         /*
-         * 4. THIRD PARTY
+         * STEP 05: THIRD-PARTY PREMIUM
          */
 
         const tpRule = calculationData?.tp_rate?.[0];
-        const tpRateType = tpRule?.rate_type || "FIXED";
+
+        const tpRateType = String(
+            tpRule?.rate_type || "FIXED"
+        ).toUpperCase();
 
         const tpRateValue = Number(
             tpRule?.slab_rate_value ??
@@ -133,45 +232,56 @@ const PremiumCalculationSummary = ({
         let tpPremium = 0;
         let tpFormula = "";
 
-        if (tpRateType === "PERCENTAGE") {
-            tpPremium = (idv * tpRateValue) / 100;
-            tpFormula = `${money(idv)} × ${tpRateValue}%`;
-        } else {
-            tpPremium = tpRateValue;
-            tpFormula = "Fixed TP rate";
+        if (tpRule) {
+            if (tpRateType === "PERCENTAGE") {
+                tpPremium = (idv * tpRateValue) / 100;
+                tpFormula = `${money(idv)} × ${tpRateValue}%`;
+            } else if (tpRateType === "FIXED") {
+                tpPremium = tpRateValue;
+                tpFormula = "Fixed TP rate";
+            }
         }
 
         /*
-         * 5. ADDITIONAL COVERS
+         * STEP 06: ADDITIONAL COVERS
          */
 
         const selectedCoverIds = Array.isArray(formData?.cover_ids)
             ? formData.cover_ids.map(Number)
             : [];
 
-        const selectedCovers = (calculationData?.covers || []).filter(
-            (item) => selectedCoverIds.includes(Number(item.cover_id))
+        const selectedCovers = (
+            calculationData?.covers || []
+        ).filter((item) =>
+            selectedCoverIds.includes(Number(item.cover_id))
         );
 
-        const seatingCapacity = Number(formData?.seating_capacity || 0);
+        const seatingCapacity = Number(
+            formData?.seating_capacity || 0
+        );
 
         const coverDetails = selectedCovers.map((item) => {
+            const rateType = String(
+                item.rate_type || "FIXED"
+            ).toUpperCase();
+
             const rateValue = Number(item.rate_value || 0);
 
             let amount = 0;
             let calculable = true;
             let formula = "";
 
-            if (item.rate_type === "FIXED") {
+            if (rateType === "FIXED") {
                 amount = rateValue;
                 formula = "Fixed amount";
-            } else if (item.rate_type === "PERCENTAGE") {
+            } else if (rateType === "PERCENTAGE") {
                 amount = (idv * rateValue) / 100;
                 formula = `${money(idv)} × ${rateValue}%`;
-            } else if (item.rate_type === "PER_UNIT") {
+            } else if (rateType === "PER_UNIT") {
                 if (seatingCapacity > 0) {
                     amount = rateValue * seatingCapacity;
-                    formula = `${money(rateValue)} × ${seatingCapacity} units`;
+                    formula =
+                        `${money(rateValue)} × ${seatingCapacity} units`;
                 } else {
                     calculable = false;
                     formula = `${money(rateValue)} × seating capacity`;
@@ -189,32 +299,47 @@ const PremiumCalculationSummary = ({
         const coverTotal = coverDetails.reduce(
             (total, item) =>
                 total +
-                Number(item.calculable ? item.calculated_amount : 0),
+                Number(
+                    item.calculable ? item.calculated_amount : 0
+                ),
             0
         );
 
         /*
-         * 6. PREMIUM BEFORE DE-TARIFF DISCOUNT
+         * STEP 07: PREMIUM BEFORE DE-TARIFF DISCOUNT
+         *
+         * The configured OD discount is already included in netOD.
+         * This subtotal is before the separately entered
+         * de-tariff discount.
          */
 
         const subtotalBeforeDiscount =
             netOD + addonTotal + tpPremium + coverTotal;
 
         /*
-         * 7. DE-TARIFF DISCOUNT
+         * STEP 08: DE-TARIFF DISCOUNT
+         *
+         * Apply the manually entered de-tariff discount to
+         * the OD premium only, not to TP, add-ons or covers.
          */
 
-        const deTariffDiscountPercentage = Number(
-            formData?.de_tariff_discount || 0
-        );
-
-        const validDeTariffDiscountPercentage = Math.min(
-            Math.max(deTariffDiscountPercentage, 0),
+        const deTariffDiscountPercentage = Math.min(
+            Math.max(
+                Number(formData?.de_tariff_discount || 0),
+                0
+            ),
             100
         );
 
-        const deTariffDiscountAmount =
-            (subtotalBeforeDiscount * validDeTariffDiscountPercentage) / 100;
+        const deTariffDiscountAmount = Math.min(
+            netOD,
+            (netOD * deTariffDiscountPercentage) / 100
+        );
+
+        const discountedOD = Math.max(
+            0,
+            netOD - deTariffDiscountAmount
+        );
 
         const subtotal = Math.max(
             0,
@@ -222,11 +347,14 @@ const PremiumCalculationSummary = ({
         );
 
         /*
-         * 8. TAXES
+         * STEP 09: COMPONENT-WISE TAX
          *
-         * calculationData.tax must contain only applicable taxes.
-         * PERCENTAGE: calculated on the premium subtotal.
-         * FIXED: expects tax_amount from the API.
+         * OD tax   -> OD after de-tariff discount
+         * TP tax   -> TP premium
+         * ADDON tax -> add-on premium
+         * COVER tax -> cover premium
+         *
+         * Never apply every component's tax to the entire subtotal.
          */
 
         const applicableTaxes = Array.isArray(calculationData?.tax)
@@ -234,34 +362,86 @@ const PremiumCalculationSummary = ({
             : [];
 
         const taxDetails = applicableTaxes.map((tax) => {
-            const taxType = tax.tax_type;
-            const taxPercentage = Number(tax.tax_percentage || 0);
-            const fixedAmount = Number(tax.tax_amount || 0);
+            const taxType = String(
+                tax.tax_type || "PERCENTAGE"
+            ).toUpperCase();
+
+            const component = String(
+                tax.premium_component || ""
+            ).toUpperCase();
+
+            const taxPercentage = Number(
+                tax.tax_percentage || 0
+            );
+
+            let taxableAmount = 0;
+
+            switch (component) {
+                case "OD":
+                    taxableAmount = discountedOD;
+                    break;
+
+                case "TP":
+                    taxableAmount = tpPremium;
+                    break;
+
+                case "ADDON":
+                    taxableAmount = addonTotal;
+                    break;
+
+                case "COVER":
+                    taxableAmount = coverTotal;
+                    break;
+
+                default:
+                    taxableAmount = 0;
+                    break;
+            }
 
             let amount = 0;
             let formula = "";
 
             if (taxType === "PERCENTAGE") {
-                amount = (subtotal * taxPercentage) / 100;
-                formula = `${money(subtotal)} × ${taxPercentage}%`;
+                amount =
+                    (taxableAmount * taxPercentage) / 100;
+
+                formula =
+                    `${money(taxableAmount)} × ${taxPercentage}%`;
             } else if (taxType === "FIXED") {
-                amount = fixedAmount;
+                /*
+                 * Your current tax API query must return tax_amount
+                 * or an equivalent fixed-tax field for FIXED taxes.
+                 */
+
+                amount = Number(
+                    tax.tax_amount ??
+                    tax.fixed_amount ??
+                    tax.tax_value ??
+                    0
+                );
+
                 formula = "Fixed tax amount";
             }
 
             return {
                 ...tax,
+                premium_component: component,
+                taxable_amount: taxableAmount,
                 calculated_amount: amount,
                 formula,
             };
         });
 
         const totalTax = taxDetails.reduce(
-            (total, tax) => total + Number(tax.calculated_amount || 0),
+            (total, tax) =>
+                total + Number(tax.calculated_amount || 0),
             0
         );
 
-        // Compatibility values for any existing code using these properties.
+        /*
+         * COMPATIBILITY VALUES
+         */
+
         const gstTaxes = taxDetails.filter((tax) =>
             String(tax.tax_code || "").startsWith("GST_")
         );
@@ -269,33 +449,43 @@ const PremiumCalculationSummary = ({
         const gstPercentage = gstTaxes.reduce(
             (total, tax) =>
                 total +
-                (tax.tax_type === "PERCENTAGE"
-                    ? Number(tax.tax_percentage || 0)
-                    : 0),
+                (
+                    String(tax.tax_type).toUpperCase() ===
+                    "PERCENTAGE"
+                        ? Number(tax.tax_percentage || 0)
+                        : 0
+                ),
             0
         );
 
         const gstAmount = gstTaxes.reduce(
-            (total, tax) => total + Number(tax.calculated_amount || 0),
+            (total, tax) =>
+                total + Number(tax.calculated_amount || 0),
             0
         );
 
         /*
-         * 9. TOTAL PREMIUM
+         * STEP 10: TOTAL PREMIUM
          */
 
         const totalPremium = subtotal + totalTax;
 
         /*
-         * 10. CASHBACK
+         * STEP 11: CASHBACK
          */
 
         const cashbackRule = calculationData?.cashback?.[0];
 
         const hasDirectCashback =
-            formData?.cashback !== undefined &&
-            formData?.cashback !== null &&
-            formData?.cashback !== "";
+            formData?.cashback_amount !== undefined &&
+            formData?.cashback_amount !== null &&
+            formData?.cashback_amount !== "";
+
+
+        console.log({
+            hasDirectCashback
+        });
+        
 
         let cashbackAmount = 0;
         let cashbackPercentage = 0;
@@ -307,16 +497,28 @@ const PremiumCalculationSummary = ({
         let cashbackSource = "";
 
         if (hasDirectCashback) {
-            cashbackAmount = Math.max(0, Number(formData.cashback || 0));
+            cashbackAmount = Math.max(
+                0,
+                Number(formData.cashback_amount || 0)
+            );
+
+            cashbackAmount = Math.min(
+                cashbackAmount,
+                totalPremium
+            );
+
             cashbackApplicable = cashbackAmount > 0;
             cashbackSource = "FORM";
+
             cashbackFormula = cashbackApplicable
                 ? "Direct cashback entered"
                 : "";
         } else if (cashbackRule) {
             cashbackSource = "API";
 
-            const cashbackValue = Number(cashbackRule.cashback_value || 0);
+            const cashbackValue = Number(
+                cashbackRule.cashback_value || 0
+            );
 
             maxCashbackAmount =
                 cashbackRule.max_cashback_amount !== null &&
@@ -337,17 +539,25 @@ const PremiumCalculationSummary = ({
                     : null;
 
             const premiumEligible =
-                (minPremium === null || totalPremium >= minPremium) &&
-                (maxPremium === null || totalPremium <= maxPremium);
+                (minPremium === null ||
+                    totalPremium >= minPremium) &&
+                (maxPremium === null ||
+                    totalPremium <= maxPremium);
 
             if (premiumEligible) {
-                if (cashbackRule.cashback_type === "PERCENTAGE") {
+                const cashbackType = String(
+                    cashbackRule.cashback_type || ""
+                ).toUpperCase();
+
+                if (cashbackType === "PERCENTAGE") {
                     cashbackPercentage = cashbackValue;
+
                     cashbackAmount =
                         (totalPremium * cashbackPercentage) / 100;
+
                     cashbackFormula =
                         `${money(totalPremium)} × ${cashbackPercentage}%`;
-                } else if (cashbackRule.cashback_type === "FIXED") {
+                } else if (cashbackType === "FIXED") {
                     cashbackFixedAmount = cashbackValue;
                     cashbackAmount = cashbackFixedAmount;
                     cashbackFormula = "Fixed cashback amount";
@@ -358,9 +568,15 @@ const PremiumCalculationSummary = ({
                     cashbackAmount > maxCashbackAmount
                 ) {
                     cashbackAmount = maxCashbackAmount;
+
                     cashbackFormula =
                         `${cashbackFormula} (capped at maximum cashback)`;
                 }
+
+                cashbackAmount = Math.min(
+                    totalPremium,
+                    Math.max(0, cashbackAmount)
+                );
             } else {
                 cashbackAmount = 0;
                 cashbackFormula = "";
@@ -370,10 +586,13 @@ const PremiumCalculationSummary = ({
         }
 
         /*
-         * 11. NET PAYABLE
+         * STEP 12: NET PAYABLE
          */
 
-        const netPayable = Math.max(0, totalPremium - cashbackAmount);
+        const netPayable = Math.max(
+            0,
+            totalPremium - cashbackAmount
+        );
 
         return {
             idv,
@@ -851,7 +1070,7 @@ const PremiumCalculationSummary = ({
                                     color: isDark ? "#fbbf24" : "#92400e",
                                 }}
                             >
-                                {money(calculation.subtotalBeforeDiscount)} ×{" "}
+                                {money(calculation.netOD)} ×{" "}
                                 {calculation.deTariffDiscountPercentage}%
                             </Typography>
 
@@ -931,9 +1150,12 @@ const PremiumCalculationSummary = ({
 
                 {/* APPLICABLE TAXES */}
 
-                {calculation.taxDetails.map((tax) => (
+                {calculation.taxDetails.map((tax, index) => (
                     <Box
-                        key={tax.tax_id ?? tax.tax_code}
+                        key={
+                            tax.tax_rule_id ??
+                            `${tax.tax_id ?? tax.tax_code}-${tax.premium_component}-${index}`
+                        }
                         sx={{
                             px: 1.5,
                             py: 1.2,
@@ -952,8 +1174,12 @@ const PremiumCalculationSummary = ({
                                 }}
                             >
                                 {tax.tax_name || tax.tax_code || "Tax"}
-                                {tax.tax_type === "PERCENTAGE"
+                                {String(tax.tax_type).toUpperCase() ===
+                                "PERCENTAGE"
                                     ? ` (${Number(tax.tax_percentage || 0)}%)`
+                                    : ""}
+                                {tax.premium_component
+                                    ? ` - ${tax.premium_component}`
                                     : ""}
                             </Typography>
 

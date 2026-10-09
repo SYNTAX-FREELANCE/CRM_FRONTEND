@@ -3,7 +3,6 @@ import React, { useMemo, useState } from "react";
 import {
     Box,
     Typography,
-    Button,
     Paper,
     useTheme,
 } from "@mui/material";
@@ -35,6 +34,7 @@ import AddonsSection from "./MotorCalculatorComponent/AddonsSection";
 import AdditionalCoversSection from "./MotorCalculatorComponent/AdditionalCoversSection";
 import PremiumCalculationSummary from "./MotorCalculatorComponent/PremiumCalculationSummary";
 import { warningNofity } from "../constant/Constant";
+import MotorPremiumSidePanel from "./MotorCalculatorComponent/MotorPremiumSidePanel";
 
 
 const MotorVehicleCalculator = () => {
@@ -958,6 +958,44 @@ const MotorVehicleCalculator = () => {
         [];
 
 
+
+    const handleClear = () => {
+        setFormData({
+            insurance_company_id: "",
+
+            vehicle_class_id: "",
+            fuel_type_id: "",
+            usage_id: "",
+
+            registration_date: "",
+            policy_start_date: "",
+
+            engine_cc: "",
+            gvw: "",
+            seating_capacity: "",
+            idv: "",
+
+            business_type_id: "",
+            product_id: "",
+            policy_type_id: "",
+            policy_term_id: "",
+
+            previous_policy_number: "",
+            previous_insurance_company: "",
+            previous_ncb_percentage: "",
+            claim_status: "",
+            claim_count: "",
+
+            de_tariff_discount: "",
+            cashback: "",
+
+            addon_ids: [],
+            cover_ids: [],
+        });
+
+        setCalculationData(null);
+    };
+
     // =========================================================
     // RENDER
     // =========================================================
@@ -966,14 +1004,25 @@ const MotorVehicleCalculator = () => {
 
         <Box
             sx={{
-                width: "100%",
-                minHeight: "100vh",
+                position: "sticky",
+                top: 0,
+                zIndex: 1200,
 
-                backgroundColor:
-                    isDark
-                        ? "#0f172a"
-                        : "#f5f7fa"
-            }}>
+                // Important: opaque background hides scrolling content
+                backgroundColor: isDark
+                    ? "#0f172a"
+                    : "#f5f7fa",
+
+                py: 1,
+                px: 0,
+
+                // Keep the header above the scrolling content
+                isolation: "isolate",
+
+                // Do not use overflow: clip here
+                overflow: "visible",
+            }}
+        >
 
             <Box
                 sx={{
@@ -985,7 +1034,7 @@ const MotorVehicleCalculator = () => {
                             ? "#0f172a"
                             : "#f5f7fa",
                     py: 1,
-                    overflow: 'hidden'
+                    overflow: 'clip'
                 }}>
                 <VehicleCategoryHeader
                     category={category}
@@ -1007,9 +1056,7 @@ const MotorVehicleCalculator = () => {
             <Box
                 sx={{
                     width: "100%",
-
                     display: "flex",
-
                     gap: 2,
 
                     flexDirection: {
@@ -1018,8 +1065,19 @@ const MotorVehicleCalculator = () => {
                         md: "row",
                     },
 
-                    alignItems:
-                        "flex-start",
+                    alignItems: "flex-start",
+
+                    height: "calc(100vh - 100px)",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+
+                    // Hide scrollbar but allow scrolling
+                    scrollbarWidth: "none", // Firefox
+                    msOverflowStyle: "none", // IE and Edge
+
+                    "&::-webkit-scrollbar": {
+                        display: "none", // Chrome, Safari
+                    },
                 }}
             >
 
@@ -1433,74 +1491,18 @@ const MotorVehicleCalculator = () => {
                     pt: 1,
                 }}
             >
-
-                <Button
-                    variant="outlined"
-
-                    onClick={() =>
-                        navigate(-1)
+                <MotorPremiumSidePanel
+                    onBack={() => navigate("/home/calculator")}
+                    onClear={handleClear}
+                    onViewPolicy={() =>
+                        navigate("/home/motor-calculator/category/preview", {
+                            state: {
+                                calculationData,
+                                formData,
+                            },
+                        })
                     }
-
-                    sx={{
-                        minWidth: 90,
-
-                        borderColor:
-                            isDark
-                                ? "#475569"
-                                : undefined,
-
-                        color:
-                            isDark
-                                ? "#cbd5e1"
-                                : undefined,
-
-                        "&:hover": {
-                            borderColor:
-                                isDark
-                                    ? "#64748b"
-                                    : undefined,
-
-                            backgroundColor:
-                                isDark
-                                    ? "rgba(255,255,255,0.04)"
-                                    : undefined,
-                        },
-                    }}
-                >
-                    Back
-                </Button>
-
-
-                {/* <Button
-                    variant="contained"
-
-                    onClick={
-                        handleContinue
-                    }
-
-                    disabled={
-                        calculationLoading
-                    }
-
-                    sx={{
-                        px: 4,
-
-                        fontWeight: 600,
-
-                        backgroundColor:
-                            "#2563eb",
-
-                        "&:hover": {
-                            backgroundColor:
-                                "#1d4ed8",
-                        },
-                    }}
-                >
-                    {calculationLoading
-                        ? "Loading..."
-                        : "Continue"}
-                </Button> */}
-
+                />
             </Box>
 
         </Box>

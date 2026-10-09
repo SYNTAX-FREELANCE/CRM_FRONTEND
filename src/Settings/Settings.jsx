@@ -442,6 +442,13 @@ const Settings = () => {
           path: "/home/setting/motorodrateslab",
           icon: <AccessTimeIcon />,
         },
+        {
+          menuslno: 58,
+          label: "Motor Tax Rule",
+          path: "/home/setting/motortaxrule",
+          icon: <AccessTimeIcon />,
+        },
+
 
       ],
     },
