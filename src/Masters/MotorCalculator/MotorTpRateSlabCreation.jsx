@@ -62,9 +62,10 @@ const MotorTpRateSlabCreation = () => {
             ?.map(item => ({
                 id: item.tp_rate_id,
                 label:
-                    `${item.tp_rate_id} - ` +
-                    `${item?.product_name || "Product"} - ` +
-                    `${item?.policy_type_name || "Policy Type"}`,
+                    `${item?.product_code || "Product"} - ` +
+                    `${item?.policy_type_code || "Policy Type"} -` +
+                    `${item?.category_code || "Category Type"} -` +
+                    `${item?.class_code || "Class Code"} -` ,
             })) || [];
 
     const ActiveEngineCCSlabMaster =
@@ -230,7 +231,7 @@ const MotorTpRateSlabCreation = () => {
             tpRateSlab.minSeatingCapacity !== null &&
             tpRateSlab.maxSeatingCapacity !== null &&
             Number(tpRateSlab.maxSeatingCapacity) <
-                Number(tpRateSlab.minSeatingCapacity)
+            Number(tpRateSlab.minSeatingCapacity)
         ) {
             errorNotify(
                 "Maximum seating capacity cannot be less than minimum seating capacity"
@@ -301,9 +302,26 @@ const MotorTpRateSlabCreation = () => {
                 editRoute: "motortprateslab",
                 columns: [
                     {
-                        field: "tp_rate_id",
-                        headerName: "TP Rate",
+                        field: "company_name",
+                        headerName: "Insurer",
                     },
+                    {
+                        field: "product_name",
+                        headerName: "Product Name",
+                    },
+                    {
+                        field: "policy_type_name",
+                        headerName: "Policy Type ",
+                    },
+                    {
+                        field: "vehicle_category_name",
+                        headerName: "Category ",
+                    },
+                    {
+                        field: "vehicle_class_name",
+                        headerName: "Class ",
+                    },
+
                     {
                         field: "engine_cc_slab_name",
                         headerName: "Engine CC Slab",
@@ -331,6 +349,7 @@ const MotorTpRateSlabCreation = () => {
                     {
                         field: "is_active",
                         headerName: "Status",
+                        type: 'status'
                     },
                 ],
             },
@@ -379,6 +398,7 @@ const MotorTpRateSlabCreation = () => {
 
             description:
                 tpRateSlab.description || null,
+            is_active: tpRateSlab?.isActive === "Active" ? 1 : 0
         };
 
         try {
@@ -401,10 +421,9 @@ const MotorTpRateSlabCreation = () => {
             if (response?.data?.success === 1) {
                 successNotify(
                     response?.data?.message ||
-                    `TP rate slab ${
-                        mode === "edit"
-                            ? "updated"
-                            : "created"
+                    `TP rate slab ${mode === "edit"
+                        ? "updated"
+                        : "created"
                     } successfully`
                 );
 

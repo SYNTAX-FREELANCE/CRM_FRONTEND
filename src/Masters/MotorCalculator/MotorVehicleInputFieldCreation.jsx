@@ -63,6 +63,9 @@ const MotorVehicleInputFieldCreation = () => {
     });
 
 
+    
+
+
     const categoryMaster =
         MotorVehicleCategoryMaster
             ?.filter(
@@ -343,12 +346,12 @@ const MotorVehicleInputFieldCreation = () => {
 
 
         const allowedFieldTypes = [
-
             "TEXT",
             "NUMBER",
             "DATE",
             "SELECT",
             "DECIMAL",
+            "CHECKBOX"
 
         ];
 

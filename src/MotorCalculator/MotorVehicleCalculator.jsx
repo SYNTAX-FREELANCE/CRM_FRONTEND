@@ -3,16 +3,8 @@ import React, { useMemo, useState } from "react";
 import {
     Box,
     Typography,
-    TextField,
-    MenuItem,
     Button,
     Paper,
-    Divider,
-    Grid,
-    Checkbox,
-    FormControlLabel,
-    FormGroup,
-    Chip,
     useTheme,
 } from "@mui/material";
 
@@ -184,74 +176,62 @@ const MotorVehicleCalculator = () => {
     // MASTER DATA
     // =========================================================
 
-    const vehicleClasses =
-        useMemo(
-            () =>
-                getMasterArray(
-                    vehicleClassResponse
-                ),
-            [vehicleClassResponse]
-        );
+    const vehicleClasses = useMemo(
+        () =>
+            getMasterArray(vehicleClassResponse).filter(
+                item =>
+                    Number(item.is_active) === 1 &&
+                    Number(item.vehicle_category_id) === Number(categoryId)
+            ),
+        [vehicleClassResponse, categoryId]
+    );
+    const fuelTypes = useMemo(
+        () =>
+            getMasterArray(fuelResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [fuelResponse]
+    );
 
+    const usages = useMemo(
+        () =>
+            getMasterArray(usageResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [usageResponse]
+    );
 
-    const fuelTypes =
-        useMemo(
-            () =>
-                getMasterArray(
-                    fuelResponse
-                ),
-            [fuelResponse]
-        );
+    const products = useMemo(
+        () =>
+            getMasterArray(productResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [productResponse]
+    );
 
+    const policyTypes = useMemo(
+        () =>
+            getMasterArray(policyTypeResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [policyTypeResponse]
+    );
 
-    const usages =
-        useMemo(
-            () =>
-                getMasterArray(
-                    usageResponse
-                ),
-            [usageResponse]
-        );
+    const businessTypes = useMemo(
+        () =>
+            getMasterArray(businessTypeResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [businessTypeResponse]
+    );
 
-
-    const products =
-        useMemo(
-            () =>
-                getMasterArray(
-                    productResponse
-                ),
-            [productResponse]
-        );
-
-
-    const policyTypes =
-        useMemo(
-            () =>
-                getMasterArray(
-                    policyTypeResponse
-                ),
-            [policyTypeResponse]
-        );
-
-
-    const businessTypes =
-        useMemo(
-            () =>
-                getMasterArray(
-                    businessTypeResponse
-                ),
-            [businessTypeResponse]
-        );
-
-
-    const policyTerms =
-        useMemo(
-            () =>
-                getMasterArray(
-                    policyTermResponse
-                ),
-            [policyTermResponse]
-        );
+    const policyTerms = useMemo(
+        () =>
+            getMasterArray(policyTermResponse).filter(
+                item => Number(item.is_active) === 1
+            ),
+        [policyTermResponse]
+    );
 
 
     // =========================================================

@@ -124,7 +124,8 @@ const MotorTpRateCreation = () => {
 
     const ActiveVehicleClassMaster =
         VehicleClassMaster
-            ?.filter(item => Number(item?.is_active) === 1)
+            ?.filter(item => Number(item?.is_active) === 1 &&
+                Number(tpRate?.vehicleCategoryId) === Number(item.vehicle_category_id))
             ?.map(item => ({
                 id: item.vehicle_class_id,
                 label: item.class_name,
@@ -387,6 +388,8 @@ const MotorTpRateCreation = () => {
                     {
                         field: "is_active",
                         headerName: "Status",
+                        type:
+                            "status"
                     },
                 ],
             },
@@ -436,6 +439,7 @@ const MotorTpRateCreation = () => {
 
             effective_to:
                 tpRate.effectiveTo || null,
+            is_active: tpRate?.isActive === "Active" ? 1 : 0
         };
 
         try {

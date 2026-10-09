@@ -112,7 +112,7 @@ const MotorNcbRuleCreation = () => {
 
                     claimFreeRequired:
                         data?.claim_free_required !== undefined &&
-                        data?.claim_free_required !== null
+                            data?.claim_free_required !== null
                             ? String(
                                 data.claim_free_required
                             )
@@ -377,6 +377,7 @@ const MotorNcbRuleCreation = () => {
                     {
                         field: "is_active",
                         headerName: "Status",
+                        type: 'status'
                     },
                 ],
             },
@@ -421,6 +422,7 @@ const MotorNcbRuleCreation = () => {
 
             description:
                 ncbRule.description || null,
+            is_active: ncbRule?.isActive === "Active" ? 1 : 0
         };
 
         try {
@@ -443,10 +445,9 @@ const MotorNcbRuleCreation = () => {
             if (response?.data?.success === 1) {
                 successNotify(
                     response?.data?.message ||
-                    `NCB rule ${
-                        mode === "edit"
-                            ? "updated"
-                            : "created"
+                    `NCB rule ${mode === "edit"
+                        ? "updated"
+                        : "created"
                     } successfully`
                 );
 

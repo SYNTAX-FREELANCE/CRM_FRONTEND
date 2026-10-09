@@ -151,7 +151,8 @@ const MotorDiscountRuleCreation = () => {
     const VehicleClassOptions =
         MotorVehicleClassMaster
             ?.filter(
-                item => Number(item?.is_active) === 1
+                item => Number(item?.is_active) === 1 &&
+                    Number(item.vehicle_category_id) === Number(discountRule?.vehicleCategoryId)
             )
             ?.map(item => ({
                 id: item.vehicle_class_id,

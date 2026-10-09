@@ -221,7 +221,8 @@ const MotorAddonRuleCreation = () => {
         MotorVehicleClassMaster
             ?.filter(
                 item =>
-                    Number(item?.is_active) === 1
+                    Number(item?.is_active) === 1 &&
+                    Number(addonRule?.vehicleCategoryId) === Number(item.vehicle_category_id)
             )
             ?.map(item => ({
                 id: item.vehicle_class_id,
