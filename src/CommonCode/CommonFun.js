@@ -1,5 +1,10 @@
 import { axioslogin } from "../Connection/axios";
-import { errorNotify, infoNotify, successNotify, warningNofity } from "../constant/Constant";
+import {
+  errorNotify,
+  infoNotify,
+  successNotify,
+  warningNofity,
+} from "../constant/Constant";
 
 export const FetchRolemaster = async () => {
   try {
@@ -1537,9 +1542,11 @@ export const getVehicleInputFields = async () => {
 };
 
 export const getVehicleInputByCategoires = async (categoryId) => {
-  if(!categoryId) return warningNofity("CategoryId is Missing")
+  if (!categoryId) return warningNofity("CategoryId is Missing");
   try {
-    const response = await axioslogin.get(`/motor/vehicle-input-field/getbycategory/${categoryId}`);
+    const response = await axioslogin.get(
+      `/motor/vehicle-input-field/getbycategory/${categoryId}`,
+    );
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -1549,10 +1556,21 @@ export const getVehicleInputByCategoires = async (categoryId) => {
   }
 };
 
-
 export const getOdRateSLabMaster = async () => {
   try {
     const response = await axioslogin.get(`/motor/od-rate-slab/getall`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};  
+
+export const getTaxRuleMasterDetails = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/tax-rule/getall`);
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];

@@ -256,6 +256,16 @@ const MotorOdRateSlabCreation = lazy(
   () => import("./Masters/MotorCalculator/MotorOdRateSlabCreation"),
 );
 
+const MotorTaxRuleCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorTaxRuleCreation"),
+);
+
+const ThejaswiPreview = lazy(
+  () => import("./MotorCalculator/MotorCalculatorComponent/ThejaswiPreview"),
+);
+
+
+
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
     <Component />
@@ -636,6 +646,16 @@ const router = createBrowserRouter([
         path: "setting/motorodrateslab",
         element: withSuspense(MotorOdRateSlabCreation),
       },
+      {
+        path: "setting/motortaxrule",
+        element: withSuspense(MotorTaxRuleCreation),
+      },
+
+  {
+        path: "motor-calculator/category/preview",
+        element: withSuspense(ThejaswiPreview),
+      },
+      
 
       // {
       //   path: "*",
