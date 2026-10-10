@@ -16,7 +16,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import { debounce } from "@mui/material/utils";
 import { axioslogin } from "../Connection/axios";
 
-const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
+const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading, rgNo = "" }) => {
+
+
     const [inputValue, setInputValue] = useState("");
     const [options, setOptions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -24,6 +26,11 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     const wrapperRef = useRef(null);
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
+
+
+    useEffect(() => {
+        setInputValue(rgNo)
+    }, [rgNo])
 
     const fetchSuggestions = async (query) => {
         if (!query || query.trim().length < 3) {
@@ -108,7 +115,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading }) => {
     };
 
     return (
-        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%", mb:2}}>
+        <Box ref={wrapperRef} sx={{ position: "relative", width: "100%", mb: 2 }}>
             <Box
                 sx={{
                     p: 1.5,

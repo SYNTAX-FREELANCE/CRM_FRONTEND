@@ -680,10 +680,7 @@ const MotorVehicleInputFieldCreation = () => {
      * SAVE
      */
 
-    console.log({
-        inputField
-    });
-
+  
 
     const handleSave = async () => {
 

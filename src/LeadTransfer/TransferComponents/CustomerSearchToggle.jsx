@@ -14,6 +14,7 @@ const CustomerSearchToggle = ({
     selectedCustomer,
     setSelectedCustomer,
     setDetailLoading,
+    rgNo = ""
 }) => {
     const [showSearch, setShowSearch] = useState(!selectedCustomer);
 
@@ -56,6 +57,7 @@ const CustomerSearchToggle = ({
                     <CustomerSearchBar
                         onSelectCustomer={handleCustomerSelect}
                         setDetailLoading={setDetailLoading}
+                        rgNo={rgNo}
                     />
 
                     {selectedCustomer && (

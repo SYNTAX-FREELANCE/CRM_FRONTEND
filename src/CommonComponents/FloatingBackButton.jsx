@@ -8,12 +8,13 @@ const FloatingBackButton = ({
     bottom = 24,
     right = 24,
     navigateTo = null,
+    state
 }) => {
     const navigate = useNavigate();
 
     const handleBack = () => {
         if (navigateTo) {
-            navigate(navigateTo);
+            navigate(navigateTo, { state });
         } else {
             navigate(-1);
         }

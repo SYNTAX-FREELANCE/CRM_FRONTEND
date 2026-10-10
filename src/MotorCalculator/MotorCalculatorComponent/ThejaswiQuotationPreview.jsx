@@ -21,6 +21,7 @@ import { toJpeg } from "html-to-image";
 export default function ThejaswiQuotationPreview({
     calculationData,
     formData = {},
+    VehicleDetails,
     formatNumber = (v) =>
         Number(v || 0).toLocaleString("en-IN", {
             minimumFractionDigits: 2,
@@ -33,15 +34,15 @@ export default function ThejaswiQuotationPreview({
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState("");
 
+
+  
+
+
     const money = (v) => `₹${formatNumber(Number(v || 0))}`;
     const num = (v) => Number(v ?? 0) || 0;
 
     const quote = {
-        quoteNo:
-            quoteData.quoteNo ||
-            formData.quote_no ||
-            formData.quotation_no ||
-            "QUOTE —",
+        quoteNo: "QUOTE —",
         quoteDate:
             quoteData.quoteDate || new Date().toLocaleDateString("en-IN"),
         customer:
@@ -69,29 +70,25 @@ export default function ThejaswiQuotationPreview({
     const vehicleRows = [
         [
             "Vehicle Category",
-            formData.vehicle_category_name ||
-            formData.category_name ||
-            formData.vehicle_category ||
+            VehicleDetails?.vehicle_category ||
             "—",
         ],
         [
             "Vehicle Class",
-            formData.vehicle_class_name || formData.class_name || "—",
+            VehicleDetails?.vehicle_class || "—",
         ],
         [
             "Registration Number",
-            formData.registration_number ||
-            formData.registration_no ||
-            formData.vehicle_number ||
+            VehicleDetails?.registration_number ||
             "—",
         ],
         [
             "Registration Date",
-            formData.registration_date || formData.date_of_purchase || "—",
+            VehicleDetails?.registration_date || "—",
         ],
         [
             "Policy Start Date",
-            formData.policy_start_date || formData.date_of_renewal || "—",
+            formData.policy_start_date || formData.policy_start_date || "—",
         ],
         [
             "Engine Capacity",
@@ -99,7 +96,7 @@ export default function ThejaswiQuotationPreview({
         ],
         ["Gross Vehicle Weight", formData.gvw ? `${formData.gvw} KG` : "—"],
         ["Seating Capacity", formData.seating_capacity || "—"],
-        ["Insured Declared Value (IDV)", money(formData.idv)],
+        ["Insured Declared Value (IDV)", money(formData?.idv)],
     ];
 
     const p = useMemo(() => {
@@ -469,6 +466,7 @@ export default function ThejaswiQuotationPreview({
         bold = false,
         negative = false,
         note,
+        nomoney = false
     }) => (
         <Box
             sx={{
@@ -510,7 +508,7 @@ export default function ThejaswiQuotationPreview({
                 }}
             >
                 {negative ? "− " : ""}
-                {money(value)}
+                {nomoney ? value : money(value)}
             </Typography>
         </Box>
     );
@@ -867,11 +865,13 @@ export default function ThejaswiQuotationPreview({
                             borderTop: 0,
                         }}
                     >
-                        {vehicleRows.map(([label, value]) => (
-                            <Box key={label}>
-                                <Row label={label} value={value} />
-                            </Box>
-                        ))}
+                        {vehicleRows.map(([label, value]) => {                            
+                            return (
+                                <Box key={label}>
+                                    <Row label={label} nomoney value={value} />
+                                </Box>
+                            )
+                        })}
                     </Box>
                 </Box>
 
@@ -1073,7 +1073,7 @@ export default function ThejaswiQuotationPreview({
                         </Typography>
                     </Box>
 
-                    {p.cashback > 0 && (
+                    {/* {p.cashback > 0 && (
                         <>
                             <Box
                                 sx={{
@@ -1139,7 +1139,7 @@ export default function ThejaswiQuotationPreview({
                                 </Typography>
                             </Box>
                         </>
-                    )}
+                    )} */}
                 </Box>
 
                 {/* Disclaimer and signature */}

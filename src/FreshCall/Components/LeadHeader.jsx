@@ -13,6 +13,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import CallPopover from "./CallPopover";
 import LocalCarWashIcon from '@mui/icons-material/LocalCarWash';
 import VehicleDetailsModal from "./VehicleDetailsModal";
+import CalculationIcon from "../../MotorCalculator/MotorCalculatorComponent/CalculationIcon";
+import { useMotorVehicleCategoryMaster } from "../../CommonCode/useQuery";
+import VehicleCategoryPopover from "./VehicleCategoryPopover";
+import { useNavigate } from "react-router-dom";
 
 
 const LeadHeader = ({
@@ -26,12 +30,48 @@ const LeadHeader = ({
     callMenuOpen,
 }) => {
 
+    const navigate = useNavigate();
+
+
     const [openmodal, setOpenModal] = useState(false);
 
     const handleClickNewVehicle = useCallback(() => {
         setOpenModal(pre => !pre)
     }, []);
+    const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
 
+    const {
+        data: MotorVehicleCategoryMaster = [],
+    } = useMotorVehicleCategoryMaster();
+
+
+    const vehicleCategories =
+        MotorVehicleCategoryMaster
+            ?.filter(
+                item =>
+                    Number(item?.is_active) === 1
+            )
+
+
+
+    const handleCalculationClick = (event) => {
+        const anchor = event.currentTarget;
+
+        setCategoryAnchorEl((current) =>
+            current ? null : anchor
+        );
+    };
+    const handleCategoryClose = () => {
+        setCategoryAnchorEl(null);
+    };
+
+    const handleSelectCategory = (category) => {
+        setCategoryAnchorEl(null);
+        navigate(`/home/motor-calculator/category/${category?.vehicle_category_id}`, {
+            state: { lead, category }
+        })
+
+    };
 
 
     return (
@@ -122,6 +162,14 @@ const LeadHeader = ({
 
                 {/* Action Buttons */}
                 <Stack direction="row" spacing={1}>
+
+
+                    <CalculationIcon
+                        title="View premium calculation"
+                        onClick={handleCalculationClick}
+                    />
+
+
                     <IconButton
                         size="small"
                         onClick={handleClickNewVehicle}
@@ -176,6 +224,14 @@ const LeadHeader = ({
                 onClose={handleCallClose}
                 mobile1={lead?.mobile_number_1}
                 mobile2={lead?.mobile_number_2}
+            />
+
+            <VehicleCategoryPopover
+                anchorEl={categoryAnchorEl}
+                open={Boolean(categoryAnchorEl)}
+                onClose={handleCategoryClose}
+                categories={vehicleCategories}
+                onSelectCategory={handleSelectCategory}
             />
         </Box>
     );
