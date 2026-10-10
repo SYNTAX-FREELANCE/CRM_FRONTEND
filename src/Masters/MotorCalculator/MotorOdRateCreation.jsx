@@ -49,9 +49,7 @@ const MotorOdRateCreation = () => {
         isActive: "Active"
     });
 
-    console.log(
-        odRate?.vehicleCategoryId
-    );
+ 
 
 
     const [loading, setLoading] = useState(false);
@@ -129,13 +127,6 @@ const MotorOdRateCreation = () => {
                     label: item.policy_type_name
                 }))
             : [];
-
-
-    console.log(odRate?.vehicleCategoryId);
-
-    console.log({
-        VehicleClassMaster
-    });
 
 
     const ActiveVehicleCategoryMaster =

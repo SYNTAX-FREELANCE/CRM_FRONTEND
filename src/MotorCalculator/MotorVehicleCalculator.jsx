@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 
 import {
     Box,
@@ -35,6 +35,7 @@ import AdditionalCoversSection from "./MotorCalculatorComponent/AdditionalCovers
 import PremiumCalculationSummary from "./MotorCalculatorComponent/PremiumCalculationSummary";
 import { warningNofity } from "../constant/Constant";
 import MotorPremiumSidePanel from "./MotorCalculatorComponent/MotorPremiumSidePanel";
+import VehicleDetailsCard from "./MotorCalculatorComponent/VehicleDetailsCard";
 
 
 const MotorVehicleCalculator = () => {
@@ -49,10 +50,22 @@ const MotorVehicleCalculator = () => {
 
     const location = useLocation();
 
+    const lead = location?.state?.lead;
+
+    const RegistrationNumber = lead?.registration_number || ""
+
     const navigate = useNavigate();
+
+    const [selectedCustomer, setSelectedCustomer] = useState(
+        () => location.state?.selectedCustomer ?? null
+    );
+    const [detailLoading, setDetailLoading] = useState(false);
 
     const category =
         location.state?.category;
+
+
+
 
 
     // =========================================================
@@ -410,62 +423,95 @@ const MotorVehicleCalculator = () => {
     // FORM STATE
     // =========================================================
 
-    const [formData, setFormData] =
-        useState({
+    // const [formData, setFormData] =
+    //     useState({
 
-            // Insurance Company
+    //         // Insurance Company
+    //         insurance_company_id: "",
+
+    //         // Vehicle
+    //         vehicle_class_id: "",
+    //         fuel_type_id: "",
+    //         usage_id: "",
+
+    //         registration_date: "",
+    //         policy_start_date: "",
+
+    //         engine_cc: "",
+    //         gvw: "",
+    //         seating_capacity: "",
+
+    //         idv: "",
+
+    //         // Policy
+    //         business_type_id: "",
+    //         product_id: "",
+    //         policy_type_id: "",
+    //         policy_term_id: "",
+
+    //         // Previous Policy / NCB
+    //         previous_policy_number: "",
+    //         previous_insurance_company: "",
+    //         previous_ncb_percentage: "",
+    //         claim_status: "",
+    //         claim_count: "",
+
+    //         // Direct De-tariff Input
+    //         // This value is percentage
+    //         de_tariff_discount: "",
+
+    //         // Direct / API Cashback
+    //         cashback: "",
+
+    //         // Selected Addons
+    //         addon_ids: [],
+
+    //         // Selected Covers
+    //         cover_ids: [],
+    //     });
+
+
+    const [formData, setFormData] = useState(
+        () => location.state?.formData ?? {
             insurance_company_id: "",
-
-            // Vehicle
             vehicle_class_id: "",
             fuel_type_id: "",
             usage_id: "",
-
             registration_date: "",
             policy_start_date: "",
-
             engine_cc: "",
             gvw: "",
             seating_capacity: "",
-
             idv: "",
-
-            // Policy
             business_type_id: "",
             product_id: "",
             policy_type_id: "",
             policy_term_id: "",
-
-            // Previous Policy / NCB
             previous_policy_number: "",
             previous_insurance_company: "",
             previous_ncb_percentage: "",
             claim_status: "",
             claim_count: "",
-
-            // Direct De-tariff Input
-            // This value is percentage
             de_tariff_discount: "",
-
-            // Direct / API Cashback
             cashback: "",
-
-            // Selected Addons
             addon_ids: [],
-
-            // Selected Covers
             cover_ids: [],
-        });
-
+        }
+    );
 
     // =========================================================
     // FETCHED CALCULATION DATA
     // =========================================================
 
-    const [
-        calculationData,
-        setCalculationData,
-    ] = useState(null);
+    const [calculationData, setCalculationData] = useState(
+        () => location.state?.calculationData ?? null
+    );
+
+
+    // const [
+    //     calculationData,
+    //     setCalculationData,
+    // ] = useState(null);
 
 
     // =========================================================
@@ -712,12 +758,6 @@ const MotorVehicleCalculator = () => {
                     success,
                 } =
                     response?.data ?? {};
-
-
-                console.log(
-                    "Motor Calculation Data:",
-                    data
-                );
 
                 if (success === 0) return warningNofity(message)
 
@@ -994,6 +1034,8 @@ const MotorVehicleCalculator = () => {
         });
 
         setCalculationData(null);
+        setSelectedCustomer(null)
+        setDetailLoading(false)
     };
 
     // =========================================================
@@ -1058,39 +1100,34 @@ const MotorVehicleCalculator = () => {
                     width: "100%",
                     display: "flex",
                     gap: 2,
-
                     flexDirection: {
                         xs: "column",
                         sm: "column",
                         md: "row",
                     },
-
                     alignItems: "flex-start",
-
                     height: "calc(100vh - 100px)",
                     overflowY: "auto",
                     overflowX: "hidden",
-
                     // Hide scrollbar but allow scrolling
                     scrollbarWidth: "none", // Firefox
                     msOverflowStyle: "none", // IE and Edge
-
                     "&::-webkit-scrollbar": {
                         display: "none", // Chrome, Safari
                     },
                 }}
             >
 
-                {/* =================================================
+                {/* 
                     LEFT SIDE
-                ================================================= */}
+                 */}
 
                 <Box
                     sx={{
                         width: {
                             xs: "100%",
                             sm: "100%",
-                            md: "60%",
+                            lg: "45%",
                         },
 
                         minWidth: 0,
@@ -1264,7 +1301,7 @@ const MotorVehicleCalculator = () => {
                                     {
                                         xs: "1fr",
                                         sm: "repeat(2, 1fr)",
-                                        md: "repeat(3, 1fr)",
+                                        md: "repeat(2, 1fr)",
                                     },
 
                                     gap: 1.5,
@@ -1409,25 +1446,25 @@ const MotorVehicleCalculator = () => {
                 </Box>
 
 
-                {/* =================================================
+                {/* 
                     RIGHT SIDE - PREMIUM CALCULATION
-                ================================================= */}
+                 */}
                 <Box
                     sx={{
                         width: {
                             xs: "100%",
                             sm: "100%",
-                            md: "40%",
+                            lg: "30%",
                         },
 
                         minWidth: 0,
 
                         position: {
                             xs: "static",
-                            md: "sticky",
+                            lg: "sticky",
                         },
 
-                        top: 16,
+                        // top: 16,
 
                         alignSelf: "flex-start",
 
@@ -1444,12 +1481,7 @@ const MotorVehicleCalculator = () => {
 
                         // Optional: cleaner scrollbar
                         "&::-webkit-scrollbar": {
-                            width: "6px",
-                        },
-
-                        "&::-webkit-scrollbar-thumb": {
-                            backgroundColor: "#94a3b8",
-                            borderRadius: "10px",
+                            display: "none",
                         },
                     }}
                 >
@@ -1470,44 +1502,48 @@ const MotorVehicleCalculator = () => {
 
                 </Box>
 
+
+                <Box sx={{
+                    width: {
+                        xs: "100%",
+                        sm: "100%",
+                        lg: "25%",
+                    },
+                }}>
+                    <VehicleDetailsCard
+                        setSelectedCustomer={setSelectedCustomer}
+                        selectedCustomer={selectedCustomer}
+                        setDetailLoading={setDetailLoading}
+                        registrationNumber={RegistrationNumber}
+                    />
+                </Box>
+
             </Box>
 
 
-            {/* =====================================================
+            {/* 
                 FOOTER BUTTONS
-            ===================================================== */}
+             */}
 
-            <Box
-                sx={{
-                    display: "flex",
-
-                    justifyContent:
-                        "flex-end",
-
-                    gap: 1.5,
-
-                    pb: 3,
-
-                    pt: 1,
-                }}
-            >
-                <MotorPremiumSidePanel
-                    onBack={() => navigate("/home/calculator")}
-                    onClear={handleClear}
-                    onViewPolicy={() =>
-                        navigate("/home/motor-calculator/category/preview", {
-                            state: {
-                                calculationData,
-                                formData,
-                            },
-                        })
-                    }
-                />
-            </Box>
+            <MotorPremiumSidePanel
+                onBack={() => navigate("/home/calculator")}
+                onClear={handleClear}
+                onViewPolicy={() =>
+                    navigate("/home/motor-calculator/category/preview", {
+                        state: {
+                            calculationData,
+                            formData,
+                            categoryId,
+                            category,
+                            selectedCustomer
+                        },
+                    })
+                }
+            />
 
         </Box>
     );
 };
 
 
-export default MotorVehicleCalculator;
+export default memo(MotorVehicleCalculator);

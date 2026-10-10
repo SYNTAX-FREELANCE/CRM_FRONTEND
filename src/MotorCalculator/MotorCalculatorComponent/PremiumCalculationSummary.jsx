@@ -21,10 +21,6 @@ const PremiumCalculationSummary = ({
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
 
-    console.log({
-        formData
-    });
-    
 
     const money = (value) => {
         const number = Number(value || 0);
@@ -482,10 +478,6 @@ const PremiumCalculationSummary = ({
             formData?.cashback_amount !== "";
 
 
-        console.log({
-            hasDirectCashback
-        });
-        
 
         let cashbackAmount = 0;
         let cashbackPercentage = 0;
@@ -758,6 +750,7 @@ const PremiumCalculationSummary = ({
                 boxShadow: isDark
                     ? "0 2px 8px rgba(0,0,0,0.20)"
                     : "0 2px 8px rgba(15,23,42,0.04)",
+                    pb:5
             }}
         >
             {/* HEADER */}
