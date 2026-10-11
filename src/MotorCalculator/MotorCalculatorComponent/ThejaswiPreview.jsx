@@ -1,59 +1,183 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import ThejaswiQuotationPreview from './ThejaswiQuotationPreview'
 import { useLocation } from 'react-router-dom';
 import companylogo from '../../assets/loginimages/companylogo.png'
 import FloatingBackButton from '../../CommonComponents/FloatingBackButton';
 import QuotationDataUnavailable from './QuotationDataUnavailable';
-import { useInsuranceCompanyMaster } from '../../CommonCode/useQuery';
+import { useAllEmployeeDetails, useInsuranceCompanyMaster } from '../../CommonCode/useQuery';
+import { errorNotify, getAuthUser, infoNotify, successNotify } from '../../constant/Constant';
+import createQuotationPayload from '../MotorHooks/CalculateQuotationDetails';
+import { axioslogin } from '../../Connection/axios';
+import GlobalLoader from '../../CommonComponents/GlobalLoader';
 
 const ThejaswiPreview = () => {
 
+    const authUser = getAuthUser();
+
+    const [loading, setLoading] = useState(false)
+    const { id: createdBy, emp_name } = authUser ?? {};
+    const [quotationdata, setQuotataionData] = useState(null)
 
     const {
         data: InsuranceCompanyMaster = [],
     } = useInsuranceCompanyMaster();
+
+    const { data: employeeListData = [], } = useAllEmployeeDetails();
+
+    const employees = employeeListData?.find(emp => Number(emp.user_id) === Number(createdBy))
+
     const location = useLocation();
     const calculationData = location.state?.calculationData;
     const formData = location.state?.formData;
     const categoryId = location.state?.categoryId;
     const category = location.state?.category;
     const selectedCustomer = location.state?.selectedCustomer;
+    const lead = location.state?.lead;
+
+
+    const validateQuotation = useCallback(() => {
+        const errors = [];
+
+        if (!formData) {
+            errors.push("Vehicle and policy form data is missing.");
+        }
+
+        if (!calculationData) {
+            errors.push("Quotation calculation data is missing.");
+        }
+
+        if (!selectedCustomer) {
+            errors.push("Please select a customer.");
+        }
+
+        if (!createdBy) {
+            errors.push("Logged-in employee details are missing.");
+        }
+
+        if (formData) {
+            if (!formData.policy_start_date) {
+                errors.push("Policy start date is required.");
+            }
+
+            if (!formData.product_id) {
+                errors.push("Please select a product.");
+            }
+
+            if (!formData.policy_type_id) {
+                errors.push("Please select a policy type.");
+            }
+
+            if (!formData.vehicle_category_id && !category?.vehicle_category_id) {
+                errors.push("Vehicle category is required.");
+            }
+        }
+        return errors;
+    }, [
+        formData,
+        calculationData,
+        selectedCustomer,
+        createdBy,
+        category,
+    ]);
+
+
+    const handleCreateQuotation = useCallback(async () => {
+
+        const errors = validateQuotation();
+
+        if (errors.length > 0) {
+            infoNotify(
+                "Please correct the following before generating the quotation:\n\n" +
+                errors.map((error, index) => `${index + 1}. ${error}`).join("\n")
+            );
+            return;
+        }
+        try {
+
+
+            setLoading(true);
+
+            const payload = createQuotationPayload({
+                formData,
+                calculationData,
+                category,
+                selectedCustomer,
+                lead,
+                createdBy,
+            });
+
+            const response = await axioslogin.post(
+                "/motor/calculation/create",
+                payload
+            );
+            const { success, data, message } = response?.data ?? {};
+            if (success === 1) {
+                successNotify(message)
+                setQuotataionData(data)
+            } else {
+                errorNotify(message)
+            }
+
+            if (response.data?.success === 1) {
+                console.log("Quotation created:", response.data.data);
+            }
+        } catch (error) {
+            console.error(
+                "Failed to create quotation:",
+                error.response?.data || error.message
+            );
+        } finally {
+            setLoading(false);
+        }
+    }, [
+        createQuotationPayload,
+        formData,
+        calculationData,
+        category,
+        selectedCustomer,
+        lead,
+        createdBy,
+        axioslogin,
+    ]);
 
 
     if (!calculationData || !formData || !selectedCustomer) {
         return <QuotationDataUnavailable />;
     }
 
-
-
     const ActiveInsurenceCompanies = InsuranceCompanyMaster?.filter(item => item?.insurance_company_id === formData?.insurance_company_id);
-
 
     const Customer = selectedCustomer?.customer ||
         selectedCustomer ||
         {}
-
-
     const CustomerName = Customer?.customer_name || "Customer"
     const VehicleDetails = selectedCustomer?.vehicles ||
         selectedCustomer ||
         {}
 
+
+
+
     return (
         <div>
+
+            {
+                loading && <GlobalLoader text="Generating Please Wait" />
+            }
             <ThejaswiQuotationPreview
                 calculationData={calculationData}
                 formData={formData}
                 VehicleDetails={VehicleDetails?.[0]}
                 companylogo={companylogo}
+                createQuotation={handleCreateQuotation}
                 quoteData={{
-                    quoteNo: "THJ-2026-0001",
+                    quoteNo: quotationdata?.quotation_number || "Employee",
                     customerName: CustomerName,
                     insurerName: ActiveInsurenceCompanies?.[0]?.company_name,
                     productName: formData.product_name,
-                    agentName: "Thejaswi",
-                    contactNo: "919633397771",
-                    email: "reachus@thejaswi.in",
+                    agentName: emp_name || "Employee",
+                    contactNo: employees?.mobile_number_1 || "+91 9656 *** **4",
+                    email: employees?.email || "example@gmail.com",
                 }}
             />
 

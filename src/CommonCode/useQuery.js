@@ -97,6 +97,7 @@ import {
   getVehicleInputByCategoires,
   getOdRateSLabMaster,
   getTaxRuleMasterDetails,
+  getVehicleCategoryProfit,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -890,7 +891,12 @@ export const useMotorODRateSlabMaster = () => {
     queryFn: getOdRateSLabMaster,
   });
 };
-
+export const useMotorProfitMaster = () => {
+  return useQuery({
+    queryKey: ["motor-profit"],
+    queryFn: getVehicleCategoryProfit,
+  });
+};
 
 export const useMotorTaxRuleMaster = () => {
   return useQuery({
@@ -1169,6 +1175,10 @@ export const useCommonMaster = (type) => {
     motortaxrule: {
       queryKey: ["tax-rule-master"],
       queryFn: getTaxRuleMasterDetails,
+    },
+    motorprofit: {
+      queryKey: ["motor-profit"],
+      queryFn: getVehicleCategoryProfit,
     },
   };
 

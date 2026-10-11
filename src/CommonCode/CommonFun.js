@@ -1579,3 +1579,16 @@ export const getTaxRuleMasterDetails = async () => {
     return [];
   }
 };
+
+
+export const getVehicleCategoryProfit = async () => {
+  try {
+    const response = await axioslogin.get(`/motor/profit/getall`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};

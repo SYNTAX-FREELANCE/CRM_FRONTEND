@@ -447,7 +447,7 @@ const PremiumCalculationSummary = ({
                 total +
                 (
                     String(tax.tax_type).toUpperCase() ===
-                    "PERCENTAGE"
+                        "PERCENTAGE"
                         ? Number(tax.tax_percentage || 0)
                         : 0
                 ),
@@ -470,112 +470,178 @@ const PremiumCalculationSummary = ({
          * STEP 11: CASHBACK
          */
 
+
+        /*
+         * STEP 11: COMMISSION, PROFIT AND CASHBACK
+         *
+         * Commission = Net Premium * Commission %
+         * Profit = Fixed amount from profit master
+         * Cashback = Commission - Profit
+         *
+         * Commission and cashback maximum limits are applied.
+         * Manually entered cash_back takes precedence.
+         */
+
+        const commissionRule = calculationData?.commission?.[0];
         const cashbackRule = calculationData?.cashback?.[0];
+        const profitRule = calculationData?.profit?.[0];
 
-        const hasDirectCashback =
-            formData?.cashback_amount !== undefined &&
-            formData?.cashback_amount !== null &&
-            formData?.cashback_amount !== "";
+        // COMMISSION MASTER
+        const commissionType = String(
+            commissionRule?.commission_type || ""
+        ).toUpperCase();
 
+        const commissionValue = Number(
+            commissionRule?.commission_value || 0
+        );
 
+        const maxCommissionAmount =
+            commissionRule?.max_commission_amount !== null &&
+                commissionRule?.max_commission_amount !== undefined &&
+                commissionRule?.max_commission_amount !== ""
+                ? Number(commissionRule.max_commission_amount)
+                : null;
 
-        let cashbackAmount = 0;
-        let cashbackPercentage = 0;
-        let cashbackFixedAmount = 0;
-        let maxCashbackAmount = null;
+        const commissionMinPremium =
+            commissionRule?.min_premium != null
+                ? Number(commissionRule.min_premium)
+                : null;
 
-        let cashbackFormula = "";
-        let cashbackApplicable = false;
-        let cashbackSource = "";
+        const commissionMaxPremium =
+            commissionRule?.max_premium != null
+                ? Number(commissionRule.max_premium)
+                : null;
 
-        if (hasDirectCashback) {
-            cashbackAmount = Math.max(
-                0,
-                Number(formData.cashback_amount || 0)
-            );
+        // Net premium means subtotal BEFORE tax.
+        const commissionEligible =
+            (!commissionMinPremium ||
+                subtotal >= commissionMinPremium) &&
+            (commissionMaxPremium === null ||
+                subtotal <= commissionMaxPremium);
 
-            cashbackAmount = Math.min(
-                cashbackAmount,
-                totalPremium
-            );
+        let commissionAmount = 0;
+        let commissionFormula = "";
 
-            cashbackApplicable = cashbackAmount > 0;
-            cashbackSource = "FORM";
+        if (commissionRule && commissionEligible) {
+            if (commissionType === "PERCENTAGE") {
+                commissionAmount =
+                    (subtotal * commissionValue) / 100;
 
-            cashbackFormula = cashbackApplicable
-                ? "Direct cashback entered"
-                : "";
-        } else if (cashbackRule) {
-            cashbackSource = "API";
-
-            const cashbackValue = Number(
-                cashbackRule.cashback_value || 0
-            );
-
-            maxCashbackAmount =
-                cashbackRule.max_cashback_amount !== null &&
-                cashbackRule.max_cashback_amount !== undefined
-                    ? Number(cashbackRule.max_cashback_amount)
-                    : null;
-
-            const minPremium =
-                cashbackRule.min_premium !== null &&
-                cashbackRule.min_premium !== undefined
-                    ? Number(cashbackRule.min_premium)
-                    : null;
-
-            const maxPremium =
-                cashbackRule.max_premium !== null &&
-                cashbackRule.max_premium !== undefined
-                    ? Number(cashbackRule.max_premium)
-                    : null;
-
-            const premiumEligible =
-                (minPremium === null ||
-                    totalPremium >= minPremium) &&
-                (maxPremium === null ||
-                    totalPremium <= maxPremium);
-
-            if (premiumEligible) {
-                const cashbackType = String(
-                    cashbackRule.cashback_type || ""
-                ).toUpperCase();
-
-                if (cashbackType === "PERCENTAGE") {
-                    cashbackPercentage = cashbackValue;
-
-                    cashbackAmount =
-                        (totalPremium * cashbackPercentage) / 100;
-
-                    cashbackFormula =
-                        `${money(totalPremium)} × ${cashbackPercentage}%`;
-                } else if (cashbackType === "FIXED") {
-                    cashbackFixedAmount = cashbackValue;
-                    cashbackAmount = cashbackFixedAmount;
-                    cashbackFormula = "Fixed cashback amount";
-                }
-
-                if (
-                    maxCashbackAmount !== null &&
-                    cashbackAmount > maxCashbackAmount
-                ) {
-                    cashbackAmount = maxCashbackAmount;
-
-                    cashbackFormula =
-                        `${cashbackFormula} (capped at maximum cashback)`;
-                }
-
-                cashbackAmount = Math.min(
-                    totalPremium,
-                    Math.max(0, cashbackAmount)
-                );
-            } else {
-                cashbackAmount = 0;
-                cashbackFormula = "";
+                commissionFormula =
+                    `${money(subtotal)} × ${commissionValue}%`;
+            } else if (commissionType === "FIXED") {
+                commissionAmount = commissionValue;
+                commissionFormula = "Fixed commission";
             }
 
-            cashbackApplicable = cashbackAmount > 0;
+            // Apply maximum commission cap.
+            if (maxCommissionAmount !== null) {
+                commissionAmount = Math.min(
+                    commissionAmount,
+                    Math.max(0, maxCommissionAmount)
+                );
+            }
         }
+
+        commissionAmount = Math.max(
+            0,
+            Number(commissionAmount.toFixed(2))
+        );
+
+        // FIXED PROFIT FROM PROFIT MASTER
+        const profitAmount = Math.max(
+            0,
+            Number(profitRule?.profit_amount || 0)
+        );
+
+        // CASHBACK MASTER LIMITS
+        const maxCashbackAmount =
+            cashbackRule?.max_cashback_amount != null &&
+                cashbackRule?.max_cashback_amount !== ""
+                ? Math.max(
+                    0,
+                    Number(cashbackRule.max_cashback_amount)
+                )
+                : null;
+
+        const cashbackMinPremium =
+            cashbackRule?.min_premium != null
+                ? Number(cashbackRule.min_premium)
+                : null;
+
+        const cashbackMaxPremium =
+            cashbackRule?.max_premium != null
+                ? Number(cashbackRule.max_premium)
+                : null;
+
+        const cashbackEligible =
+            (!cashbackMinPremium ||
+                totalPremium >= cashbackMinPremium) &&
+            (cashbackMaxPremium === null ||
+                totalPremium <= cashbackMaxPremium);
+
+        // Support both field names:
+        // formData.cash_back (your manual field)
+        // formData.cashback_amount (existing field)
+        const manualCashbackValue =
+            formData?.cash_back !== undefined &&
+                formData?.cash_back !== null &&
+                formData?.cash_back !== ""
+                ? formData.cash_back
+                : formData?.cashback_amount;
+
+        const hasManualCashback =
+            manualCashbackValue !== undefined &&
+            manualCashbackValue !== null &&
+            manualCashbackValue !== "";
+
+        let cashbackAmount = 0;
+        let cashbackFormula = "";
+        let cashbackSource = "";
+        let cashbackApplicable = false;
+
+        if (hasManualCashback) {
+            // A manually entered cashback overrides the formula.
+            cashbackAmount = Math.max(
+                0,
+                Number(manualCashbackValue) || 0
+            );
+
+            cashbackSource = "FORM";
+            cashbackFormula = "Manually entered cashback";
+        } else if (cashbackRule && cashbackEligible) {
+            // Calculated cashback = commission - fixed profit.
+            cashbackAmount = Math.max(
+                0,
+                commissionAmount - profitAmount
+            );
+
+            cashbackSource = "COMMISSION";
+            cashbackFormula =
+                `${money(commissionAmount)} - ${money(profitAmount)}`;
+        }
+
+        // Apply maximum cashback cap to both calculated and manual cashback.
+        if (maxCashbackAmount !== null) {
+            cashbackAmount = Math.min(
+                cashbackAmount,
+                maxCashbackAmount
+            );
+        }
+
+        // Cashback cannot exceed the total premium.
+        cashbackAmount = Math.min(
+            totalPremium,
+            Math.max(0, Number(cashbackAmount.toFixed(2)))
+        );
+
+        cashbackApplicable = cashbackAmount > 0;
+
+        if (cashbackApplicable) {
+            cashbackFormula +=
+                ` = ${money(cashbackAmount)}`;
+        }
+
 
         /*
          * STEP 12: NET PAYABLE
@@ -622,11 +688,17 @@ const PremiumCalculationSummary = ({
 
             totalPremium,
 
+            commissionRule,
+            commissionAmount,
+            commissionFormula,
+            maxCommissionAmount,
+
+            profitRule,
+            profitAmount,
+
             cashbackRule,
             cashbackSource,
             cashbackApplicable,
-            cashbackPercentage,
-            cashbackFixedAmount,
             cashbackFormula,
             maxCashbackAmount,
             cashbackAmount,
@@ -737,6 +809,7 @@ const PremiumCalculationSummary = ({
         );
     }
 
+
     return (
         <Paper
             sx={{
@@ -750,7 +823,7 @@ const PremiumCalculationSummary = ({
                 boxShadow: isDark
                     ? "0 2px 8px rgba(0,0,0,0.20)"
                     : "0 2px 8px rgba(15,23,42,0.04)",
-                    pb:5
+                pb: 5
             }}
         >
             {/* HEADER */}
@@ -1168,7 +1241,7 @@ const PremiumCalculationSummary = ({
                             >
                                 {tax.tax_name || tax.tax_code || "Tax"}
                                 {String(tax.tax_type).toUpperCase() ===
-                                "PERCENTAGE"
+                                    "PERCENTAGE"
                                     ? ` (${Number(tax.tax_percentage || 0)}%)`
                                     : ""}
                                 {tax.premium_component
@@ -1283,13 +1356,13 @@ const PremiumCalculationSummary = ({
                             color: "#1d4ed8",
                         }}
                     >
-                        {money(calculation.totalPremium)}
+                        {money(calculation?.totalPremium)}
                     </Typography>
                 </Box>
 
                 {/* CASHBACK */}
 
-                {calculation.cashbackApplicable && (
+                {calculation?.cashbackApplicable && (
                     <Box
                         sx={{
                             mt: 1.5,
@@ -1352,7 +1425,7 @@ const PremiumCalculationSummary = ({
                                     color: "#65a30d",
                                 }}
                             >
-                                {calculation.cashbackFormula}
+                                {"Formula Hided"}
                             </Typography>
 
                             <Typography
