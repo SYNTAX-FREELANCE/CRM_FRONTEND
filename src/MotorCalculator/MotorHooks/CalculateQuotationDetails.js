@@ -6,9 +6,7 @@ const createQuotationPayload = ({
   lead,
   createdBy,
 }) => {
-  console.log({
-    selectedCustomer,
-  });
+
 
   const Customer = selectedCustomer?.customer || selectedCustomer || {};
   const FetchedLead = selectedCustomer?.leads?.[0] || {};
@@ -462,7 +460,7 @@ const createQuotationPayload = ({
 
   return {
     quotation: {
-      lead_id: lead?.lead_id ?? FetchedLead?.lead_id,
+      lead_id: lead?.lead_id ?? FetchedLead?.lead_id ?? null,
       customer_id: customerId,
       vehicle_id: vehicleId,
       status: "CALCULATED",

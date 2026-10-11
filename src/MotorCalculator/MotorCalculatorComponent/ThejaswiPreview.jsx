@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import ThejaswiQuotationPreview from './ThejaswiQuotationPreview'
 import { useLocation } from 'react-router-dom';
-import companylogo from '../../assets/loginimages/companylogo.png'
 import FloatingBackButton from '../../CommonComponents/FloatingBackButton';
 import QuotationDataUnavailable from './QuotationDataUnavailable';
 import { useAllEmployeeDetails, useInsuranceCompanyMaster } from '../../CommonCode/useQuery';
@@ -168,7 +167,6 @@ const ThejaswiPreview = () => {
                 calculationData={calculationData}
                 formData={formData}
                 VehicleDetails={VehicleDetails?.[0]}
-                companylogo={companylogo}
                 createQuotation={handleCreateQuotation}
                 quoteData={{
                     quoteNo: quotationdata?.quotation_number || "Employee",

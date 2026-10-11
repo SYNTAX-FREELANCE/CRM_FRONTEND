@@ -12,7 +12,7 @@ import {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { toJpeg } from "html-to-image";
-
+import companylogo from '../../assets/loginimages/companylogo.png'
 
 /**
  * Independent Thejaswi quotation preview page.
@@ -29,7 +29,6 @@ export default function ThejaswiQuotationPreview({
             maximumFractionDigits: 2,
         }),
     quoteData = {},
-    companylogo = "",
 }) {
     const quotationRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);

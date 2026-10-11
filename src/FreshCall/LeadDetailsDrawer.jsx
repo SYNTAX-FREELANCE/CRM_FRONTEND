@@ -1,40 +1,23 @@
 import React, { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import {
-  Avatar,
   Box,
-  Button,
-  Chip,
   Drawer,
-  IconButton,
   Stack,
   Typography,
   Divider,
-  TextField,
-  Paper,
   useTheme,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+
 import PersonIcon from "@mui/icons-material/Person";
-import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import ArticleIcon from "@mui/icons-material/Article";
 import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
-import EventNoteIcon from "@mui/icons-material/EventNote";
-import CommentIcon from "@mui/icons-material/Comment";
 import HistoryIcon from "@mui/icons-material/History";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
-import EditDocumentIcon from '@mui/icons-material/EditDocument';
-
-import CallPopover from "./Components/CallPopover";
 import Section from "./Components/Section";
 import Row from "./Components/Row";
-import { useFollowUpDetail, useGetLeadHistory } from "../CommonCode/useQuery";
-import { errorNotify, getAuthUser, successNotify, warningNofity, warningNotify } from "../constant/Constant";
-import axios from "axios";
+import { useFollowUpDetail, useGetLeadHistory, useGetQuotationDetails } from "../CommonCode/useQuery";
+import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
 import { axioslogin } from "../Connection/axios";
 import { statusReasonMap } from "../CommonCode/Reusable";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,9 +26,9 @@ import LeadFollowUpCard from "./Components/LeadFollowUpCard";
 import { format } from "date-fns";
 import StatusActionCardsSkeleton from "../SkeletonComponent/StatusActionCardsSkeleton";
 import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
-import { DatePicker } from "@mui/x-date-pickers";
 import EditableDateField from "./Components/EditableDateField";
 import LeadVehicleUploads from "./Components/LeadVehicleUploads";
+import MotorQuotationSection from "./Components/MotorQuotationSection";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -91,11 +74,9 @@ const LeadDetailsDrawer = ({
   const [followUpAction, setFollowUpAction] = useState("");
 
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [editingField, setEditingField] = useState(null);
 
-  const [expiryDate, setExpiryDate] = useState(
-    lead?.known_policy_expiry_date || null
-  );
+
+  const { data: QuotationData = [] } = useGetQuotationDetails(leadId)
 
   const queryClient = useQueryClient();
 
@@ -692,8 +673,6 @@ const LeadDetailsDrawer = ({
               <LeadVehicleUploads lead={lead} />
             </Section>
 
-
-
             {
               hasFollowUp && (
                 <Section
@@ -733,6 +712,18 @@ const LeadDetailsDrawer = ({
                 </Stack>
               </Section>
             )}
+            <Section
+              title="Quotation Details"
+              icon={<ArticleIcon sx={{ fontSize: 16 }} />}
+              accent="orange"
+              defaultExpanded={true}
+            >
+              <MotorQuotationSection
+                quotations={QuotationData}
+              />
+            </Section>
+
+
 
             {hasPolicy && (
               <Section

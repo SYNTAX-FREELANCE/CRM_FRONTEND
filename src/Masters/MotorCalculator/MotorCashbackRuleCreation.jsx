@@ -47,6 +47,7 @@ const MotorCashbackRuleCreation = () => {
         vehicleClassId: "",
         cashbackType: "",
         cashbackValue: "",
+        maxcashbackvalue: "",
         minPremium: "",
         maxPremium: "",
         effectiveFrom: "",
@@ -227,6 +228,9 @@ const MotorCashbackRuleCreation = () => {
 
                     cashbackValue:
                         data?.cashback_value ?? "",
+
+                    maxcashbackvalue:
+                        data?.max_cashback_amount ?? "",
 
                     minPremium:
                         data?.min_premium ?? "",
@@ -409,7 +413,7 @@ const MotorCashbackRuleCreation = () => {
 
         if (
             cashbackRule.cashbackType ===
-                "PERCENTAGE" &&
+            "PERCENTAGE" &&
             Number(
                 cashbackRule.cashbackValue
             ) > 100
@@ -493,7 +497,7 @@ const MotorCashbackRuleCreation = () => {
         if (
             cashbackRule.effectiveTo &&
             cashbackRule.effectiveTo <
-                cashbackRule.effectiveFrom
+            cashbackRule.effectiveFrom
         ) {
             errorNotify(
                 "Effective to date cannot be before effective from date"
@@ -529,6 +533,7 @@ const MotorCashbackRuleCreation = () => {
             vehicleClassId: "",
             cashbackType: "",
             cashbackValue: "",
+            maxcashbackvalue: "",
             minPremium: "",
             maxPremium: "",
             effectiveFrom: "",
@@ -617,6 +622,13 @@ const MotorCashbackRuleCreation = () => {
                         },
                         {
                             field:
+                                "max_cashback_amount",
+                            headerName:
+                                "Max CashBack Value",
+                        },
+
+                        {
+                            field:
                                 "min_premium",
                             headerName:
                                 "Min Premium",
@@ -632,14 +644,14 @@ const MotorCashbackRuleCreation = () => {
                                 "effective_from",
                             headerName:
                                 "Effective From",
-                                   type: "date"
+                            type: "date"
                         },
                         {
                             field:
                                 "effective_to",
                             headerName:
                                 "Effective To",
-                                   type: "date"
+                            type: "date"
                         },
                         {
                             field:
@@ -711,6 +723,10 @@ const MotorCashbackRuleCreation = () => {
                     cashbackRule.cashbackValue
                 ),
 
+            max_cashback_amount: Number(
+                cashbackRule.maxcashbackvalue
+            ),
+
             min_premium:
                 cashbackRule.minPremium === ""
                     ? null
@@ -775,10 +791,9 @@ const MotorCashbackRuleCreation = () => {
 
                 successNotify(
                     response?.data?.message ||
-                    `Cashback rule ${
-                        mode === "edit"
-                            ? "updated"
-                            : "created"
+                    `Cashback rule ${mode === "edit"
+                        ? "updated"
+                        : "created"
                     } successfully`
                 );
 
@@ -943,6 +958,21 @@ const MotorCashbackRuleCreation = () => {
                                 onChange={
                                     set(
                                         "cashbackValue"
+                                    )
+                                }
+                            />
+                        </FormRow>
+                        <FormRow
+                            label="Max Cashback Value"
+                            required
+                        >
+                            <InputLg
+                                value={
+                                    cashbackRule.maxcashbackvalue
+                                }
+                                onChange={
+                                    set(
+                                        "maxcashbackvalue"
                                     )
                                 }
                             />

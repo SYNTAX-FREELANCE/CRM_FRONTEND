@@ -98,6 +98,7 @@ import {
   getOdRateSLabMaster,
   getTaxRuleMasterDetails,
   getVehicleCategoryProfit,
+  getQuotationDetails,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -902,6 +903,15 @@ export const useMotorTaxRuleMaster = () => {
   return useQuery({
     queryKey: ["tax-rule-master"],
     queryFn: getTaxRuleMasterDetails,
+  });
+};
+
+export const useGetQuotationDetails = (leadId) => {
+  return useQuery({
+    queryKey: ["quotationdetail", leadId],
+    queryFn: () => getQuotationDetails(leadId),
+    enabled: !!leadId,
+    staleTime: Infinity,
   });
 };
 
