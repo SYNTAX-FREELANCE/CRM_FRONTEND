@@ -760,7 +760,9 @@ const MotorVehicleCalculator = () => {
                     response?.data ?? {};
 
                 if (success === 0) return warningNofity(message)
-
+                    console.log({
+                data});
+                    
                 setCalculationData(
                     data || null
                 );
@@ -1535,7 +1537,8 @@ const MotorVehicleCalculator = () => {
                             formData,
                             categoryId,
                             category,
-                            selectedCustomer
+                            selectedCustomer,
+                            lead
                         },
                     })
                 }

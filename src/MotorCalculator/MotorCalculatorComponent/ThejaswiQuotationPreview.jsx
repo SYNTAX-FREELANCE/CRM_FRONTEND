@@ -12,7 +12,7 @@ import {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { toJpeg } from "html-to-image";
-
+import companylogo from '../../assets/loginimages/companylogo.png'
 
 /**
  * Independent Thejaswi quotation preview page.
@@ -22,27 +22,27 @@ export default function ThejaswiQuotationPreview({
     calculationData,
     formData = {},
     VehicleDetails,
+    createQuotation,
     formatNumber = (v) =>
         Number(v || 0).toLocaleString("en-IN", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }),
     quoteData = {},
-    companylogo = "",
 }) {
     const quotationRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState("");
 
 
-  
+
 
 
     const money = (v) => `₹${formatNumber(Number(v || 0))}`;
     const num = (v) => Number(v ?? 0) || 0;
 
     const quote = {
-        quoteNo: "QUOTE —",
+        quoteNo: quoteData?.quoteNo,
         quoteDate:
             quoteData.quoteDate || new Date().toLocaleDateString("en-IN"),
         customer:
@@ -273,50 +273,158 @@ export default function ThejaswiQuotationPreview({
         });
 
         const taxTotal = taxes.reduce((s, x) => s + x.amount, 0);
+
         const total = subtotal + taxTotal;
-        const rule = calculationData?.cashback?.[0];
 
-        const direct =
-            formData.cashback_amount !== undefined &&
-            formData.cashback_amount !== null &&
-            formData.cashback_amount !== "";
+        /*
+         * COMMISSION
+         * Commission = Premium Before Tax * Commission %
+         * Apply max_commission_amount.
+         */
 
-        let cashback = 0;
+        const commissionRule = calculationData?.commission?.[0];
+        const cashbackRule = calculationData?.cashback?.[0];
+        const profitRule = calculationData?.profit?.[0];
 
-        if (direct) {
-            cashback = Math.min(
-                total,
-                Math.max(0, num(formData.cashback_amount))
-            );
-        } else if (rule) {
-            const eligible =
-                (rule.min_premium == null ||
-                    total >= num(rule.min_premium)) &&
-                (rule.max_premium == null ||
-                    total <= num(rule.max_premium));
+        const commissionType = String(
+            commissionRule?.commission_type || ""
+        ).toUpperCase();
 
-            if (eligible) {
-                const type = String(
-                    rule.cashback_type || ""
-                ).toUpperCase();
+        const commissionValue = num(
+            commissionRule?.commission_value
+        );
 
-                cashback =
-                    type === "PERCENTAGE"
-                        ? (total * num(rule.cashback_value)) / 100
-                        : type === "FIXED"
-                            ? num(rule.cashback_value)
-                            : 0;
+        const maxCommissionAmount =
+            commissionRule?.max_commission_amount != null &&
+                commissionRule?.max_commission_amount !== ""
+                ? num(commissionRule.max_commission_amount)
+                : null;
 
-                if (rule.max_cashback_amount != null) {
-                    cashback = Math.min(
-                        cashback,
-                        num(rule.max_cashback_amount)
-                    );
-                }
+        const commissionMinPremium =
+            commissionRule?.min_premium != null
+                ? num(commissionRule.min_premium)
+                : null;
 
-                cashback = Math.min(total, Math.max(0, cashback));
+        const commissionMaxPremium =
+            commissionRule?.max_premium != null
+                ? num(commissionRule.max_premium)
+                : null;
+
+        const commissionEligible =
+            (commissionMinPremium === null ||
+                subtotal >= commissionMinPremium) &&
+            (commissionMaxPremium === null ||
+                subtotal <= commissionMaxPremium);
+
+        let commission = 0;
+
+        if (commissionRule && commissionEligible) {
+            if (commissionType === "PERCENTAGE") {
+                commission =
+                    (subtotal * commissionValue) / 100;
+            } else if (commissionType === "FIXED") {
+                commission = commissionValue;
+            }
+
+            if (maxCommissionAmount !== null) {
+                commission = Math.min(
+                    commission,
+                    Math.max(0, maxCommissionAmount)
+                );
             }
         }
+
+        commission = Math.max(
+            0,
+            Number(commission.toFixed(2))
+        );
+
+        /*
+         * FIXED PROFIT FROM PROFIT MASTER
+         */
+
+        const profit = Math.max(
+            0,
+            num(profitRule?.profit_amount)
+        );
+
+        /*
+         * CASHBACK
+         * Calculated cashback = Commission - Profit.
+         * Manual formData.cash_back or cashback_amount
+         * takes precedence.
+         */
+
+        const manualCashbackValue =
+            formData.cash_back !== undefined &&
+                formData.cash_back !== null &&
+                formData.cash_back !== ""
+                ? formData.cash_back
+                : formData.cashback_amount;
+
+        const hasManualCashback =
+            manualCashbackValue !== undefined &&
+            manualCashbackValue !== null &&
+            manualCashbackValue !== "";
+
+        const cashbackMinPremium =
+            cashbackRule?.min_premium != null
+                ? num(cashbackRule.min_premium)
+                : null;
+
+        const cashbackMaxPremium =
+            cashbackRule?.max_premium != null
+                ? num(cashbackRule.max_premium)
+                : null;
+
+        const cashbackEligible =
+            (cashbackMinPremium === null ||
+                total >= cashbackMinPremium) &&
+            (cashbackMaxPremium === null ||
+                total <= cashbackMaxPremium);
+
+        const maxCashbackAmount =
+            cashbackRule?.max_cashback_amount != null &&
+                cashbackRule.max_cashback_amount !== ""
+                ? Math.max(
+                    0,
+                    num(cashbackRule.max_cashback_amount)
+                )
+                : null;
+
+        let cashback = 0;
+        let cashbackSource = "";
+
+        if (hasManualCashback) {
+            cashback = Math.max(
+                0,
+                num(manualCashbackValue)
+            );
+
+            cashbackSource = "FORM";
+        } else if (cashbackRule && cashbackEligible) {
+            cashback = Math.max(0, commission - profit);
+            cashbackSource = "COMMISSION";
+        }
+
+        // Apply cashback cap to calculated and manual cashback.
+        if (maxCashbackAmount !== null) {
+            cashback = Math.min(
+                cashback,
+                maxCashbackAmount
+            );
+        }
+
+        // Cashback cannot exceed the total premium.
+        cashback = Math.min(
+            total,
+            Math.max(0, Number(cashback.toFixed(2)))
+        );
+
+        const netPayable = Math.max(
+            0,
+            total - cashback
+        );
 
         return {
             basicOD,
@@ -335,9 +443,17 @@ export default function ThejaswiQuotationPreview({
             taxes,
             taxTotal,
             total,
+
+            commission,
+            maxCommissionAmount,
+            profit,
+
             cashback,
-            netPayable: Math.max(0, total - cashback),
+            cashbackSource,
+            maxCashbackAmount,
+            netPayable,
         };
+
     }, [calculationData, formData]);
 
     const handleDownloadJpg = async () => {
@@ -444,7 +560,7 @@ export default function ThejaswiQuotationPreview({
         >
             <Typography
                 sx={{
-                    fontSize: 10.5,
+                    fontSize: 12.5,
                     fontWeight: 800,
                     letterSpacing: ".04em",
                 }}
@@ -453,7 +569,7 @@ export default function ThejaswiQuotationPreview({
             </Typography>
 
             {meta && (
-                <Typography sx={{ fontSize: 9, color: "#dbeafe" }}>
+                <Typography sx={{ fontSize: 11, color: "#dbeafe" }}>
                     {meta}
                 </Typography>
             )}
@@ -482,9 +598,9 @@ export default function ThejaswiQuotationPreview({
             <Box sx={{ minWidth: 0 }}>
                 <Typography
                     sx={{
-                        fontSize: 10.5,
+                        fontSize: 12.5,
                         color: "#344054",
-                        fontWeight: bold ? 800 : 500,
+                        fontWeight: bold ? 900 : 900,
                     }}
                 >
                     {label}
@@ -492,7 +608,7 @@ export default function ThejaswiQuotationPreview({
 
                 {note && (
                     <Typography
-                        sx={{ mt: 0.2, fontSize: 9, color: "#8792a5" }}
+                        sx={{ mt: 0.2, fontSize: 10, color: "#8792a5", fontWeight: 900 }}
                     >
                         {note}
                     </Typography>
@@ -521,17 +637,26 @@ export default function ThejaswiQuotationPreview({
                 minHeight: "100%",
             }}
         >
+
             <Box
                 className="quotation-toolbar"
                 sx={{
                     maxWidth: 900,
                     mx: "auto",
-                    mb: 1.5,
+                    mb: 2,
+                    p: 1.25,
                     display: "flex",
                     justifyContent: "flex-end",
+                    alignItems: "center",
                     flexWrap: "wrap",
-                    gap: 1,
-                    "@media print": { display: "none" },
+                    gap: 1.25,
+                    bgcolor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 3,
+                    boxShadow: "0 3px 12px rgba(23, 47, 101, 0.06)",
+                    "@media print": {
+                        display: "none",
+                    },
                 }}
             >
                 <Button
@@ -539,19 +664,30 @@ export default function ThejaswiQuotationPreview({
                     startIcon={<PrintOutlinedIcon />}
                     onClick={() => window.print()}
                     sx={{
-                        borderColor: "#172f65",
-                        color: "#172f65",
+                        minHeight: 42,
+                        px: 2,
+                        borderRadius: 2,
+                        borderColor: "#cbd5e1",
+                        color: "#334155",
+                        bgcolor: "#ffffff",
                         textTransform: "none",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            borderColor: "#172f65",
+                            bgcolor: "#f1f5f9",
+                        },
                     }}
                 >
                     Print / Save PDF
                 </Button>
 
                 <Button
-                    variant="contained"
+                    variant="outlined"
                     startIcon={
                         isExporting ? (
-                            <CircularProgress size={18} color="inherit" />
+                            <CircularProgress size={17} color="inherit" />
                         ) : (
                             <DownloadOutlinedIcon />
                         )
@@ -559,15 +695,56 @@ export default function ThejaswiQuotationPreview({
                     onClick={handleDownloadJpg}
                     disabled={isExporting}
                     sx={{
-                        bgcolor: "#172f65",
+                        minHeight: 42,
+                        px: 2,
+                        borderRadius: 2,
+                        borderColor: "#bfdbfe",
+                        color: "#1d4ed8",
+                        bgcolor: "#eff6ff",
                         textTransform: "none",
-                        fontWeight: 700,
-                        "&:hover": { bgcolor: "#101d40" },
+                        fontWeight: 600,
+                        fontSize: 13,
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            borderColor: "#60a5fa",
+                            bgcolor: "#dbeafe",
+                        },
+                        "&.Mui-disabled": {
+                            opacity: 0.7,
+                        },
                     }}
                 >
                     {isExporting ? "Preparing JPG..." : "Download JPG"}
                 </Button>
+
+                <Button
+                    variant="contained"
+                    startIcon={<PrintOutlinedIcon />}
+                    onClick={createQuotation}
+                    sx={{
+                        minHeight: 42,
+                        px: 2.5,
+                        borderRadius: 2,
+                        background: "linear-gradient(135deg, #172f65 0%, #2854a1 100%)",
+                        color: "#ffffff",
+                        textTransform: "none",
+                        fontWeight: 700,
+                        fontSize: 13,
+                        boxShadow: "0 4px 10px rgba(23, 47, 101, 0.2)",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            background: "linear-gradient(135deg, #101d40 0%, #1d4385 100%)",
+                            boxShadow: "0 6px 14px rgba(23, 47, 101, 0.28)",
+                            transform: "translateY(-1px)",
+                        },
+                    }}
+                >
+                    Generate Quote
+                </Button>
             </Box>
+
+
+            {/* button */}
 
             {exportError && (
                 <Alert
@@ -865,7 +1042,7 @@ export default function ThejaswiQuotationPreview({
                             borderTop: 0,
                         }}
                     >
-                        {vehicleRows.map(([label, value]) => {                            
+                        {vehicleRows.map(([label, value]) => {
                             return (
                                 <Box key={label}>
                                     <Row label={label} nomoney value={value} />

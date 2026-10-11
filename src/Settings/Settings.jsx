@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import PageWrapper from "../CommonComponents/PageWrapper";
 
 // Material UI Icons
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import HailIcon from '@mui/icons-material/Hail';
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExtensionIcon from "@mui/icons-material/Extension";
@@ -446,7 +448,13 @@ const Settings = () => {
           menuslno: 58,
           label: "Motor Tax Rule",
           path: "/home/setting/motortaxrule",
-          icon: <AccessTimeIcon />,
+          icon: <HailIcon />,
+        },
+        {
+          menuslno: 58,
+          label: "Motor Profit Master",
+          path: "/home/setting/motorprofit",
+          icon: <MonetizationOnIcon />,
         },
 
 

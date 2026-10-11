@@ -264,7 +264,9 @@ const ThejaswiPreview = lazy(
   () => import("./MotorCalculator/MotorCalculatorComponent/ThejaswiPreview"),
 );
 
-
+const MotorProfitCreation = lazy(
+  () => import("./Masters/MotorCalculator/MotorProfitCreation"),
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -651,11 +653,14 @@ const router = createBrowserRouter([
         element: withSuspense(MotorTaxRuleCreation),
       },
 
-  {
+      {
         path: "motor-calculator/category/preview",
         element: withSuspense(ThejaswiPreview),
       },
-      
+      {
+        path: "setting/motorprofit",
+        element: withSuspense(MotorProfitCreation),
+      },
 
       // {
       //   path: "*",

@@ -47,6 +47,7 @@ const MotorCommissionRuleCreation = () => {
         vehicleClassId: "",
         commissionType: "",
         commissionValue: "",
+        maxcommissionvalue: "",
         minPremium: "",
         maxPremium: "",
         effectiveFrom: "",
@@ -227,6 +228,9 @@ const MotorCommissionRuleCreation = () => {
 
                     commissionValue:
                         data?.commission_value ?? "",
+
+                    maxcommissionvalue:
+                        data?.max_commission_amount ?? "",
 
                     minPremium:
                         data?.min_premium ?? "",
@@ -529,6 +533,7 @@ const MotorCommissionRuleCreation = () => {
             vehicleClassId: "",
             commissionType: "",
             commissionValue: "",
+            maxcommissionvalue: "",
             minPremium: "",
             maxPremium: "",
             effectiveFrom: "",
@@ -615,6 +620,13 @@ const MotorCommissionRuleCreation = () => {
                             headerName:
                                 "Commission Value",
                         },
+                        {
+                            field:
+                                "max_commission_amount",
+                            headerName:
+                                "Max Commission",
+                        },
+
                         {
                             field:
                                 "min_premium",
@@ -709,6 +721,11 @@ const MotorCommissionRuleCreation = () => {
             commission_value:
                 Number(
                     commissionRule.commissionValue
+                ),
+
+            max_commission_amount:
+                Number(
+                    commissionRule.maxcommissionvalue
                 ),
 
             min_premium:
@@ -947,14 +964,20 @@ const MotorCommissionRuleCreation = () => {
                             />
                         </FormRow>
 
+
+                        <FormRow
+                            label="Max Commission Values"
+                            required>
+                            <InputLg
+                                value={commissionRule.maxcommissionvalue}
+                                onChange={set("maxcommissionvalue")}
+                            />
+                        </FormRow>
+
                         <FormRow label="Minimum Premium">
                             <InputLg
-                                value={
-                                    commissionRule.minPremium
-                                }
-                                onChange={
-                                    set("minPremium")
-                                }
+                                value={commissionRule.minPremium}
+                                onChange={set("minPremium")}
                             />
                         </FormRow>
 
