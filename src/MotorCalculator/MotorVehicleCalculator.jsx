@@ -499,10 +499,7 @@ const MotorVehicleCalculator = () => {
         }
     );
 
-    console.log({
-        formData
-    });
-    
+
 
     // =========================================================
     // FETCHED CALCULATION DATA
