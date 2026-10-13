@@ -56,6 +56,9 @@ const MotorAddonRuleCreation = () => {
 
         minVehicleAgeMonths: "",
         maxVehicleAgeMonths: "",
+        discount_type: "",
+        discount_value: "",
+        max_discount_value: "",
 
         minIdv: "",
         maxIdv: "",
@@ -105,6 +108,8 @@ const MotorAddonRuleCreation = () => {
     // ADDON MASTER
 
     const [AddonMaster, setAddonMaster] = useState([]);
+
+
 
 
     const fetchAddonMaster = useCallback(async () => {
@@ -248,6 +253,23 @@ const MotorAddonRuleCreation = () => {
     ];
 
 
+    const DiscountType = [
+        {
+            id: "NONE",
+            label: "none",
+        },
+        {
+            id: "PERCENTAGE",
+            label: "Percentage",
+        },
+
+        {
+            id: "FIXED",
+            label: "Fixed",
+        },
+
+    ];
+
 
     // SET FIELD
 
@@ -288,6 +310,12 @@ const MotorAddonRuleCreation = () => {
                     response.data.data;
 
 
+                console.log({
+                    data
+                });
+
+
+
                 setAddonRule({
 
                     addonId:
@@ -325,6 +353,10 @@ const MotorAddonRuleCreation = () => {
 
                     rateValue:
                         data?.rate_value ?? "",
+
+                    discount_type: data?.discount_type ?? "",
+                    discount_value: data?.discount_value ?? "",
+                    max_discount_value: data?.max_discount_value ?? "",
 
                     effectiveFrom:
                         data?.effective_from
@@ -719,6 +751,10 @@ const MotorAddonRuleCreation = () => {
             minIdv: "",
             maxIdv: "",
 
+            discount_type: "",
+            discount_value: "",
+            max_discount_value: "",
+
             rateType: "",
             rateValue: "",
 
@@ -881,6 +917,28 @@ const MotorAddonRuleCreation = () => {
                             headerName:
                                 "Rate Value",
                         },
+                        {
+                            field:
+                                "discount_value",
+
+                            headerName:
+                                "Discount Value",
+                        },
+                        {
+                            field:
+                                "max_discount_value",
+
+                            headerName:
+                                "Max Discount Value",
+                        },
+
+                        {
+                            field:
+                                "discount_type",
+
+                            headerName:
+                                "Discount Type",
+                        },
 
                         {
                             field:
@@ -1024,6 +1082,14 @@ const MotorAddonRuleCreation = () => {
                     addonRule.rateValue
                 ),
 
+
+            discount_type: addonRule?.discount_type,
+            discount_value: Number(
+                addonRule.discount_value
+            ),
+            max_discount_value: Number(
+                addonRule.max_discount_value
+            ),
 
             effective_from:
                 addonRule.effectiveFrom,
@@ -1428,6 +1494,65 @@ const MotorAddonRuleCreation = () => {
 
                         </FormRow>
 
+
+
+
+                        <FormRow
+                            label="Discount Value"
+                        >
+
+                            <InputLg
+                                type="number"
+
+                                value={
+                                    addonRule.discount_value
+                                }
+
+                                onChange={set(
+                                    "discount_value"
+                                )}
+                            />
+
+                        </FormRow>
+
+
+                        <FormRow
+                            label="Max Discount Value"
+                        >
+
+                            <InputLg
+                                type="number"
+
+                                value={
+                                    addonRule.max_discount_value
+                                }
+
+                                onChange={set(
+                                    "max_discount_value"
+                                )}
+                            />
+
+                        </FormRow>
+
+                        <FormRow
+                            label="Discount Type"
+                        >
+
+                            <SelectLg
+                                options={
+                                    DiscountType
+                                }
+
+                                value={
+                                    addonRule.discount_type
+                                }
+
+                                onChange={set(
+                                    "discount_type"
+                                )}
+                            />
+
+                        </FormRow>
 
 
                         {/* EFFECTIVE FROM */}
