@@ -310,11 +310,6 @@ const MotorAddonRuleCreation = () => {
                     response.data.data;
 
 
-                console.log({
-                    data
-                });
-
-
 
                 setAddonRule({
 
