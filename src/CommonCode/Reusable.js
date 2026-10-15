@@ -1109,7 +1109,7 @@ export const FieldCodeMaster = [
   { id: "registration_date", label: "Registration Date", type: "DATE", placeholder: "Select registration date" },
   { id: "policy_start_date", label: "Policy Start Date", type: "DATE", placeholder: "Select policy start date" },
   { id: "claim_status", label: "Claim in Previous Policy", type: "CHECKBOX", placeholder: "" },
-  { id: "previous_ncb_percentage", label: "Previous Year NCB (%)", type: "DECIMAL", placeholder: "Enter previous NCB percentage" },
+  { id: "previous_ncb_percentage", label: "Previous Year NCB (%)", type: "SELECT", placeholder: "Enter previous NCB percentage" },
   { id: "idv", label: "IDV", type: "DECIMAL", placeholder: "Enter IDV" },
   { id: "engine_cc", label: "Engine Capacity (CC)", type: "NUMBER", placeholder: "Enter engine capacity in CC" },
   { id: "previous_policy_type_id", label: "Previous Policy Type", type: "SELECT", placeholder: "Select previous policy type" },

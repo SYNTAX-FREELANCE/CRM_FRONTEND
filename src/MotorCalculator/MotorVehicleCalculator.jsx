@@ -311,6 +311,16 @@ const MotorVehicleCalculator = () => {
                         policyTerms
                     );
 
+                case "previous_ncb_percentage":
+                    return [
+                        { id: 0, name: "0%" },
+                        { id: 20, name: "20%" },
+                        { id: 25, name: "25%" },
+                        { id: 35, name: "35%" },
+                        { id: 45, name: "45%" },
+                        { id: 50, name: "50%" },
+                    ];
+
                 default:
                     return [];
             }
@@ -358,6 +368,9 @@ const MotorVehicleCalculator = () => {
                 case "policy_term":
                 case "policy_term_id":
                     return item.policy_term_id;
+
+                case "previous_ncb_percentage":
+                    return item.id;
 
                 default:
                     return "";
@@ -413,62 +426,13 @@ const MotorVehicleCalculator = () => {
                         item.policy_term_name
                     );
 
+                case "previous_ncb_percentage":
+                    return item.name;
+
                 default:
                     return "";
             }
         };
-
-
-    // =========================================================
-    // FORM STATE
-    // =========================================================
-
-    // const [formData, setFormData] =
-    //     useState({
-
-    //         // Insurance Company
-    //         insurance_company_id: "",
-
-    //         // Vehicle
-    //         vehicle_class_id: "",
-    //         fuel_type_id: "",
-    //         usage_id: "",
-
-    //         registration_date: "",
-    //         policy_start_date: "",
-
-    //         engine_cc: "",
-    //         gvw: "",
-    //         seating_capacity: "",
-
-    //         idv: "",
-
-    //         // Policy
-    //         business_type_id: "",
-    //         product_id: "",
-    //         policy_type_id: "",
-    //         policy_term_id: "",
-
-    //         // Previous Policy / NCB
-    //         previous_policy_number: "",
-    //         previous_insurance_company: "",
-    //         previous_ncb_percentage: "",
-    //         claim_status: "",
-    //         claim_count: "",
-
-    //         // Direct De-tariff Input
-    //         // This value is percentage
-    //         de_tariff_discount: "",
-
-    //         // Direct / API Cashback
-    //         cashback: "",
-
-    //         // Selected Addons
-    //         addon_ids: [],
-
-    //         // Selected Covers
-    //         cover_ids: [],
-    //     });
 
 
     const [formData, setFormData] = useState(
@@ -762,8 +726,8 @@ const MotorVehicleCalculator = () => {
                     response?.data ?? {};
 
                 if (success === 0) return warningNofity(message)
-                
-                    
+
+
                 setCalculationData(
                     data || null
                 );

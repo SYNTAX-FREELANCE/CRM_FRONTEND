@@ -18,6 +18,7 @@ import companylogo from "../../assets/loginimages/companylogo.png";
  * Props: calculationData, formData, VehicleDetails, createQuotation,
  * formatNumber, quoteData.
  */
+
 export default function ThejaswiQuotationPreview({
     calculationData,
     formData = {},
@@ -82,51 +83,165 @@ export default function ThejaswiQuotationPreview({
         ["Insured Declared Value (IDV)", money(formData.idv)],
     ];
 
+
     const p = useMemo(() => {
         const idv = num(formData?.idv);
         const od = calculationData?.od_calculation || {};
         const odRule = calculationData?.od_rate?.[0] || {};
-        const odType = String(odRule.rate_type || "PERCENTAGE").toUpperCase();
+
+        const odType = String(
+            odRule.rate_type || "PERCENTAGE"
+        ).toUpperCase();
+
         const odRate = num(
-            odRule.slab_rate_value ?? odRule.rate_value ?? odRule.master_rate_value
+            odRule.slab_rate_value ??
+            odRule.rate_value ??
+            odRule.master_rate_value
         );
+
+        // STEP 1: Basic OD
         const basicOD = round(
             od.basic_od_premium ??
-            (odType === "FIXED" ? odRate : (idv * odRate) / 100)
+            (
+                odType === "FIXED"
+                    ? odRate
+                    : (idv * odRate) / 100
+            )
         );
 
-        // NCB is calculated on Basic OD, before adding IMT-23.
-        const ncbRule = calculationData?.ncb_rule?.[0] || {};
-        const ncbPct = Math.min(
-            100,
-            Math.max(0, num(
-                od.ncb_percentage ??
-                ncbRule.calculated_ncb_percentage ??
-                ncbRule.ncb_percentage
-            ))
-        );
-        const ncb = round(Math.min(
-            basicOD,
-            Math.max(0, num(od.ncb_amount ?? (basicOD * ncbPct) / 100))
-        ));
-
+        // STEP 2: IMT-23
+        // IMT-23 is included in Total OD only once.
         const addonIds = Array.isArray(formData?.addon_ids)
             ? formData.addon_ids.map(Number)
             : [];
+
         const allAddons = Array.isArray(calculationData?.addons)
             ? calculationData.addons
             : [];
+
         const imt23Rule = allAddons.find(
-            (item) => String(item.addon_code || "").toUpperCase() === "IMT_23"
+            (item) =>
+                String(item.addon_code || "").toUpperCase() === "IMT_23"
         );
-        // Match PremiumCalculationSummary: if the API provides IMT-23, include it in Total OD.
+
+        // Keep IMT-23 automatic when its rule is returned,
+        // matching the existing PremiumCalculationSummary behavior.
         const imt23Selected = Boolean(imt23Rule);
-        const imt23Rate = num(imt23Rule?.rate_value ?? imt23Rule?.slab_rate_value ?? 15);
+
+        const imt23Rate = imt23Selected
+            ? num(
+                imt23Rule.rate_value ??
+                imt23Rule.slab_rate_value ??
+                15
+            )
+            : 0;
+
         const imt23Premium = imt23Selected
             ? round((basicOD * imt23Rate) / 100)
             : 0;
-        const totalOD = round(basicOD + imt23Premium);
 
+        const totalOD = round(
+            basicOD + imt23Premium
+        );
+
+        // STEP 3: DE Tariff Discount
+        const discountRule =
+            calculationData?.discount_rule?.[0] || {};
+
+        const formDeValue = formData?.de_tariff_discount;
+
+        const dePct = Math.min(
+            100,
+            Math.max(
+                0,
+                num(
+                    formDeValue !== undefined &&
+                        formDeValue !== null &&
+                        formDeValue !== ""
+                        ? formDeValue
+                        : discountRule.discount_value ?? 0
+                )
+            )
+        );
+
+        const deAmount = round(
+            Math.min(
+                totalOD,
+                (totalOD * dePct) / 100
+            )
+        );
+
+        const odAfterDiscount = round(
+            Math.max(0, totalOD - deAmount)
+        );
+
+        // STEP 4: NCB on OD after DE Tariff Discount
+        const ncbRule =
+            calculationData?.ncb_rule?.[0] || {};
+
+        const ncbPct = Math.min(
+            100,
+            Math.max(
+                0,
+                num(
+                    od.ncb_percentage ??
+                    ncbRule.calculated_ncb_percentage ??
+                    ncbRule.ncb_percentage
+                )
+            )
+        );
+
+        const ncb = round(
+            Math.min(
+                odAfterDiscount,
+                Math.max(
+                    0,
+                    od.ncb_amount != null &&
+                        dePct === 0
+                        ? num(od.ncb_amount)
+                        : (odAfterDiscount * ncbPct) / 100
+                )
+            )
+        );
+
+        // STEP 5: Final Net OD
+        const netOD = round(
+            Math.max(0, odAfterDiscount - ncb)
+        );
+
+        // Use backend final OD only when no IMT-23 or
+        // DE Tariff Discount adjustment is applied.
+        const finalOD = round(
+            imt23Premium === 0 &&
+                dePct === 0 &&
+                od.final_od_premium != null
+                ? num(od.final_od_premium)
+                : netOD
+        );
+
+        const premiumOD = finalOD;
+
+        // STEP 6: Third-Party Premium
+        const tpRule = calculationData?.tp_rate?.[0] || {};
+
+        const tpType = String(
+            tpRule.rate_type || "FIXED"
+        ).toUpperCase();
+
+        const tpRate = num(
+            tpRule.slab_rate_value ??
+            tpRule.rate_value ??
+            tpRule.master_rate_value
+        );
+
+        const tp = round(
+            tpType === "PERCENTAGE"
+                ? (idv * tpRate) / 100
+                : tpRate
+        );
+
+        // STEP 7: Other selected add-ons
+        // IMT-23 is excluded here because it is already in Total OD.
         const addons = allAddons
             .filter(
                 (item) =>
@@ -142,7 +257,6 @@ export default function ThejaswiQuotationPreview({
                     item.rate_value ?? item.slab_rate_value
                 );
 
-                // 1. Calculate original add-on premium
                 const originalAmount =
                     type === "FIXED"
                         ? rate
@@ -150,7 +264,6 @@ export default function ThejaswiQuotationPreview({
                             ? (idv * rate) / 100
                             : 0;
 
-                // 2. Read discount configuration
                 const discountType = String(
                     item.discount_type || "NONE"
                 ).toUpperCase();
@@ -163,7 +276,6 @@ export default function ThejaswiQuotationPreview({
                         ? null
                         : num(item.max_discount_value);
 
-                // 3. Calculate discount on the original premium
                 let discountAmount = 0;
 
                 if (discountType === "PERCENTAGE") {
@@ -173,7 +285,6 @@ export default function ThejaswiQuotationPreview({
                     discountAmount = discountValue;
                 }
 
-                // 4. Apply maximum discount if a positive cap is configured
                 if (maxDiscountValue !== null) {
                     discountAmount = Math.min(
                         discountAmount,
@@ -181,33 +292,33 @@ export default function ThejaswiQuotationPreview({
                     );
                 }
 
-                // Discount cannot exceed the original premium
                 discountAmount = round(
-                    Math.max(0, Math.min(discountAmount, originalAmount))
+                    Math.max(
+                        0,
+                        Math.min(discountAmount, originalAmount)
+                    )
                 );
 
-                // 5. Final premium after discount
                 const amount = round(
                     Math.max(0, originalAmount - discountAmount)
                 );
 
                 return {
                     id: item.addon_id,
-                    label: item.addon_name || item.name || "Add-on",
-
+                    label:
+                        item.addon_name ||
+                        item.name ||
+                        "Add-on",
                     rate,
-
                     originalAmount: round(originalAmount),
                     discountType,
                     discountValue,
                     discountAmount,
                     amount,
-
                     formula:
                         type === "FIXED"
                             ? `Fixed amount: ${money(rate)}`
                             : `${money(idv)} × ${rate}%`,
-
                     discountFormula:
                         discountType === "PERCENTAGE"
                             ? `${money(originalAmount)} × ${discountValue}%`
@@ -218,147 +329,271 @@ export default function ThejaswiQuotationPreview({
             });
 
         const addonTotal = round(
-            addons?.reduce((sum, item) => sum + item.amount, 0)
+            addons.reduce(
+                (sum, item) => sum + item.amount,
+                0
+            )
         );
 
-        // The configured OD discount is kept separate from the manually entered DE tariff discount.
-        const discountRule = calculationData?.discount_rule?.[0] || {};
-        const configuredDiscountPct = Math.max(0, num(
-            od.discount_percentage ??
-            discountRule.discount_percentage ??
-            discountRule.rate_value ??
-            discountRule.discount_rate
-        ));
-        const configuredDiscount = Math.max(0, num(
-            od.discount_amount ?? ((basicOD - ncb) * configuredDiscountPct) / 100
-        ));
-        const configuredNetOD = Math.max(
-            0,
-            round(od.final_od_premium ?? (basicOD - ncb - configuredDiscount))
-        );
-
-        const tpRule = calculationData?.tp_rate?.[0] || {};
-        const tpType = String(tpRule.rate_type || "FIXED").toUpperCase();
-        const tpRate = num(
-            tpRule.slab_rate_value ?? tpRule.rate_value ?? tpRule.master_rate_value
-        );
-        const tp = round(tpType === "PERCENTAGE" ? (idv * tpRate) / 100 : tpRate);
-
+        // STEP 8: Additional Covers
         const coverIds = Array.isArray(formData?.cover_ids)
             ? formData.cover_ids.map(Number)
             : [];
-        const covers = (Array.isArray(calculationData?.covers) ? calculationData.covers : [])
-            .filter((item) => coverIds.includes(Number(item.cover_id)))
+
+        const covers = (
+            Array.isArray(calculationData?.covers)
+                ? calculationData.covers
+                : []
+        )
+            .filter(
+                (item) =>
+                    coverIds.includes(Number(item.cover_id))
+            )
             .map((item) => {
-                const type = String(item.rate_type || "FIXED").toUpperCase();
-                const rate = num(item.rate_value ?? item.slab_rate_value);
+                const type = String(
+                    item.rate_type || "FIXED"
+                ).toUpperCase();
+
+                const rate = num(
+                    item.rate_value ?? item.slab_rate_value
+                );
+
                 const seats = num(formData?.seating_capacity);
-                const pending = type === "PER_UNIT" && seats <= 0;
-                const amount = type === "PERCENTAGE"
-                    ? (idv * rate) / 100
-                    : type === "PER_UNIT"
-                        ? rate * seats
-                        : rate;
+
+                const pending =
+                    type === "PER_UNIT" && seats <= 0;
+
+                const amount =
+                    type === "PERCENTAGE"
+                        ? (idv * rate) / 100
+                        : type === "PER_UNIT"
+                            ? rate * seats
+                            : rate;
+
                 return {
                     id: item.cover_id,
-                    label: item.cover_name || item.name || "Additional cover",
+                    label:
+                        item.cover_name ||
+                        item.name ||
+                        "Additional cover",
                     amount: round(amount),
                     pending,
                 };
             });
-        const coverTotal = round(covers.reduce(
-            (sum, item) => sum + (item.pending ? 0 : item.amount), 0
-        ));
 
-        // DE Tariff Discount applies to Total OD (Basic OD + IMT-23), then NCB and discount are deducted.
-        const formDeValue = formData?.de_tariff_discount;
-        const dePct = Math.min(100, Math.max(0, num(
-            formDeValue !== undefined && formDeValue !== null && formDeValue !== ""
-                ? formDeValue
-                : discountRule.discount_value ?? 0
-        )));
-        const deAmount = round(Math.min(totalOD, (totalOD * dePct) / 100));
-        const netOD = round(Math.max(0, totalOD - ncb - deAmount));
+        const coverTotal = round(
+            covers.reduce(
+                (sum, item) =>
+                    sum + (item.pending ? 0 : item.amount),
+                0
+            )
+        );
 
-        // Use the backend's final OD only when no IMT-23 / DE tariff adjustment is required.
-        // Otherwise calculate explicitly so the shown formula and final amount agree.
-        const finalOD = round((imt23Premium === 0 && dePct === 0 && od.final_od_premium != null)
-            ? num(od.final_od_premium)
-            : netOD);
-        const premiumOD = finalOD;
-        const subtotal = round(Math.max(0, premiumOD + addonTotal + tp + coverTotal));
+        // STEP 9: Premium before tax
+        const subtotal = round(
+            Math.max(
+                0,
+                premiumOD + addonTotal + tp + coverTotal
+            )
+        );
 
-        const taxes = (Array.isArray(calculationData?.tax) ? calculationData.tax : []).map((tax) => {
-            const component = String(tax.premium_component || "").toUpperCase();
-            const taxable = component === "OD"
-                ? premiumOD
-                : component === "TP"
-                    ? tp
-                    : component === "ADDON"
-                        ? addonTotal
-                        : component === "COVER"
-                            ? coverTotal
-                            : 0;
-            const type = String(tax.tax_type || "PERCENTAGE").toUpperCase();
-            const amount = type === "FIXED"
-                ? num(tax.tax_amount ?? tax.fixed_amount ?? tax.tax_value)
-                : (taxable * num(tax.tax_percentage)) / 100;
+        // STEP 10: Component-wise taxes
+        const taxes = (
+            Array.isArray(calculationData?.tax)
+                ? calculationData.tax
+                : []
+        ).map((tax) => {
+            const component = String(
+                tax.premium_component || ""
+            ).toUpperCase();
+
+            const taxable =
+                component === "OD"
+                    ? premiumOD
+                    : component === "TP"
+                        ? tp
+                        : component === "ADDON"
+                            ? addonTotal
+                            : component === "COVER"
+                                ? coverTotal
+                                : 0;
+
+            const type = String(
+                tax.tax_type || "PERCENTAGE"
+            ).toUpperCase();
+
+            const amount =
+                type === "FIXED"
+                    ? num(
+                        tax.tax_amount ??
+                        tax.fixed_amount ??
+                        tax.tax_value
+                    )
+                    : (
+                        taxable * num(tax.tax_percentage)
+                    ) / 100;
+
             return {
-                label: `${tax.tax_name || tax.tax_code || "Tax"}${type === "PERCENTAGE" ? ` (${num(tax.tax_percentage)}%)` : ""}`,
+                label:
+                    `${tax.tax_name || tax.tax_code || "Tax"}` +
+                    (
+                        type === "PERCENTAGE"
+                            ? ` (${num(tax.tax_percentage)}%)`
+                            : ""
+                    ),
                 component,
                 amount: round(amount),
             };
         });
-        const taxTotal = round(taxes.reduce((sum, tax) => sum + tax.amount, 0));
-        const total = round(subtotal + taxTotal);
 
-        const commissionRule = calculationData?.commission?.[0];
-        const cashbackRule = calculationData?.cashback?.[0];
-        const profitRule = calculationData?.profit?.[0];
-        const commissionType = String(commissionRule?.commission_type || "").toUpperCase();
-        const commissionValue = num(commissionRule?.commission_value);
-        const commissionMin = commissionRule?.min_premium == null ? null : num(commissionRule.min_premium);
-        const commissionMax = commissionRule?.max_premium == null ? null : num(commissionRule.max_premium);
-        const commissionEligible = (commissionMin === null || subtotal >= commissionMin) &&
+        const taxTotal = round(
+            taxes.reduce(
+                (sum, tax) => sum + tax.amount,
+                0
+            )
+        );
+
+        const total = round(
+            subtotal + taxTotal
+        );
+
+        // STEP 11: Commission
+        const commissionRule =
+            calculationData?.commission?.[0];
+
+        const cashbackRule =
+            calculationData?.cashback?.[0];
+
+        const profitRule =
+            calculationData?.profit?.[0];
+
+        const commissionType = String(
+            commissionRule?.commission_type || ""
+        ).toUpperCase();
+
+        const commissionValue = num(
+            commissionRule?.commission_value
+        );
+
+        const commissionMin =
+            commissionRule?.min_premium == null
+                ? null
+                : num(commissionRule.min_premium);
+
+        const commissionMax =
+            commissionRule?.max_premium == null
+                ? null
+                : num(commissionRule.max_premium);
+
+        const commissionEligible =
+            (commissionMin === null || subtotal >= commissionMin) &&
             (commissionMax === null || subtotal <= commissionMax);
+
         let commission = 0;
+
         if (commissionRule && commissionEligible) {
-            commission = commissionType === "PERCENTAGE"
-                ? (subtotal * commissionValue) / 100
-                : commissionType === "FIXED"
-                    ? commissionValue
-                    : 0;
-            if (commissionRule.max_commission_amount != null && commissionRule.max_commission_amount !== "") {
-                commission = Math.min(commission, Math.max(0, num(commissionRule.max_commission_amount)));
+            commission =
+                commissionType === "PERCENTAGE"
+                    ? (subtotal * commissionValue) / 100
+                    : commissionType === "FIXED"
+                        ? commissionValue
+                        : 0;
+
+            if (
+                commissionRule.max_commission_amount != null &&
+                commissionRule.max_commission_amount !== ""
+            ) {
+                commission = Math.min(
+                    commission,
+                    Math.max(
+                        0,
+                        num(commissionRule.max_commission_amount)
+                    )
+                );
             }
         }
-        commission = round(Math.max(0, commission));
-        const profit = Math.max(0, num(profitRule?.profit_amount));
 
-        const manualCashback = formData?.cash_back !== undefined && formData?.cash_back !== null && formData?.cash_back !== ""
-            ? formData.cash_back
-            : formData?.cashback_amount;
-        const hasManualCashback = manualCashback !== undefined && manualCashback !== null && manualCashback !== "";
-        const cashbackMin = cashbackRule?.min_premium == null ? null : num(cashbackRule.min_premium);
-        const cashbackMax = cashbackRule?.max_premium == null ? null : num(cashbackRule.max_premium);
-        const cashbackEligible = (cashbackMin === null || total >= cashbackMin) &&
+        commission = round(
+            Math.max(0, commission)
+        );
+
+        const profit = round(
+            Math.max(
+                0,
+                num(profitRule?.profit_amount)
+            )
+        );
+
+        // STEP 12: Cashback
+        const manualCashback =
+            formData?.cash_back !== undefined &&
+                formData?.cash_back !== null &&
+                formData?.cash_back !== ""
+                ? formData.cash_back
+                : formData?.cashback_amount;
+
+        const hasManualCashback =
+            manualCashback !== undefined &&
+            manualCashback !== null &&
+            manualCashback !== "";
+
+        const cashbackMin =
+            cashbackRule?.min_premium == null
+                ? null
+                : num(cashbackRule.min_premium);
+
+        const cashbackMax =
+            cashbackRule?.max_premium == null
+                ? null
+                : num(cashbackRule.max_premium);
+
+        const cashbackEligible =
+            (cashbackMin === null || total >= cashbackMin) &&
             (cashbackMax === null || total <= cashbackMax);
-        const maxCashback = cashbackRule?.max_cashback_amount == null || cashbackRule.max_cashback_amount === ""
-            ? null
-            : Math.max(0, num(cashbackRule.max_cashback_amount));
+
+        const maxCashback =
+            cashbackRule?.max_cashback_amount == null ||
+                cashbackRule.max_cashback_amount === ""
+                ? null
+                : Math.max(
+                    0,
+                    num(cashbackRule.max_cashback_amount)
+                );
+
         let cashback = 0;
         let cashbackSource = "";
+
         if (hasManualCashback) {
-            cashback = Math.max(0, num(manualCashback));
+            cashback = Math.max(
+                0,
+                num(manualCashback)
+            );
             cashbackSource = "FORM";
         } else if (cashbackRule && cashbackEligible) {
-            // Match the premium calculation summary: commission minus configured profit.
-            cashback = Math.max(0, commission - profit);
+            cashback = Math.max(
+                0,
+                commission - profit
+            );
             cashbackSource = "COMMISSION";
         }
-        if (maxCashback !== null) cashback = Math.min(cashback, maxCashback);
-        cashback = round(Math.min(total, Math.max(0, cashback)));
-        const netPayable = round(Math.max(0, total - cashback));
+
+        if (maxCashback !== null) {
+            cashback = Math.min(
+                cashback,
+                maxCashback
+            );
+        }
+
+        cashback = round(
+            Math.min(
+                total,
+                Math.max(0, cashback)
+            )
+        );
+
+        const netPayable = round(
+            Math.max(0, total - cashback)
+        );
 
         return {
             idv,
@@ -369,7 +604,7 @@ export default function ThejaswiQuotationPreview({
             imt23Rate,
             imt23Premium,
             totalOD,
-            configuredNetOD,
+            odAfterDiscount,
             netOD,
             addons,
             addonTotal,
@@ -391,6 +626,7 @@ export default function ThejaswiQuotationPreview({
             netPayable,
         };
     }, [calculationData, formData, formatNumber]);
+
 
     const handleDownloadJpg = async () => {
         const element = quotationRef.current;
@@ -461,10 +697,10 @@ export default function ThejaswiQuotationPreview({
     const Row = ({ label, value, bold = false, negative = false, note, plain = false }) => (
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, px: 1.25, py: 0.7, borderBottom: "1px solid #e9edf4" }}>
             <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontSize: 10.5, color: "#344054", fontWeight: bold ? 800 : 500 }}>{label}</Typography>
+                <Typography sx={{ fontSize: 12.5, color: "#344054", fontWeight: bold ? 800 : 500 }}>{label}</Typography>
                 {note && <Typography sx={{ mt: 0.2, fontSize: 9, color: "#8792a5" }}>{note}</Typography>}
             </Box>
-            <Typography sx={{ whiteSpace: "nowrap", fontSize: 10.5, fontWeight: bold ? 800 : 600, color: negative ? "#b42332" : "#172033" }}>
+            <Typography sx={{ whiteSpace: "nowrap", fontSize: 12.5, fontWeight: bold ? 800 : 600, color: negative ? "#b42332" : "#172033" }}>
                 {negative ? "− " : ""}{plain ? value : money(value)}
             </Typography>
         </Box>
@@ -511,7 +747,7 @@ export default function ThejaswiQuotationPreview({
                         </Box>
                         <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
                             <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1 }}>INSURANCE PROVIDER</Typography>
-                            <Typography sx={{ mt: 0.4, fontSize: 12, fontWeight: 800, color: "#172033" }}>{quote.insurer}</Typography>
+                            <Typography sx={{ mt: 0.4, fontSize: 16, fontWeight: 800, color: "#172033", textTransform: 'uppercase' }}>{quote.insurer}</Typography>
                             <Typography sx={{ mt: 0.3, fontSize: 10, color: "#667085" }}>{quote.product}</Typography>
                         </Box>
                     </Box>
@@ -529,20 +765,20 @@ export default function ThejaswiQuotationPreview({
                         <Box sx={{ border: "1px solid #e1e7f0", borderRadius: 1, overflow: "hidden" }}>
                             <Section title="02 / OWN DAMAGE PREMIUM" meta="OD" />
                             <Row label="Basic Own Damage Premium" value={p.basicOD} />
-                            {p.imt23Selected && <Row label={`IMT-23 (${p.imt23Rate}%)`} value={p.imt23Premium} note="Calculated on Basic OD" />}
-                            <Row label="Total OD before NCB / discount" value={p.totalOD} bold />
+                            {p.imt23Selected && <Row label={`IMT-23 `} value={p.imt23Premium} />}
+                            {/* <Row label="Total OD before NCB / discount" value={p.totalOD} bold /> */}
                             <Row label={`No Claim Bonus (${p.ncbPct}%)`} value={p.ncb} negative />
-                            {p.dePct > 0 && <Row label={`DE Tariff Discount (${p.dePct}%)`} value={p.deAmount} negative note="Calculated on Total OD" />}
-                            <Row label="Net Own Damage Premium" value={p.discountedOD} bold />
+                            {p.dePct > 0 && <Row label={`DE Tariff Discount (${p.dePct}%)`} value={p.deAmount} negative />}
+                            {/* <Row label="Net Own Damage Premium" value={p.discountedOD} bold /> */}
                             <Divider />
-                            <Row label="Selected Add-ons" value={p.addonTotal} />
+                            {/* <Row label="Selected Add-ons" value={p.addonTotal} /> */}
                             {p.addons.map((item, index) => <Row key={`${item.id}-${index}`} label={`↳ ${item.label}`} value={item.amount} />)}
                             <Row label="OD + Add-ons" value={p.discountedOD + p.addonTotal} bold />
                         </Box>
                         <Box sx={{ border: "1px solid #e1e7f0", borderRadius: 1, overflow: "hidden" }}>
                             <Section title="03 / LIABILITY PREMIUM" meta="TP" />
                             <Row label="Basic Third-Party Premium" value={p.tp} />
-                            <Row label="Additional Covers" value={p.coverTotal} />
+                            {/* <Row label="Additional Covers" value={p.coverTotal} /> */}
                             {p.covers.map((item, index) => <Row key={`${item.id}-${index}`} label={`↳ ${item.label}`} value={item.amount} note={item.pending ? "Requires seating capacity; not included in total" : undefined} />)}
                             <Row label="Total TP + Covers" value={p.tp + p.coverTotal} bold />
                         </Box>
@@ -552,12 +788,12 @@ export default function ThejaswiQuotationPreview({
                 <Box sx={{ px: { xs: 1.5, sm: 4 }, pb: 2 }}>
                     <Section title="04 / PREMIUM SUMMARY" />
                     <Box sx={{ border: "1px solid #e1e7f0", borderTop: 0 }}>
-                        <Row label="Net Own Damage Premium" value={p.discountedOD} />
+                        {/* <Row label="Net Own Damage Premium" value={p.discountedOD} />
                         <Row label="Other Add-ons Premium" value={p.addonTotal} />
                         <Row label="Third-Party Premium" value={p.tp} />
-                        <Row label="Additional Covers Premium" value={p.coverTotal} />
-                        <Row label="Premium Before Tax" value={p.subtotal} bold />
-                        {p.taxes.length ? p.taxes.map((item, index) => <Row key={`${item.label}-${item.component}-${index}`} label={item.component ? `${item.label} · ${item.component}` : item.label} value={item.amount} />) : <Row label="Applicable Taxes" value={0} />}
+                        <Row label="Additional Covers Premium" value={p.coverTotal} /> */}
+                        <Row label="Premium Before Tax" value={p.subtotal} bold note={"OD + TP"} />
+                        {/* {p.taxes.length ? p.taxes.map((item, index) => <Row key={`${item.label}-${item.component}-${index}`} label={item.component ? `${item.label} · ${item.component}` : item.label} value={item.amount} />) : <Row label="Applicable Taxes" value={0} />} */}
                         <Row label="Total Tax" value={p.taxTotal} bold />
                     </Box>
                     <Box sx={{ mt: 1.5, p: { xs: 1.8, sm: 2.2 }, borderRadius: 1.5, background: "linear-gradient(110deg,#142958 0%,#214983 100%)", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
