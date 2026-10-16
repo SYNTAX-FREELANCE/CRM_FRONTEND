@@ -135,11 +135,11 @@ const VehicleDetailsCard = ({
             .join(" ") || "Vehicle details";
 
     const vehicleMeta = [
-        {
-            label: "RTO",
-            value: selectedVehicle.rto,
-            icon: <LocationCityOutlinedIcon />,
-        },
+        // {
+        //     label: "RTO",
+        //     value: selectedVehicle.rto,
+        //     icon: <LocationCityOutlinedIcon />,
+        // },
         {
             label: "Registration date",
             value: formatDate(selectedVehicle.registration_date),
@@ -547,136 +547,8 @@ const VehicleDetailsCard = ({
                             </Box>
                         </Stack>
 
-                        {(customerData.mobile_number_1 ||
-                            customerData.mobile_number_2) && (
-                                <Stack
-                                    direction={{
-                                        xs: "column",
-                                        sm: "row",
-                                    }}
-                                    spacing={1}
-                                    sx={{
-                                        mb: fullAddress ? 1.5 : 0,
-                                    }}
-                                >
-                                    {[
-                                        customerData.mobile_number_1,
-                                        customerData.mobile_number_2,
-                                    ]
-                                        .filter(Boolean)
-                                        .map((number, index) => (
-                                            <Box
-                                                key={`${number}-${index}`}
-                                                component="a"
-                                                href={`tel:${number}`}
-                                                sx={{
-                                                    flex: 1,
-                                                    minWidth: 0,
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: 1,
-                                                    px: 1.5,
-                                                    py: 1.25,
-                                                    borderRadius: 1.5,
-                                                    bgcolor: colors.surfaceAlt,
-                                                    border: `1px solid ${colors.border}`,
-                                                    textDecoration: "none",
-                                                    transition: "all 0.15s ease",
-                                                    "&:hover": {
-                                                        borderColor: colors.primary,
-                                                        bgcolor: colors.primarySoft,
-                                                    },
-                                                }}
-                                            >
-                                                <CallOutlinedIcon
-                                                    sx={{
-                                                        fontSize: 16,
-                                                        color: colors.primary,
-                                                        flexShrink: 0,
-                                                    }}
-                                                />
+                    
 
-                                                <Box sx={{ minWidth: 0 }}>
-                                                    <Typography
-                                                        sx={{
-                                                            fontSize: 10,
-                                                            color: colors.secondary,
-                                                            fontFamily: "Bahnschrift",
-                                                        }}
-                                                    >
-                                                        {index === 0
-                                                            ? "Mobile number"
-                                                            : "Alternate mobile"}
-                                                    </Typography>
-
-                                                    <Typography
-                                                        sx={{
-                                                            fontSize: 13,
-                                                            fontWeight: 650,
-                                                            color: colors.text,
-                                                            overflowWrap: "anywhere",
-                                                            fontFamily: "Bahnschrift",
-                                                        }}
-                                                    >
-                                                        {number}
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                        ))}
-                                </Stack>
-                            )}
-
-                        {fullAddress && (
-                            <Box
-                                sx={{
-                                    p: 1.5,
-                                    borderRadius: 1.5,
-                                    bgcolor: colors.surfaceAlt,
-                                    border: `1px solid ${colors.border}`,
-                                    display: "flex",
-                                    alignItems: "flex-start",
-                                    gap: 1,
-                                }}
-                            >
-                                <LocationOnOutlinedIcon
-                                    sx={{
-                                        fontSize: 17,
-                                        color: colors.primary,
-                                        mt: 0.2,
-                                        flexShrink: 0,
-                                    }}
-                                />
-
-                                <Box sx={{ minWidth: 0 }}>
-                                    <Typography
-                                        sx={{
-                                            fontSize: 10,
-                                            fontWeight: 600,
-                                            color: colors.secondary,
-                                            textTransform: "uppercase",
-                                            letterSpacing: 0.4,
-                                            fontFamily: "Bahnschrift",
-                                        }}
-                                    >
-                                        Address
-                                    </Typography>
-
-                                    <Typography
-                                        sx={{
-                                            mt: 0.5,
-                                            fontSize: 12.5,
-                                            fontWeight: 500,
-                                            color: colors.text,
-                                            lineHeight: 1.55,
-                                            overflowWrap: "anywhere",
-                                            fontFamily: "Bahnschrift",
-                                        }}
-                                    >
-                                        {fullAddress}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        )}
                     </Box>
 
                     {/* Vehicle information */}
@@ -706,7 +578,7 @@ const VehicleDetailsCard = ({
                                             gridTemplateColumns: {
                                                 xs: "minmax(0, 1fr)",
                                                 sm: "repeat(2, minmax(0, 1fr))",
-                                                md: "repeat(3, minmax(0, 1fr))",
+                                                md: "repeat(2, minmax(0, 1fr))",
                                             },
                                             gap: 1.25,
                                         }}
@@ -731,6 +603,58 @@ const VehicleDetailsCard = ({
                                 )}
                             </Box>
                         </>
+                    )}
+
+                    {fullAddress && (
+                        <Box
+                            sx={{
+                                p: 1.5,
+                                borderRadius: 1.5,
+                                bgcolor: colors.surfaceAlt,
+                                border: `1px solid ${colors.border}`,
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: 1,
+                            }}
+                        >
+                            <LocationOnOutlinedIcon
+                                sx={{
+                                    fontSize: 17,
+                                    color: colors.primary,
+                                    mt: 0.2,
+                                    flexShrink: 0,
+                                }}
+                            />
+
+                            <Box sx={{ minWidth: 0 }}>
+                                <Typography
+                                    sx={{
+                                        fontSize: 10,
+                                        fontWeight: 600,
+                                        color: colors.secondary,
+                                        textTransform: "uppercase",
+                                        letterSpacing: 0.4,
+                                        fontFamily: "Bahnschrift",
+                                    }}
+                                >
+                                    Address
+                                </Typography>
+
+                                <Typography
+                                    sx={{
+                                        mt: 0.5,
+                                        fontSize: 12.5,
+                                        fontWeight: 500,
+                                        color: colors.text,
+                                        lineHeight: 1.55,
+                                        overflowWrap: "anywhere",
+                                        fontFamily: "Bahnschrift",
+                                    }}
+                                >
+                                    {fullAddress}
+                                </Typography>
+                            </Box>
+                        </Box>
                     )}
 
                     {/* Selected customer exists, but no vehicle */}

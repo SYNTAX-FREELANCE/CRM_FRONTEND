@@ -84,6 +84,7 @@ export default function ThejaswiQuotationPreview({
     ];
 
 
+
     const p = useMemo(() => {
         const idv = num(formData?.idv);
         const od = calculationData?.od_calculation || {};
@@ -99,7 +100,7 @@ export default function ThejaswiQuotationPreview({
             odRule.master_rate_value
         );
 
-        // STEP 1: Basic OD
+        // 1. Basic OD
         const basicOD = round(
             od.basic_od_premium ??
             (
@@ -109,14 +110,13 @@ export default function ThejaswiQuotationPreview({
             )
         );
 
-        // STEP 2: IMT-23
-        // IMT-23 is included in Total OD only once.
-        const addonIds = Array.isArray(formData?.addon_ids)
-            ? formData.addon_ids.map(Number)
-            : [];
-
+        // 2. IMT-23: calculate from Basic OD
         const allAddons = Array.isArray(calculationData?.addons)
             ? calculationData.addons
+            : [];
+
+        const addonIds = Array.isArray(formData?.addon_ids)
+            ? formData.addon_ids.map(Number)
             : [];
 
         const imt23Rule = allAddons.find(
@@ -124,8 +124,6 @@ export default function ThejaswiQuotationPreview({
                 String(item.addon_code || "").toUpperCase() === "IMT_23"
         );
 
-        // Keep IMT-23 automatic when its rule is returned,
-        // matching the existing PremiumCalculationSummary behavior.
         const imt23Selected = Boolean(imt23Rule);
 
         const imt23Rate = imt23Selected
@@ -136,48 +134,41 @@ export default function ThejaswiQuotationPreview({
             )
             : 0;
 
-        const imt23Premium = imt23Selected
-            ? round((basicOD * imt23Rate) / 100)
-            : 0;
+        const imt23Premium = round(
+            basicOD * imt23Rate / 100
+        );
 
         const totalOD = round(
             basicOD + imt23Premium
         );
 
-        // STEP 3: DE Tariff Discount
-        const discountRule =
-            calculationData?.discount_rule?.[0] || {};
-
-        const formDeValue = formData?.de_tariff_discount;
+        // 3. DE Tariff Discount
+        const discountRule = calculationData?.discount_rule?.[0] || {};
 
         const dePct = Math.min(
             100,
             Math.max(
                 0,
                 num(
-                    formDeValue !== undefined &&
-                        formDeValue !== null &&
-                        formDeValue !== ""
-                        ? formDeValue
-                        : discountRule.discount_value ?? 0
+                    formData?.de_tariff_discount !== undefined &&
+                        formData?.de_tariff_discount !== null &&
+                        formData?.de_tariff_discount !== ""
+                        ? formData.de_tariff_discount
+                        : discountRule.discount_value
                 )
             )
         );
 
         const deAmount = round(
-            Math.min(
-                totalOD,
-                (totalOD * dePct) / 100
-            )
+            Math.min(totalOD, totalOD * dePct / 100)
         );
 
         const odAfterDiscount = round(
             Math.max(0, totalOD - deAmount)
         );
 
-        // STEP 4: NCB on OD after DE Tariff Discount
-        const ncbRule =
-            calculationData?.ncb_rule?.[0] || {};
+        // 4. NCB
+        const ncbRule = calculationData?.ncb_rule?.[0] || {};
 
         const ncbPct = Math.min(
             100,
@@ -196,22 +187,19 @@ export default function ThejaswiQuotationPreview({
                 odAfterDiscount,
                 Math.max(
                     0,
-                    od.ncb_amount != null &&
-                        dePct === 0
+                    od.ncb_amount != null && dePct === 0
                         ? num(od.ncb_amount)
-                        : (odAfterDiscount * ncbPct) / 100
+                        : odAfterDiscount * ncbPct / 100
                 )
             )
         );
 
-        // STEP 5: Final Net OD
         const netOD = round(
             Math.max(0, odAfterDiscount - ncb)
         );
 
-        // Use backend final OD only when no IMT-23 or
-        // DE Tariff Discount adjustment is applied.
-        const finalOD = round(
+        // Use backend final OD only when no adjustments are required.
+        const premiumOD = round(
             imt23Premium === 0 &&
                 dePct === 0 &&
                 od.final_od_premium != null
@@ -219,9 +207,7 @@ export default function ThejaswiQuotationPreview({
                 : netOD
         );
 
-        const premiumOD = finalOD;
-
-        // STEP 6: Third-Party Premium
+        // 5. Third-party premium
         const tpRule = calculationData?.tp_rate?.[0] || {};
 
         const tpType = String(
@@ -236,12 +222,11 @@ export default function ThejaswiQuotationPreview({
 
         const tp = round(
             tpType === "PERCENTAGE"
-                ? (idv * tpRate) / 100
+                ? idv * tpRate / 100
                 : tpRate
         );
 
-        // STEP 7: Other selected add-ons
-        // IMT-23 is excluded here because it is already in Total OD.
+        // 6. Selected add-ons, excluding IMT-23
         const addons = allAddons
             .filter(
                 (item) =>
@@ -257,12 +242,30 @@ export default function ThejaswiQuotationPreview({
                     item.rate_value ?? item.slab_rate_value
                 );
 
-                const originalAmount =
+                const addonCode = String(
+                    item.addon_code || ""
+                ).toUpperCase();
+
+                const calculationBasis =
+                    String(item.calculation_basis || "").toUpperCase() ||
+                    (
+                        ["ZD", "ZERO_DEP"].includes(addonCode)
+                            ? "BASIC_OD"
+                            : "IDV"
+                    );
+
+                const calculationBase =
+                    calculationBasis === "BASIC_OD"
+                        ? basicOD
+                        : idv;
+
+                const originalAmount = round(
                     type === "FIXED"
                         ? rate
                         : type === "PERCENTAGE"
-                            ? (idv * rate) / 100
-                            : 0;
+                            ? calculationBase * rate / 100
+                            : 0
+                );
 
                 const discountType = String(
                     item.discount_type || "NONE"
@@ -280,7 +283,7 @@ export default function ThejaswiQuotationPreview({
 
                 if (discountType === "PERCENTAGE") {
                     discountAmount =
-                        (originalAmount * discountValue) / 100;
+                        originalAmount * discountValue / 100;
                 } else if (discountType === "FIXED") {
                     discountAmount = discountValue;
                 }
@@ -305,37 +308,23 @@ export default function ThejaswiQuotationPreview({
 
                 return {
                     id: item.addon_id,
-                    label:
-                        item.addon_name ||
-                        item.name ||
-                        "Add-on",
+                    label: item.addon_name || item.name || "Add-on",
                     rate,
-                    originalAmount: round(originalAmount),
+                    calculationBasis,
+                    calculationBase: round(calculationBase),
+                    originalAmount,
                     discountType,
                     discountValue,
                     discountAmount,
                     amount,
-                    formula:
-                        type === "FIXED"
-                            ? `Fixed amount: ${money(rate)}`
-                            : `${money(idv)} × ${rate}%`,
-                    discountFormula:
-                        discountType === "PERCENTAGE"
-                            ? `${money(originalAmount)} × ${discountValue}%`
-                            : discountType === "FIXED"
-                                ? `Fixed discount: ${money(discountValue)}`
-                                : "No discount",
                 };
             });
 
         const addonTotal = round(
-            addons.reduce(
-                (sum, item) => sum + item.amount,
-                0
-            )
+            addons.reduce((sum, item) => sum + item.amount, 0)
         );
 
-        // STEP 8: Additional Covers
+        // 7. Additional covers
         const coverIds = Array.isArray(formData?.cover_ids)
             ? formData.cover_ids.map(Number)
             : [];
@@ -346,8 +335,7 @@ export default function ThejaswiQuotationPreview({
                 : []
         )
             .filter(
-                (item) =>
-                    coverIds.includes(Number(item.cover_id))
+                (item) => coverIds.includes(Number(item.cover_id))
             )
             .map((item) => {
                 const type = String(
@@ -360,22 +348,18 @@ export default function ThejaswiQuotationPreview({
 
                 const seats = num(formData?.seating_capacity);
 
-                const pending =
-                    type === "PER_UNIT" && seats <= 0;
+                const pending = type === "PER_UNIT" && seats <= 0;
 
                 const amount =
                     type === "PERCENTAGE"
-                        ? (idv * rate) / 100
+                        ? idv * rate / 100
                         : type === "PER_UNIT"
                             ? rate * seats
                             : rate;
 
                 return {
                     id: item.cover_id,
-                    label:
-                        item.cover_name ||
-                        item.name ||
-                        "Additional cover",
+                    label: item.cover_name || item.name || "Additional cover",
                     amount: round(amount),
                     pending,
                 };
@@ -383,21 +367,17 @@ export default function ThejaswiQuotationPreview({
 
         const coverTotal = round(
             covers.reduce(
-                (sum, item) =>
-                    sum + (item.pending ? 0 : item.amount),
+                (sum, item) => sum + (item.pending ? 0 : item.amount),
                 0
             )
         );
 
-        // STEP 9: Premium before tax
+        // 8. Premium before tax
         const subtotal = round(
-            Math.max(
-                0,
-                premiumOD + addonTotal + tp + coverTotal
-            )
+            premiumOD + addonTotal + tp + coverTotal
         );
 
-        // STEP 10: Component-wise taxes
+        // 9. Component-wise taxes
         const taxes = (
             Array.isArray(calculationData?.tax)
                 ? calculationData.tax
@@ -408,30 +388,23 @@ export default function ThejaswiQuotationPreview({
             ).toUpperCase();
 
             const taxable =
-                component === "OD"
-                    ? premiumOD
-                    : component === "TP"
-                        ? tp
-                        : component === "ADDON"
-                            ? addonTotal
-                            : component === "COVER"
-                                ? coverTotal
+                component === "OD" ? premiumOD
+                    : component === "TP" ? tp
+                        : component === "ADDON" ? addonTotal
+                            : component === "COVER" ? coverTotal
                                 : 0;
 
             const type = String(
                 tax.tax_type || "PERCENTAGE"
             ).toUpperCase();
 
-            const amount =
-                type === "FIXED"
-                    ? num(
-                        tax.tax_amount ??
-                        tax.fixed_amount ??
-                        tax.tax_value
-                    )
-                    : (
-                        taxable * num(tax.tax_percentage)
-                    ) / 100;
+            const amount = type === "FIXED"
+                ? num(
+                    tax.tax_amount ??
+                    tax.fixed_amount ??
+                    tax.tax_value
+                )
+                : taxable * num(tax.tax_percentage) / 100;
 
             return {
                 label:
@@ -447,25 +420,15 @@ export default function ThejaswiQuotationPreview({
         });
 
         const taxTotal = round(
-            taxes.reduce(
-                (sum, tax) => sum + tax.amount,
-                0
-            )
+            taxes.reduce((sum, tax) => sum + tax.amount, 0)
         );
 
-        const total = round(
-            subtotal + taxTotal
-        );
+        const total = round(subtotal + taxTotal);
 
-        // STEP 11: Commission
-        const commissionRule =
-            calculationData?.commission?.[0];
-
-        const cashbackRule =
-            calculationData?.cashback?.[0];
-
-        const profitRule =
-            calculationData?.profit?.[0];
+        // 10. Commission and cashback
+        const commissionRule = calculationData?.commission?.[0];
+        const cashbackRule = calculationData?.cashback?.[0];
+        const profitRule = calculationData?.profit?.[0];
 
         const commissionType = String(
             commissionRule?.commission_type || ""
@@ -475,15 +438,13 @@ export default function ThejaswiQuotationPreview({
             commissionRule?.commission_value
         );
 
-        const commissionMin =
-            commissionRule?.min_premium == null
-                ? null
-                : num(commissionRule.min_premium);
+        const commissionMin = commissionRule?.min_premium == null
+            ? null
+            : num(commissionRule.min_premium);
 
-        const commissionMax =
-            commissionRule?.max_premium == null
-                ? null
-                : num(commissionRule.max_premium);
+        const commissionMax = commissionRule?.max_premium == null
+            ? null
+            : num(commissionRule.max_premium);
 
         const commissionEligible =
             (commissionMin === null || subtotal >= commissionMin) &&
@@ -494,58 +455,41 @@ export default function ThejaswiQuotationPreview({
         if (commissionRule && commissionEligible) {
             commission =
                 commissionType === "PERCENTAGE"
-                    ? (subtotal * commissionValue) / 100
+                    ? subtotal * commissionValue / 100
                     : commissionType === "FIXED"
                         ? commissionValue
                         : 0;
 
-            if (
-                commissionRule.max_commission_amount != null &&
-                commissionRule.max_commission_amount !== ""
-            ) {
+            if (commissionRule.max_commission_amount != null) {
                 commission = Math.min(
                     commission,
-                    Math.max(
-                        0,
-                        num(commissionRule.max_commission_amount)
-                    )
+                    Math.max(0, num(commissionRule.max_commission_amount))
                 );
             }
         }
 
-        commission = round(
-            Math.max(0, commission)
-        );
+        commission = round(Math.max(0, commission));
 
         const profit = round(
-            Math.max(
-                0,
-                num(profitRule?.profit_amount)
-            )
+            Math.max(0, num(profitRule?.profit_amount))
         );
 
-        // STEP 12: Cashback
         const manualCashback =
-            formData?.cash_back !== undefined &&
-                formData?.cash_back !== null &&
-                formData?.cash_back !== ""
-                ? formData.cash_back
-                : formData?.cashback_amount;
+            formData?.cash_back ??
+            formData?.cashback_amount;
 
         const hasManualCashback =
             manualCashback !== undefined &&
             manualCashback !== null &&
             manualCashback !== "";
 
-        const cashbackMin =
-            cashbackRule?.min_premium == null
-                ? null
-                : num(cashbackRule.min_premium);
+        const cashbackMin = cashbackRule?.min_premium == null
+            ? null
+            : num(cashbackRule.min_premium);
 
-        const cashbackMax =
-            cashbackRule?.max_premium == null
-                ? null
-                : num(cashbackRule.max_premium);
+        const cashbackMax = cashbackRule?.max_premium == null
+            ? null
+            : num(cashbackRule.max_premium);
 
         const cashbackEligible =
             (cashbackMin === null || total >= cashbackMin) &&
@@ -555,40 +499,22 @@ export default function ThejaswiQuotationPreview({
             cashbackRule?.max_cashback_amount == null ||
                 cashbackRule.max_cashback_amount === ""
                 ? null
-                : Math.max(
-                    0,
-                    num(cashbackRule.max_cashback_amount)
-                );
+                : Math.max(0, num(cashbackRule.max_cashback_amount));
 
         let cashback = 0;
-        let cashbackSource = "";
 
         if (hasManualCashback) {
-            cashback = Math.max(
-                0,
-                num(manualCashback)
-            );
-            cashbackSource = "FORM";
+            cashback = Math.max(0, num(manualCashback));
         } else if (cashbackRule && cashbackEligible) {
-            cashback = Math.max(
-                0,
-                commission - profit
-            );
-            cashbackSource = "COMMISSION";
+            cashback = Math.max(0, commission - profit);
         }
 
         if (maxCashback !== null) {
-            cashback = Math.min(
-                cashback,
-                maxCashback
-            );
+            cashback = Math.min(cashback, maxCashback);
         }
 
         cashback = round(
-            Math.min(
-                total,
-                Math.max(0, cashback)
-            )
+            Math.min(total, Math.max(0, cashback))
         );
 
         const netPayable = round(
@@ -621,8 +547,6 @@ export default function ThejaswiQuotationPreview({
             commission,
             profit,
             cashback,
-            cashbackSource,
-            maxCashback,
             netPayable,
         };
     }, [calculationData, formData, formatNumber]);

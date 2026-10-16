@@ -17,6 +17,11 @@ const ThejaswiPreview = () => {
     const { id: createdBy, emp_name } = authUser ?? {};
     const [quotationdata, setQuotataionData] = useState(null)
 
+    console.log({
+        quotationdata
+    });
+    
+
     const {
         data: InsuranceCompanyMaster = [],
     } = useInsuranceCompanyMaster();
@@ -80,9 +85,15 @@ const ThejaswiPreview = () => {
     ]);
 
 
+
+
+
     const handleCreateQuotation = useCallback(async () => {
 
         const errors = validateQuotation();
+
+        if (quotationdata != null)
+            return infoNotify(`Quotation ${quotationdata?.quotation_number} Already Exists`)
 
         if (errors.length > 0) {
             infoNotify(
@@ -137,6 +148,7 @@ const ThejaswiPreview = () => {
         lead,
         createdBy,
         axioslogin,
+        quotationdata
     ]);
 
 
@@ -169,7 +181,7 @@ const ThejaswiPreview = () => {
                 VehicleDetails={VehicleDetails?.[0]}
                 createQuotation={handleCreateQuotation}
                 quoteData={{
-                    quoteNo: quotationdata?.quotation_number || "Employee",
+                    quoteNo: quotationdata?.quotation_number || "QOUT-3887JDS-EXMP- ****",
                     customerName: CustomerName,
                     insurerName: ActiveInsurenceCompanies?.[0]?.company_name,
                     productName: formData.product_name,
