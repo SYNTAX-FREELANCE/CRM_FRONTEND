@@ -28,7 +28,8 @@ const PolicyDetailsForm = lazy(() => import('./PolicyDetailsForm'))
 const FollowUpForm = ({
     statusName,
     onCancel,
-    onSave
+    onSave,
+    loading
 }) => {
 
     const theme = useTheme();
@@ -248,6 +249,8 @@ const FollowUpForm = ({
                         <Button
                             variant="contained"
                             onClick={handleSave}
+                            disabled={loading}
+                            isLoading={loading}
                             sx={{
                                 borderRadius: 3,
                                 px: 4,

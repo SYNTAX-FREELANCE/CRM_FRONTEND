@@ -74,9 +74,12 @@ const LeadDetailsDrawer = ({
   const [followUpAction, setFollowUpAction] = useState("");
 
   const [selectedStatus, setSelectedStatus] = useState("");
-
+  const [loading, setLoading] = useState(false)
 
   const { data: QuotationData = [] } = useGetQuotationDetails(leadId)
+
+
+
 
   const queryClient = useQueryClient();
 
@@ -518,6 +521,7 @@ const LeadDetailsDrawer = ({
     };
 
     try {
+      setLoading(true)
       const response = await axioslogin.post(
         "/lead/update-status",
         payload
@@ -535,6 +539,8 @@ const LeadDetailsDrawer = ({
     } catch (error) {
       errorNotify("Error in Updating Status");
       return false;
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -793,6 +799,7 @@ const LeadDetailsDrawer = ({
                         statusName={selectedStatus}
                         onCancel={resetFollowup}
                         onSave={HandleSaveFollowup}
+                        loading={loading}
                       />
                     </Suspense>
                   )}

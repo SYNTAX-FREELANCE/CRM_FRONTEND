@@ -26,8 +26,8 @@ const PremiumCalculationSummary = ({
         const number = Number(value || 0);
 
         return `₹${typeof formatNumber === "function"
-                ? formatNumber(number.toFixed(2))
-                : Number(number.toFixed(2)).toLocaleString("en-IN")
+            ? formatNumber(number.toFixed(2))
+            : Number(number.toFixed(2)).toLocaleString("en-IN")
             }`;
     };
 
@@ -138,10 +138,97 @@ const PremiumCalculationSummary = ({
             (odPremium + imt23Premium).toFixed(2)
         );
 
+        // const addonDetails = selectedAddons.map((item) => {
+        //     const isIMT23 =
+        //         String(item.addon_code || "").toUpperCase() ===
+        //         "IMT_23";
+
+        //     const rateType = String(
+        //         item.rate_type || "PERCENTAGE"
+        //     ).toUpperCase();
+
+        //     const rateValue = Number(item.rate_value || 0);
+
+        //     let originalAmount = 0;
+        //     let formula = "";
+
+        //     if (isIMT23) {
+        //         originalAmount = imt23Premium;
+        //         formula = `${money(odPremium)} × ${imt23Rate}% (Basic OD)`;
+        //     } else if (rateType === "PERCENTAGE") {
+        //         originalAmount = (idv * rateValue) / 100;
+        //         formula = `${money(idv)} × ${rateValue}%`;
+        //     } else if (rateType === "FIXED") {
+        //         originalAmount = rateValue;
+        //         formula = "Fixed amount";
+        //     }
+
+        //     // Apply add-on discount, if configured.
+
+        //     const discountType = String(
+        //         item.discount_type || "NONE"
+        //     ).toUpperCase();
+
+        //     const discountValue = Math.max(
+        //         0,
+        //         Number(item.discount_value || 0)
+        //     );
+
+        //     let discountAmount = 0;
+
+        //     if (discountType === "PERCENTAGE") {
+        //         discountAmount =
+        //             (originalAmount * discountValue) / 100;
+        //     } else if (discountType === "FIXED") {
+        //         discountAmount = discountValue;
+        //     }
+
+        //     // Apply maximum discount cap when configured.
+
+        //     const maxDiscountValue =
+        //         item.max_discount_value != null
+        //             ? Number(item.max_discount_value)
+        //             : 0;
+
+        //     if (maxDiscountValue > 0) {
+        //         discountAmount = Math.min(
+        //             discountAmount,
+        //             maxDiscountValue
+        //         );
+        //     }
+
+        //     discountAmount = Number(
+        //         Math.min(
+        //             Math.max(discountAmount, 0),
+        //             originalAmount
+        //         ).toFixed(2)
+        //     );
+
+        //     const calculatedAmount = Number(
+        //         (originalAmount - discountAmount).toFixed(2)
+        //     );
+
+        //     return {
+        //         ...item,
+        //         original_amount: originalAmount,
+        //         discount_type: discountType,
+        //         discount_value: discountValue,
+        //         discount_amount: discountAmount,
+        //         calculated_amount: calculatedAmount,
+        //         formula,
+        //         is_imt23: isIMT23,
+        //     };
+        // });
+
+
+
+
         const addonDetails = selectedAddons.map((item) => {
-            const isIMT23 =
-                String(item.addon_code || "").toUpperCase() ===
-                "IMT_23";
+            const addonCode = String(
+                item.addon_code || ""
+            ).toUpperCase();
+
+            const isIMT23 = addonCode === "IMT_23";
 
             const rateType = String(
                 item.rate_type || "PERCENTAGE"
@@ -149,21 +236,48 @@ const PremiumCalculationSummary = ({
 
             const rateValue = Number(item.rate_value || 0);
 
+            // Prefer the basis configured in the database.
+            // Fallbacks support existing rules during migration.
+            const calculationBasis = String(
+                item.calculation_basis ||
+                (addonCode === "ZD" || isIMT23
+                    ? "BASIC_OD"
+                    : "IDV")
+            ).toUpperCase();
+
             let originalAmount = 0;
             let formula = "";
 
-            if (isIMT23) {
-                originalAmount = imt23Premium;
-                formula = `${money(odPremium)} × ${imt23Rate}% (Basic OD)`;
-            } else if (rateType === "PERCENTAGE") {
-                originalAmount = (idv * rateValue) / 100;
-                formula = `${money(idv)} × ${rateValue}%`;
-            } else if (rateType === "FIXED") {
+            if (rateType === "FIXED") {
                 originalAmount = rateValue;
                 formula = "Fixed amount";
+            } else if (rateType === "PERCENTAGE") {
+                let baseAmount = 0;
+                let baseLabel = "";
+
+                switch (calculationBasis) {
+                    case "BASIC_OD":
+                        baseAmount = odPremium;
+                        baseLabel = "Basic OD";
+                        break;
+
+                    case "IDV":
+                    default:
+                        baseAmount = idv;
+                        baseLabel = "IDV";
+                        break;
+                }
+
+                originalAmount =
+                    (baseAmount * rateValue) / 100;
+
+                formula =
+                    `${money(baseAmount)} × ${rateValue}% (${baseLabel})`;
             }
 
-            // Apply add-on discount, if configured.
+            // Keep your existing discount calculation here:
+            // discount_type, discount_value, max_discount_value,
+            // discount_amount and calculated_amount.
 
             const discountType = String(
                 item.discount_type || "NONE"
@@ -182,8 +296,6 @@ const PremiumCalculationSummary = ({
             } else if (discountType === "FIXED") {
                 discountAmount = discountValue;
             }
-
-            // Apply maximum discount cap when configured.
 
             const maxDiscountValue =
                 item.max_discount_value != null
@@ -210,6 +322,7 @@ const PremiumCalculationSummary = ({
 
             return {
                 ...item,
+                calculation_basis: calculationBasis,
                 original_amount: originalAmount,
                 discount_type: discountType,
                 discount_value: discountValue,
@@ -219,6 +332,7 @@ const PremiumCalculationSummary = ({
                 is_imt23: isIMT23,
             };
         });
+
 
         // IMT-23 is already included in Total OD.
         // Exclude it here to prevent double-counting.

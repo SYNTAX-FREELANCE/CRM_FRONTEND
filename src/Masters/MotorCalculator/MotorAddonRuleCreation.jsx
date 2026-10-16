@@ -59,6 +59,7 @@ const MotorAddonRuleCreation = () => {
         discount_type: "",
         discount_value: "",
         max_discount_value: "",
+        calculation_basis: "",
 
         minIdv: "",
         maxIdv: "",
@@ -74,8 +75,6 @@ const MotorAddonRuleCreation = () => {
         isActive: "Active",
 
     });
-
-
 
     // MASTER DATA
 
@@ -271,6 +270,28 @@ const MotorAddonRuleCreation = () => {
     ];
 
 
+    const CalculationBasic = [
+        {
+            id: "IDV",
+            label: "idv",
+        },
+        {
+            id: "BASIC_OD",
+            label: "Basic Od",
+        },
+
+        {
+            id: "TOTAL_OD",
+            label: "Total Od",
+        },
+
+        {
+            id: "FIXED",
+            label: "Fixed",
+        }
+
+    ];
+
     // SET FIELD
 
     const set = field => event => {
@@ -352,6 +373,7 @@ const MotorAddonRuleCreation = () => {
                     discount_type: data?.discount_type ?? "",
                     discount_value: data?.discount_value ?? "",
                     max_discount_value: data?.max_discount_value ?? "",
+                    calculation_basis: data?.calculation_basis ?? "",
 
                     effectiveFrom:
                         data?.effective_from
@@ -752,6 +774,7 @@ const MotorAddonRuleCreation = () => {
 
             rateType: "",
             rateValue: "",
+            calculation_basis: "",
 
             effectiveFrom: "",
             effectiveTo: "",
@@ -934,7 +957,13 @@ const MotorAddonRuleCreation = () => {
                             headerName:
                                 "Discount Type",
                         },
+                        {
+                            field:
+                                "calculation_basis",
 
+                            headerName:
+                                "Calculation Basic",
+                        },
                         {
                             field:
                                 "effective_from",
@@ -1085,6 +1114,11 @@ const MotorAddonRuleCreation = () => {
             max_discount_value: Number(
                 addonRule.max_discount_value
             ),
+
+
+            calculation_basis:
+                addonRule.calculation_basis
+            ,
 
             effective_from:
                 addonRule.effectiveFrom,
@@ -1544,6 +1578,26 @@ const MotorAddonRuleCreation = () => {
 
                                 onChange={set(
                                     "discount_type"
+                                )}
+                            />
+
+                        </FormRow>
+
+                        <FormRow
+                            label="Calcultation Basic"
+                        >
+
+                            <SelectLg
+                                options={
+                                    CalculationBasic
+                                }
+
+                                value={
+                                    addonRule.calculation_basis
+                                }
+
+                                onChange={set(
+                                    "calculation_basis"
                                 )}
                             />
 
