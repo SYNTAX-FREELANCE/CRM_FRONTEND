@@ -529,7 +529,7 @@ const DetailedUserLogReports = () => {
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Login Time</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Logout Time</TableCell>
                                                 <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>Productivity Hours</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>System IP</TableCell>
+                                                {/* <TableCell sx={{ fontWeight: 800, bgcolor: tableHeaderBg, color: tableHeaderTextColor, borderBottom: isDark ? "2px solid rgba(255,255,255,0.08)" : "2px solid #e2e8f0" }}>System IP</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -555,7 +555,7 @@ const DetailedUserLogReports = () => {
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.login_time)}</TableCell>
                                                             <TableCell sx={{ color: textPrimaryColor }}>{formatDateTime(row.logout_time)}</TableCell>
                                                             <TableCell sx={{ fontWeight: 600, color: "#10b981" }}>{formatProductivityHours(row.productivity_hours)}</TableCell>
-                                                            <TableCell sx={{ color: textPrimaryColor }}>{row.system_ip || "—"}</TableCell>
+                                                            {/* <TableCell sx={{ color: textPrimaryColor }}>{row.system_ip || "—"}</TableCell> */}
                                                         </TableRow>
                                                     );
                                                 })}

@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import { Box, Collapse, IconButton } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 const ExpandableSection = ({
     children,
     isDark,
     defaultOpen = true,
     header,
+    width = '100%'
 }) => {
     const [open, setOpen] = useState(defaultOpen);
 
@@ -32,6 +32,7 @@ const ExpandableSection = ({
                     : "#ffffff",
 
                 overflow: "hidden",
+                width: width ?? "100%"
             }}
         >
             {/* HEADER */}
