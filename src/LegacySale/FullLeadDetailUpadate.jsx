@@ -906,77 +906,101 @@ const FullLeadDetailUpadate = () => {
 
                         }}
                     >
-                        {/* =================================================
+
+                        <Box sx={{
+                            display: 'flex',
+                            width: '100%',
+                            flexDirection: {
+                                xs: 'column',
+                                sm: 'column',
+                                md: 'row'
+                            },
+                            gap: 1,
+                            mt: 2
+
+                        }}>
+
+
+                            {/* =================================================
                             CUSTOMER SECTION
                         ================================================== */}
 
-                        <ExpandableSection
-                            isDark={isDark}
-                            defaultOpen={true}
-                            header={
-                                <SectionHeader
-                                    icon={<PersonIcon />}
-                                    title="Customer Information"
-                                    subtitle="Customer personal and contact details"
-                                    number="01"
-                                />
-                            }
-                        >
 
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        "repeat(auto-fit, minmax(330px, 1fr))",
-                                    gap: {
-                                        xs: 1,
-                                        md: 3,
-                                    },
+                            <ExpandableSection
+                                isDark={isDark}
+                                defaultOpen={true}
+                                width={{
+                                    xs: '100%',
+                                    sm: '100%',
+                                    md: '50%'
                                 }}
+                                header={
+                                    <SectionHeader
+                                        icon={<PersonIcon />}
+                                        title="Customer Information"
+                                        subtitle="Customer personal and contact details"
+                                        number="01"
+                                    />
+                                }
                             >
-                                <FormRow
-                                    label="Customer Name"
-                                    required
+
+                                <Box
+                                    sx={{
+                                        display: "grid",
+                                        gridTemplateColumns: {
+                                            xs: "repeat(1,minmax(0,1fr))",
+                                            md: "repeat(1,minmax(0,1fr))",
+                                            lg: "repeat(1,minmax(0,1fr))",
+                                        },
+                                        // gap: {
+                                        //     xs: 1,
+                                        //     md: 2,
+                                        // },
+                                    }}
                                 >
-                                    <InputLg
-                                        value={
-                                            customer.customerName
-                                        }
-                                        onChange={setCustomerField(
-                                            "customerName"
-                                        )}
-                                        placeholder="Enter customer name"
-                                    />
-                                </FormRow>
+                                    <FormRow
+                                        label="Customer Name"
+                                        required
+                                    >
+                                        <InputLg
+                                            value={
+                                                customer.customerName
+                                            }
+                                            onChange={setCustomerField(
+                                                "customerName"
+                                            )}
+                                            placeholder="Enter customer name"
+                                        />
+                                    </FormRow>
 
-                                <FormRow
-                                    label="Mobile Number 1"
-                                    required
-                                >
-                                    <InputLg
-                                        value={
-                                            customer.mobileNumber1
-                                        }
-                                        onChange={setCustomerField(
-                                            "mobileNumber1"
-                                        )}
-                                        placeholder="Enter primary mobile number"
-                                    />
-                                </FormRow>
+                                    <FormRow
+                                        label="Mobile Number 1"
+                                        required
+                                    >
+                                        <InputLg
+                                            value={
+                                                customer.mobileNumber1
+                                            }
+                                            onChange={setCustomerField(
+                                                "mobileNumber1"
+                                            )}
+                                            placeholder="Enter primary mobile number"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Mobile Number 2">
-                                    <InputLg
-                                        value={
-                                            customer.mobileNumber2
-                                        }
-                                        onChange={setCustomerField(
-                                            "mobileNumber2"
-                                        )}
-                                        placeholder="Enter alternate mobile number"
-                                    />
-                                </FormRow>
+                                    <FormRow label="Mobile Number 2">
+                                        <InputLg
+                                            value={
+                                                customer.mobileNumber2
+                                            }
+                                            onChange={setCustomerField(
+                                                "mobileNumber2"
+                                            )}
+                                            placeholder="Enter alternate mobile number"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Email Address">
+                                    {/* <FormRow label="Email Address">
                                     <InputLg
                                         value={customer.email}
                                         onChange={setCustomerField(
@@ -984,9 +1008,9 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter email address"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="City">
+                                    {/* <FormRow label="City">
                                     <InputLg
                                         value={customer.city}
                                         onChange={setCustomerField(
@@ -994,9 +1018,9 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter city"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="District">
+                                    {/* <FormRow label="District">
                                     <InputLg
                                         value={
                                             customer.district
@@ -1006,9 +1030,9 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter district"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="State">
+                                    {/* <FormRow label="State">
                                     <InputLg
                                         value={customer.state}
                                         onChange={setCustomerField(
@@ -1016,9 +1040,9 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter state"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="Pincode">
+                                    {/* <FormRow label="Pincode">
                                     <InputLg
                                         value={customer.pincode}
                                         onChange={setCustomerField(
@@ -1026,150 +1050,156 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter pincode"
                                     />
-                                </FormRow>
+                                </FormRow> */}
+
+                                </Box>
+
+                                <Box sx={{ mt: 1 }}>
+                                    <FormRow label=" Customer Address">
+                                        <textarea
+                                            rows={3}
+                                            value={customer.address}
+                                            onChange={setCustomerField(
+                                                "address"
+                                            )}
+                                            placeholder="Enter customer address"
+                                            style={{
+                                                width: "100%",
+                                                boxSizing: "border-box",
+                                                resize: "vertical",
+                                                border: isDark
+                                                    ? "1px solid #475569"
+                                                    : "1px solid #d1d5db",
+                                                borderRadius: "6px",
+                                                padding:
+                                                    "8px 10px",
+                                                fontSize: "13px",
+                                                outline: "none",
+                                                backgroundColor:
+                                                    isDark
+                                                        ? "#1e293b"
+                                                        : "#fff",
+                                                color: isDark
+                                                    ? "#f8fafc"
+                                                    : "#0f172a",
+                                            }}
+                                        />
+                                    </FormRow>
+                                </Box>
+
                                 <FormRow label="Previous Customers">
                                     <Checkbox
                                         value={isPreviousCustomer}
                                         onChange={(e) => setIsPreviousCustomer(e.target.checked)}
                                     />
                                 </FormRow>
-                            </Box>
+                            </ExpandableSection>
 
-                            <Box sx={{ mt: 1 }}>
-                                <FormRow label="Address">
-                                    <textarea
-                                        rows={3}
-                                        value={customer.address}
-                                        onChange={setCustomerField(
-                                            "address"
-                                        )}
-                                        placeholder="Enter customer address"
-                                        style={{
-                                            width: "100%",
-                                            boxSizing: "border-box",
-                                            resize: "vertical",
-                                            border: isDark
-                                                ? "1px solid #475569"
-                                                : "1px solid #d1d5db",
-                                            borderRadius: "6px",
-                                            padding:
-                                                "8px 10px",
-                                            fontSize: "13px",
-                                            outline: "none",
-                                            backgroundColor:
-                                                isDark
-                                                    ? "#1e293b"
-                                                    : "#fff",
-                                            color: isDark
-                                                ? "#f8fafc"
-                                                : "#0f172a",
-                                        }}
-                                    />
-                                </FormRow>
-                            </Box>
-                        </ExpandableSection>
-
-                        {/* =================================================
+                            {/* =================================================
                             VEHICLE SECTION
                         ================================================== */}
 
 
 
-                        <ExpandableSection
-                            isDark={isDark}
-                            defaultOpen={true}
-                            header={
-                                <SectionHeader
-                                    icon={<DirectionsCar
-                                        sx={{ fontSize: 22 }}
-                                    />}
-                                    title="Vehicle Information"
-                                    subtitle="Enter the vehicle details associated with this customer"
-                                    number="02"
-                                />
-                            }
-                        >
-
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        "repeat(auto-fit, minmax(280px, 1fr))",
-                                    gap: {
-                                        xs: 1,
-                                        md: 2,
-                                    },
+                            <ExpandableSection
+                                isDark={isDark}
+                                defaultOpen={true}
+                                width={{
+                                    xs: '100%',
+                                    sm: '100%',
+                                    md: '50%'
                                 }}
+                                header={
+                                    <SectionHeader
+                                        icon={<DirectionsCar
+                                            sx={{ fontSize: 22 }}
+                                        />}
+                                        title="Vehicle Information"
+                                        subtitle="Enter the vehicle details associated with this customer"
+                                        number="02"
+                                    />
+                                }
                             >
-                                <FormRow
-                                    label="Registration Number"
-                                    required
+
+                                <Box
+                                    sx={{
+                                        display: "grid",
+                                        gridTemplateColumns: {
+                                            xs: "repeat(1,minmax(0,1fr))",
+                                            md: "repeat(1,minmax(0,1fr))",
+                                            lg: "repeat(1,minmax(0,1fr))",
+                                        },
+                                    }}
                                 >
-                                    <InputLg
-                                        value={
-                                            vehicle.registrationNumber
-                                        }
-                                        onChange={setVehicleField(
-                                            "registrationNumber"
-                                        )}
-                                        placeholder="e.g. KL01AB1234"
-                                    />
-                                </FormRow>
+                                    <FormRow
+                                        label="Registration Number"
+                                        required
+                                    >
+                                        <InputLg
+                                            value={
+                                                vehicle.registrationNumber
+                                            }
+                                            onChange={setVehicleField(
+                                                "registrationNumber"
+                                            )}
+                                            placeholder="e.g. KL01AB1234"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="RTO Details">
-                                    <InputLg
-                                        value={vehicle.rto}
-                                        onChange={setVehicleField(
-                                            "rto"
-                                        )}
-                                        placeholder="Enter RTO code"
-                                    />
-                                </FormRow>
+                                    {/* <FormRow label="RTO Details">
+                                        <InputLg
+                                            value={vehicle.rto}
+                                            onChange={setVehicleField(
+                                                "rto"
+                                            )}
+                                            placeholder="Enter RTO code"
+                                        />
+                                    </FormRow> */}
 
-                                <FormRow label="Registration Date">
-                                    <InputDate
-                                        value={
-                                            vehicle.registrationData
-                                        }
-                                        onChange={setVehicleField(
-                                            "registrationData"
-                                        )}
-                                    />
-                                </FormRow>
+                                    <FormRow label="Registration Date">
+                                        <InputDate
+                                            value={
+                                                vehicle.registrationData
+                                            }
+                                            onChange={setVehicleField(
+                                                "registrationData"
+                                            )}
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Policy Expiry Date" required>
-                                    <input
-                                        type="date"
-                                        value={
-                                            vehicle.knownPolicyExpiryDate
-                                        }
-                                        onChange={setVehicleField(
-                                            "knownPolicyExpiryDate"
-                                        )}
-                                        style={{
-                                            height: "30px",
-                                            width: "100%",
-                                            boxSizing:
-                                                "border-box",
-                                            fontSize: "13px",
-                                            border: isDark
-                                                ? "1px solid #475569"
-                                                : "1px solid #d1d5db",
-                                            borderRadius: "4px",
-                                            padding: "0 8px",
-                                            outline: "none",
-                                            backgroundColor:
-                                                isDark
-                                                    ? "#1e293b"
-                                                    : "#fff",
-                                            color: isDark
-                                                ? "#f8fafc"
-                                                : "#0f172a",
-                                        }}
-                                    />
-                                </FormRow>
+                                    <FormRow label="Policy Expiry Date" required>
+                                        <input
+                                            type="date"
+                                            value={
+                                                vehicle.knownPolicyExpiryDate
+                                            }
+                                            onChange={setVehicleField(
+                                                "knownPolicyExpiryDate"
+                                            )}
+                                            style={{
+                                                height: "30px",
+                                                width: "100%",
+                                                boxSizing:
+                                                    "border-box",
+                                                fontSize: "13px",
+                                                border: isDark
+                                                    ? "1px solid #475569"
+                                                    : "1px solid #d1d5db",
+                                                borderRadius: "4px",
+                                                padding: "0 8px",
+                                                outline: "none",
+                                                backgroundColor:
+                                                    isDark
+                                                        ? "#1e293b"
+                                                        : "#fff",
+                                                color: isDark
+                                                    ? "#f8fafc"
+                                                    : "#0f172a",
+                                            }}
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Vehicle Maker">
+                                    {/* <FormRow label="Vehicle Maker">
                                     <InputLg
                                         value={
                                             vehicle.vehicleMaker
@@ -1179,19 +1209,19 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter vehicle manufacturer"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="Vehicle Model">
-                                    <InputLg
-                                        value={vehicle.model}
-                                        onChange={setVehicleField(
-                                            "model"
-                                        )}
-                                        placeholder="Enter vehicle model"
-                                    />
-                                </FormRow>
+                                    <FormRow label="Vehicle Model">
+                                        <InputLg
+                                            value={vehicle.model}
+                                            onChange={setVehicleField(
+                                                "model"
+                                            )}
+                                            placeholder="Enter vehicle model"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Engine Number">
+                                    {/* <FormRow label="Engine Number">
                                     <InputLg
                                         value={
                                             vehicle.engineNumber
@@ -1201,9 +1231,9 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter engine number"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="Chassis Number">
+                                    {/* <FormRow label="Chassis Number">
                                     <InputLg
                                         value={
                                             vehicle.chassisNumber
@@ -1213,33 +1243,33 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter chassis number"
                                     />
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="Vehicle Class">
-                                    <InputLg
-                                        value={
-                                            vehicle.vehicleClass
-                                        }
-                                        onChange={setVehicleField(
-                                            "vehicleClass"
-                                        )}
-                                        placeholder="Enter vehicle class"
-                                    />
-                                </FormRow>
+                                    <FormRow label="Vehicle Class">
+                                        <InputLg
+                                            value={
+                                                vehicle.vehicleClass
+                                            }
+                                            onChange={setVehicleField(
+                                                "vehicleClass"
+                                            )}
+                                            placeholder="Enter vehicle class"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Vehicle Category">
-                                    <InputLg
-                                        value={
-                                            vehicle.vehicleCategory
-                                        }
-                                        onChange={setVehicleField(
-                                            "vehicleCategory"
-                                        )}
-                                        placeholder="Enter vehicle category"
-                                    />
-                                </FormRow>
+                                    <FormRow label="Vehicle Category">
+                                        <InputLg
+                                            value={
+                                                vehicle.vehicleCategory
+                                            }
+                                            onChange={setVehicleField(
+                                                "vehicleCategory"
+                                            )}
+                                            placeholder="Enter vehicle category"
+                                        />
+                                    </FormRow>
 
-                                <FormRow label="Fuel Type">
+                                    {/* <FormRow label="Fuel Type">
                                     <select
                                         value={
                                             vehicle.fuelType
@@ -1293,9 +1323,9 @@ const FullLeadDetailUpadate = () => {
                                             Hybrid
                                         </option>
                                     </select>
-                                </FormRow>
+                                </FormRow> */}
 
-                                <FormRow label="Seating Capacity">
+                                    {/* <FormRow label="Seating Capacity">
                                     <InputLg
                                         value={
                                             vehicle.seatCapacity
@@ -1305,10 +1335,10 @@ const FullLeadDetailUpadate = () => {
                                         )}
                                         placeholder="Enter seating capacity"
                                     />
-                                </FormRow>
-                            </Box>
-                        </ExpandableSection>
-
+                                </FormRow> */}
+                                </Box>
+                            </ExpandableSection>
+                        </Box>
                         {/* =================================================
                             SALE SECTION
                         ================================================== */}

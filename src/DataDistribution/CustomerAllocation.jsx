@@ -63,8 +63,9 @@ const CustomerAllocation = () => {
 
     const formattedDate = month?.format("YYYY-MM");
 
-    const { data: Employee_master = [], isLoading: EmployeeDetailloading } = useAllEmployeeDetails();
-    const { data: newCustomers = [], refetch } = useNewCustomers(formattedDate);
+    const { data: Employee_master = [] } = useAllEmployeeDetails();
+    const { data: newCustomers = [] } = useNewCustomers(formattedDate);
+
 
     const customers = Array.isArray(newCustomers) ? newCustomers : newCustomers?.data ?? [];
     const employees = Array.isArray(Employee_master) ? Employee_master : Employee_master?.data ?? [];
@@ -172,7 +173,7 @@ const CustomerAllocation = () => {
     return (
         <Box
             sx={{
-                minHeight: "95vh",
+                height: "95vh",
                 width: "100%",
                 overflowY: "auto",
                 scrollbarWidth: "none",
@@ -191,13 +192,16 @@ const CustomerAllocation = () => {
           radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
           linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
         `,
+                overflow: 'scroll'
             }}
         >
             <Box
                 sx={{
                     display: 'flex',
                     gap: 2,
-                    flexDirection: { xs: 'column', sm: 'column', md: 'column', lg: 'row' }
+                    flexDirection: { xs: 'column', sm: 'column', md: 'column', lg: 'row' },
+                    height: '100%',
+                    // bgcolor:'red'
                 }}
             >
                 <Card
@@ -210,14 +214,24 @@ const CustomerAllocation = () => {
                             : "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,250,255,0.84) 100%)",
                         border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(148,163,184,0.18)",
                         boxShadow: isDark ? "0 12px 32px rgba(0, 0, 0, 0.4)" : "0 12px 32px rgba(15, 23, 42, 0.06)",
+                        height: '90vh',
+                        // overflow: 'scroll',
+                        // scrollbarWidth: "none",
+                        // msOverflowStyle: "none",
+                        // "&::-webkit-scrollbar": {
+                        //     display: "none",
+                        // },
                     }}
                 >
                     <Stack spacing={2}>
                         <Box>
-                            <Typography level="h3" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#17324a" }}>
+                            <Typography level="h3" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#17324a", fontFamily: "Bahnschrift", }}>
                                 Allocation Setup
                             </Typography>
-                            <Typography level="body-sm" sx={{ color: isDark ? "#94a3b8" : "#6b7d90", mt: 0.5 }}>
+                            <Typography level="body-sm" sx={{
+                                color: isDark ? "#94a3b8" : "#6b7d90", mt: 0.5,
+                                fontFamily: "Bahnschrift",
+                            }}>
                                 Choose month and allocation preferences.
                             </Typography>
                         </Box>
@@ -225,7 +239,7 @@ const CustomerAllocation = () => {
                         <Divider sx={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : undefined }} />
 
                         <Box>
-                            <Typography level="title-sm" sx={{ mb: 0.8, color: isDark ? "#cbd5e1" : "#284862" }}>
+                            <Typography level="title-sm" sx={{ mb: 0.8, color: isDark ? "#cbd5e1" : "#284862", fontFamily: "Bahnschrift", }}>
                                 Expiry Month
                             </Typography>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -248,12 +262,15 @@ const CustomerAllocation = () => {
                                                     "& fieldset": {
                                                         borderColor: isDark ? "rgba(255,255,255,0.15)" : undefined,
                                                     },
+                                                    fontFamily: "Bahnschrift",
                                                 },
                                                 "& .MuiInputBase-input": {
                                                     color: isDark ? "#f8fafc" : undefined,
+                                                    fontFamily: "Bahnschrift",
                                                 },
                                                 "& .MuiSvgIcon-root": {
                                                     color: isDark ? "#94a3b8" : undefined,
+                                                    fontFamily: "Bahnschrift",
                                                 },
                                             },
                                         },
@@ -263,7 +280,7 @@ const CustomerAllocation = () => {
                         </Box>
 
                         <Box>
-                            <Typography level="title-sm" sx={{ mb: 0.8, color: isDark ? "#cbd5e1" : "#284862" }}>
+                            <Typography level="title-sm" sx={{ mb: 0.8, color: isDark ? "#cbd5e1" : "#284862", fontFamily: "Bahnschrift", }}>
                                 Allocation Mode
                             </Typography>
                             <RadioGroup
@@ -276,6 +293,7 @@ const CustomerAllocation = () => {
                                     background: isDark ? "rgba(15,23,42,0.6)" : "#f8fbff",
                                     border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(148,163,184,0.14)",
                                     color: isDark ? "#f8fafc" : undefined,
+                                    fontFamily: "Bahnschrift",
                                 }}
                             >
                                 <Radio value="single" label="Single Employee" sx={{ color: isDark ? "#f8fafc" : undefined }} />
@@ -300,6 +318,7 @@ const CustomerAllocation = () => {
                                         color: isDark ? "#f8fafc" : undefined,
                                         borderColor: isDark ? "rgba(255,255,255,0.15)" : undefined,
                                         fontSize: 14,
+                                        fontFamily: "Bahnschrift",
                                     }}
                                 >
                                     {employees?.map((emp) => (
@@ -313,6 +332,7 @@ const CustomerAllocation = () => {
                                                 "&:hover": {
                                                     bgcolor: isDark ? "#334155" : undefined,
                                                 },
+                                                fontFamily: "Bahnschrift",
                                             }}
                                             key={emp?.user_id}
                                             value={emp?.user_id}
@@ -335,7 +355,16 @@ const CustomerAllocation = () => {
                         )}
 
                         {allocationMode === "equal" && (
-                            <Box>
+                            <Box sx={{
+                                height: '40%',
+                                // bgcolor:'red',
+                                overflow: 'scroll',
+                                scrollbarWidth: "none",
+                                msOverflowStyle: "none",
+                                "&::-webkit-scrollbar": {
+                                    display: "none",
+                                }
+                            }}>
                                 <Typography level="title-sm" sx={{ mb: 1, color: isDark ? "#cbd5e1" : "#284862" }}>
                                     Available Employees
                                 </Typography>
@@ -410,7 +439,7 @@ const CustomerAllocation = () => {
                             : "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,251,255,0.98) 100%)",
                         border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(148,163,184,0.18)",
                         boxShadow: isDark ? "0 12px 32px rgba(0, 0, 0, 0.4)" : "0 12px 32px rgba(15, 23, 42, 0.06)",
-                        minHeight: 700,
+                        height: '90vh',
                     }}
                 >
                     <Stack spacing={1.8}>
@@ -424,10 +453,10 @@ const CustomerAllocation = () => {
                             }}
                         >
                             <Box>
-                                <Typography level="h3" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#17324a" }}>
+                                <Typography level="h3" sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#17324a", fontFamily: "Bahnschrift", }}>
                                     Customers Awaiting Allocation
                                 </Typography>
-                                <Typography level="body-sm" sx={{ color: isDark ? "#94a3b8" : "#6b7d90", mt: 0.4 }}>
+                                <Typography level="body-sm" sx={{ color: isDark ? "#94a3b8" : "#6b7d90", mt: 0.4, fontFamily: "Bahnschrift", }}>
                                     Review and select customers from the filtered list.
                                 </Typography>
                             </Box>
