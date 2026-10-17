@@ -17,10 +17,7 @@ const ThejaswiPreview = () => {
     const { id: createdBy, emp_name } = authUser ?? {};
     const [quotationdata, setQuotataionData] = useState(null)
 
-    console.log({
-        quotationdata
-    });
-    
+
 
     const {
         data: InsuranceCompanyMaster = [],
