@@ -4,10 +4,13 @@ const createQuotationPayload = ({
     calculationData = {},
     category = {},
     selectedCustomer = {},
+    coverInputValues = {},
     lead,
     createdBy,
 }) => {
-    const Customer = selectedCustomer?.customer || selectedCustomer || {};
+    const Customer =
+        selectedCustomer?.customer || selectedCustomer || {};
+
     const FetchedLead = selectedCustomer?.leads?.[0] || {};
 
     const Vehicle =
@@ -24,20 +27,30 @@ const createQuotationPayload = ({
         Number((Number(value) || 0).toFixed(2));
 
     const getNumber = (value, fallback = 0) => {
-        if (value === null || value === undefined || value === "") {
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
             return fallback;
         }
 
         const number = Number(value);
+
         return Number.isFinite(number) ? number : fallback;
     };
 
     const getId = (value) => {
-        if (value === null || value === undefined || value === "") {
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
             return null;
         }
 
         const number = Number(value);
+
         return Number.isFinite(number) ? number : null;
     };
 
@@ -54,21 +67,6 @@ const createQuotationPayload = ({
 
     const getRateType = (item, fallback = "FIXED") =>
         String(item?.rate_type || fallback).toUpperCase();
-
-    const getAmount = (item, baseAmount, quantity = 1) => {
-        const rateType = getRateType(item);
-        const rate = getRate(item);
-
-        if (rateType === "PERCENTAGE") {
-            return round((baseAmount * rate) / 100);
-        }
-
-        if (rateType === "PER_UNIT") {
-            return round(rate * quantity);
-        }
-
-        return round(rate);
-    };
 
     const selectedAddonIds = getArray(formData.addon_ids).map(Number);
     const selectedCoverIds = getArray(formData.cover_ids).map(Number);
@@ -93,8 +91,8 @@ const createQuotationPayload = ({
     // MASTER RULES
     // --------------------------------------------------
 
-    const odRate = calculationData.od_rate?.[0] || {};
-    const tpRate = calculationData.tp_rate?.[0] || {};
+    const odRule = calculationData.od_rate?.[0] || {};
+    const tpRule = calculationData.tp_rate?.[0] || {};
     const ncbRule = calculationData.ncb_rule?.[0] || {};
     const discountRule = calculationData.discount_rule?.[0] || {};
     const commissionRule = calculationData.commission?.[0] || {};
@@ -103,62 +101,207 @@ const createQuotationPayload = ({
 
     // --------------------------------------------------
     // STEP 1: BASIC OD
+    // Matches PremiumCalculationSummary
     // --------------------------------------------------
 
-    const odRateType = getRateType(odRate, "PERCENTAGE");
-    const odRateValue = getRate(odRate);
+    const odRateType = String(
+        odRule.rate_type || "PERCENTAGE"
+    ).toUpperCase();
+
+    const odRateValue = getRate(odRule);
 
     const calculatedBasicOD =
-        odRateType === "FIXED"
-            ? odRateValue
-            : odRateType === "PERCENTAGE"
-                ? (idv * odRateValue) / 100
+        odRateType === "PERCENTAGE"
+            ? (idv * odRateValue) / 100
+            : odRateType === "FIXED"
+                ? odRateValue
                 : 0;
 
-    const basicOD = round(
-        getNumber(od.basic_od_premium, calculatedBasicOD)
+    const basicOD = getNumber(
+        od.basic_od_premium,
+        calculatedBasicOD
     );
 
     // --------------------------------------------------
     // STEP 2: IMT-23
-    // Automatically included when the calculation API
-    // returns the IMT-23 rule.
-    // Calculated on BASIC OD, not IDV.
+    // Always included when returned by the calculation API
+    // IMT-23 = Basic OD x IMT-23 percentage
     // --------------------------------------------------
 
     const imt23Addon = allAddons.find(
         (item) =>
-            String(item.addon_code || "").toUpperCase() === "IMT_23"
+            String(item.addon_code || "").toUpperCase() ===
+            "IMT_23"
     );
 
     const imt23Selected = Boolean(imt23Addon);
-    const imt23Rate = imt23Selected ? getRate(imt23Addon) : 0;
 
-    const imt23Premium = imt23Selected
+    const imt23Rate = imt23Addon
+        ? getNumber(imt23Addon.rate_value, 15)
+        : 0;
+
+    const imt23Premium = imt23Addon
         ? round((basicOD * imt23Rate) / 100)
         : 0;
 
     const totalOD = round(basicOD + imt23Premium);
 
     // --------------------------------------------------
-    // STEP 3: DE-TARIFF DISCOUNT
-    // Apply the discount to TOTAL OD, including IMT-23.
+    // STEP 3: SELECTED ADD-ONS AND THEIR DISCOUNTS
+    // Matches PremiumCalculationSummary:
+    // ZD percentage basis = Basic OD
+    // Other percentage add-ons = IDV
+    // IMT-23 excluded from the add-on total
     // --------------------------------------------------
 
-    const suppliedDiscount =
-        formData.de_tariff_discount !== undefined &&
-        formData.de_tariff_discount !== null &&
-        formData.de_tariff_discount !== ""
-            ? formData.de_tariff_discount
-            : (
-                discountRule.discount_value ??
-                discountRule.discount_percentage ??
-                discountRule.rate_value
+    const selectedAddons = allAddons.filter(
+        (item) =>
+            String(item.addon_code || "").toUpperCase() ===
+                "IMT_23" ||
+            selectedAddonIds.includes(Number(item.addon_id))
+    );
+
+    const addonDetails = selectedAddons.map((item) => {
+        const addonCode = String(
+            item.addon_code || ""
+        ).toUpperCase();
+
+        const isIMT23 = addonCode === "IMT_23";
+
+        const rateType = String(
+            item.rate_type || "PERCENTAGE"
+        ).toUpperCase();
+
+        const rateValue = getNumber(item.rate_value);
+
+        const calculationBasis = String(
+            item.calculation_basis ||
+            (
+                addonCode === "ZD" || isIMT23
+                    ? "BASIC_OD"
+                    : "IDV"
+            )
+        ).toUpperCase();
+
+        let originalAmount = 0;
+
+        if (rateType === "FIXED") {
+            originalAmount = rateValue;
+        } else if (rateType === "PERCENTAGE") {
+            const baseAmount =
+                calculationBasis === "BASIC_OD"
+                    ? basicOD
+                    : idv;
+
+            originalAmount = (baseAmount * rateValue) / 100;
+        }
+
+        originalAmount = round(originalAmount);
+
+        const discountType = String(
+            item.discount_type || "NONE"
+        ).toUpperCase();
+
+        const discountValue = Math.max(
+            0,
+            getNumber(item.discount_value)
+        );
+
+        let discountAmount = 0;
+
+        if (discountType === "PERCENTAGE") {
+            discountAmount =
+                (originalAmount * discountValue) / 100;
+        } else if (discountType === "FIXED") {
+            discountAmount = discountValue;
+        }
+
+        const maxDiscountValue =
+            item.max_discount_value != null
+                ? getNumber(item.max_discount_value)
+                : 0;
+
+        if (maxDiscountValue > 0) {
+            discountAmount = Math.min(
+                discountAmount,
+                maxDiscountValue
             );
+        }
+
+        discountAmount = round(
+            Math.min(
+                Math.max(discountAmount, 0),
+                originalAmount
+            )
+        );
+
+        const calculatedAmount = round(
+            Math.max(0, originalAmount - discountAmount)
+        );
+
+        return {
+            ...item,
+            addon_id: Number(item.addon_id),
+            rate: rateValue,
+            rate_type: rateType,
+            calculation_basis: calculationBasis,
+            original_amount: originalAmount,
+            discount_type: discountType,
+            discount_value: discountValue,
+            discount_amount: discountAmount,
+            calculated_amount: calculatedAmount,
+            amount: calculatedAmount,
+            is_imt23: isIMT23,
+        };
+    });
+
+    // IMT-23 is already included in Total OD.
+    const otherAddonDetails = addonDetails.filter(
+        (item) => !item.is_imt23
+    );
+
+    const addonTotal = round(
+        otherAddonDetails.reduce(
+            (sum, item) =>
+                sum + getNumber(item.calculated_amount),
+            0
+        )
+    );
+
+    // Match the summary's ZD selection and discounted amount.
+    const zdAddon = addonDetails.find(
+        (item) =>
+            String(item.addon_code || "").toUpperCase() === "ZD"
+    );
+
+    const zdAmount = round(
+        getNumber(zdAddon?.calculated_amount)
+    );
+
+    // --------------------------------------------------
+    // STEP 4: DE-TARIFF DISCOUNT
+    // Applied to Total OD (Basic OD + IMT-23)
+    // --------------------------------------------------
+
+    const formDiscountValue = formData.de_tariff_discount;
 
     const deTariffDiscountPercentage = Math.min(
         100,
-        Math.max(0, getNumber(suppliedDiscount))
+        Math.max(
+            0,
+            getNumber(
+                formDiscountValue !== undefined &&
+                    formDiscountValue !== null &&
+                    formDiscountValue !== ""
+                    ? formDiscountValue
+                    : (
+                        discountRule.discount_value ??
+                        discountRule.discount_percentage ??
+                        discountRule.rate_value ??
+                        0
+                    )
+            )
+        )
     );
 
     const deTariffDiscountAmount = round(
@@ -168,17 +311,20 @@ const createQuotationPayload = ({
         )
     );
 
+    // --------------------------------------------------
+    // STEP 5: OD AFTER DE-TARIFF DISCOUNT
+    // --------------------------------------------------
+
     const odAfterDiscount = round(
         Math.max(0, totalOD - deTariffDiscountAmount)
     );
 
     // --------------------------------------------------
-    // STEP 4: NCB
-    // Apply NCB AFTER the DE tariff discount.
+    // STEP 6: NCB
     //
-    // When no DE tariff discount is applied, use the
-    // backend NCB amount if it is available, matching
-    // the preview's existing fallback behavior.
+    // NCB base = Total OD + discounted ZD - de-tariff discount
+    // NCB amount = NCB base x NCB percentage
+    // Do not use backend ncb_amount.
     // --------------------------------------------------
 
     const ncbPercentage = Math.min(
@@ -188,174 +334,41 @@ const createQuotationPayload = ({
             getNumber(
                 od.ncb_percentage ??
                 ncbRule.calculated_ncb_percentage ??
-                ncbRule.ncb_percentage
+                ncbRule.ncb_percentage ??
+                0
             )
         )
     );
 
-    const calculatedNCB = round(
+    const ncbBaseAmount = round(
+        Math.max(
+            0,
+            totalOD + zdAmount - deTariffDiscountAmount
+        )
+    );
+
+    const ncbAmount = round(
         Math.min(
-            odAfterDiscount,
-            (odAfterDiscount * ncbPercentage) / 100
+            ncbBaseAmount,
+            (ncbBaseAmount * ncbPercentage) / 100
         )
     );
 
-    const backendNCBAmount = getNumber(od.ncb_amount, NaN);
-
-    const ncbAmount =
-        deTariffDiscountPercentage === 0 &&
-        Number.isFinite(backendNCBAmount)
-            ? round(
-                Math.min(
-                    odAfterDiscount,
-                    Math.max(0, backendNCBAmount)
-                )
-            )
-            : calculatedNCB;
-
+    // Final Net OD matches the summary exactly.
     const netOD = round(
         Math.max(0, odAfterDiscount - ncbAmount)
     );
 
     // --------------------------------------------------
-    // STEP 5: OTHER SELECTED ADD-ONS
-    // Exclude IMT-23 because it is already included in OD.
+    // STEP 7: THIRD-PARTY PREMIUM
+    // Matches PremiumCalculationSummary's TP rate formula.
     // --------------------------------------------------
 
-    const selectedAddons = allAddons
-        .filter(
-            (item) =>
-                selectedAddonIds.includes(Number(item.addon_id)) &&
-                String(item.addon_code || "").toUpperCase() !== "IMT_23"
-        )
-        .map((item) => {
-            const addonCode = String(
-                item.addon_code || ""
-            ).toUpperCase();
+    const tpRateType = String(
+        tpRule.rate_type || "FIXED"
+    ).toUpperCase();
 
-            const isZeroDep = ["ZD", "ZERO_DEP"].includes(addonCode);
-
-            const rateType = getRateType(item, "PERCENTAGE");
-            const rate = getRate(item);
-
-            const calculationBasis = String(
-                item.calculation_basis ||
-                (isZeroDep ? "BASIC_OD" : "IDV")
-            ).toUpperCase();
-
-            let baseAmount = idv;
-
-            if (calculationBasis === "BASIC_OD") {
-                baseAmount = basicOD;
-            } else if (calculationBasis === "TOTAL_OD") {
-                baseAmount = totalOD;
-            } else if (calculationBasis === "NET_OD") {
-                baseAmount = netOD;
-            }
-
-            const quantity =
-                rateType === "PER_UNIT"
-                    ? getNumber(item.quantity ?? item.units ?? 1, 1)
-                    : 1;
-
-            let originalAmount = 0;
-
-            if (rateType === "PERCENTAGE") {
-                originalAmount = round((baseAmount * rate) / 100);
-            } else if (rateType === "PER_UNIT") {
-                originalAmount = round(rate * quantity);
-            } else {
-                originalAmount = round(rate);
-            }
-
-            const discountType = String(
-                item.discount_type || "NONE"
-            ).toUpperCase();
-
-            const discountValue = Math.max(
-                0,
-                getNumber(item.discount_value)
-            );
-
-            const configuredMaxDiscount = getNumber(
-                item.max_discount_value
-            );
-
-            let discountAmount = 0;
-
-            if (discountType === "PERCENTAGE") {
-                discountAmount =
-                    (originalAmount * discountValue) / 100;
-            } else if (discountType === "FIXED") {
-                discountAmount = discountValue;
-            }
-
-            if (configuredMaxDiscount > 0) {
-                discountAmount = Math.min(
-                    discountAmount,
-                    configuredMaxDiscount
-                );
-            }
-
-            discountAmount = round(
-                Math.min(
-                    originalAmount,
-                    Math.max(0, discountAmount)
-                )
-            );
-
-            return {
-                addon_id: Number(item.addon_id),
-                rate,
-                rate_type: rateType,
-                calculation_basis: calculationBasis,
-                quantity,
-                original_amount: round(originalAmount),
-                discount_type: discountType,
-                discount_value: discountValue,
-                discount_amount: discountAmount,
-                amount: round(
-                    Math.max(0, originalAmount - discountAmount)
-                ),
-            };
-        });
-
-    // Save IMT-23 in the add-on list for traceability.
-    // Its amount is NOT added to addonTotal because it is
-    // already included in totalOD and netOD.
-    const imt23PayloadAddon = imt23Selected
-        ? {
-            addon_id: Number(imt23Addon.addon_id),
-            rate: imt23Rate,
-            rate_type: getRateType(imt23Addon, "PERCENTAGE"),
-            calculation_basis: "BASIC_OD",
-            quantity: 1,
-            original_amount: imt23Premium,
-            discount_type: "NONE",
-            discount_value: 0,
-            discount_amount: 0,
-            amount: imt23Premium,
-        }
-        : null;
-
-    const addons = [
-        ...(imt23PayloadAddon ? [imt23PayloadAddon] : []),
-        ...selectedAddons,
-    ];
-
-    const addonTotal = round(
-        selectedAddons.reduce(
-            (sum, item) => sum + getNumber(item.amount),
-            0
-        )
-    );
-
-    // --------------------------------------------------
-    // STEP 6: THIRD-PARTY PREMIUM
-    // --------------------------------------------------
-
-    const tpRateType = getRateType(tpRate, "FIXED");
-    const tpRateValue = getRate(tpRate);
+    const tpRateValue = getRate(tpRule);
 
     const calculatedTP =
         tpRateType === "PERCENTAGE"
@@ -365,56 +378,89 @@ const createQuotationPayload = ({
                 : 0;
 
     const tpPremium = round(
-        getNumber(
-            tpCalculation.tp_premium ??
-            tpCalculation.premium ??
-            tpCalculation.amount ??
-            calculation.tp_premium ??
-            calculation.third_party_premium,
-            calculatedTP
-        )
+        tpRule
+            ? calculatedTP
+            : getNumber(
+                tpCalculation.tp_premium ??
+                tpCalculation.premium ??
+                tpCalculation.amount ??
+                calculation.tp_premium ??
+                calculation.third_party_premium
+            )
     );
 
     // --------------------------------------------------
-    // STEP 7: ADDITIONAL COVERS
+    // STEP 8: ADDITIONAL COVERS
+    // Use the entered units for PER_UNIT covers.
+    // Fall back to seating capacity only if not entered.
     // --------------------------------------------------
 
-    const seatingCapacity = getNumber(formData.seating_capacity);
+    const seatingCapacity = getNumber(
+        formData.seating_capacity
+    );
 
     const covers = allCovers
-        .filter((cover) =>
-            selectedCoverIds.includes(Number(cover.cover_id))
+        .filter((item) =>
+            selectedCoverIds.includes(Number(item.cover_id))
         )
-        .map((cover) => {
-            const rateType = getRateType(cover, "FIXED");
-            const rate = getRate(cover);
+        .map((item) => {
+            const coverId = Number(item.cover_id);
+
+            const rateType = String(
+                item.rate_type || "FIXED"
+            ).toUpperCase();
+
+            const rateValue = getNumber(item.rate_value);
+
+            const enteredUnits =
+                coverInputValues?.[coverId] ??
+                coverInputValues?.[String(coverId)];
+
+            const hasEnteredUnits =
+                enteredUnits !== undefined &&
+                enteredUnits !== null &&
+                enteredUnits !== "";
 
             const quantity =
-                rateType === "PER_UNIT" ? seatingCapacity : 1;
+                rateType === "PER_UNIT"
+                    ? getNumber(
+                        hasEnteredUnits
+                            ? enteredUnits
+                            : seatingCapacity
+                    )
+                    : 1;
 
             const pending =
-                rateType === "PER_UNIT" && seatingCapacity <= 0;
+                rateType === "PER_UNIT" && quantity <= 0;
 
-            const amount = pending
-                ? 0
-                : getAmount(
-                    { ...cover, rate_value: rate },
-                    idv,
-                    quantity
-                );
+            let amount = 0;
+
+            if (!pending) {
+                if (rateType === "FIXED") {
+                    amount = rateValue;
+                } else if (rateType === "PERCENTAGE") {
+                    amount = (idv * rateValue) / 100;
+                } else if (rateType === "PER_UNIT") {
+                    amount = rateValue * quantity;
+                }
+            }
 
             return {
-                cover_id: Number(cover.cover_id),
+                cover_id: coverId,
                 quantity,
-                rate,
+                rate: rateValue,
                 rate_type: rateType,
-                amount,
+                amount: round(amount),
                 pending,
             };
         });
 
     const coverTotal = round(
-        covers.reduce((sum, item) => sum + item.amount, 0)
+        covers.reduce(
+            (sum, item) =>
+                sum + (item.pending ? 0 : item.amount),
+            0
+        )
     );
 
     const findCoverAmount = (type) =>
@@ -422,7 +468,8 @@ const createQuotationPayload = ({
             covers.reduce((sum, item) => {
                 const master = allCovers.find(
                     (cover) =>
-                        Number(cover.cover_id) === Number(item.cover_id)
+                        Number(cover.cover_id) ===
+                        Number(item.cover_id)
                 );
 
                 const coverType = String(
@@ -431,10 +478,15 @@ const createQuotationPayload = ({
 
                 const matches =
                     type === "LIABILITY"
-                        ? ["LIABILITY", "LEGAL_LIABILITY"].includes(coverType)
+                        ? [
+                            "LIABILITY",
+                            "LEGAL_LIABILITY",
+                        ].includes(coverType)
                         : coverType === type;
 
-                return matches ? sum + item.amount : sum;
+                return matches && !item.pending
+                    ? sum + item.amount
+                    : sum;
             }, 0)
         );
 
@@ -443,18 +495,33 @@ const createQuotationPayload = ({
     const passengerPremium = findCoverAmount("PASSENGER");
 
     // --------------------------------------------------
-    // STEP 8: SUBTOTAL
+    // STEP 9: SUBTOTALS
+    // Match the summary's formulas.
     // --------------------------------------------------
+
+    const subtotalBeforeDiscount = round(
+        Math.max(
+            0,
+            totalOD -
+                ncbAmount +
+                addonTotal +
+                tpPremium +
+                coverTotal
+        )
+    );
 
     const subtotal = round(
         Math.max(
             0,
-            netOD + addonTotal + tpPremium + coverTotal
+            netOD +
+                addonTotal +
+                tpPremium +
+                coverTotal
         )
     );
 
     // --------------------------------------------------
-    // STEP 9: TAX
+    // STEP 10: COMPONENT-WISE TAX
     // --------------------------------------------------
 
     const taxBreakdown = taxRules.map((tax) => {
@@ -462,7 +529,7 @@ const createQuotationPayload = ({
             tax.premium_component || ""
         ).toUpperCase();
 
-        const taxableAmountForComponent =
+        const taxableAmount =
             {
                 OD: netOD,
                 TP: tpPremium,
@@ -474,7 +541,9 @@ const createQuotationPayload = ({
             tax.tax_type || "PERCENTAGE"
         ).toUpperCase();
 
-        const taxPercentage = getNumber(tax.tax_percentage);
+        const taxPercentage = getNumber(
+            tax.tax_percentage
+        );
 
         const amount = round(
             taxType === "FIXED"
@@ -484,7 +553,7 @@ const createQuotationPayload = ({
                     tax.tax_value
                 )
                 : taxType === "PERCENTAGE"
-                    ? (taxableAmountForComponent * taxPercentage) / 100
+                    ? (taxableAmount * taxPercentage) / 100
                     : 0
         );
 
@@ -492,7 +561,7 @@ const createQuotationPayload = ({
             tax_id: getId(tax.tax_id),
             tax_rule_id: getId(tax.tax_rule_id),
             component,
-            taxable_amount: round(taxableAmountForComponent),
+            taxable_amount: round(taxableAmount),
             tax_type: taxType,
             tax_percentage: taxPercentage,
             amount,
@@ -500,7 +569,10 @@ const createQuotationPayload = ({
     });
 
     const totalTax = round(
-        taxBreakdown.reduce((sum, tax) => sum + tax.amount, 0)
+        taxBreakdown.reduce(
+            (sum, tax) => sum + tax.amount,
+            0
+        )
     );
 
     const gstAmount = round(
@@ -508,11 +580,14 @@ const createQuotationPayload = ({
             const master = taxRules.find(
                 (item) =>
                     Number(item.tax_id) === Number(tax.tax_id) &&
-                    String(item.premium_component || "").toUpperCase() ===
-                    tax.component
+                    String(
+                        item.premium_component || ""
+                    ).toUpperCase() === tax.component
             );
 
-            return String(master?.tax_code || "").startsWith("GST_")
+            return String(
+                master?.tax_code || ""
+            ).startsWith("GST_")
                 ? sum + tax.amount
                 : sum;
         }, 0)
@@ -522,7 +597,7 @@ const createQuotationPayload = ({
     const totalPremium = round(subtotal + totalTax);
 
     // --------------------------------------------------
-    // STEP 10: COMMISSION
+    // STEP 11: COMMISSION
     // --------------------------------------------------
 
     const commissionType = String(
@@ -535,30 +610,34 @@ const createQuotationPayload = ({
 
     const maxCommissionAmount =
         commissionRule.max_commission_amount != null &&
-        commissionRule.max_commission_amount !== ""
+            commissionRule.max_commission_amount !== ""
             ? Math.max(
                 0,
-                getNumber(commissionRule.max_commission_amount)
+                getNumber(
+                    commissionRule.max_commission_amount
+                )
             )
             : null;
 
     const commissionMinPremium =
         commissionRule.min_premium != null &&
-        commissionRule.min_premium !== ""
+            commissionRule.min_premium !== ""
             ? getNumber(commissionRule.min_premium)
             : null;
 
     const commissionMaxPremium =
         commissionRule.max_premium != null &&
-        commissionRule.max_premium !== ""
+            commissionRule.max_premium !== ""
             ? getNumber(commissionRule.max_premium)
             : null;
 
     const commissionEligible =
-        (commissionMinPremium === null ||
+        (!commissionMinPremium ||
             subtotal >= commissionMinPremium) &&
-        (commissionMaxPremium === null ||
-            subtotal <= commissionMaxPremium);
+        (
+            commissionMaxPremium === null ||
+            subtotal <= commissionMaxPremium
+        );
 
     let commissionAmount = 0;
 
@@ -578,24 +657,29 @@ const createQuotationPayload = ({
         );
     }
 
-    commissionAmount = round(Math.max(0, commissionAmount));
-
-    // --------------------------------------------------
-    // STEP 11: PROFIT
-    // --------------------------------------------------
-
-    const profitAmount = round(
-        Math.max(0, getNumber(profitRule.profit_amount))
+    commissionAmount = round(
+        Math.max(0, commissionAmount)
     );
 
     // --------------------------------------------------
-    // STEP 12: CASHBACK
+    // STEP 12: PROFIT
+    // --------------------------------------------------
+
+    const profitAmount = round(
+        Math.max(
+            0,
+            getNumber(profitRule.profit_amount)
+        )
+    );
+
+    // --------------------------------------------------
+    // STEP 13: CASHBACK
     // --------------------------------------------------
 
     const manualCashbackValue =
         formData.cash_back !== undefined &&
-        formData.cash_back !== null &&
-        formData.cash_back !== ""
+            formData.cash_back !== null &&
+            formData.cash_back !== ""
             ? formData.cash_back
             : formData.cashback_amount;
 
@@ -606,28 +690,32 @@ const createQuotationPayload = ({
 
     const cashbackMinPremium =
         cashbackRule.min_premium != null &&
-        cashbackRule.min_premium !== ""
+            cashbackRule.min_premium !== ""
             ? getNumber(cashbackRule.min_premium)
             : null;
 
     const cashbackMaxPremium =
         cashbackRule.max_premium != null &&
-        cashbackRule.max_premium !== ""
+            cashbackRule.max_premium !== ""
             ? getNumber(cashbackRule.max_premium)
             : null;
 
     const cashbackEligible =
-        (cashbackMinPremium === null ||
+        (!cashbackMinPremium ||
             totalPremium >= cashbackMinPremium) &&
-        (cashbackMaxPremium === null ||
-            totalPremium <= cashbackMaxPremium);
+        (
+            cashbackMaxPremium === null ||
+            totalPremium <= cashbackMaxPremium
+        );
 
     const maxCashbackAmount =
         cashbackRule.max_cashback_amount != null &&
-        cashbackRule.max_cashback_amount !== ""
+            cashbackRule.max_cashback_amount !== ""
             ? Math.max(
                 0,
-                getNumber(cashbackRule.max_cashback_amount)
+                getNumber(
+                    cashbackRule.max_cashback_amount
+                )
             )
             : null;
 
@@ -638,7 +726,7 @@ const createQuotationPayload = ({
             0,
             getNumber(manualCashbackValue)
         );
-    } else if (cashbackEligible) {
+    } else if (cashbackRule && cashbackEligible) {
         cashbackAmount = Math.max(
             0,
             commissionAmount - profitAmount
@@ -653,11 +741,17 @@ const createQuotationPayload = ({
     }
 
     cashbackAmount = round(
-        Math.min(totalPremium, Math.max(0, cashbackAmount))
+        Math.min(
+            totalPremium,
+            Math.max(0, cashbackAmount)
+        )
     );
 
     const effectiveNetPayable = round(
-        Math.max(0, totalPremium - cashbackAmount)
+        Math.max(
+            0,
+            totalPremium - cashbackAmount
+        )
     );
 
     // --------------------------------------------------
@@ -681,6 +775,40 @@ const createQuotationPayload = ({
     // FINAL PAYLOAD
     // --------------------------------------------------
 
+    const imt23PayloadAddon = imt23Selected
+        ? {
+            addon_id: Number(imt23Addon.addon_id),
+            rate: imt23Rate,
+            rate_type: getRateType(
+                imt23Addon,
+                "PERCENTAGE"
+            ),
+            calculation_basis: "BASIC_OD",
+            quantity: 1,
+            original_amount: imt23Premium,
+            discount_type: "NONE",
+            discount_value: 0,
+            discount_amount: 0,
+            amount: imt23Premium,
+        }
+        : null;
+
+    const addons = [
+        ...(imt23PayloadAddon ? [imt23PayloadAddon] : []),
+        ...otherAddonDetails.map((item) => ({
+            addon_id: item.addon_id,
+            rate: getNumber(item.rate),
+            rate_type: item.rate_type,
+            calculation_basis: item.calculation_basis,
+            quantity: 1,
+            original_amount: round(item.original_amount),
+            discount_type: item.discount_type,
+            discount_value: getNumber(item.discount_value),
+            discount_amount: round(item.discount_amount),
+            amount: round(item.calculated_amount),
+        })),
+    ];
+
     return {
         quotation: {
             lead_id:
@@ -695,9 +823,14 @@ const createQuotationPayload = ({
         },
 
         input: {
-            registration_date: formData.registration_date || null,
-            policy_start_date: formData.policy_start_date || null,
-            policy_end_date: formData.policy_end_date || null,
+            registration_date:
+                formData.registration_date || null,
+
+            policy_start_date:
+                formData.policy_start_date || null,
+
+            policy_end_date:
+                formData.policy_end_date || null,
 
             vehicle_type_id: getId(category.vehicle_type_id),
             vehicle_category_id: getId(category.vehicle_category_id),
@@ -717,17 +850,23 @@ const createQuotationPayload = ({
 
             idv,
 
-            previous_policy_id: getId(formData.previous_policy_id),
+            previous_policy_id:
+                getId(formData.previous_policy_id),
+
             previous_insurance_company_id:
                 getId(formData.previous_insurance_company_id),
 
             previous_ncb_percentage:
                 getId(formData.previous_ncb_percentage),
 
-            claim_status: formData.claim_status || "NO_CLAIM",
+            claim_status:
+                formData.claim_status || "NO_CLAIM",
+
             claim_count: getNumber(formData.claim_count),
 
-            business_type_id: getId(formData.business_type_id),
+            business_type_id:
+                getId(formData.business_type_id),
+
             product_id: getId(formData.product_id),
             policy_type_id: getId(formData.policy_type_id),
             policy_term_id: getId(formData.policy_term_id),
@@ -742,33 +881,24 @@ const createQuotationPayload = ({
                 calculation_status: "CALCULATED",
 
                 idv,
-                basic_od: basicOD,
+                basic_od: round(basicOD),
                 total_od: totalOD,
 
                 od_discount: deTariffDiscountAmount,
-                ncb_percentage: ncbPercentage,
-                ncb_amount: ncbAmount,
                 de_tariff_amount: deTariffDiscountAmount,
+
+                ncb_percentage: ncbPercentage,
+                ncb_base_amount: ncbBaseAmount,
+                ncb_amount: ncbAmount,
+
+                od_after_discount: odAfterDiscount,
                 net_od: netOD,
 
                 imt23_premium: imt23Premium,
+
                 tp_premium: tpPremium,
 
-                zd_premium: round(
-                    selectedAddons.reduce((sum, item) => {
-                        const master = allAddons.find(
-                            (addon) =>
-                                Number(addon.addon_id) ===
-                                Number(item.addon_id)
-                        );
-
-                        return ["ZD", "ZERO_DEP"].includes(
-                            String(master?.addon_code || "").toUpperCase()
-                        )
-                            ? sum + getNumber(item.amount)
-                            : sum;
-                    }, 0)
-                ),
+                zd_premium: zdAmount,
 
                 addon_premium: addonTotal,
 
@@ -776,6 +906,7 @@ const createQuotationPayload = ({
                 liability_premium: liabilityPremium,
                 passenger_premium: passengerPremium,
 
+                subtotal_before_discount: subtotalBeforeDiscount,
                 subtotal,
 
                 commission_amount: commissionAmount,
@@ -790,13 +921,14 @@ const createQuotationPayload = ({
 
                 od_rate_id:
                     getId(od.od_rate_id) ??
-                    getId(odRate.od_rate_id),
+                    getId(odRule.od_rate_id),
 
                 tp_rate_id:
                     getId(tpCalculation.tp_rate_id) ??
-                    getId(tpRate.tp_rate_id),
+                    getId(tpRule.tp_rate_id),
 
-                ncb_rule_id: getId(ncbRule.ncb_rule_id),
+                ncb_rule_id:
+                    getId(ncbRule.ncb_rule_id),
 
                 discount_rule_id:
                     getId(od.discount_rule_id) ??

@@ -8,6 +8,7 @@ import { errorNotify, getAuthUser, infoNotify, successNotify } from '../../const
 import createQuotationPayload from '../MotorHooks/CalculateQuotationDetails';
 import { axioslogin } from '../../Connection/axios';
 import GlobalLoader from '../../CommonComponents/GlobalLoader';
+import { BACKEND_IMAGE } from '../../constant/Static';
 
 const ThejaswiPreview = () => {
 
@@ -33,6 +34,7 @@ const ThejaswiPreview = () => {
     const categoryId = location.state?.categoryId;
     const category = location.state?.category;
     const selectedCustomer = location.state?.selectedCustomer;
+    const coverInputValues = location.state?.coverInputValues;
     const lead = location.state?.lead;
 
 
@@ -109,6 +111,7 @@ const ThejaswiPreview = () => {
                 calculationData,
                 category,
                 selectedCustomer,
+                coverInputValues,
                 lead,
                 createdBy,
             });
@@ -123,10 +126,6 @@ const ThejaswiPreview = () => {
                 setQuotataionData(data)
             } else {
                 errorNotify(message)
-            }
-
-            if (response.data?.success === 1) {
-                console.log("Quotation created:", response.data.data);
             }
         } catch (error) {
             console.error(
@@ -163,8 +162,8 @@ const ThejaswiPreview = () => {
         selectedCustomer ||
         {}
 
-
-
+    const imagePath = ActiveInsurenceCompanies?.[0]?.company_image;
+    const CompanyIMage = `${BACKEND_IMAGE}${imagePath}`
 
     return (
         <div>
@@ -177,10 +176,13 @@ const ThejaswiPreview = () => {
                 formData={formData}
                 VehicleDetails={VehicleDetails?.[0]}
                 createQuotation={handleCreateQuotation}
+                coverInputValues={coverInputValues}
                 quoteData={{
                     quoteNo: quotationdata?.quotation_number || "QOUT-3887JDS-EXMP- ****",
                     customerName: CustomerName,
                     insurerName: ActiveInsurenceCompanies?.[0]?.company_name,
+                    coloreCode: ActiveInsurenceCompanies?.[0]?.company_color,
+                    InsuranceCompanyImage: CompanyIMage,
                     productName: formData.product_name,
                     agentName: emp_name || "Employee",
                     contactNo: employees?.mobile_number_1 || "+91 9656 *** **4",

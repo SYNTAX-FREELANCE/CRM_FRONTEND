@@ -48,6 +48,7 @@ const MotorTpRateSlabCreation = () => {
         data: TpRateMaster = [],
     } = useMotorTPRateMaster();
 
+
     const {
         data: EngineCCSlabMaster = [],
     } = useMotorEngineCCSlabMaster();
@@ -65,7 +66,8 @@ const MotorTpRateSlabCreation = () => {
                     `${item?.product_code || "Product"} - ` +
                     `${item?.policy_type_code || "Policy Type"} -` +
                     `${item?.category_code || "Category Type"} -` +
-                    `${item?.class_code || "Class Code"} -` ,
+                    `${item?.class_code || "Class Code"} -` +
+                    `${item?.fuel_name || "Fuel Type"} -`,
             })) || [];
 
     const ActiveEngineCCSlabMaster =
@@ -320,6 +322,10 @@ const MotorTpRateSlabCreation = () => {
                     {
                         field: "vehicle_class_name",
                         headerName: "Class ",
+                    },
+                      {
+                        field: "fuel_name",
+                        headerName: "Fuel ",
                     },
 
                     {

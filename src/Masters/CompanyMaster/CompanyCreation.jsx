@@ -41,11 +41,7 @@ const CompanyCreation = () => {
         DEFAULT_COMPANY_COLOR
     );
 
-    console.log({
-        imagePreview
-    });
-
-
+ 
     const [removeExistingImage, setRemoveExistingImage] =
         useState(false);
 

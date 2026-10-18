@@ -62,6 +62,16 @@ const MotorVehicleCalculator = () => {
     );
     const [detailLoading, setDetailLoading] = useState(false);
 
+
+    const [coverInputValues, setCoverInputValues] = useState({});
+
+    const handleCoverInputChange = (coverId, value) => {
+        setCoverInputValues((prev) => ({
+            ...prev,
+            [coverId]: value,
+        }));
+    };
+
     const category =
         location.state?.category;
 
@@ -1363,8 +1373,8 @@ const MotorVehicleCalculator = () => {
                                     backgroundColor:
                                         "#d88d1d",
                                 },
-                                m:1,
-                                width:'100%'
+                                m: 1,
+                                width: '100%'
                             }}>
                             {calculationLoading
                                 ? "Loading..."
@@ -1413,7 +1423,7 @@ const MotorVehicleCalculator = () => {
                         calculationLoading={
                             calculationLoading
                         }
-
+                        coverInputValues={coverInputValues}
                         fetchedCovers={
                             fetchedCovers
                         }
@@ -1429,6 +1439,9 @@ const MotorVehicleCalculator = () => {
                         handleCoverChange={
                             handleCoverChange
                         }
+
+                        handleCoverInputChange={handleCoverInputChange}
+
                     />
 
                 </Box>
@@ -1478,7 +1491,7 @@ const MotorVehicleCalculator = () => {
                         calculationData={
                             calculationData
                         }
-
+                        coverInputValues={coverInputValues}
                         formData={
                             formData
                         }
@@ -1524,7 +1537,8 @@ const MotorVehicleCalculator = () => {
                             categoryId,
                             category,
                             selectedCustomer,
-                            lead
+                            lead,
+                            coverInputValues
                         },
                     })
                 }

@@ -28,6 +28,7 @@ import {
 
     useMotorVehicleUsageMaster,
     useMotorPolicyTermMaster,
+    useMotorFuelTypeMaster,
 } from "../../CommonCode/useQuery";
 
 const MotorTpRateCreation = () => {
@@ -47,6 +48,7 @@ const MotorTpRateCreation = () => {
         vehicleCategoryId: "",
         vehicleClassId: "",
         usageId: "",
+        fuelTypeId: "",
         rateType: "FIXED",
         effectiveFrom: "",
         effectiveTo: "",
@@ -81,6 +83,10 @@ const MotorTpRateCreation = () => {
     const {
         data: VehicleUsageMaster = [],
     } = useMotorVehicleUsageMaster();
+
+
+    const { data: FuelTypeMaster = [] } =
+        useMotorFuelTypeMaster();
 
     const ActiveInsuranceCompanyMaster =
         InsuranceCompanyMaster
@@ -139,6 +145,18 @@ const MotorTpRateCreation = () => {
                 label: item.usage_name,
             })) || [];
 
+
+    const ActiveFuelTypeMaster =
+        Array.isArray(FuelTypeMaster)
+            ? FuelTypeMaster
+                .filter(item => item.is_active === 1)
+                .map(item => ({
+                    id: item.fuel_type_id,
+                    label: item.fuel_name
+                }))
+            : [];
+
+
     const set = field => event => {
         setTpRate(prev => ({
             ...prev,
@@ -175,6 +193,7 @@ const MotorTpRateCreation = () => {
                     vehicleCategoryId: data?.vehicle_category_id || "",
                     vehicleClassId: data?.vehicle_class_id || "",
                     usageId: data?.usage_id || "",
+                    fuelTypeId: data?.fuel_type_id || "",
                     rateType: data?.rate_type || "FIXED",
                     effectiveFrom: data?.effective_from
                         ? data.effective_from.substring(0, 10)
@@ -314,6 +333,7 @@ const MotorTpRateCreation = () => {
             vehicleCategoryId: "",
             vehicleClassId: "",
             usageId: "",
+            fuelTypeId: "",
             rateType: "FIXED",
             effectiveFrom: "",
             effectiveTo: "",
@@ -368,6 +388,12 @@ const MotorTpRateCreation = () => {
                     {
                         field: "usage_name",
                         headerName: "Usage",
+                    },
+                    {
+                        field:
+                            "fuel_name",
+                        headerName:
+                            "Fuel Type"
                     },
                     {
                         field: "rate_type",
@@ -428,6 +454,11 @@ const MotorTpRateCreation = () => {
             usage_id:
                 tpRate.usageId
                     ? Number(tpRate.usageId)
+                    : null,
+
+            fuel_type_id:
+                tpRate.fuelTypeId
+                    ? Number(tpRate.fuelTypeId)
                     : null,
 
             rate_type: tpRate.rateType || "FIXED",
@@ -601,6 +632,23 @@ const MotorTpRateCreation = () => {
                                 }
                                 value={tpRate.usageId}
                                 onChange={set("usageId")}
+                            />
+                        </FormRow>
+
+
+                        <FormRow
+                            label="Fuel Type"
+                        >
+                            <SelectLg
+                                value={
+                                    tpRate.fuelTypeId
+                                }
+                                onChange={
+                                    set("fuelTypeId")
+                                }
+                                options={
+                                    ActiveFuelTypeMaster
+                                }
                             />
                         </FormRow>
 
