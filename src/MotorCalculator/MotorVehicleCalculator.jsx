@@ -5,6 +5,7 @@ import {
     Typography,
     Paper,
     useTheme,
+    Button,
 } from "@mui/material";
 
 import {
@@ -1056,8 +1057,6 @@ const MotorVehicleCalculator = () => {
                         ActiveInsuranceCompanies
                     }
                     selectSx={selectSx}
-                    handleContinue={handleContinue}
-                    calculationLoading={calculationLoading}
                 />
             </Box>
             {/*  MAIN CONTENT */}
@@ -1349,6 +1348,28 @@ const MotorVehicleCalculator = () => {
                             </Box>
 
                         </Box>
+
+
+                        <Button
+                            variant="contained"
+                            onClick={handleContinue}
+                            disabled={calculationLoading}
+                            sx={{
+                                px: 4,
+                                fontWeight: 600,
+                                backgroundColor:
+                                    "#d88d1d",
+                                "&:hover": {
+                                    backgroundColor:
+                                        "#d88d1d",
+                                },
+                                m:1,
+                                width:'100%'
+                            }}>
+                            {calculationLoading
+                                ? "Loading..."
+                                : "Calculate"}
+                        </Button>
 
                     </Paper>
 

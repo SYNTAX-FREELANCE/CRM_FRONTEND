@@ -1,3 +1,4 @@
+
 import { Box } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -6,29 +7,47 @@ import FormRow from "../../Settings/CommonMasterComponent/FormRow";
 import InputLg from "../../Settings/CommonMasterComponent/InputLg";
 import Checkbox from "../../Settings/CommonMasterComponent/Checkbox";
 import Button from "../../Settings/CommonMasterComponent/Button";
-import Toast from "../../Settings/CommonMasterComponent/Toast";
 import Panel from "../../Settings/CommonMasterComponent/Panel";
 import Wrapper from "../../Settings/CommonMasterComponent/Wrapper";
 import ButtonWrapper from "../../Settings/CommonMasterComponent/ButtonWrapper";
 
 import { axioslogin } from "../../Connection/axios";
 import {
-    errorNotify,
+    infoNotify,
     successNotify,
-    warningNotify
+    warningNotify,
 } from "../../constant/Constant";
 
 import { useInsuranceCompanyMaster } from "../../CommonCode/useQuery";
+import { BACKEND_IMAGE } from "../../constant/Static";
+
+const DEFAULT_COMPANY_COLOR = "#1976d2";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 const InsuranceCompanyCreation = () => {
     const [insurance, setInsurance] = useState({
         companyName: "",
         contactNumber: "",
         email: "",
+        display_order: "0",
         isActive: "Active",
     });
 
-    const [toast, setToast] = useState("");
+    const [companyImage, setCompanyImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
+    const [companyColor, setCompanyColor] = useState(
+        DEFAULT_COMPANY_COLOR
+    );
+
+    console.log({
+        companyImage,
+        imagePreview
+    });
+
+
+    const [removeExistingImage, setRemoveExistingImage] =
+        useState(false);
+
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -36,33 +55,77 @@ const InsuranceCompanyCreation = () => {
 
     const { id, mode } = location.state || {};
 
-    const { refetch: FetchInsuranceCompanyMaster } = useInsuranceCompanyMaster();
+    const {
+        refetch: FetchInsuranceCompanyMaster,
+    } = useInsuranceCompanyMaster();
 
-    const set = (field) => (e) =>
+    const set = (field) => (e) => {
         setInsurance((prev) => ({
             ...prev,
-            [field]: e.target.value
+            [field]: e.target.value,
         }));
+    };
 
+    // CONTACT NUMBER
     const handleContactChange = (e) => {
-        const val = e.target.value;
-        if (/^\d*$/.test(val) && val.length <= 10) {
+        const value = e.target.value;
+
+        if (/^\d*$/.test(value) && value.length <= 10) {
             setInsurance((prev) => ({
                 ...prev,
-                contactNumber: val
+                contactNumber: value,
             }));
         }
     };
 
+    // IMAGE UPLOAD
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            warningNotify("Please select a valid image");
+            e.target.value = "";
+            return;
+        }
+
+        if (file.size > MAX_IMAGE_SIZE) {
+            warningNotify("Image size must not exceed 5 MB");
+            e.target.value = "";
+            return;
+        }
+
+        setCompanyImage(file);
+        setImagePreview(URL.createObjectURL(file));
+        setRemoveExistingImage(false);
+
+        e.target.value = "";
+    };
+
+    const handleRemoveImage = () => {
+        setCompanyImage(null);
+        setImagePreview("");
+        setRemoveExistingImage(true);
+    };
+
+    // RESET FORM
     const handleReset = useCallback(() => {
         setInsurance({
             companyName: "",
             contactNumber: "",
             email: "",
+            display_order: "0",
             isActive: "Active",
         });
+
+        setCompanyImage(null);
+        setImagePreview("");
+        setCompanyColor(DEFAULT_COMPANY_COLOR);
+        setRemoveExistingImage(false);
     }, []);
 
+    // VALIDATION
     const validateInsuranceCompany = () => {
         if (!insurance.companyName.trim()) {
             warningNotify("Company Name is required");
@@ -70,12 +133,16 @@ const InsuranceCompanyCreation = () => {
         }
 
         if (insurance.companyName.trim().length < 2) {
-            warningNotify("Company Name must be at least 2 characters");
+            warningNotify(
+                "Company Name must be at least 2 characters"
+            );
             return false;
         }
 
-        if (insurance.companyName.trim().length > 150) {
-            warningNotify("Company Name must not exceed 150 characters");
+        if (insurance.companyName.trim().length > 200) {
+            warningNotify(
+                "Company Name cannot exceed 200 characters"
+            );
             return false;
         }
 
@@ -84,8 +151,10 @@ const InsuranceCompanyCreation = () => {
             return false;
         }
 
-        if (insurance.contactNumber.trim().length !== 10) {
-            warningNotify("Contact Number must be exactly 10 digits");
+        if (!/^\d{10}$/.test(insurance.contactNumber.trim())) {
+            warningNotify(
+                "Contact Number must be exactly 10 digits"
+            );
             return false;
         }
 
@@ -94,33 +163,80 @@ const InsuranceCompanyCreation = () => {
             return false;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(insurance.email.trim())) {
+        if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                insurance.email.trim()
+            )
+        ) {
             warningNotify("Please enter a valid email address");
+            return false;
+        }
+
+        if (
+            insurance.display_order === "" ||
+            !Number.isInteger(Number(insurance.display_order)) ||
+            Number(insurance.display_order) < 0
+        ) {
+            warningNotify(
+                "Display order must be a non-negative integer"
+            );
+            return false;
+        }
+
+        if (!/^#[0-9A-Fa-f]{6}$/.test(companyColor)) {
+            warningNotify("Please select a valid company color");
             return false;
         }
 
         return true;
     };
 
-    const getInsuranceCompanyById = async (id) => {
+    // FETCH COMPANY FOR EDIT
+    const getInsuranceCompanyById = async (companyId) => {
         try {
-            const result = await axioslogin.get(`/insurancecompany/getbyid/${id}`);
+            const result = await axioslogin.get(
+                `/insurancecompany/getbyid/${companyId}`
+            );
+
             const { success, data, message } = result.data;
 
-            if (success !== 1) {
-                return errorNotify(message);
+            if (success !== 1 || !data) {
+                warningNotify(
+                    message || "Failed to load insurance company"
+                );
+                return;
             }
 
             setInsurance({
                 companyName: data.company_name || "",
                 contactNumber: data.contact_number || "",
                 email: data.email || "",
-                isActive: data.is_active === 1 ? "Active" : "Inactive",
+                display_order: String(data.display_order ?? 0),
+                isActive: Number(data.is_active) === 1
+                    ? "Active"
+                    : "Inactive",
             });
+
+            setCompanyImage(null);
+            setImagePreview(data.company_image || "");
+
+            setCompanyColor(
+                /^#[0-9A-Fa-f]{6}$/.test(data.company_color || "")
+                    ? data.company_color
+                    : DEFAULT_COMPANY_COLOR
+            );
+
+            setRemoveExistingImage(false);
         } catch (error) {
-            console.error(error);
-            warningNotify("Failed to load insurance company details");
+            console.error(
+                "getInsuranceCompanyById error:",
+                error
+            );
+
+            warningNotify(
+                error?.response?.data?.message ||
+                "Failed to load insurance company details"
+            );
         }
     };
 
@@ -130,30 +246,80 @@ const InsuranceCompanyCreation = () => {
         }
     }, [id, mode]);
 
+    // SAVE / UPDATE
     const handleSave = async () => {
-        if (!validateInsuranceCompany()) return;
+        if (loading || !validateInsuranceCompany()) return;
 
         setLoading(true);
 
         try {
-            const companyData = {
-                company_name: insurance.companyName.trim(),
-                contact_number: insurance.contactNumber.trim() || null,
-                email: insurance.email.trim() || null,
-                is_active: insurance.isActive === "Active" ? 1 : 0
-            };
+            const formData = new FormData();
+
+            formData.append(
+                "company_name",
+                insurance.companyName.trim()
+            );
+
+            formData.append(
+                "contact_number",
+                insurance.contactNumber.trim()
+            );
+
+            formData.append(
+                "email",
+                insurance.email.trim()
+            );
+
+            formData.append(
+                "display_order",
+                String(Number(insurance.display_order))
+            );
+
+            formData.append(
+                "isActive",
+                insurance.isActive === "Active" ? "1" : "0"
+            );
+
+            formData.append("company_color", companyColor);
+
+            if (companyImage) {
+                formData.append("insurance_compnay", companyImage);
+            }
+
+            if (removeExistingImage) {
+                formData.append("remove_insurance_compnay", "1");
+            }
+            console.log("FormData entries:");
+            for (const [key, value] of formData.entries()) {
+                console.log(
+                    key,
+                    value instanceof File
+                        ? `${value.name} (${value.type}, ${value.size} bytes)`
+                        : value
+                );
+            }
 
             let response;
 
-            if (mode === "edit") {
+            if (mode === "edit" && id) {
                 response = await axioslogin.patch(
                     `/insurancecompany/update/${id}`,
-                    companyData
+                    formData,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
                 );
             } else {
                 response = await axioslogin.post(
                     "/insurancecompany/create",
-                    companyData
+                    formData,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
                 );
             }
 
@@ -166,8 +332,8 @@ const InsuranceCompanyCreation = () => {
                         : "Insurance Company created successfully!"
                 );
 
-                FetchInsuranceCompanyMaster();
-                handleReset();
+                await FetchInsuranceCompanyMaster();
+
                 if (mode === "edit") {
                     navigate("/home/setting/commonview", {
                         state: {
@@ -178,49 +344,64 @@ const InsuranceCompanyCreation = () => {
                             columns: [
                                 {
                                     field: "company_name",
-                                    headerName: "Company Name"
+                                    headerName: "Company Name",
                                 },
                                 {
                                     field: "contact_number",
-                                    headerName: "Contact Number"
+                                    headerName: "Contact Number",
                                 },
                                 {
                                     field: "email",
-                                    headerName: "Email"
+                                    headerName: "Email",
+                                },
+                                {
+                                    field: "display_order",
+                                    headerName: "Display Order",
+                                },
+                                {
+                                    field: "company_color",
+                                    headerName: "Company Color",
                                 },
                                 {
                                     field: "is_active",
                                     headerName: "Status",
-                                    type: "status"
-                                }
-                            ]
-                        }
+                                    type: "status",
+                                },
+                            ],
+                        },
                     });
+                } else {
+                    handleReset();
                 }
             } else {
                 warningNotify(
                     message ||
-                    (mode === "edit"
-                        ? "Failed to update insurance company"
-                        : "Failed to create insurance company")
+                    "Failed to save insurance company"
                 );
             }
         } catch (error) {
+            console.error("handleSave error:", error);
+
             warningNotify(
                 error?.response?.data?.message ||
-                (mode === "edit"
-                    ? "Error updating insurance company"
-                    : "Error creating insurance company")
+                (
+                    mode === "edit"
+                        ? "Error updating insurance company"
+                        : "Error creating insurance company"
+                )
             );
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCancel = () => {
+    // CANCEL
+    const handleCancel = useCallback(() => {
         handleReset();
-    };
+        infoNotify("Form cleared");
+    }, [handleReset]);
 
+    // VIEW
     const handleView = () => {
         navigate("/home/setting/commonview", {
             state: {
@@ -231,48 +412,67 @@ const InsuranceCompanyCreation = () => {
                 columns: [
                     {
                         field: "company_name",
-                        headerName: "Company Name"
+                        headerName: "Company Name",
                     },
                     {
                         field: "contact_number",
-                        headerName: "Contact Number"
+                        headerName: "Contact Number",
                     },
                     {
                         field: "email",
-                        headerName: "Email"
+                        headerName: "Email",
+                    },
+                    {
+                        field: "display_order",
+                        headerName: "Display Order",
+                    },
+                    {
+                        field: "company_color",
+                        headerName: "Company Color",
                     },
                     {
                         field: "is_active",
                         headerName: "Status",
-                        type: "status"
-                    }
-                ]
-            }
+                        type: "status",
+                    },
+                ],
+            },
         });
     };
 
-
     const handleClose = useCallback(() => {
-        navigate('/home/settings');
+        navigate("/home/settings");
     }, [navigate]);
 
     return (
         <Wrapper>
             <Panel
-                title={mode === "edit" ? "Edit Insurance Company" : "Insurance Company Creation"}
+                title={
+                    mode === "edit"
+                        ? "Edit Insurance Company"
+                        : "Insurance Company Creation"
+                }
+                onBack={handleClose}
             >
                 <Box
                     sx={{
                         display: "flex",
                         justifyContent: "center",
+                        width: "100%",
                         gap: "24px",
                     }}
                 >
-                    <Box sx={{ width: "70%" }}>
-                        <FormRow
-                            label="Company Name"
-                            required
-                        >
+                    <Box
+                        sx={{
+                            width: "70%",
+                            maxWidth: "900px",
+                            minWidth: 0,
+                            "@media (max-width: 768px)": {
+                                width: "100%",
+                            },
+                        }}
+                    >
+                        <FormRow label="Company Name" required>
                             <InputLg
                                 value={insurance.companyName}
                                 onChange={set("companyName")}
@@ -284,7 +484,7 @@ const InsuranceCompanyCreation = () => {
                             <InputLg
                                 value={insurance.contactNumber}
                                 onChange={handleContactChange}
-                                placeholder="Enter contact number"
+                                placeholder="Enter 10-digit contact number"
                             />
                         </FormRow>
 
@@ -297,6 +497,170 @@ const InsuranceCompanyCreation = () => {
                             />
                         </FormRow>
 
+                        {/* DISPLAY ORDER */}
+                        <FormRow label="Display Order" required>
+                            <InputLg
+                                value={insurance.display_order}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+
+                                    if (/^\d*$/.test(value)) {
+                                        setInsurance((prev) => ({
+                                            ...prev,
+                                            display_order: value,
+                                        }));
+                                    }
+                                }}
+                                placeholder="Enter display order"
+                                type="number"
+                            />
+                        </FormRow>
+
+                        {/* COMPANY IMAGE */}
+                        <FormRow label="Company Image">
+                            <Box
+                                sx={{
+                                    width: "100%",
+                                    border: "1px dashed #b8c0cc",
+                                    borderRadius: "10px",
+                                    padding: "16px",
+                                    backgroundColor: "#fafbfc",
+                                    boxSizing: "border-box",
+                                }}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    style={{
+                                        width: "100%",
+                                        boxSizing: "border-box",
+                                        padding: "8px",
+                                        cursor: "pointer",
+                                    }}
+                                />
+
+                                <Box
+                                    sx={{
+                                        mt: 1,
+                                        color: "#64748b",
+                                        fontSize: "12px",
+                                    }}
+                                >
+                                    Select an image. Maximum size: 5 MB.
+                                </Box>
+
+                                {imagePreview && (
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            flexWrap: "wrap",
+                                            gap: 2,
+                                            mt: 2,
+                                            p: 2,
+                                            backgroundColor: "#ffffff",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: "8px",
+                                        }}
+                                    >
+                                        <img
+                                            src={
+                                                imagePreview.startsWith("blob:")
+                                                    ? imagePreview
+                                                    : `${BACKEND_IMAGE}${imagePreview}`
+                                            }
+                                            alt="Insurance company preview"
+                                            style={{
+                                                width: "120px",
+                                                height: "100px",
+                                                objectFit: "contain",
+                                                border: "1px solid #e5e7eb",
+                                                borderRadius: "8px",
+                                                padding: "6px",
+                                                backgroundColor: "#ffffff",
+                                            }}
+                                        />
+
+                                        <Button
+                                            onClick={handleRemoveImage}
+                                        >
+                                            Remove Image
+                                        </Button>
+                                    </Box>
+                                )}
+                            </Box>
+                        </FormRow>
+
+                        {/* COMPANY COLOR */}
+                        <FormRow label="Company Color" required>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    width: "100%",
+                                    flexWrap: "wrap",
+                                }}
+                            >
+                                <input
+                                    type="color"
+                                    value={companyColor}
+                                    aria-label="Select company color"
+                                    onChange={(e) =>
+                                        setCompanyColor(e.target.value)
+                                    }
+                                    style={{
+                                        width: "60px",
+                                        height: "42px",
+                                        padding: "3px",
+                                        cursor: "pointer",
+                                        border: "1px solid #d1d5db",
+                                        borderRadius: "8px",
+                                        background: "#ffffff",
+                                    }}
+                                />
+
+                                <Box
+                                    sx={{
+                                        flex: 1,
+                                        minWidth: "120px",
+                                    }}
+                                >
+                                    <InputLg
+                                        value={companyColor}
+                                        onChange={(e) =>
+                                            setCompanyColor(e.target.value)
+                                        }
+                                        placeholder="#1976d2"
+                                    />
+                                </Box>
+
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        backgroundColor: /^#[0-9A-Fa-f]{6}$/.test(
+                                            companyColor
+                                        )
+                                            ? companyColor
+                                            : DEFAULT_COMPANY_COLOR,
+                                        color: "#ffffff",
+                                        borderRadius: "8px",
+                                        px: 2,
+                                        py: 1,
+                                        minHeight: "26px",
+                                        fontSize: "13px",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Preview
+                                </Box>
+                            </Box>
+                        </FormRow>
+
+                        {/* ACTIVE STATUS */}
                         <FormRow label="Active Status">
                             <Checkbox
                                 value={insurance.isActive}
@@ -318,18 +682,31 @@ const InsuranceCompanyCreation = () => {
                         onClick={handleSave}
                         disabled={loading}
                     >
-                        {loading ? "Saving..." : "Save"}
+                        {loading
+                            ? "Saving..."
+                            : mode === "edit"
+                                ? "Update"
+                                : "Save"}
                     </Button>
 
-                    <Button onClick={handleCancel}>
+                    <Button
+                        onClick={handleCancel}
+                        disabled={loading}
+                    >
                         Cancel
                     </Button>
 
-                    <Button onClick={handleView}>
+                    <Button
+                        onClick={handleView}
+                        disabled={loading}
+                    >
                         View
                     </Button>
 
-                    <Button onClick={handleClose}>
+                    <Button
+                        onClick={handleClose}
+                        disabled={loading}
+                    >
                         Close
                     </Button>
                 </ButtonWrapper>
