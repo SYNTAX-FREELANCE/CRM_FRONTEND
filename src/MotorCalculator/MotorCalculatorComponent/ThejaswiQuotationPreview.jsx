@@ -815,13 +815,13 @@ export default function ThejaswiQuotationPreview({
                         <Row label="Third-Party Premium" value={p.tp} />
                         <Row label="Additional Covers Premium" value={p.coverTotal} /> */}
                         <Row
-                            label="Premium Before Tax"
+                            label="Premium Before GST"
                             value={p.subtotal}
                             bold
                             note="Final Net OD + Add-ons + TP + Additional Covers"
                         />
                         {/* {p.taxes.length ? p.taxes.map((item, index) => <Row key={`${item.label}-${item.component}-${index}`} label={item.component ? `${item.label} · ${item.component}` : item.label} value={item.amount} />) : <Row label="Applicable Taxes" value={0} />} */}
-                        <Row label="Total Tax" value={p.taxTotal} bold />
+                        <Row label="Total GST" value={p.taxTotal} bold />
                     </Box>
                     <Box sx={{ mt: 1.5, p: { xs: 1.8, sm: 2.2 }, borderRadius: 1.5, background: formColorCode ?? "linear-gradient(110deg,#142958 0%,#214983 100%)", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
                         <Box>
