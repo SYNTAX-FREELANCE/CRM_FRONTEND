@@ -38,13 +38,6 @@ const InsuranceCompanyCreation = () => {
     const [companyColor, setCompanyColor] = useState(
         DEFAULT_COMPANY_COLOR
     );
-
-    console.log({
-        companyImage,
-        imagePreview
-    });
-
-
     const [removeExistingImage, setRemoveExistingImage] =
         useState(false);
 
@@ -288,15 +281,6 @@ const InsuranceCompanyCreation = () => {
 
             if (removeExistingImage) {
                 formData.append("remove_insurance_compnay", "1");
-            }
-            console.log("FormData entries:");
-            for (const [key, value] of formData.entries()) {
-                console.log(
-                    key,
-                    value instanceof File
-                        ? `${value.name} (${value.type}, ${value.size} bytes)`
-                        : value
-                );
             }
 
             let response;

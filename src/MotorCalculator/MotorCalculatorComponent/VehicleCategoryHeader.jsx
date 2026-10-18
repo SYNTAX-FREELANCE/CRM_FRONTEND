@@ -24,8 +24,8 @@ const VehicleCategoryHeader = ({
         ? `${BACKEND_IMAGE}${category.image_path}`
         : null;
 
-
    
+
 
     return (
         <Paper
@@ -94,11 +94,67 @@ const VehicleCategoryHeader = ({
                         size="small"
                         label="Insurance Company"
                         name="insurance_company_id"
-                        value={
-                            formData.insurance_company_id
-                        }
+                        value={formData.insurance_company_id}
                         onChange={handleChange}
                         required
+                        SelectProps={{
+                            MenuProps: {
+                                PaperProps: {
+                                    sx: {
+                                        mt: 0.5,
+                                        borderRadius: 2,
+                                        maxHeight: 360,
+
+                                        backgroundColor: isDark
+                                            ? "#1e293b"
+                                            : "#ffffff",
+
+                                        border: `1px solid ${isDark ? "#334155" : "#e2e8f0"
+                                            }`,
+
+                                        boxShadow: isDark
+                                            ? "0 12px 30px rgba(0,0,0,0.35)"
+                                            : "0 12px 30px rgba(15,23,42,0.12)",
+
+                                        p: 0.5,
+
+                                        // HIDE SCROLLBAR
+                                        "&::-webkit-scrollbar": {
+                                            display: "none",
+                                        },
+
+                                        scrollbarWidth: "none",
+                                        msOverflowStyle: "none",
+
+                                        "& .MuiMenuItem-root": {
+                                            borderRadius: 1.5,
+                                            mb: 0.3,
+                                            minHeight: 58,
+                                            px: 1,
+                                            transition: "all 0.15s ease",
+
+                                            "&:hover": {
+                                                backgroundColor: isDark
+                                                    ? "#273449"
+                                                    : "#f8fafc",
+                                            },
+
+                                            "&.Mui-selected": {
+                                                backgroundColor: isDark
+                                                    ? "#334155"
+                                                    : "#eff6ff",
+
+                                                "&:hover": {
+                                                    backgroundColor: isDark
+                                                        ? "#3b4a61"
+                                                        : "#dbeafe",
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        }}
                         sx={{
                             ...selectSx,
 
@@ -152,6 +208,8 @@ const VehicleCategoryHeader = ({
                                 color: isDark
                                     ? "#f1f5f9"
                                     : "#334155",
+
+                                py: 1,
                             },
 
                             "& .MuiSvgIcon-root": {
@@ -159,26 +217,226 @@ const VehicleCategoryHeader = ({
                                     ? "#94a3b8"
                                     : "#64748b",
                             },
+
                         }}
+
                     >
+                        {/* DEFAULT */}
                         <MenuItem value="">
-                            Select Insurance Company
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.2,
+                                    width: "100%",
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: 38,
+                                        height: 38,
+                                        borderRadius: 1.5,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        backgroundColor: isDark
+                                            ? "#334155"
+                                            : "#f1f5f9",
+                                        color: isDark
+                                            ? "#cbd5e1"
+                                            : "#64748b",
+                                        fontSize: 17,
+                                        fontWeight: 700,
+                                    }}
+                                >
+                                    +
+                                </Box>
+
+                                <Box>
+                                    <Typography
+                                        sx={{
+                                            fontSize: 13,
+                                            fontWeight: 600,
+                                            color: isDark
+                                                ? "#e2e8f0"
+                                                : "#334155",
+                                        }}
+                                    >
+                                        Select Insurance Company
+                                    </Typography>
+
+                                    <Typography
+                                        sx={{
+                                            fontSize: 10,
+                                            color: isDark
+                                                ? "#94a3b8"
+                                                : "#94a3b8",
+                                        }}
+                                    >
+                                        Choose an insurer
+                                    </Typography>
+                                </Box>
+                            </Box>
                         </MenuItem>
 
-                        {ActiveInsuranceCompanies?.map(
-                            (item) => (
-                                <MenuItem
-                                    key={
-                                        item.insurance_company_id
-                                    }
-                                    value={
-                                        item.insurance_company_id
-                                    }
-                                >
-                                    {item.company_name}
-                                </MenuItem>
-                            )
-                        )}
+                        {/* COMPANIES */}
+                        {ActiveInsuranceCompanies
+                            ?.sort((a, b) => a.display_order - b.display_order)
+                            ?.map((item) => {
+                                const imageUrl = item?.company_image
+                                    ? `${BACKEND_IMAGE}${item.company_image}`
+                                    : null;
+
+                                const companyColor =
+                                    item?.company_color || "#1976d2";
+
+                                const companyName =
+                                    item?.company_name || "Insurance Company";
+
+                                const initials = companyName
+                                    .split(" ")
+                                    .filter(Boolean)
+                                    .slice(0, 2)
+                                    .map((word) => word[0])
+                                    .join("")
+                                    .toUpperCase();
+
+                                return (
+                                    <MenuItem
+                                        key={item.insurance_company_id}
+                                        value={item.insurance_company_id}
+                                        sx={{
+                                            scrollbarWidth: "none",
+                                            msOverflowStyle: "none",
+                                            "&::-webkit-scrollbar": {
+                                                display: "none",
+                                            },
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1.2,
+                                                width: "100%",
+                                                minWidth: 0,
+                                            }}
+                                        >
+                                            {/* COMPANY LOGO */}
+                                            <Box
+                                                sx={{
+                                                    width: 42,
+                                                    height: 42,
+                                                    minWidth: 42,
+                                                    borderRadius: 1.5,
+                                                    overflow: "hidden",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+
+                                                    backgroundColor: `${companyColor}15`,
+
+                                                    border: `1px solid ${companyColor}35`,
+
+                                                    position: "relative",
+                                                }}
+                                            >
+                                                {imageUrl ? (
+                                                    <Box
+                                                        component="img"
+                                                        src={imageUrl}
+                                                        alt={companyName}
+                                                        sx={{
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            objectFit: "contain",
+                                                            p: 0.5,
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: 12,
+                                                            fontWeight: 800,
+                                                            color: companyColor,
+                                                            letterSpacing: 0.3,
+                                                        }}
+                                                    >
+                                                        {initials}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+
+                                            {/* COMPANY DETAILS */}
+                                            <Box
+                                                sx={{
+                                                    flex: 1,
+                                                    minWidth: 0,
+                                                }}
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: 12.5,
+                                                        fontWeight: 700,
+                                                        color: isDark
+                                                            ? "#f1f5f9"
+                                                            : "#1e293b",
+
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                    }}
+                                                >
+                                                    {companyName}
+                                                </Typography>
+
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 0.6,
+                                                        mt: 0.3,
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            width: 7,
+                                                            height: 7,
+                                                            borderRadius: "50%",
+                                                            backgroundColor:
+                                                                companyColor,
+                                                        }}
+                                                    />
+
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: 9.5,
+                                                            color: isDark
+                                                                ? "#94a3b8"
+                                                                : "#94a3b8",
+                                                            fontWeight: 500,
+                                                        }}
+                                                    >
+                                                        General Insurance
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+
+                                            {/* COLOR INDICATOR */}
+                                            <Box
+                                                sx={{
+                                                    width: 4,
+                                                    height: 30,
+                                                    borderRadius: 5,
+                                                    backgroundColor:
+                                                        companyColor,
+                                                    opacity: 0.9,
+                                                }}
+                                            />
+                                        </Box>
+                                    </MenuItem>
+                                );
+                            })}
                     </TextField>
 
 
@@ -197,7 +455,7 @@ const VehicleCategoryHeader = ({
                     sx={{
                         display: "flex",
                         alignItems: "flex-end",
-                        justifyContent:'flex-end',
+                        justifyContent: 'flex-end',
                         gap: 1.5,
                         minWidth: 0,
                         flex: 1,
