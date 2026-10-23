@@ -18,6 +18,7 @@ const PremiumCalculationSummary = ({
     calculationData,
     formData,
     formatNumber,
+    coverInputValues = {},
 }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
@@ -137,89 +138,6 @@ const PremiumCalculationSummary = ({
         const totalOD = Number(
             (odPremium + imt23Premium).toFixed(2)
         );
-
-        // const addonDetails = selectedAddons.map((item) => {
-        //     const isIMT23 =
-        //         String(item.addon_code || "").toUpperCase() ===
-        //         "IMT_23";
-
-        //     const rateType = String(
-        //         item.rate_type || "PERCENTAGE"
-        //     ).toUpperCase();
-
-        //     const rateValue = Number(item.rate_value || 0);
-
-        //     let originalAmount = 0;
-        //     let formula = "";
-
-        //     if (isIMT23) {
-        //         originalAmount = imt23Premium;
-        //         formula = `${money(odPremium)} × ${imt23Rate}% (Basic OD)`;
-        //     } else if (rateType === "PERCENTAGE") {
-        //         originalAmount = (idv * rateValue) / 100;
-        //         formula = `${money(idv)} × ${rateValue}%`;
-        //     } else if (rateType === "FIXED") {
-        //         originalAmount = rateValue;
-        //         formula = "Fixed amount";
-        //     }
-
-        //     // Apply add-on discount, if configured.
-
-        //     const discountType = String(
-        //         item.discount_type || "NONE"
-        //     ).toUpperCase();
-
-        //     const discountValue = Math.max(
-        //         0,
-        //         Number(item.discount_value || 0)
-        //     );
-
-        //     let discountAmount = 0;
-
-        //     if (discountType === "PERCENTAGE") {
-        //         discountAmount =
-        //             (originalAmount * discountValue) / 100;
-        //     } else if (discountType === "FIXED") {
-        //         discountAmount = discountValue;
-        //     }
-
-        //     // Apply maximum discount cap when configured.
-
-        //     const maxDiscountValue =
-        //         item.max_discount_value != null
-        //             ? Number(item.max_discount_value)
-        //             : 0;
-
-        //     if (maxDiscountValue > 0) {
-        //         discountAmount = Math.min(
-        //             discountAmount,
-        //             maxDiscountValue
-        //         );
-        //     }
-
-        //     discountAmount = Number(
-        //         Math.min(
-        //             Math.max(discountAmount, 0),
-        //             originalAmount
-        //         ).toFixed(2)
-        //     );
-
-        //     const calculatedAmount = Number(
-        //         (originalAmount - discountAmount).toFixed(2)
-        //     );
-
-        //     return {
-        //         ...item,
-        //         original_amount: originalAmount,
-        //         discount_type: discountType,
-        //         discount_value: discountValue,
-        //         discount_amount: discountAmount,
-        //         calculated_amount: calculatedAmount,
-        //         formula,
-        //         is_imt23: isIMT23,
-        //     };
-        // });
-
 
 
 
@@ -347,6 +265,16 @@ const PremiumCalculationSummary = ({
             0
         );
 
+
+        const zdAddon = addonDetails.find(
+            (item) =>
+                String(item.addon_code || "").toUpperCase() === "ZD"
+        );
+
+        const zdAmount = Number(
+            zdAddon?.calculated_amount || 0
+        );
+
         /*
          * STEP 04: DE-TARIFF DISCOUNT
          *
@@ -399,15 +327,26 @@ const PremiumCalculationSummary = ({
             100
         );
 
+        const ncbBaseAmount = Math.max(
+            0,
+            Number(
+                (
+                    totalOD +
+                    zdAmount -
+                    deTariffDiscountAmount
+                ).toFixed(2)
+            )
+        );
+
         const calculatedNCBAmount = Number(
             (
-                (odAfterDiscount * ncbPercentage) /
+                (ncbBaseAmount * ncbPercentage) /
                 100
             ).toFixed(2)
         );
 
         const ncbAmount = Math.min(
-            odAfterDiscount,
+            ncbBaseAmount,
             Math.max(0, calculatedNCBAmount)
         );
 
@@ -468,6 +407,70 @@ const PremiumCalculationSummary = ({
          * STEP 09: ADDITIONAL COVERS
          */
 
+        // const selectedCoverIds = Array.isArray(formData?.cover_ids)
+        //     ? formData.cover_ids.map(Number)
+        //     : [];
+
+        // const selectedCovers = (
+        //     calculationData?.covers || []
+        // ).filter((item) =>
+        //     selectedCoverIds.includes(Number(item.cover_id))
+        // );
+
+        // const seatingCapacity = Number(
+        //     formData?.seating_capacity || 0
+        // );
+
+        // const coverDetails = selectedCovers.map((item) => {
+        //     const rateType = String(
+        //         item.rate_type || "FIXED"
+        //     ).toUpperCase();
+
+        //     const rateValue = Number(item.rate_value || 0);
+
+        //     let amount = 0;
+        //     let calculable = true;
+        //     let formula = "";
+
+        //     if (rateType === "FIXED") {
+        //         amount = rateValue;
+        //         formula = "Fixed amount";
+        //     } else if (rateType === "PERCENTAGE") {
+        //         amount = (idv * rateValue) / 100;
+        //         formula = `${money(idv)} × ${rateValue}%`;
+        //     } else if (rateType === "PER_UNIT") {
+        //         if (seatingCapacity > 0) {
+        //             amount = rateValue * seatingCapacity;
+        //             formula =
+        //                 `${money(rateValue)} × ${seatingCapacity} units`;
+        //         } else {
+        //             calculable = false;
+        //             formula =
+        //                 `${money(rateValue)} × seating capacity`;
+        //         }
+        //     }
+
+        //     return {
+        //         ...item,
+        //         calculated_amount: amount,
+        //         calculable,
+        //         formula,
+        //     };
+        // });
+
+        // const coverTotal = coverDetails.reduce(
+        //     (total, item) =>
+        //         total +
+        //         Number(
+        //             item.calculable ? item.calculated_amount : 0
+        //         ),
+        //     0
+        // );
+
+        /*
+ * STEP 09: ADDITIONAL COVERS
+ */
+
         const selectedCoverIds = Array.isArray(formData?.cover_ids)
             ? formData.cover_ids.map(Number)
             : [];
@@ -478,16 +481,22 @@ const PremiumCalculationSummary = ({
             selectedCoverIds.includes(Number(item.cover_id))
         );
 
-        const seatingCapacity = Number(
-            formData?.seating_capacity || 0
-        );
-
         const coverDetails = selectedCovers.map((item) => {
             const rateType = String(
                 item.rate_type || "FIXED"
             ).toUpperCase();
 
             const rateValue = Number(item.rate_value || 0);
+
+            // Use the manually entered value for this cover.
+            // Fall back to vehicle seating capacity if no value was entered.
+            const enteredUnits = coverInputValues[item.cover_id];
+
+            const units = Number(
+                enteredUnits !== undefined && enteredUnits !== ""
+                    ? enteredUnits
+                    : formData?.seating_capacity || 0
+            );
 
             let amount = 0;
             let calculable = true;
@@ -500,20 +509,20 @@ const PremiumCalculationSummary = ({
                 amount = (idv * rateValue) / 100;
                 formula = `${money(idv)} × ${rateValue}%`;
             } else if (rateType === "PER_UNIT") {
-                if (seatingCapacity > 0) {
-                    amount = rateValue * seatingCapacity;
-                    formula =
-                        `${money(rateValue)} × ${seatingCapacity} units`;
+                if (units > 0) {
+                    amount = rateValue * units;
+
+                    formula = `${money(rateValue)} × ${units} units`;
                 } else {
                     calculable = false;
-                    formula =
-                        `${money(rateValue)} × seating capacity`;
+                    formula = `${money(rateValue)} × Enter units`;
                 }
             }
 
             return {
                 ...item,
-                calculated_amount: amount,
+                input_units: units,
+                calculated_amount: Number(amount.toFixed(2)),
                 calculable,
                 formula,
             };
@@ -877,6 +886,9 @@ const PremiumCalculationSummary = ({
             gstPercentage,
             gstAmount,
 
+            ncbBaseAmount,
+            zdAmount,
+
             totalPremium,
 
             commissionRule,
@@ -896,7 +908,7 @@ const PremiumCalculationSummary = ({
 
             netPayable,
         };
-    }, [calculationData, formData, formatNumber]);
+    }, [calculationData, formData, formatNumber,coverInputValues]);
 
     if (!calculationData) {
         return (
@@ -1273,8 +1285,8 @@ const PremiumCalculationSummary = ({
                 <CalculationStep
                     number="04"
                     title={`NCB ${calculation.ncbPercentage}%`}
-                    formula={`${money(calculation.odAfterDiscount)} × ${calculation.ncbPercentage}%`}
-                    formulaResult={`= ${money(calculation.ncbAmount)}`}
+                    formula={`${money(calculation.totalOD)} + ${money(calculation.zdAmount)} - ${money(calculation.deTariffDiscountAmount)}`}
+                    formulaResult={`NCB Base: ${money(calculation.ncbBaseAmount)} × ${calculation.ncbPercentage}% = ${money(calculation.ncbAmount)}`}
                     amount={`-${money(calculation.ncbAmount)}`}
                     amountColor="#dc2626"
                 />

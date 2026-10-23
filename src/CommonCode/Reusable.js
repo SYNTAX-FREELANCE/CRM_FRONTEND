@@ -1106,6 +1106,7 @@ export const FieldCodeMaster = [
   { id: "business_type_id", label: "Business Type", type: "SELECT", placeholder: "Select business type" },
   { id: "policy_term_id", label: "Policy Term", type: "SELECT", placeholder: "Select policy term" },
   { id: "vehicle_class_id", label: "Vehicle Class", type: "SELECT", placeholder: "Select vehicle class" },
+  { id: "fuel_type_id", label: "Fuel Type", type: "SELECT", placeholder: "Select Fuel Type" },
   { id: "registration_date", label: "Registration Date", type: "DATE", placeholder: "Select registration date" },
   { id: "policy_start_date", label: "Policy Start Date", type: "DATE", placeholder: "Select policy start date" },
   { id: "claim_status", label: "Claim in Previous Policy", type: "CHECKBOX", placeholder: "" },

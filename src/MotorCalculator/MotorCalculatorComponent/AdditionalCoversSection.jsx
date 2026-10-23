@@ -4,6 +4,7 @@ import {
     Checkbox,
     Grid,
     Paper,
+    TextField,
     Typography,
     useTheme,
 } from "@mui/material";
@@ -12,11 +13,14 @@ const AdditionalCoversSection = ({
     calculationLoading,
     fetchedCovers = [],
     formData,
+    coverInputValues = {},
     getId,
     handleCoverChange,
+    handleCoverInputChange,
 }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
+
 
     return (
         <Paper
@@ -407,7 +411,64 @@ const AdditionalCoversSection = ({
                                                 >
                                                     {item.rate_value}
                                                 </Typography>
+
+                                                {isSelected && item.rate_type === "PER_UNIT" && (
+                                                    <TextField
+                                                        label="Units"
+                                                        type="number"
+                                                        size="small"
+                                                        value={coverInputValues[id] ?? ""}
+                                                        onChange={(event) =>
+                                                            handleCoverInputChange(id, event.target.value)
+                                                        }
+                                                        onClick={(event) => event.stopPropagation()}
+                                                        onKeyDown={(event) => event.stopPropagation()}
+                                                        inputProps={{ min: 1, step: 1 }}
+                                                        sx={{
+                                                            width: 105,
+                                                            mt: 0.5,
+
+                                                            "& .MuiOutlinedInput-root": {
+                                                                height: 38,
+                                                                borderRadius: "9px",
+                                                                backgroundColor: isDark ? "#0f172a" : "#ffffff",
+                                                                fontSize: "13px",
+                                                                fontWeight: 600,
+                                                                transition: "all 0.2s ease",
+
+                                                                "& fieldset": {
+                                                                    borderColor: isDark ? "#475569" : "#cbd5e1",
+                                                                },
+
+                                                                "&:hover fieldset": {
+                                                                    borderColor: "#16a34a",
+                                                                },
+
+                                                                "&.Mui-focused fieldset": {
+                                                                    borderColor: "#16a34a",
+                                                                    borderWidth: "1.5px",
+                                                                },
+                                                            },
+
+                                                            "& .MuiInputLabel-root": {
+                                                                fontSize: "12px",
+                                                                color: isDark ? "#94a3b8" : "#64748b",
+                                                            },
+
+                                                            "& .MuiInputLabel-root.Mui-focused": {
+                                                                color: "#16a34a",
+                                                            },
+
+                                                            "& input": {
+                                                                color: isDark ? "#f1f5f9" : "#1e293b",
+                                                                py: 1,
+                                                            },
+                                                        }}
+                                                    />
+                                                )}
                                             </Box>
+
+
                                         </Box>
                                     </Box>
                                 </Grid>
