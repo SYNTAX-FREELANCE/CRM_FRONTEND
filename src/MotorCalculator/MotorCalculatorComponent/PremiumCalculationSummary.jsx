@@ -423,11 +423,15 @@ const PremiumCalculationSummary = ({
          * = FINAL NET OD
          */
 
-        const netOD = Math.max(
-            0,
-            Number(
-                (odAfterDiscount - ncbAmount).toFixed(2)
-            )
+        // const netOD = Math.max(
+        //     0,
+        //     Number(
+        //         (odAfterDiscount - ncbAmount).toFixed(2)
+        //     )
+        // );
+
+        const netOD = Number(
+            (odAfterDiscount - ncbAmount).toFixed(2)
         );
 
         /*

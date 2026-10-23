@@ -213,9 +213,13 @@ const createQuotationPayload = ({
             )
             : calculatedNCB;
 
-    const netOD = round(
-        Math.max(0, odAfterDiscount - ncbAmount)
-    );
+    // const netOD = round(
+    //     Math.max(0, odAfterDiscount - ncbAmount)
+    // );
+
+    const netOD = Number(
+    (odAfterDiscount - ncbAmount).toFixed(2)
+);
 
     // --------------------------------------------------
     // STEP 5: OTHER SELECTED ADD-ONS

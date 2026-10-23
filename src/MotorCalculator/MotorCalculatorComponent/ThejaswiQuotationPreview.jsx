@@ -194,9 +194,7 @@ export default function ThejaswiQuotationPreview({
             )
         );
 
-        const netOD = round(
-            Math.max(0, odAfterDiscount - ncb)
-        );
+        const netOD = round(odAfterDiscount - ncb);
 
         // Use backend final OD only when no adjustments are required.
         const premiumOD = round(
