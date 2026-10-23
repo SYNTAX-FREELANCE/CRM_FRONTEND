@@ -12,6 +12,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { toJpeg } from "html-to-image";
 import companylogo from "../../assets/loginimages/companylogo.png";
+// import { useLocation } from "react-router-dom";
 
 /**
  * Thejaswi quotation preview.
@@ -35,6 +36,8 @@ export default function ThejaswiQuotationPreview({
     const quotationRef = useRef(null);
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState("");
+
+    
 
     const num = (value) => {
         const result = Number(value ?? 0);
@@ -354,9 +357,7 @@ export default function ThejaswiQuotationPreview({
         );
 
         // OD after discount, minus NCB.
-        const netOD = round(
-            Math.max(0, odAfterDiscount - ncb)
-        );
+        const netOD = round(odAfterDiscount - ncb);
 
         const premiumOD = netOD;
 

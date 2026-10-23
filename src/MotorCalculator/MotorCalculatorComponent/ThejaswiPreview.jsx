@@ -9,6 +9,7 @@ import createQuotationPayload from '../MotorHooks/CalculateQuotationDetails';
 import { axioslogin } from '../../Connection/axios';
 import GlobalLoader from '../../CommonComponents/GlobalLoader';
 import { BACKEND_IMAGE } from '../../constant/Static';
+import GoBackToLead from './GoBackToLead';
 
 const ThejaswiPreview = () => {
 
@@ -199,6 +200,12 @@ const ThejaswiPreview = () => {
                     category,
                     selectedCustomer
                 }} />
+
+
+            <GoBackToLead
+                leadId={lead?.lead_id}
+                statusId={lead?.status_id}
+            />
         </div>
     )
 }

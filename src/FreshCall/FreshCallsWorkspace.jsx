@@ -187,6 +187,32 @@ export default function FreshCallsWorkspace() {
   }, [searchText]);
 
 
+  useEffect(() => {
+    if (!state) return;
+
+    const targetLeadId = state.lead_id ?? state.leadId;
+    const targetStatusId = state.status_id ?? state.status;
+
+    if (targetStatusId != null) {
+      setStatusFilter(Number(targetStatusId));
+    }
+
+    if (!targetLeadId || !AllCallDetails?.length) return;
+
+    const lead = AllCallDetails?.find(
+      (item) => Number(item.lead_id) === Number(targetLeadId)
+    );
+
+    if (!lead) return;
+
+    setSelectedLead(lead);
+    setDetailOpen(true);
+    setDrawerLoaded(true);
+
+    navigate(".", { replace: true, state: null });
+  }, [state, AllCallDetails, navigate]);
+
+
   // const filteredRows = useMemo(() => {
   //   return groupedData[statusFilter] || [];
   // }, [groupedData, statusFilter]);

@@ -355,10 +355,13 @@ const createQuotationPayload = ({
     );
 
     // Final Net OD matches the summary exactly.
-    const netOD = round(
-        Math.max(0, odAfterDiscount - ncbAmount)
-    );
+    // const netOD = round(
+    //     Math.max(0, odAfterDiscount - ncbAmount)
+    // );
 
+     const netOD = Number(
+            (odAfterDiscount - ncbAmount).toFixed(2)
+        );
     // --------------------------------------------------
     // STEP 7: THIRD-PARTY PREMIUM
     // Matches PremiumCalculationSummary's TP rate formula.
