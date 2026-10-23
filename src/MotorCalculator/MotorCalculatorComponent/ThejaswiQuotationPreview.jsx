@@ -12,6 +12,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { toJpeg } from "html-to-image";
 import companylogo from "../../assets/loginimages/companylogo.png";
+// import { useLocation } from "react-router-dom";
 
 /**
  * Thejaswi quotation preview.
@@ -24,6 +25,7 @@ export default function ThejaswiQuotationPreview({
     formData = {},
     VehicleDetails = {},
     createQuotation,
+    coverInputValues,
     formatNumber = (value) =>
         Number(value || 0).toLocaleString("en-IN", {
             minimumFractionDigits: 2,
@@ -35,12 +37,19 @@ export default function ThejaswiQuotationPreview({
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState("");
 
+    
+
     const num = (value) => {
         const result = Number(value ?? 0);
         return Number.isFinite(result) ? result : 0;
     };
     const round = (value) => Number(num(value).toFixed(2));
     const money = (value) => `₹${formatNumber(round(value))}`;
+
+
+
+    const InsuranceCompnayImage = quoteData?.InsuranceCompanyImage;
+    const formColorCode = quoteData?.coloreCode;
 
     const quote = {
         quoteNo:
@@ -167,45 +176,6 @@ export default function ThejaswiQuotationPreview({
             Math.max(0, totalOD - deAmount)
         );
 
-        // 4. NCB
-        const ncbRule = calculationData?.ncb_rule?.[0] || {};
-
-        const ncbPct = Math.min(
-            100,
-            Math.max(
-                0,
-                num(
-                    od.ncb_percentage ??
-                    ncbRule.calculated_ncb_percentage ??
-                    ncbRule.ncb_percentage
-                )
-            )
-        );
-
-        const ncb = round(
-            Math.min(
-                odAfterDiscount,
-                Math.max(
-                    0,
-                    od.ncb_amount != null && dePct === 0
-                        ? num(od.ncb_amount)
-                        : odAfterDiscount * ncbPct / 100
-                )
-            )
-        );
-
-        const netOD = round(
-            Math.max(0, odAfterDiscount - ncb)
-        );
-
-        // Use backend final OD only when no adjustments are required.
-        const premiumOD = round(
-            imt23Premium === 0 &&
-                dePct === 0 &&
-                od.final_od_premium != null
-                ? num(od.final_od_premium)
-                : netOD
-        );
 
         // 5. Third-party premium
         const tpRule = calculationData?.tp_rate?.[0] || {};
@@ -246,26 +216,42 @@ export default function ThejaswiQuotationPreview({
                     item.addon_code || ""
                 ).toUpperCase();
 
-                const calculationBasis =
-                    String(item.calculation_basis || "").toUpperCase() ||
+                const calculationBasis = String(
+                    item.calculation_basis ||
                     (
                         ["ZD", "ZERO_DEP"].includes(addonCode)
                             ? "BASIC_OD"
                             : "IDV"
-                    );
+                    )
+                ).toUpperCase();
 
-                const calculationBase =
-                    calculationBasis === "BASIC_OD"
-                        ? basicOD
-                        : idv;
+                let calculationBase = 0;
 
-                const originalAmount = round(
-                    type === "FIXED"
+                switch (calculationBasis) {
+                    case "BASIC_OD":
+                        calculationBase = basicOD;
+                        break;
+
+                    case "TOTAL_OD":
+                        calculationBase = totalOD;
+                        break;
+
+                    case "FIXED":
+                        calculationBase = 0;
+                        break;
+
+                    case "IDV":
+                    default:
+                        calculationBase = idv;
+                        break;
+                }
+
+                const originalAmount =
+                    type === "FIXED" || calculationBasis === "FIXED"
                         ? rate
                         : type === "PERCENTAGE"
-                            ? calculationBase * rate / 100
-                            : 0
-                );
+                            ? (calculationBase * rate) / 100
+                            : 0;
 
                 const discountType = String(
                     item.discount_type || "NONE"
@@ -324,6 +310,57 @@ export default function ThejaswiQuotationPreview({
             addons.reduce((sum, item) => sum + item.amount, 0)
         );
 
+
+        // 4. NCB
+        // 4. NCB — match PremiumCalculationSummary
+
+        const ncbRule = calculationData?.ncb_rule?.[0] || {};
+
+        const ncbPct = Math.min(
+            100,
+            Math.max(
+                0,
+                num(
+                    od.ncb_percentage ??
+                    ncbRule.calculated_ncb_percentage ??
+                    ncbRule.ncb_percentage
+                )
+            )
+        );
+
+        // Calculate ZD after its configured discount.
+        const zdAddon = addons?.find((item) => {
+            const sourceAddon = allAddons.find(
+                (addon) => Number(addon.addon_id) === Number(item.id)
+            );
+
+            return ["ZD", "ZERO_DEP"].includes(
+                String(sourceAddon?.addon_code || "").toUpperCase()
+            );
+        });
+
+        const zdAmount = num(zdAddon?.amount);
+
+        // NCB base = Total OD + discounted ZD - DE Tariff Discount.
+        const ncbBaseAmount = round(
+            Math.max(
+                0,
+                totalOD + zdAmount - deAmount
+            )
+        );
+
+        const ncb = round(
+            Math.min(
+                ncbBaseAmount,
+                Math.max(0, (ncbBaseAmount * ncbPct) / 100)
+            )
+        );
+
+        // OD after discount, minus NCB.
+        const netOD = round(odAfterDiscount - ncb);
+
+        const premiumOD = netOD;
+
         // 7. Additional covers
         const coverIds = Array.isArray(formData?.cover_ids)
             ? formData.cover_ids.map(Number)
@@ -334,9 +371,7 @@ export default function ThejaswiQuotationPreview({
                 ? calculationData.covers
                 : []
         )
-            .filter(
-                (item) => coverIds.includes(Number(item.cover_id))
-            )
+            .filter((item) => coverIds.includes(Number(item.cover_id)))
             .map((item) => {
                 const type = String(
                     item.rate_type || "FIXED"
@@ -346,20 +381,40 @@ export default function ThejaswiQuotationPreview({
                     item.rate_value ?? item.slab_rate_value
                 );
 
-                const seats = num(formData?.seating_capacity);
+                // Use the manually entered count for this cover.
+                // Fall back to vehicle seating capacity if not entered.
+                const enteredUnits =
+                    coverInputValues?.[item.cover_id] ??
+                    coverInputValues?.[String(item.cover_id)];
 
-                const pending = type === "PER_UNIT" && seats <= 0;
+                const units = num(
+                    enteredUnits !== undefined && enteredUnits !== ""
+                        ? enteredUnits
+                        : formData?.seating_capacity
+                );
 
-                const amount =
-                    type === "PERCENTAGE"
-                        ? idv * rate / 100
-                        : type === "PER_UNIT"
-                            ? rate * seats
-                            : rate;
+                const pending = type === "PER_UNIT" && units <= 0;
+
+                let amount = 0;
+                let formula = "";
+
+                if (type === "PERCENTAGE") {
+                    amount = (num(formData?.idv) * rate) / 100;
+                    formula = `${money(formData?.idv)} × ${rate}%`;
+                } else if (type === "PER_UNIT") {
+                    amount = rate * units;
+                    formula = `${money(rate)} × ${units} units`;
+                } else {
+                    amount = rate;
+                    formula = "Fixed amount";
+                }
 
                 return {
                     id: item.cover_id,
                     label: item.cover_name || item.name || "Additional cover",
+                    rate,
+                    units,
+                    formula,
                     amount: round(amount),
                     pending,
                 };
@@ -371,7 +426,6 @@ export default function ThejaswiQuotationPreview({
                 0
             )
         );
-
         // 8. Premium before tax
         const subtotal = round(
             premiumOD + addonTotal + tp + coverTotal
@@ -549,7 +603,7 @@ export default function ThejaswiQuotationPreview({
             cashback,
             netPayable,
         };
-    }, [calculationData, formData, formatNumber]);
+    }, [calculationData, formData, formatNumber, coverInputValues]);
 
 
     const handleDownloadJpg = async () => {
@@ -612,7 +666,7 @@ export default function ThejaswiQuotationPreview({
     };
 
     const Section = ({ title, meta }) => (
-        <Box sx={{ px: 1.4, py: 0.9, bgcolor: "#172f65", color: "#fff", display: "flex", justifyContent: "space-between", gap: 1 }}>
+        <Box sx={{ px: 1.4, py: 0.9, bgcolor: formColorCode ?? "#172f65", color: "#fff", display: "flex", justifyContent: "space-between", gap: 1 }}>
             <Typography sx={{ fontSize: 11, fontWeight: 800, letterSpacing: ".04em" }}>{title}</Typography>
             {meta && <Typography sx={{ fontSize: 9, color: "#dbeafe" }}>{meta}</Typography>}
         </Box>
@@ -671,7 +725,41 @@ export default function ThejaswiQuotationPreview({
                         </Box>
                         <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
                             <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1 }}>INSURANCE PROVIDER</Typography>
-                            <Typography sx={{ mt: 0.4, fontSize: 16, fontWeight: 800, color: "#172033", textTransform: 'uppercase' }}>{quote.insurer}</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                }}
+                            >
+                                {InsuranceCompnayImage && (
+                                    <Box
+                                        component="img"
+                                        src={InsuranceCompnayImage}
+                                        alt="Insurance company logo"
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                            objectFit: "contain",
+                                            flexShrink: 0,
+                                        }}
+                                    />
+                                )}
+
+                                <Typography
+                                    sx={{
+                                        mt: 0.4,
+                                        fontSize: 16,
+                                        fontWeight: 800,
+                                        color: "#172033",
+                                        textTransform: "uppercase",
+                                    }}
+                                >
+                                    {quote.insurer}
+                                </Typography>
+                            </Box>
+
                             <Typography sx={{ mt: 0.3, fontSize: 10, color: "#667085" }}>{quote.product}</Typography>
                         </Box>
                     </Box>
@@ -703,7 +791,18 @@ export default function ThejaswiQuotationPreview({
                             <Section title="03 / LIABILITY PREMIUM" meta="TP" />
                             <Row label="Basic Third-Party Premium" value={p.tp} />
                             {/* <Row label="Additional Covers" value={p.coverTotal} /> */}
-                            {p.covers.map((item, index) => <Row key={`${item.id}-${index}`} label={`↳ ${item.label}`} value={item.amount} note={item.pending ? "Requires seating capacity; not included in total" : undefined} />)}
+                            {p.covers.map((item, index) => (
+                                <Row
+                                    key={`${item.id}-${index}`}
+                                    label={`↳ ${item.label}`}
+                                    value={item.amount}
+                                    note={
+                                        item.pending
+                                            ? "Enter the required unit count in the calculator"
+                                            : item.formula
+                                    }
+                                />
+                            ))}
                             <Row label="Total TP + Covers" value={p.tp + p.coverTotal} bold />
                         </Box>
                     </Box>
@@ -716,11 +815,16 @@ export default function ThejaswiQuotationPreview({
                         <Row label="Other Add-ons Premium" value={p.addonTotal} />
                         <Row label="Third-Party Premium" value={p.tp} />
                         <Row label="Additional Covers Premium" value={p.coverTotal} /> */}
-                        <Row label="Premium Before Tax" value={p.subtotal} bold note={"OD + TP"} />
+                        <Row
+                            label="Premium Before GST"
+                            value={p.subtotal}
+                            bold
+                            note="Final Net OD + Add-ons + TP + Additional Covers"
+                        />
                         {/* {p.taxes.length ? p.taxes.map((item, index) => <Row key={`${item.label}-${item.component}-${index}`} label={item.component ? `${item.label} · ${item.component}` : item.label} value={item.amount} />) : <Row label="Applicable Taxes" value={0} />} */}
-                        <Row label="Total Tax" value={p.taxTotal} bold />
+                        <Row label="Total GST" value={p.taxTotal} bold />
                     </Box>
-                    <Box sx={{ mt: 1.5, p: { xs: 1.8, sm: 2.2 }, borderRadius: 1.5, background: "linear-gradient(110deg,#142958 0%,#214983 100%)", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+                    <Box sx={{ mt: 1.5, p: { xs: 1.8, sm: 2.2 }, borderRadius: 1.5, background: formColorCode ?? "linear-gradient(110deg,#142958 0%,#214983 100%)", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
                         <Box>
                             <Typography sx={{ fontSize: 10, color: "#dbeafe", fontWeight: 800, letterSpacing: 1 }}>TOTAL PREMIUM PAYABLE</Typography>
                             <Typography sx={{ mt: 0.5, fontSize: 9, color: "#c2d3ed" }}>Inclusive of applicable taxes</Typography>

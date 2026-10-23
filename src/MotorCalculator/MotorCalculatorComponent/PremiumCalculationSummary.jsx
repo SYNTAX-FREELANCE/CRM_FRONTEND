@@ -908,7 +908,7 @@ const PremiumCalculationSummary = ({
 
             netPayable,
         };
-    }, [calculationData, formData, formatNumber,coverInputValues]);
+    }, [calculationData, formData, formatNumber, coverInputValues]);
 
     if (!calculationData) {
         return (
@@ -1346,7 +1346,10 @@ const PremiumCalculationSummary = ({
                     title="Add-ons"
                     amount={money(calculation.addonTotal)}
                 >
-                    {calculation.addonDetails.map((item) => (
+                    {calculation?.addonDetails?.filter(
+                        (item) =>
+                            String(item.addon_code || "").toUpperCase() !== "IMT_23"
+                    )?.map((item) => (
                         <CalculationLine
                             key={item.addon_id}
                             label={item.addon_name}
