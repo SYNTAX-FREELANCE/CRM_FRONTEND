@@ -37,7 +37,7 @@ export default function ThejaswiQuotationPreview({
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState("");
 
-    
+
 
     const num = (value) => {
         const result = Number(value ?? 0);
@@ -328,6 +328,40 @@ export default function ThejaswiQuotationPreview({
             )
         );
 
+        // 4. NCB — include OD-based add-ons only
+
+        const ncbEligibleAddonAmount = round(
+            addons.reduce((sum, item) => {
+                const sourceAddon = allAddons.find(
+                    (addon) =>
+                        Number(addon.addon_id) === Number(item.id)
+                );
+
+                const calculationBasis = String(
+                    sourceAddon?.calculation_basis ||
+                    (
+                        ["ZD", "ZERO_DEP"].includes(
+                            String(sourceAddon?.addon_code || "").toUpperCase()
+                        )
+                            ? "BASIC_OD"
+                            : "IDV"
+                    )
+                ).toUpperCase();
+
+                // IMT-23 is already included in totalOD.
+                if (
+                    ["BASIC_OD", "TOTAL_OD"].includes(calculationBasis) &&
+                    !["IMT_23"].includes(
+                        String(sourceAddon?.addon_code || "").toUpperCase()
+                    )
+                ) {
+                    return sum + num(item.amount);
+                }
+
+                return sum;
+            }, 0)
+        );
+
         // Calculate ZD after its configured discount.
         const zdAddon = addons?.find((item) => {
             const sourceAddon = allAddons.find(
@@ -345,7 +379,7 @@ export default function ThejaswiQuotationPreview({
         const ncbBaseAmount = round(
             Math.max(
                 0,
-                totalOD + zdAmount - deAmount
+                totalOD + ncbEligibleAddonAmount  - deAmount
             )
         );
 
@@ -602,6 +636,8 @@ export default function ThejaswiQuotationPreview({
             profit,
             cashback,
             netPayable,
+            ncbEligibleAddonAmount,
+            ncbBaseAmount
         };
     }, [calculationData, formData, formatNumber, coverInputValues]);
 

@@ -15,6 +15,7 @@ import { axioslogin } from "../../Connection/axios";
 import {
     errorNotify,
     successNotify,
+    warningNotify,
 } from "../../constant/Constant";
 
 import {
@@ -50,6 +51,8 @@ const MotorCommissionRuleCreation = () => {
         maxcommissionvalue: "",
         minPremium: "",
         maxPremium: "",
+        minGvw: "",
+        maxGvw: "",
         effectiveFrom: "",
         effectiveTo: "",
         description: "",
@@ -237,6 +240,9 @@ const MotorCommissionRuleCreation = () => {
 
                     maxPremium:
                         data?.max_premium ?? "",
+
+                    minGvw: data.min_gvw ?? "",
+                    maxGvw: data.max_gvw ?? "",
 
                     effectiveFrom:
                         data?.effective_from
@@ -507,6 +513,53 @@ const MotorCommissionRuleCreation = () => {
         }
 
         if (
+            commissionRule.minGvw === "" ||
+            commissionRule.minGvw === null ||
+            commissionRule.minGvw === undefined
+        ) {
+            warningNotify("Minimum GVW is required.");
+            return false;
+        }
+
+        if (Number.isNaN(Number(commissionRule.minGvw))) {
+            warningNotify(
+                "Minimum GVW must be a valid number."
+            );
+            return false;
+        }
+
+        if (Number(commissionRule.minGvw) < 0) {
+            warningNotify(
+                "Minimum GVW cannot be negative."
+            );
+            return false;
+        }
+
+        if (
+            commissionRule.maxGvw !== "" &&
+            commissionRule.maxGvw !== null &&
+            commissionRule.maxGvw !== undefined
+        ) {
+
+            if (Number.isNaN(Number(commissionRule.maxGvw))) {
+                warningNotify(
+                    "Maximum GVW must be a valid number."
+                );
+                return false;
+            }
+
+            if (
+                Number(commissionRule.maxGvw) <
+                Number(commissionRule.minGvw)
+            ) {
+                warningNotify(
+                    "Maximum GVW cannot be less than minimum GVW."
+                );
+                return false;
+            }
+        }
+
+        if (
             commissionRule.description &&
             commissionRule.description.length > 500
         ) {
@@ -536,6 +589,8 @@ const MotorCommissionRuleCreation = () => {
             maxcommissionvalue: "",
             minPremium: "",
             maxPremium: "",
+            minGvw: "",
+            maxGvw: "",
             effectiveFrom: "",
             effectiveTo: "",
             description: "",
@@ -640,6 +695,14 @@ const MotorCommissionRuleCreation = () => {
                                 "Max Premium",
                         },
                         {
+                            field: "min_gvw",
+                            headerName: "Minimum GVW"
+                        },
+                        {
+                            field: "max_gvw",
+                            headerName: "Maximum GVW"
+                        },
+                        {
                             field:
                                 "effective_from",
                             headerName:
@@ -741,6 +804,15 @@ const MotorCommissionRuleCreation = () => {
                     : Number(
                         commissionRule.maxPremium
                     ),
+
+            min_gvw: Number(commissionRule.minGvw),
+
+            max_gvw:
+                commissionRule.maxGvw === "" ||
+                    commissionRule.maxGvw === null ||
+                    commissionRule.maxGvw === undefined
+                    ? null
+                    : Number(commissionRule.maxGvw),
 
             effective_from:
                 commissionRule.effectiveFrom,
@@ -989,6 +1061,24 @@ const MotorCommissionRuleCreation = () => {
                                 onChange={
                                     set("maxPremium")
                                 }
+                            />
+                        </FormRow>
+
+                          <FormRow label="Minimum GVW" required>
+                            <InputLg
+                                type="number"
+                                value={commissionRule.minGvw}
+                                onChange={set("minGvw")}
+                                placeholder="Enter minimum GVW"
+                            />
+                        </FormRow>
+
+                        <FormRow label="Maximum GVW">
+                            <InputLg
+                                type="number"
+                                value={commissionRule.maxGvw}
+                                onChange={set("maxGvw")}
+                                placeholder="Enter maximum GVW"
                             />
                         </FormRow>
 
