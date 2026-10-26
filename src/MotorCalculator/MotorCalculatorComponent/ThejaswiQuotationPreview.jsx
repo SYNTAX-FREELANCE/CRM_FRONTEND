@@ -703,7 +703,7 @@ export default function ThejaswiQuotationPreview({
 
     const Section = ({ title, meta }) => (
         <Box sx={{ px: 1.4, py: 0.9, bgcolor: formColorCode ?? "#172f65", color: "#fff", display: "flex", justifyContent: "space-between", gap: 1 }}>
-            <Typography sx={{ fontSize: 11, fontWeight: 800, letterSpacing: ".04em" }}>{title}</Typography>
+            <Typography sx={{ fontSize: 16, fontWeight: 800, letterSpacing: ".04em", fontFamily: "Bahnschrift", }}>{title}</Typography>
             {meta && <Typography sx={{ fontSize: 9, color: "#dbeafe" }}>{meta}</Typography>}
         </Box>
     );
@@ -711,10 +711,10 @@ export default function ThejaswiQuotationPreview({
     const Row = ({ label, value, bold = false, negative = false, note, plain = false }) => (
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, px: 1.25, py: 0.7, borderBottom: "1px solid #e9edf4" }}>
             <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontSize: 12.5, color: "#344054", fontWeight: bold ? 800 : 500 }}>{label}</Typography>
-                {note && <Typography sx={{ mt: 0.2, fontSize: 9, color: "#8792a5" }}>{note}</Typography>}
+                <Typography sx={{ fontSize: 14.5, color: "#344054", fontWeight: bold ? 800 : 500, fontFamily: "Bahnschrift", }}>{label}</Typography>
+                {note && <Typography sx={{ mt: 0.2, fontSize: 9, color: "#8792a5", fontFamily: "Bahnschrift", }}>{note}</Typography>}
             </Box>
-            <Typography sx={{ whiteSpace: "nowrap", fontSize: 12.5, fontWeight: bold ? 800 : 600, color: negative ? "#b42332" : "#172033" }}>
+            <Typography sx={{ whiteSpace: "nowrap",  fontWeight: bold ? 800 : 600, color: negative ? "#b42332" : "#172033" , fontFamily: "Bahnschrift",fontSize:14}}>
                 {negative ? "− " : ""}{plain ? value : money(value)}
             </Typography>
         </Box>
@@ -755,12 +755,12 @@ export default function ThejaswiQuotationPreview({
                     <Divider sx={{ my: 2, borderColor: "#dce3ed" }} />
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
                         <Box>
-                            <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1 }}>PREPARED FOR</Typography>
-                            <Typography sx={{ mt: 0.4, fontSize: 15, fontWeight: 800, color: "#172f65" }}>{quote.customer}</Typography>
-                            {quote.address && <Typography sx={{ mt: 0.3, fontSize: 10, color: "#667085" }}>{quote.address}</Typography>}
+                            <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1, fontFamily: "Bahnschrift", }}>PREPARED FOR</Typography>
+                            <Typography sx={{ mt: 0.4, fontSize: 15, fontWeight: 800, color: "#172f65", fontFamily: "Bahnschrift", }}>{quote.customer}</Typography>
+                            {quote.address && <Typography sx={{ mt: 0.3, fontSize: 10, color: "#667085", fontFamily: "Bahnschrift", }}>{quote.address}</Typography>}
                         </Box>
                         <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
-                            <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1 }}>INSURANCE PROVIDER</Typography>
+                            <Typography sx={{ fontSize: 9, color: "#8792a5", fontWeight: 700, letterSpacing: 1, fontFamily: "Bahnschrift", }}>INSURANCE PROVIDER</Typography>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -790,6 +790,7 @@ export default function ThejaswiQuotationPreview({
                                         fontWeight: 800,
                                         color: "#172033",
                                         textTransform: "uppercase",
+                                         fontFamily: "Bahnschrift",
                                     }}
                                 >
                                     {quote.insurer}
@@ -862,7 +863,7 @@ export default function ThejaswiQuotationPreview({
                     </Box>
                     <Box sx={{ mt: 1.5, p: { xs: 1.8, sm: 2.2 }, borderRadius: 1.5, background: formColorCode ?? "linear-gradient(110deg,#142958 0%,#214983 100%)", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
                         <Box>
-                            <Typography sx={{ fontSize: 10, color: "#dbeafe", fontWeight: 800, letterSpacing: 1 }}>TOTAL PREMIUM PAYABLE</Typography>
+                            <Typography sx={{ fontSize: 12, color: "#dbeafe", fontWeight: 800, letterSpacing: 1 , fontFamily: "Bahnschrift",}}>TOTAL PREMIUM PAYABLE</Typography>
                             <Typography sx={{ mt: 0.5, fontSize: 9, color: "#c2d3ed" }}>Inclusive of applicable taxes</Typography>
                         </Box>
                         <Typography sx={{ fontSize: { xs: 22, sm: 28 }, fontWeight: 900, whiteSpace: "nowrap" }}>{money(p.total)}</Typography>
@@ -884,7 +885,7 @@ export default function ThejaswiQuotationPreview({
                 <Box sx={{ mx: { xs: 1.5, sm: 4 }, mt: 0.5, mb: 2.5, pt: 1.5, borderTop: "1px solid #dce3ed", display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 2, flexWrap: "wrap" }}>
                     <Box sx={{ maxWidth: 490 }}>
                         <Typography sx={{ fontSize: 9, fontWeight: 800, color: "#344054" }}>IMPORTANT NOTE</Typography>
-                        <Typography sx={{ mt: 0.5, fontSize: 9, lineHeight: 1.6, color: "#7a8598" }}>
+                        <Typography sx={{ mt: 0.5, fontSize: 9, lineHeight: 1.6, color: "#7a8598", fontFamily: "Bahnschrift", }}>
                             This quotation is indicative and provided for reference. Final premium, coverage, terms, taxes and acceptance are subject to the insurer&apos;s underwriting and issued policy. Please verify all vehicle and policy details before proceeding.
                         </Typography>
                     </Box>
