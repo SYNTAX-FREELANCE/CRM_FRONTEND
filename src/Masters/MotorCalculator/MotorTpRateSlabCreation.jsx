@@ -353,7 +353,7 @@ const MotorTpRateSlabCreation = () => {
                         headerName: "Description",
                     },
                     {
-                        field: "is_active",
+                        field: "slab_is_active",
                         headerName: "Status",
                         type: 'status'
                     },
