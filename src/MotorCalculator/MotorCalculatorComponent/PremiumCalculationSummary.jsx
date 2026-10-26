@@ -327,12 +327,25 @@ const PremiumCalculationSummary = ({
             100
         );
 
+        const ncbEligibleAddonAmount = addonDetails
+            .filter(
+                (item) =>
+                    !item.is_imt23 &&
+                    String(item.calculation_basis || "").toUpperCase() ===
+                    "BASIC_OD"
+            )
+            .reduce(
+                (total, item) =>
+                    total + Number(item.calculated_amount || 0),
+                0
+            );
+
         const ncbBaseAmount = Math.max(
             0,
             Number(
                 (
                     totalOD +
-                    zdAmount -
+                    ncbEligibleAddonAmount -
                     deTariffDiscountAmount
                 ).toFixed(2)
             )
@@ -863,6 +876,7 @@ const PremiumCalculationSummary = ({
             odAfterDiscount,
 
             ncbPercentage,
+            ncbEligibleAddonAmount,
             ncbAmount,
             netOD,
 
@@ -1285,7 +1299,8 @@ const PremiumCalculationSummary = ({
                 <CalculationStep
                     number="04"
                     title={`NCB ${calculation.ncbPercentage}%`}
-                    formula={`${money(calculation.totalOD)} + ${money(calculation.zdAmount)} - ${money(calculation.deTariffDiscountAmount)}`}
+                    // formula={`${money(calculation.totalOD)} + ${money(calculation.zdAmount)} - ${money(calculation.deTariffDiscountAmount)}`}
+                    formula={`${money(calculation.totalOD)} + ${money(calculation.ncbEligibleAddonAmount)} - ${money(calculation.deTariffDiscountAmount)}`}
                     formulaResult={`NCB Base: ${money(calculation.ncbBaseAmount)} × ${calculation.ncbPercentage}% = ${money(calculation.ncbAmount)}`}
                     amount={`-${money(calculation.ncbAmount)}`}
                     amountColor="#dc2626"

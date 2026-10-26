@@ -24,9 +24,6 @@ const VehicleCategoryHeader = ({
         ? `${BACKEND_IMAGE}${category.image_path}`
         : null;
 
-   
-
-
     return (
         <Paper
             elevation={0}

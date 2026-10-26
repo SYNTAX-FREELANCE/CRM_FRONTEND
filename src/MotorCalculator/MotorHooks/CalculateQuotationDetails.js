@@ -157,7 +157,7 @@ const createQuotationPayload = ({
     const selectedAddons = allAddons.filter(
         (item) =>
             String(item.addon_code || "").toUpperCase() ===
-                "IMT_23" ||
+            "IMT_23" ||
             selectedAddonIds.includes(Number(item.addon_id))
     );
 
@@ -340,10 +340,27 @@ const createQuotationPayload = ({
         )
     );
 
+    const ncbEligibleAddonAmount = round(
+        otherAddonDetails.reduce((sum, item) => {
+            const basis = String(
+                item.calculation_basis || ""
+            ).toUpperCase();
+
+            if (
+                basis === "BASIC_OD" ||
+                basis === "TOTAL_OD"
+            ) {
+                return sum + getNumber(item.calculated_amount);
+            }
+
+            return sum;
+        }, 0)
+    );
+
     const ncbBaseAmount = round(
         Math.max(
             0,
-            totalOD + zdAmount - deTariffDiscountAmount
+            totalOD + ncbEligibleAddonAmount - deTariffDiscountAmount
         )
     );
 
@@ -359,9 +376,9 @@ const createQuotationPayload = ({
     //     Math.max(0, odAfterDiscount - ncbAmount)
     // );
 
-     const netOD = Number(
-            (odAfterDiscount - ncbAmount).toFixed(2)
-        );
+    const netOD = Number(
+        (odAfterDiscount - ncbAmount).toFixed(2)
+    );
     // --------------------------------------------------
     // STEP 7: THIRD-PARTY PREMIUM
     // Matches PremiumCalculationSummary's TP rate formula.
@@ -506,10 +523,10 @@ const createQuotationPayload = ({
         Math.max(
             0,
             totalOD -
-                ncbAmount +
-                addonTotal +
-                tpPremium +
-                coverTotal
+            ncbAmount +
+            addonTotal +
+            tpPremium +
+            coverTotal
         )
     );
 
@@ -517,9 +534,9 @@ const createQuotationPayload = ({
         Math.max(
             0,
             netOD +
-                addonTotal +
-                tpPremium +
-                coverTotal
+            addonTotal +
+            tpPremium +
+            coverTotal
         )
     );
 
@@ -893,6 +910,7 @@ const createQuotationPayload = ({
                 ncb_percentage: ncbPercentage,
                 ncb_base_amount: ncbBaseAmount,
                 ncb_amount: ncbAmount,
+                ncb_eligible_addon_amount: ncbEligibleAddonAmount,
 
                 od_after_discount: odAfterDiscount,
                 net_od: netOD,
