@@ -18,8 +18,20 @@ const CustomerSearchToggle = ({
 }) => {
     const [showSearch, setShowSearch] = useState(!selectedCustomer);
 
-    const handleCustomerSelect = (customer) => {
-        setSelectedCustomer(customer);
+  
+    // KL02BW9791
+    const handleCustomerSelect = (customer, regnumber) => {
+     
+        const registrationNumber = regnumber?.trim()?.toUpperCase();
+        const selectedVehicle = customer?.vehicles?.find(
+            vehicle =>
+                vehicle?.registration_number?.trim()?.toUpperCase() ===
+                registrationNumber
+        );
+        setSelectedCustomer({
+            ...customer,
+            vehicles: selectedVehicle ? [selectedVehicle] : []
+        });
         setShowSearch(false);
     };
 

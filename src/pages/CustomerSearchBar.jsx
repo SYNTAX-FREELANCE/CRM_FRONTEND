@@ -88,7 +88,7 @@ const CustomerSearchBar = ({ onSelectCustomer, setDetailLoading, rgNo = "" }) =>
             const { data } = await axioslogin.get(
                 `/lead/customer/${value.customer_id}/details`
             );
-            onSelectCustomer?.(data?.data);
+            onSelectCustomer?.(data?.data, value?.registration_number);
         } catch (err) {
             console.error(err);
             onSelectCustomer?.(value);
