@@ -90,8 +90,8 @@ const CustomerAllocationTable = ({
                 accessorFn: (row) =>
                     row.registration_date
                         ? new Date(
-                              row.registration_date
-                          ).toLocaleDateString("en-GB")
+                            row.registration_date
+                        ).toLocaleDateString("en-GB")
                         : "-",
                 id: "registration_date",
                 header: "Registration Date",
@@ -101,8 +101,8 @@ const CustomerAllocationTable = ({
                 accessorFn: (row) =>
                     row.expiry_date
                         ? new Date(
-                              row.expiry_date
-                          ).toLocaleDateString("en-GB")
+                            row.expiry_date
+                        ).toLocaleDateString("en-GB")
                         : "-",
                 id: "expiry_date",
                 header: "Expiry Date",
@@ -216,9 +216,9 @@ const CustomerAllocationTable = ({
             sx: {
                 color: isDark ? "#f8fafc" : undefined,
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiIconButton-root":
-                    {
-                        color: isDark ? "#f8fafc" : undefined,
-                    },
+                {
+                    color: isDark ? "#f8fafc" : undefined,
+                },
                 fontFamily: "Bahnschrift",
             },
         },
@@ -237,9 +237,8 @@ const CustomerAllocationTable = ({
                     mb: 1.5,
                     p: 1.5,
                     borderRadius: 2,
-                    border: `1px solid ${
-                        isDark ? "rgba(255,255,255,0.12)" : "#e5e7eb"
-                    }`,
+                    border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "#e5e7eb"
+                        }`,
                     bgcolor: isDark ? "#0f172a" : "#fff",
                 }}
             >

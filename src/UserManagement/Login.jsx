@@ -164,13 +164,13 @@ const Login = () => {
 
     const handleLogin = async () => {
         try {
-            if (!username || !password) {
+            if (!username?.trim() || !password?.trim()) {
                 warningNotify("Please enter username and password");
                 return;
             }
             const response = await axioslogin.post("/user/login", {
-                username,
-                password,
+                username: username?.trim(),
+                password: password?.trim(),
             });
             const { success, message, user, attendance_id } = response?.data ?? {}
             if (success !== 1) return warningNotify(message);
