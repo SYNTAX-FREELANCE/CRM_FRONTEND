@@ -21,6 +21,8 @@ export const AllocationColumns = (
     isDark = false
 ) => {
 
+
+
     const STATUS_CONFIG = {
         NEW: {
             color: "#2563EB",
@@ -175,6 +177,22 @@ export const AllocationColumns = (
             ),
         },
         {
+            field: "known_policy_expiry_date",
+            headerName: "Expiry Date",
+            minWidth: 150,
+            flex: 1,
+            renderCell: ({ value }) => (
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography
+                        sx={{
+                            fontSize: 13,
+                            color: isDark ? "#f8fafc" : "inherit",
+                            fontFamily: "Bahnschrift",
+                        }}>{value}</Typography>
+                </Stack>
+            ),
+        },
+        {
             field: "status_name",
             headerName: "Status",
             minWidth: 120,
@@ -204,4 +222,4 @@ export const AllocationColumns = (
     ];
 
     return isMobile ? mobileColumns : desktopColumns;
-};
+};
