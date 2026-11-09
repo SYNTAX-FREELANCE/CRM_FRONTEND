@@ -60,6 +60,7 @@ const MotorVehicleCalculator = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(
         () => location.state?.selectedCustomer ?? null
     );
+    
     const [detailLoading, setDetailLoading] = useState(false);
 
 

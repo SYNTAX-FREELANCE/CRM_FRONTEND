@@ -39,14 +39,8 @@ const ViewAllocation = () => {
 
     const { data: Employee_master = [] } = useAllEmployeeDetails();
 
-
-
-
     const { data: AssignDetails = [], isLoading: LoadingTableData, refetch: FechtAllocationDetail } =
         useEmployeeAssignDetails(allocatedempid);
-
-
-
 
     const isMobile = useMediaQuery("(max-width:600px)");
     const employees = Array.isArray(Employee_master) ? Employee_master : [];
@@ -65,10 +59,10 @@ const ViewAllocation = () => {
     const handleSelect = useCallback((row, checked) => {
         if (!selectedEmployee || selectedEmployee?.trim() === "") return warningNofity("Select Employee First");
 
-        if (String(row.user_id) === String(selectedEmployee)) {
-            warningNofity("New employee and previous employee cannot be same.");
-            return;
-        }
+        // if (String(row.user_id) === String(selectedEmployee)) {
+        //     warningNofity("New employee and previous employee cannot be same.");
+        //     return;
+        // }
 
         if (checked) {
             setSelectedRows((prev) => [...prev, row.lead_id]);
@@ -141,15 +135,15 @@ const ViewAllocation = () => {
                     return warningNofity("Select Employee First");
                 }
 
-                const invalidRows = AssignDetails.filter(
-                    (row) => String(row.user_id) === String(selectedEmployee)
-                );
+                // const invalidRows = AssignDetails.filter(
+                //     (row) => String(row.user_id) === String(selectedEmployee)
+                // );
 
-                if (invalidRows.length > 0) {
-                    return warningNofity(
-                        "New employee and previous employee cannot be same."
-                    );
-                }
+                // if (invalidRows.length > 0) {
+                //     return warningNofity(
+                //         "New employee and previous employee cannot be same."
+                //     );
+                // }
 
                 setSelectedRows(AssignDetails?.map((row) => row.lead_id));
                 setRowFullSelect(AssignDetails);
@@ -178,24 +172,27 @@ const ViewAllocation = () => {
     });
 
     const handleEmployeeChange = (value) => {
-        const selectedRowsData = AssignDetails.filter((row) =>
-            selectedRows.includes(row.lead_id)
-        );
+        // const selectedRowsData = AssignDetails.filter((row) =>
+        //     selectedRows.includes(row.lead_id)
+        // );
 
-        const conflict = selectedRowsData.some(
-            (row) => String(row.user_id) === String(value)
-        );
+        // const conflict = selectedRowsData.some(
+        //     (row) => String(row.user_id) === String(value)
+        // );
 
-        if (conflict) {
-            warningNofity("New employee and previous employee cannot be same.");
-            return;
-        }
+        // if (conflict) {
+        //     warningNofity("New employee and previous employee cannot be same.");
+        //     return;
+        // }
 
         setSelectedEmployee(value);
     };
 
+    // const FinalMultipleReallocatedEmployee = employees ?
+    //     employees?.filter(item => Number(item.user_id) != Number(allocatedempid)) : [];
+
     const FinalMultipleReallocatedEmployee = employees ?
-        employees?.filter(item => Number(item.user_id) != Number(allocatedempid)) : [];
+        employees : [];
 
 
     const handleMultiAllocate = useCallback(async (work_status, is_locked, remarks) => {
@@ -327,7 +324,7 @@ const ViewAllocation = () => {
                                 size="small"
                                 variant="contained"
                                 color="success"
-                                disabled={selectedRows.length === 0 || !selectedEmployee || isInvalidSelection}
+                                disabled={selectedRows.length === 0 || !selectedEmployee}
                                 onClick={handlePreviewOpen}
                                 sx={{
                                     textTransform: "none",
@@ -390,7 +387,7 @@ const ViewAllocation = () => {
                 <Paper
                     elevation={0}
                     sx={{
-                        width: isReallocateMode ? {xs:'100%',md:"70%"} : '100%',
+                        width: isReallocateMode ? { xs: '100%', md: "70%" } : '100%',
                         height: { xs: "calc(100vh - 170px)", md: "calc(100vh - 180px)" },
                         borderRadius: 4,
                         overflow: "hidden",
@@ -495,7 +492,7 @@ const ViewAllocation = () => {
                     <Paper
                         elevation={0}
                         sx={{
-                            width: isReallocateMode ? {xs:'100%',md:'30%'} : '0%',
+                            width: isReallocateMode ? { xs: '100%', md: '30%' } : '0%',
                             height: { xs: "calc(100vh - 170px)", md: "calc(100vh - 180px)" },
                             borderRadius: 4,
                             overflow: "hidden",

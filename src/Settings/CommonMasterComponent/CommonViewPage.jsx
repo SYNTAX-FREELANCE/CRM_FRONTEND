@@ -23,10 +23,7 @@ const CommonViewPage = () => {
     } = location.state || {};
 
 
-    
-
     const { data = [] } = useCommonMaster(type);
-
 
     const handleEdit = (row) => {
         const recordId = row[idField] || row.id;

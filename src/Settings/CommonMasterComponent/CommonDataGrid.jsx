@@ -1,7 +1,7 @@
 import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box } from "@mui/material";
+import { Box, Chip } from "@mui/material";
 
 const CommonDataGrid = ({
     columns = [],
@@ -41,9 +41,18 @@ const CommonDataGrid = ({
                 renderCell:
                     type === "status"
                         ? (params) =>
-                            Number(params.value) === 1
-                                ? "Active"
-                                : "Inactive"
+                        (
+                            <Chip
+                                sx={{
+                                    fontFamily: "Bahnschrift",
+                                    fontSize:10
+                                }}
+                                label={Number(params.value) === 1 ? "Active" : "Inactive"}
+                                size="small"
+                                color={Number(params.value) === 1 ? "success" : "error"}
+                                variant="soft"
+                            />
+                        )
                         : type === "date"
                             ? (params) => {
                                 if (!params.value) return "-";
@@ -96,11 +105,13 @@ const CommonDataGrid = ({
                 sx={{
                     border: "1px solid #e5e7eb",
                     fontSize: "13px",
+                    fontFamily: "Bahnschrift",
 
                     "& .MuiDataGrid-columnHeaders": {
                         backgroundColor: "#f7f7f7",
                         minHeight: "36px !important",
-                        maxHeight: "36px !important"
+                        maxHeight: "36px !important",
+                        fontFamily: "Bahnschrift",
                     },
 
                     "& .MuiDataGrid-columnHeader": {
@@ -109,16 +120,19 @@ const CommonDataGrid = ({
 
                     "& .MuiDataGrid-columnHeaderTitle": {
                         fontWeight: 600,
-                        fontSize: "13px"
+                        fontSize: "13px",
+                        fontFamily: "Bahnschrift",
                     },
 
                     "& .MuiDataGrid-cell": {
                         padding: "0 8px",
-                        fontSize: "13px"
+                        fontSize: "13px",
+                        fontFamily: "Bahnschrift",
                     },
 
                     "& .MuiDataGrid-footerContainer": {
-                        minHeight: "40px"
+                        minHeight: "40px",
+                        fontFamily: "Bahnschrift",
                     }
                 }}
             />

@@ -63,6 +63,7 @@ const MotorTpRateSlabCreation = () => {
             ?.map(item => ({
                 id: item.tp_rate_id,
                 label:
+                    `${item?.insurance_company_name || "Insurance"} - ` +
                     `${item?.product_code || "Product"} - ` +
                     `${item?.policy_type_code || "Policy Type"} -` +
                     `${item?.category_code || "Category Type"} -` +
@@ -353,7 +354,7 @@ const MotorTpRateSlabCreation = () => {
                         headerName: "Description",
                     },
                     {
-                        field: "is_active",
+                        field: "slab_is_active",
                         headerName: "Status",
                         type: 'status'
                     },

@@ -15,6 +15,7 @@ import { axioslogin } from "../../Connection/axios";
 import {
     errorNotify,
     successNotify,
+    warningNotify,
 } from "../../constant/Constant";
 
 import {
@@ -50,6 +51,8 @@ const MotorCashbackRuleCreation = () => {
         maxcashbackvalue: "",
         minPremium: "",
         maxPremium: "",
+        minGvw: "",
+        maxGvw: "",
         effectiveFrom: "",
         effectiveTo: "",
         description: "",
@@ -237,6 +240,9 @@ const MotorCashbackRuleCreation = () => {
 
                     maxPremium:
                         data?.max_premium ?? "",
+
+                    minGvw: data.min_gvw ?? "",
+                    maxGvw: data.max_gvw ?? "",
 
                     effectiveFrom:
                         data?.effective_from
@@ -507,6 +513,53 @@ const MotorCashbackRuleCreation = () => {
         }
 
         if (
+            cashbackRule.minGvw === "" ||
+            cashbackRule.minGvw === null ||
+            cashbackRule.minGvw === undefined
+        ) {
+            warningNotify("Minimum GVW is required.");
+            return false;
+        }
+
+        if (Number.isNaN(Number(cashbackRule.minGvw))) {
+            warningNotify(
+                "Minimum GVW must be a valid number."
+            );
+            return false;
+        }
+
+        if (Number(cashbackRule.minGvw) < 0) {
+            warningNotify(
+                "Minimum GVW cannot be negative."
+            );
+            return false;
+        }
+
+        if (
+            cashbackRule.maxGvw !== "" &&
+            cashbackRule.maxGvw !== null &&
+            cashbackRule.maxGvw !== undefined
+        ) {
+
+            if (Number.isNaN(Number(cashbackRule.maxGvw))) {
+                warningNotify(
+                    "Maximum GVW must be a valid number."
+                );
+                return false;
+            }
+
+            if (
+                Number(cashbackRule.maxGvw) <
+                Number(cashbackRule.minGvw)
+            ) {
+                warningNotify(
+                    "Maximum GVW cannot be less than minimum GVW."
+                );
+                return false;
+            }
+        }
+
+        if (
             cashbackRule.description &&
             cashbackRule.description.length > 500
         ) {
@@ -536,6 +589,8 @@ const MotorCashbackRuleCreation = () => {
             maxcashbackvalue: "",
             minPremium: "",
             maxPremium: "",
+            minGvw: "",
+            maxGvw: "",
             effectiveFrom: "",
             effectiveTo: "",
             description: "",
@@ -640,6 +695,14 @@ const MotorCashbackRuleCreation = () => {
                                 "Max Premium",
                         },
                         {
+                            field: "min_gvw",
+                            headerName: "Minimum GVW"
+                        },
+                        {
+                            field: "max_gvw",
+                            headerName: "Maximum GVW"
+                        },
+                        {
                             field:
                                 "effective_from",
                             headerName:
@@ -730,16 +793,23 @@ const MotorCashbackRuleCreation = () => {
             min_premium:
                 cashbackRule.minPremium === ""
                     ? null
-                    : Number(
-                        cashbackRule.minPremium
-                    ),
-
+                    : Number(cashbackRule.minPremium),
+ 
             max_premium:
                 cashbackRule.maxPremium === ""
                     ? null
                     : Number(
                         cashbackRule.maxPremium
                     ),
+
+            min_gvw: Number(cashbackRule.minGvw),
+
+            max_gvw:
+                cashbackRule.maxGvw === "" ||
+                    cashbackRule.maxGvw === null ||
+                    cashbackRule.maxGvw === undefined
+                    ? null
+                    : Number(cashbackRule.maxGvw),
 
             effective_from:
                 cashbackRule.effectiveFrom,
@@ -997,6 +1067,24 @@ const MotorCashbackRuleCreation = () => {
                                 onChange={
                                     set("maxPremium")
                                 }
+                            />
+                        </FormRow>
+
+                        <FormRow label="Minimum GVW" required>
+                            <InputLg
+                                type="number"
+                                value={cashbackRule.minGvw}
+                                onChange={set("minGvw")}
+                                placeholder="Enter minimum GVW"
+                            />
+                        </FormRow>
+
+                        <FormRow label="Maximum GVW">
+                            <InputLg
+                                type="number"
+                                value={cashbackRule.maxGvw}
+                                onChange={set("maxGvw")}
+                                placeholder="Enter maximum GVW"
                             />
                         </FormRow>
 
