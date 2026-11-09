@@ -99,6 +99,7 @@ import {
   getTaxRuleMasterDetails,
   getVehicleCategoryProfit,
   getQuotationDetails,
+  getCallDetailsDuraiton,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -1198,6 +1199,17 @@ export const useCommonMaster = (type) => {
     queryKey: config?.queryKey || ["common-master", type],
     queryFn: config?.queryFn || (() => Promise.resolve([])),
     enabled: !!config,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useLeadCallDetails = (leadId) => {
+  return useQuery({
+    queryKey: ["calldetails-leads", leadId],
+    queryFn: () => getCallDetailsDuraiton(leadId),
+    enabled: !!leadId,
     staleTime: Infinity,
   });
 };
