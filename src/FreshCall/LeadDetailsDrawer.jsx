@@ -16,7 +16,7 @@ import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import HistoryIcon from "@mui/icons-material/History";
 import Section from "./Components/Section";
 import Row from "./Components/Row";
-import { useFollowUpDetail, useGetLeadHistory, useGetQuotationDetails } from "../CommonCode/useQuery";
+import { useFollowUpDetail, useGetLeadHistory, useGetQuotationDetails, useLeadCallDetails } from "../CommonCode/useQuery";
 import { errorNotify, getAuthUser, successNotify, warningNotify } from "../constant/Constant";
 import { axioslogin } from "../Connection/axios";
 import { statusReasonMap } from "../CommonCode/Reusable";
@@ -29,6 +29,7 @@ import FollowUpFormSkeleton from "../SkeletonComponent/FollowUpFormSkeleton";
 import EditableDateField from "./Components/EditableDateField";
 import LeadVehicleUploads from "./Components/LeadVehicleUploads";
 import MotorQuotationSection from "./Components/MotorQuotationSection";
+import LeadCallHistory from "./Components/LeadCallHistory";
 
 const glassEffect = {
   backdropFilter: "blur(12px) saturate(1.5)",
@@ -76,7 +77,13 @@ const LeadDetailsDrawer = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const [loading, setLoading] = useState(false)
 
-  const { data: QuotationData = [] } = useGetQuotationDetails(leadId)
+  const { data: QuotationData = [] } = useGetQuotationDetails(leadId);
+  const { data: LeadCallDetails = [] } = useLeadCallDetails(leadId);
+
+  console.log({
+    LeadCallDetails
+  });
+
 
 
 
@@ -729,7 +736,16 @@ const LeadDetailsDrawer = ({
               />
             </Section>
 
-
+            <Section
+              title="Call History"
+              icon={<HistoryIcon sx={{ fontSize: 16 }} />}
+              accent="blue"
+              defaultExpanded={true}
+            >
+              <LeadCallHistory
+                calls={LeadCallDetails}
+              />
+            </Section>
 
             {hasPolicy && (
               <Section

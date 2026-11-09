@@ -1608,3 +1608,18 @@ export const getQuotationDetails = async (leadid) => {
 };
 
 
+export const getCallDetailsDuraiton = async (leadid) => {
+  if(!leadid) return infoNotify("Lead Id is Missing!")
+  try {
+    const response = await axioslogin.get(`/lead-call-logs/getbylead/${leadid}`);
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getMotorTax error:", error);
+    return [];
+  }
+};
+
+
+
