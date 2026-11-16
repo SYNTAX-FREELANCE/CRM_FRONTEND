@@ -37,6 +37,7 @@ import PremiumCalculationSummary from "./MotorCalculatorComponent/PremiumCalcula
 import { warningNofity } from "../constant/Constant";
 import MotorPremiumSidePanel from "./MotorCalculatorComponent/MotorPremiumSidePanel";
 import VehicleDetailsCard from "./MotorCalculatorComponent/VehicleDetailsCard";
+import { addDays, format, isBefore, parseISO, startOfDay } from "date-fns";
 
 
 const MotorVehicleCalculator = () => {
@@ -1044,6 +1045,31 @@ const MotorVehicleCalculator = () => {
             return String(date).slice(0, 10);
         };
 
+        // Calculate next policy start date
+        const getNextPolicyDate = (expiryDate) => {
+
+            const today = startOfDay(new Date());
+
+            const tomorrow = addDays(today, 1);
+
+            if (!expiryDate) {
+                return format(tomorrow, "yyyy-MM-dd");
+            }
+
+            // Add one day to the existing expiry date
+            const nextDate = addDays(
+                parseISO(formatDate(expiryDate)),
+                1
+            );
+
+            // If the calculated date is before today, use tomorrow
+            const finalDate = isBefore(nextDate, today)
+                ? tomorrow
+                : nextDate;
+
+            return format(finalDate, "yyyy-MM-dd");
+        };
+
         setFormData(prev => ({
             ...prev,
 
@@ -1051,8 +1077,8 @@ const MotorVehicleCalculator = () => {
                 vehicleDetails?.registration_date
             ),
 
-            policy_start_date: formatDate(
-                leadDetails?.start_date
+            policy_start_date: getNextPolicyDate(
+                vehicleDetails?.known_policy_expiry_date
             )
         }));
 
