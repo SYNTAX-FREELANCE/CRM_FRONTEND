@@ -64,10 +64,6 @@ export default function FreshCallsWorkspace() {
   const { data: EmployeeTargetDetails = [] } = useGetMyTargetDetail(id);
 
 
-  console.log({
-    EmployeeTargetDetails
-  });
-
 
   const {
     data: AllCallDetails = [],

@@ -80,9 +80,6 @@ const LeadDetailsDrawer = ({
   const { data: QuotationData = [] } = useGetQuotationDetails(leadId);
   const { data: LeadCallDetails = [] } = useLeadCallDetails(leadId);
 
-  console.log({
-    LeadCallDetails
-  });
 
 
 
