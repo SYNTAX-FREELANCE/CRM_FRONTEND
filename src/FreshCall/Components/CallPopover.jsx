@@ -11,13 +11,13 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import CallIcon from "@mui/icons-material/Call";
 import CloseIcon from "@mui/icons-material/Close";
 import { axioslogin } from "../../Connection/axios";
-import { getAuthUser } from "../../constant/Constant";
+import { errorNotify, getAuthUser, successNotify, warningNotify } from "../../constant/Constant";
 
 const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2, lead }) => {
 
   const [calling, setCalling] = React.useState(null);
 
- 
+
 
   const authUser = getAuthUser();
   const { id } = authUser ?? {}
@@ -27,11 +27,40 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2, lead }) => {
   const isDark = theme.palette.mode === 'dark';
 
 
+  // const handleCall = async (number) => {
+  //   if (!number) return;
+
+  //   try {
+
+  //     const payload = {
+  //       leadId: lead?.lead_id,
+  //       customerName: lead?.customer_name,
+  //       phoneNumber: number,
+  //       registrationNumber: lead?.registration_number,
+  //       model: lead?.model,
+  //       user_id: id,
+  //     };
+  //     // console.log("📤 Sending test push:", payload);
+  //     const response = await axioslogin.post(
+  //       "/notifications/test",
+  //       payload
+  //     );
+
+  //     // console.log("✅ Push response:", response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "❌ Push test failed:",
+  //       error.response?.data || error.message
+  //     );
+  //   }
+  // };
   const handleCall = async (number) => {
-    if (!number) return;
+    if (!number) {
+      warningNotify("Phone number is missing");
+      return;
+    }
 
     try {
-
       const payload = {
         leadId: lead?.lead_id,
         customerName: lead?.customer_name,
@@ -40,21 +69,78 @@ const CallPopover = ({ anchorEl, open, onClose, mobile1, mobile2, lead }) => {
         model: lead?.model,
         user_id: id,
       };
-      console.log("📤 Sending test push:", payload);
+
       const response = await axioslogin.post(
         "/notifications/test",
         payload
       );
 
-      console.log("✅ Push response:", response.data);
+      const result = response.data;
+
+      if (result.success !== 1) {
+        errorNotify(result.message || "Notification failed");
+        return;
+      }
+
+      const devices = result.devices || [];
+
+      if (devices.length === 0) {
+        warningNotify("No active device found");
+        return;
+      }
+
+      const successfulDevices = [];
+      const failedDevices = [];
+
+      devices.forEach((device) => {
+        const tickets = device.tickets || [];
+
+        tickets?.forEach((ticket) => {
+          if (ticket.status === "ok") {
+            successfulDevices.push({
+              deviceName: device.deviceName,
+              ticketId: ticket.id,
+            });
+          } else {
+            failedDevices.push({
+              deviceName: device.deviceName,
+              message:
+                ticket.message ||
+                ticket.details?.error ||
+                "Notification failed",
+            });
+          }
+        });
+      });
+
+      if (successfulDevices.length > 0) {
+        successNotify(
+          `Notification accepted by Expo for ${successfulDevices.length} device(s)`
+        );
+      }
+
+      if (failedDevices.length > 0) {
+        failedDevices.forEach((device) => {
+          errorNotify(
+            `${device.deviceName}: ${device.message}`
+          );
+        });
+      }
+
+      if (
+        successfulDevices.length === 0 &&
+        failedDevices.length > 0
+      ) {
+        errorNotify("All notification attempts failed");
+      }
     } catch (error) {
-      console.error(
-        "❌ Push test failed:",
-        error.response?.data || error.message
+      errorNotify(
+        error.response?.data?.message ||
+        error.message ||
+        "Push notification request failed"
       );
     }
   };
-
   const Item = ({ label, number }) => {
     const active = calling === number;
 

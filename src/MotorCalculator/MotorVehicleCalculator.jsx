@@ -60,7 +60,7 @@ const MotorVehicleCalculator = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(
         () => location.state?.selectedCustomer ?? null
     );
-    
+
     const [detailLoading, setDetailLoading] = useState(false);
 
 
@@ -75,6 +75,12 @@ const MotorVehicleCalculator = () => {
 
     const category =
         location.state?.category;
+
+
+
+    console.log({
+        selectedCustomer
+    });
 
 
 
