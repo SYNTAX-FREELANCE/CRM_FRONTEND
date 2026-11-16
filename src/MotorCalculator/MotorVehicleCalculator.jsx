@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 
 import {
     Box,
@@ -60,7 +60,7 @@ const MotorVehicleCalculator = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(
         () => location.state?.selectedCustomer ?? null
     );
-    
+
     const [detailLoading, setDetailLoading] = useState(false);
 
 
@@ -75,9 +75,6 @@ const MotorVehicleCalculator = () => {
 
     const category =
         location.state?.category;
-
-
-
 
 
     // =========================================================
@@ -257,6 +254,9 @@ const MotorVehicleCalculator = () => {
             ),
         [policyTermResponse]
     );
+
+
+
 
 
     // =========================================================
@@ -461,7 +461,7 @@ const MotorVehicleCalculator = () => {
             idv: "",
             business_type_id: "",
             product_id: "",
-            policy_type_id: "",
+            policy_type_id: 2,
             policy_term_id: "",
             previous_policy_number: "",
             previous_insurance_company: "",
@@ -996,7 +996,7 @@ const MotorVehicleCalculator = () => {
 
             business_type_id: "",
             product_id: "",
-            policy_type_id: "",
+            policy_type_id: 2,
             policy_term_id: "",
 
             previous_policy_number: "",
@@ -1017,6 +1017,49 @@ const MotorVehicleCalculator = () => {
         setDetailLoading(false)
     };
 
+
+
+
+    // =========================================================
+    // AUTO POPULATE CUSTOMER VEHICLE AND POLICY DETAILS
+    // =========================================================
+
+    useEffect(() => {
+
+        if (!selectedCustomer) return;
+
+        const leadDetails =
+            selectedCustomer?.leads?.find(
+                item => Number(item.lead_id) === Number(lead?.lead_id)
+            ) || selectedCustomer?.leads?.[0];
+
+        const vehicleDetails =
+            selectedCustomer?.vehicles?.find(
+                item => Number(item.vehicle_id) === Number(leadDetails?.vehicle_id)
+            ) || selectedCustomer?.vehicles?.[0];
+
+        const formatDate = (date) => {
+            if (!date) return "";
+
+            return String(date).slice(0, 10);
+        };
+
+        setFormData(prev => ({
+            ...prev,
+
+            registration_date: formatDate(
+                vehicleDetails?.registration_date
+            ),
+
+            policy_start_date: formatDate(
+                leadDetails?.start_date
+            )
+        }));
+
+        // Previous calculation is no longer valid
+        setCalculationData(null);
+
+    }, [selectedCustomer, lead?.lead_id]);
     // =========================================================
     // RENDER
     // =========================================================
