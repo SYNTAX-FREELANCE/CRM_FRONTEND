@@ -2,28 +2,59 @@ import React, { memo } from "react";
 import { Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import { useThemeMode } from "../Context/ThemeContext";
-
-// Icons
-// import ExtensionIcon from "@mui/icons-material/Extension";
 import MenuIcon from "@mui/icons-material/Menu";
-// import PeopleIcon from "@mui/icons-material/People";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SecurityIcon from "@mui/icons-material/Security";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Stack } from "@mui/system";
 import { Paper, Typography } from "@mui/material";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import CallIcon from "@mui/icons-material/Call";
 
 const items = [
-    { label: "Policy Report", path: "./policyreport", icon: <MenuIcon /> },
-    // { label: "Sales Report", path: "/home/setting/modulemaster", icon: <ExtensionIcon /> },
-    { label: "Employee Performance Report", path: "./employeperformance", icon: <BadgeIcon /> },
-    { label: "All Employee Performance Report", path: "./allemployeeperformance", icon: <BadgeIcon /> },
-    { label: "Employee Login Report", path: "./UserLogReports", icon: <SecurityIcon /> },
-    { label: "Detailed Employee Login Report", path: "./DetailedUserLogReports", icon: <SecurityIcon /> },
+    {
+        label: "Policy Report",
+        path: "./policyreport",
+        icon: <MenuIcon />
+    },
+    {
+        label: "Employee Performance Report",
+        path: "./employeperformance",
+        icon: <BadgeIcon />
+    },
+    {
+        label: "All Employee Performance Report",
+        path: "./allemployeeperformance",
+        icon: <BadgeIcon />
+    },
+    {
+        label: "Employee Login Report",
+        path: "./UserLogReports",
+        icon: <SecurityIcon />
+    },
+    {
+        label: "Detailed Employee Login Report",
+        path: "./DetailedUserLogReports",
+        icon: <SecurityIcon />
+    },
+    {
+        label: "Daily Employee Productivity Report",
+        path: "./dailyemployeeproductivity",
+        icon: <AssessmentIcon />
+    },
+    {
+        label: "Employee Call Details Report",
+        path: "./employeecalldetails",
+        icon: <CallIcon />
+    },
 ];
 
 const ReportSetting = () => {
+
+
+
+
     const navigate = useNavigate();
     const { mode } = useThemeMode();
     const isDark = mode === "dark";

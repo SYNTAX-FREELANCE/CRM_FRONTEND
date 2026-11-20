@@ -409,7 +409,7 @@ export const FetchCallCenterPerformance = async (
     console.error("FetchCallCenterPerformance error:", error);
     throw new Error(
       error?.response?.data?.message ||
-        "Failed to fetch call center performance",
+      "Failed to fetch call center performance",
     );
   }
 };
@@ -1566,7 +1566,7 @@ export const getOdRateSLabMaster = async () => {
     console.error("getMotorTax error:", error);
     return [];
   }
-};  
+};
 
 export const getTaxRuleMasterDetails = async () => {
   try {
@@ -1594,10 +1594,10 @@ export const getVehicleCategoryProfit = async () => {
 };
 
 
-export const getQuotationDetails = async (leadid) => {
-  if(!leadid) return infoNotify("Lead Id is Missing!")
+export const getQuotationDetails = async (leadid, VehicleId) => {
+  if (!leadid || !VehicleId) return infoNotify("Required Id is Missing!")
   try {
-    const response = await axioslogin.get(`/motor/calculation/getbylead/${leadid}`);
+    const response = await axioslogin.get(`/motor/calculation/getbylead/${leadid}/${VehicleId}`);
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -1609,7 +1609,7 @@ export const getQuotationDetails = async (leadid) => {
 
 
 export const getCallDetailsDuraiton = async (leadid) => {
-  if(!leadid) return infoNotify("Lead Id is Missing!")
+  if (!leadid) return infoNotify("Lead Id is Missing!")
   try {
     const response = await axioslogin.get(`/lead-call-logs/getbylead/${leadid}`);
     const { success, data } = response.data;
@@ -1623,3 +1623,34 @@ export const getCallDetailsDuraiton = async (leadid) => {
 
 
 
+export const FetchPolicyClaimStatusMaster = async () => {
+  try {
+    const response = await axioslogin.get("/policyclaimstatus/getall");
+    const { success, data } = response.data;
+
+    if (success !== 0) return data;
+
+    return [];
+  } catch (error) {
+    console.error("FetchPolicyClaimStatusMaster error:", error);
+    throw new Error(
+      error?.response?.data?.message ||
+      "Failed to fetch policy claim statuses"
+    );
+  }
+};
+
+
+export const getActivePolicyDetils = async () => {
+  try {
+    const response = await axioslogin.get(
+      `/policyclaim/get-active`,
+    );
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    console.error("getPolicyClaimDetails error:", error);
+    return [];
+  }
+};

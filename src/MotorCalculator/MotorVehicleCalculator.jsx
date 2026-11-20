@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 
 import {
     Box,
@@ -37,6 +37,7 @@ import PremiumCalculationSummary from "./MotorCalculatorComponent/PremiumCalcula
 import { warningNofity } from "../constant/Constant";
 import MotorPremiumSidePanel from "./MotorCalculatorComponent/MotorPremiumSidePanel";
 import VehicleDetailsCard from "./MotorCalculatorComponent/VehicleDetailsCard";
+import { addDays, format, isBefore, parseISO, startOfDay } from "date-fns";
 
 
 const MotorVehicleCalculator = () => {
@@ -60,7 +61,7 @@ const MotorVehicleCalculator = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(
         () => location.state?.selectedCustomer ?? null
     );
-    
+
     const [detailLoading, setDetailLoading] = useState(false);
 
 
@@ -75,9 +76,6 @@ const MotorVehicleCalculator = () => {
 
     const category =
         location.state?.category;
-
-
-
 
 
     // =========================================================
@@ -257,6 +255,9 @@ const MotorVehicleCalculator = () => {
             ),
         [policyTermResponse]
     );
+
+
+
 
 
     // =========================================================
@@ -461,7 +462,7 @@ const MotorVehicleCalculator = () => {
             idv: "",
             business_type_id: "",
             product_id: "",
-            policy_type_id: "",
+            policy_type_id: 2,
             policy_term_id: "",
             previous_policy_number: "",
             previous_insurance_company: "",
@@ -996,7 +997,7 @@ const MotorVehicleCalculator = () => {
 
             business_type_id: "",
             product_id: "",
-            policy_type_id: "",
+            policy_type_id: 2,
             policy_term_id: "",
 
             previous_policy_number: "",
@@ -1017,6 +1018,74 @@ const MotorVehicleCalculator = () => {
         setDetailLoading(false)
     };
 
+
+
+
+    // =========================================================
+    // AUTO POPULATE CUSTOMER VEHICLE AND POLICY DETAILS
+    // =========================================================
+
+    useEffect(() => {
+
+        if (!selectedCustomer) return;
+
+        const leadDetails =
+            selectedCustomer?.leads?.find(
+                item => Number(item.lead_id) === Number(lead?.lead_id)
+            ) || selectedCustomer?.leads?.[0];
+
+        const vehicleDetails =
+            selectedCustomer?.vehicles?.find(
+                item => Number(item.vehicle_id) === Number(leadDetails?.vehicle_id)
+            ) || selectedCustomer?.vehicles?.[0];
+
+        const formatDate = (date) => {
+            if (!date) return "";
+
+            return String(date).slice(0, 10);
+        };
+
+        // Calculate next policy start date
+        const getNextPolicyDate = (expiryDate) => {
+
+            const today = startOfDay(new Date());
+
+            const tomorrow = addDays(today, 1);
+
+            if (!expiryDate) {
+                return format(tomorrow, "yyyy-MM-dd");
+            }
+
+            // Add one day to the existing expiry date
+            const nextDate = addDays(
+                parseISO(formatDate(expiryDate)),
+                1
+            );
+
+            // If the calculated date is before today, use tomorrow
+            const finalDate = isBefore(nextDate, today)
+                ? tomorrow
+                : nextDate;
+
+            return format(finalDate, "yyyy-MM-dd");
+        };
+
+        setFormData(prev => ({
+            ...prev,
+
+            registration_date: formatDate(
+                vehicleDetails?.registration_date
+            ),
+
+            policy_start_date: getNextPolicyDate(
+                vehicleDetails?.known_policy_expiry_date
+            )
+        }));
+
+        // Previous calculation is no longer valid
+        setCalculationData(null);
+
+    }, [selectedCustomer, lead?.lead_id]);
     // =========================================================
     // RENDER
     // =========================================================

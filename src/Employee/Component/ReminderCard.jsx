@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Avatar, Typography, Chip, useTheme } from "@mui/material";
 
-const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
+const ReminderCard = ({ title, count, color, bg, icon, icons, active, onClick }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
@@ -14,7 +14,7 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
         gap: 1.5,
         p: { xs: 1.25, md: 1.5 },
         borderRadius: 3,
-        bgcolor: active 
+        bgcolor: active
           ? (isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.06)")
           : (isDark ? "rgba(30,41,59,0.7)" : "#fff"),
         border: active
@@ -39,7 +39,7 @@ const ReminderCard = ({ title, count, color, bg, icon, active, onClick }) => {
           height: { xs: 36, md: 40 },
         }}
       >
-        {icon}
+        {icons}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
