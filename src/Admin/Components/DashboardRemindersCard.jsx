@@ -32,24 +32,28 @@ const statusMeta = {
         color: "#dc2626",
         bg: "rgba(220,38,38,0.08)",
         icon: <ErrorOutline fontSize="small" />,
+        icons: "⌛",
     },
     today: {
         label: "Today",
         color: "#2563eb",
         bg: "rgba(37,99,235,0.08)",
         icon: <Today fontSize="small" />,
+        icons: "📅",
     },
     tomorrow: {
         label: "Tomorrow",
         color: "#7c3aed",
         bg: "rgba(124,58,237,0.08)",
         icon: <Schedule fontSize="small" />,
+        icons: "👉",
     },
     upcoming: {
         label: "Upcoming",
         color: "#059669",
         bg: "rgba(5,150,105,0.08)",
         icon: <EventAvailable fontSize="small" />,
+        icons: "🎁",
     },
 };
 
@@ -124,7 +128,7 @@ const DashboardRemindersCard = ({ remindersData }) => {
 
             }}
         >
-            <CardContent sx={{ px: 2,bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff", }}>
+            <CardContent sx={{ px: 2, bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff", }}>
                 <Box
                     sx={{
                         position: "sticky",
@@ -236,8 +240,8 @@ const DashboardRemindersCard = ({ remindersData }) => {
                                 textAlign: "center",
                                 borderRadius: 3,
                                 bgcolor: isDark ? "rgba(30,41,59,0.9)" : "rgba(248,250,252,0.9)",
-                                     boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
+                                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                             }}
                         >
                             <Typography sx={{ fontWeight: 700, color: isDark ? "#cbd5e1" : "#334155" }}>

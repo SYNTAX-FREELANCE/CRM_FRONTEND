@@ -267,6 +267,24 @@ const ThejaswiPreview = lazy(
 const MotorProfitCreation = lazy(
   () => import("./Masters/MotorCalculator/MotorProfitCreation"),
 );
+const DailyEmployeeProductivityReport = lazy(
+  () => import("./Reports/DailyEmployeeProductivityReport"),
+);
+
+const EmployeeCallDetailsReport = lazy(
+  () => import("./Reports/EmployeeCallDetailsReport"),
+);
+
+const PolicyClaimStatusCreation = lazy(
+  () => import("./Masters/PolicyClaimStatusMaster/PolicyClaimStatusCreation"),
+);
+
+const PolicyClaims = lazy(
+  () => import("./PolicyClaims/PolicyClaims"),
+);
+
+
+
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -330,6 +348,11 @@ const router = createBrowserRouter([
         path: "mycustomer",
         element: withSuspense(MyCustomers),
       },
+      {
+        path: "policyclaims",
+        element: withSuspense(PolicyClaims),
+      },
+
       {
         path: "allocation",
         element: withSuspense(CustomerAllocation),
@@ -661,7 +684,18 @@ const router = createBrowserRouter([
         path: "setting/motorprofit",
         element: withSuspense(MotorProfitCreation),
       },
-
+      {
+        path: "reports/dailyemployeeproductivity",
+        element: withSuspense(DailyEmployeeProductivityReport),
+      },
+      {
+        path: "reports/employeecalldetails",
+        element: withSuspense(EmployeeCallDetailsReport),
+      },
+      {
+        path: "setting/policyclaimstatus",
+        element: withSuspense(PolicyClaimStatusCreation),
+      },
       // {
       //   path: "*",
       //   element: withSuspense(NotFoundPage),

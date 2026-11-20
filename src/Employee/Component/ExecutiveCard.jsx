@@ -42,7 +42,7 @@ const ExecutiveCard = ({
     highlight = false,
 }) => {
     const colors = {
-        blue: "#1D4ED8",
+        blue: "#257210b5",
         blueSoft: "#DBEAFE",
         orange: "#F97316",
         orangeSoft: "#FFEDD5",
@@ -129,12 +129,12 @@ const ExecutiveCard = ({
                         <Stack direction="row" spacing={1} sx={{ mt: 0.6, alignItems: "center", flexWrap: "wrap" }}>
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
-                                <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} />
-                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}><strong style={{ fontSize: 14 }}>{sold}</strong> Captured</Typography>
+                                {/* <SellIcon sx={{ fontSize: 15, color: '#f0a308' }} /> */}
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}><strong style={{ fontSize: 14 }}>🎯 {sold}</strong> Captured</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: isDark ? "#94a3b8" : colors.muted }}>
-                                <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} />
-                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}> <strong style={{ fontSize: 14 }}>{calls}</strong> Target</Typography>
+                                {/* <PhoneInTalkIcon sx={{ fontSize: 15, color: "#1f2eff" }} /> */}
+                                <Typography sx={{ fontSize: 12.5, color: isDark ? "#f8fafc" : "#0f172a", fontWeight: 800 }}> <strong style={{ fontSize: 14 }}>☎️ {calls}</strong>Target</Typography>
                             </Box>
 
                         </Stack>

@@ -11,6 +11,8 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import TransferWithinAStationIcon from "@mui/icons-material/TransferWithinAStation";
+import CookieIcon from '@mui/icons-material/Cookie';
+
 
 export const MENU = [
   {
@@ -103,6 +105,13 @@ export const MENU = [
     icon: TransferWithinAStationIcon,
     path: "/home/transfer",
   },
+  {
+    module_id: 17,
+    label: "Policy Claims",
+    icon: CookieIcon,
+    path: "/home/policyclaims",
+  },
+
 ];
 
 export const getMenu = (RoleRights = [], userId, role) => {

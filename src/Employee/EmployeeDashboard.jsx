@@ -36,7 +36,7 @@ const EmployeeDashboard = () => {
 
     const { data: incentiveAmount = [] } = useEmployeeCurrentIncentiveAmount(id, CaptureCount);
 
-    
+
 
 
 
@@ -56,65 +56,116 @@ const EmployeeDashboard = () => {
         >
             <Card
                 sx={{
-                    borderRadius: 5,
-                    px: 2,
-                    py: 2,
+                    borderRadius: 4,
+                    px: { xs: 2, sm: 2.5 },
+                    py: { xs: 2, sm: 2.5 },
                     mb: 1,
-                    background: "linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #f97316 100%)",
+                    background: "linear-gradient(110deg, #164e63 0%, #087e91 55%, #8a9d54 100%)",
                     position: "relative",
                     overflow: "hidden",
-                    boxShadow: "0 25px 60px rgba(37, 99, 235, 0.22)",
+                    boxShadow: "0 5px 18px rgba(20, 70, 75, 0.18)",
+                    border: "1px solid rgba(255,255,255,0.12)",
                 }}
             >
+                {/* Background Decoration */}
                 <Box
                     sx={{
                         position: "absolute",
-                        top: -60,
-                        right: -60,
+                        top: -80,
+                        right: "25%",
+                        width: 180,
+                        height: 180,
+                        borderRadius: "50%",
+                        bgcolor: "rgba(255,255,255,0.05)",
+                        pointerEvents: "none",
+                    }}
+                />
+
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: -100,
+                        left: "35%",
                         width: 200,
                         height: 200,
                         borderRadius: "50%",
-                        bgcolor: "rgba(255,255,255,0.08)",
-                    }}
-                />
-                <Box
-                    sx={{
-                        position: "absolute",
-                        bottom: -80,
-                        left: -40,
-                        width: 150,
-                        height: 150,
-                        borderRadius: "50%",
-                        bgcolor: "rgba(255,255,255,0.06)",
+                        bgcolor: "rgba(255,255,255,0.04)",
+                        pointerEvents: "none",
                     }}
                 />
 
-                <Grid container spacing={2} alignItems="center" justifyContent={'space-between'} ssx={{
-                    width: "100%",
-                    m: 0,
-                }}>
-                    <Grid item xs={12} md={6} sx={{
-                        width: { xs: '100%', md: "50%" },
-                        flexBasis: { xs: '100%', md: "50%" },
-                    }}>
-                        <Typography fontSize={{ xs: 16, sm: 20, md: 26 }} fontWeight={900} color="#fff">
-                            WELCOME BACK {authUser?.emp_name?.toUpperCase() || "EMPLOYEE"}.
+                <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{
+                        width: "100%",
+                        m: 0,
+                        position: "relative",
+                        zIndex: 1,
+                    }}
+                >
+                    {/* Welcome Section */}
+                    <Grid
+                        item
+                        xs={12}
+                        md={7}
+                        sx={{
+                            width: { xs: "100%", md: "60%" },
+                            flexBasis: { xs: "100%", md: "60%" },
+                        }}
+                    >
+                        <Typography
+                            fontSize={10}
+                            fontWeight={800}
+                            letterSpacing={1.3}
+                            color="rgba(255,255,255,0.75)"
+                            sx={{ mb: 0.5 }}
+                        >
+                            WELCOME BACK
                         </Typography>
-                        <Typography fontSize={{ xs: 10, sm: 11, md: 13 }} color="rgba(255,255,255,0.88)">
-                            Track calls, follow-ups, appointments, renewals, and overall performance in one place.
+
+                        <Typography
+                            fontSize={{ xs: 19, sm: 23, md: 26 }}
+                            fontWeight={900}
+                            color="#FFFFFF"
+                            lineHeight={1.2}
+                            sx={{ mb: 0.7 }}
+                        >
+                            {authUser?.emp_name?.toUpperCase() || "EMPLOYEE"} 👋
+                        </Typography>
+
+                        <Typography
+                            fontSize={{ xs: 10, sm: 11, md: 12 }}
+                            fontWeight={600}
+                            color="rgba(255,255,255,0.88)"
+                            sx={{
+                                lineHeight: 1.6,
+                                maxWidth: 550,
+                            }}
+                        >
+                            Your day at a glance: track calls, follow-ups, appointments,
+                            renewals, and see how your performance is progressing.
                         </Typography>
                     </Grid>
 
-                    {/* Incentive */}
-                    <Grid item xs={12} md={6} sx={{
-                        width: { xs: '100%', md: "40%" },
-                        flexBasis:{ xs: '100%', md: "40%" },
-                        display: "flex",
-                        justifyContent: {
-                            xs: "center",
-                            md: "flex-end",
-                        },
-                    }}>
+                    {/* Incentive Section */}
+                    <Grid
+                        item
+                        xs={12}
+                        md={5}
+                        sx={{
+                            width: { xs: "100%", md: "38%" },
+                            flexBasis: { xs: "100%", md: "38%" },
+                            display: "flex",
+                            justifyContent: {
+                                xs: "flex-start",
+                                md: "flex-end",
+                            },
+                            alignItems: "center",
+                        }}
+                    >
                         <EmployeeIncentiveCard
                             captureCount={CaptureCount}
                             incentiveAmount={incentiveAmount?.current_incentive}
@@ -144,7 +195,7 @@ const EmployeeDashboard = () => {
                                     xs: "repeat(2, minmax(0, 1fr))",
                                     sm: "repeat(3, minmax(0, 1fr))",
                                     md: "repeat(6, minmax(0, 1fr))",
-                                    lg: "repeat(6, minmax(0, 1fr))",
+                                    lg: "repeat(8, minmax(0, 1fr))",
                                 },
                                 gap: 2,
                                 width: '100%',

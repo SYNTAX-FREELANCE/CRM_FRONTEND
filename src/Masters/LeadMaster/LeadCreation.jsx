@@ -27,7 +27,6 @@ const LeadCreation = () => {
         isActive: "Active",
     });
 
-    const [toast, setToast] = useState("");
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();

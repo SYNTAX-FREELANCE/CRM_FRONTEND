@@ -185,6 +185,13 @@ const Settings = () => {
           path: "/home/setting/paymentmethod",
           icon: <PaymentIcon />,
         },
+        {
+          menuslno: 59,
+          label: "Policy Claim Status Master",
+          path: "/home/setting/policyclaimstatus",
+          icon: <PaymentIcon />,
+        },
+
       ],
     },
 
