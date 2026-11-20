@@ -1,7 +1,9 @@
 import React from "react";
 import { Button, TextField } from "@mui/material";
-import { GridToolbarContainer } from "@mui/x-data-grid";
+import { GridToolbarContainer, GridToolbarExport } from "@mui/x-data-grid";
 import DownloadIcon from "@mui/icons-material/Download";
+
+
 
 export const CustomToolbar = ({
     selectedDateType,
@@ -184,3 +186,63 @@ export const CaptureListToolbar = ({
     );
 };
 
+
+export const PolicyClaimToolbar = ({
+    selectedMonth,
+    setSelectedMonth,
+}) => {
+    return (
+        <GridToolbarContainer
+            sx={{
+                minHeight: "48px",
+                px: 1,
+                py: 0.5,
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: 1,
+                borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
+            }}
+        >
+            <TextField
+                type="month"
+                size="small"
+                label="Select Month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                sx={{
+                    width: 170,
+                    "& .MuiInputBase-root": {
+                        height: 36,
+                        fontSize: 12,
+                    },
+                    "& .MuiInputLabel-root": {
+                        fontSize: 12,
+                    },
+                    "& .MuiOutlinedInput-input": {
+                        py: 0.5,
+                    },
+                }}
+            />
+
+            <GridToolbarExport
+                csvOptions={{
+                    fileName: "Policy_Claims",
+                    utf8WithBom: true,
+                }}
+                printOptions={{ disableToolbarButton: true }}
+                sx={{
+                    height: 36,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textTransform: "none",
+                    borderRadius: 1.5,
+                    px: 1.5,
+                }}
+            />
+        </GridToolbarContainer>
+    );
+};

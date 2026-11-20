@@ -18,10 +18,16 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { axioslogin } from "../../Connection/axios";
 import { errorNotify, successNotify } from "../../constant/Constant";
 import GlobalLoader from "../../CommonComponents/GlobalLoader";
+import { usePolicyClaimStatusMaster } from "../../CommonCode/useQuery";
+import PolicyClaimStatusSelect from "./PolicyClaimStatusSelect";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const PolicyDetails = ({ policyData, open, setOpen }) => {
     // Claim drawer
+    const [claimStatusId, setClaimStatusId] = useState(1);
+
+    const queryClient = useQueryClient();
 
     // CLAIM INITIAL STATE
     // =========================================
@@ -56,6 +62,7 @@ const PolicyDetails = ({ policyData, open, setOpen }) => {
 
     const [claimErrors, setClaimErrors] = useState({});
 
+    const { data: PolicyClaimDetails = [] } = usePolicyClaimStatusMaster();
 
     // =========================================
     // OPEN CLAIM DRAWER
@@ -348,6 +355,8 @@ const PolicyDetails = ({ policyData, open, setOpen }) => {
                 accident_date:
                     claimForm.accident_date,
 
+                claim_status_id: claimStatusId,
+
                 accident_time:
                     claimForm.accident_time,
 
@@ -400,6 +409,7 @@ const PolicyDetails = ({ policyData, open, setOpen }) => {
             const { success, message } = response?.data ?? {};
             if (success !== 1) return errorNotify(message);
             successNotify(message)
+            await queryClient.invalidateQueries(["policy-claim", policyData.policy_id])
             handlerest()
         } catch (error) {
             errorNotify("Error in Claming Process")
@@ -794,15 +804,11 @@ const PolicyDetails = ({ policyData, open, setOpen }) => {
                             size="small"
                             label="Driver Age"
                             type="number"
-                            value={
-                                claimForm.driver_age
-                            }
-                            onChange={handleClaimChange(
-                                "driver_age"
-                            )}
-
+                            value={claimForm.driver_age}
+                            onChange={handleClaimChange("driver_age")}
+                            error={Boolean(claimErrors.driver_age)}
+                            helperText={claimErrors.driver_age || " "}
                         />
-
 
                         <TextField
                             fullWidth
@@ -913,6 +919,16 @@ const PolicyDetails = ({ policyData, open, setOpen }) => {
                         sx={{ mb: 2 }}
                     />
 
+                    <SectionTitle>
+                        Select Claim Status
+                    </SectionTitle>
+
+
+                    <PolicyClaimStatusSelect
+                        statuses={PolicyClaimDetails || []}
+                        value={claimStatusId}
+                        onChange={setClaimStatusId}
+                    />
 
                     {/* =============================================
                         REMARKS

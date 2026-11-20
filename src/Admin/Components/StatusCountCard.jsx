@@ -1,86 +1,91 @@
+
 import React from "react";
 import { Card, CardContent, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+const STATUS_COLORS = {
+    1: "#2563eb", // NEW
+    2: "#d97706", // CALLBACK
+    3: "#7c3aed", // QUOTE
+    4: "#0891b2", // APPOINTMENT
+    5: "#16a34a", // SOLD
+    6: "#dc2626", // LOST
+    7: "#059669", // PAID
+    8: "#6366f1", // RECALL
+};
 
 const StatusCountCard = ({
     title,
     statusId,
     count,
     color = "#2563eb",
-    borderColor = "#fc8f1a8d",
 }) => {
     const navigate = useNavigate();
     const theme = useTheme();
-    const isDark = theme.palette.mode === 'dark';
+    const isDark = theme.palette.mode === "dark";
 
-    const FinalTitle = title === 'SOLD' ? "CAPTURED" : title;
+    const FinalTitle = title === "SOLD" ? "CAPTURED" : title;
+
+    const statusColor = STATUS_COLORS[statusId] || color;
 
     return (
         <Card
-            onClick={() => navigate('/home/freshcalls', {
-                state: { status: statusId }
-            })}
-
+            onClick={() =>
+                navigate("/home/freshcalls", {
+                    state: { status: statusId },
+                })
+            }
             elevation={0}
             sx={{
                 minWidth: 0,
-                borderRadius: 4,
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,.8)",
-                borderLeft: `4px solid ${borderColor}`,
-                cursor: 'pointer',
-
-                background: isDark
-                    ? `radial-gradient(circle at 15% 20%, rgba(37,99,235,0.1) 0%, transparent 30%),
-                       radial-gradient(circle at 85% 15%, rgba(249,115,22,0.1) 0%, transparent 28%),
-                       linear-gradient(180deg, #1e293b 0%, #0f172a 100%)`
-                    : `radial-gradient(circle at 15% 20%, rgba(37,99,235,0.14) 0%, transparent 30%),
-                       radial-gradient(circle at 85% 15%, rgba(249,115,22,0.12) 0%, transparent 28%),
-                       linear-gradient(180deg, #f8fbff 0%, #ffffff 45%, #f8fafc 100%)`,
-
+                height: "100%",
+                borderRadius: "19px",
+                border: isDark
+                    ? "1px solid rgba(255,255,255,0.08)"
+                    : "1px solid #e5e7eb",
+                borderTop: `3px solid ${statusColor}`,
+                cursor: "pointer",
+                background: isDark ? "#1e293b" : "#ffffff",
                 boxShadow: isDark
-                    ? `0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)`
-                    : `0 12px 30px rgba(15,23,42,.06), inset 0 1px 0 rgba(255,255,255,.8)`,
-
-                backdropFilter: "blur(12px)",
-                transition: "all .25s ease",
+                    ? "0 4px 12px rgba(0,0,0,0.2)"
+                    : "0 4px 12px rgba(15,23,42,0.045)",
+                transition: "all 0.2s ease",
 
                 "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: isDark
-                        ? `0 18px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1)`
-                        : `0 18px 40px rgba(37,99,235,.12), inset 0 1px 0 rgba(255,255,255,.9)`,
+                    transform: "translateY(-3px)",
+                    boxShadow: `0 8px 20px ${statusColor}25`,
                 },
             }}
         >
-            <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+            <CardContent
+                sx={{
+                    px: 1.7,
+                    py: 1.4,
+                    "&:last-child": { pb: 1.4 },
+                }}
+            >
                 <Typography
-                    variant="caption"
                     sx={{
-                        color: isDark ? "#94a3b8" : "#475569",
+                        fontFamily: "Bahnschrift",
+                        color: isDark ? "#94a3b8" : "#64748b",
                         fontWeight: 800,
                         textTransform: "uppercase",
-                        letterSpacing: "0.5px",
+                        letterSpacing: "0.7px",
                         fontSize: 10,
+                        mb: 0.5,
                     }}
                 >
                     {FinalTitle}
                 </Typography>
 
                 <Typography
-                    fontWeight={900}
-                    fontSize={{ xs: 32, sm: 36, md: 42 }}
                     sx={{
-                        mb: 0.5,
-                        color: isDark ? "#f8fafc" : "#050505",
-                        letterSpacing: 1,
-                        textShadow: isDark
-                            ? "0px 4px 12px rgba(0,0,0,0.6)"
-                            : `
-                             1px 1px 0px #fff,
-                             2px 2px 0px #d1d5db,
-                             3px 3px 0px #cbd5e1,
-                             4px 4px 6px rgba(0,0,0,0.25)
-                           `,
+                        fontFamily: "Bahnschrift",
+                        fontWeight: 900,
+                        fontSize: { xs: 27, sm: 30, md: 32 },
+                        lineHeight: 1.2,
+                        color: isDark ? "#f8fafc" : "#1e293b",
+                        fontVariantNumeric: "tabular-nums",
                     }}
                 >
                     {count}

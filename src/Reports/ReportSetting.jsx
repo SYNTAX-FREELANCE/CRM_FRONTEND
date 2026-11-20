@@ -9,40 +9,51 @@ import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Stack } from "@mui/system";
 import { Paper, Typography } from "@mui/material";
-
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import CallIcon from "@mui/icons-material/Call";
 
 const items = [
-    { 
+    {
         label: "Policy Report",
-         path: "./policyreport",
-          icon: <MenuIcon />
-         },
-    { 
+        path: "./policyreport",
+        icon: <MenuIcon />
+    },
+    {
         label: "Employee Performance Report",
-         path: "./employeperformance",
-          icon: <BadgeIcon />
-         },
-    { 
+        path: "./employeperformance",
+        icon: <BadgeIcon />
+    },
+    {
         label: "All Employee Performance Report",
-         path: "./allemployeeperformance",
-          icon: <BadgeIcon />
-         },
+        path: "./allemployeeperformance",
+        icon: <BadgeIcon />
+    },
     {
-         label: "Employee Login Report",
-         path: "./UserLogReports",
-          icon: <SecurityIcon />
-         },
+        label: "Employee Login Report",
+        path: "./UserLogReports",
+        icon: <SecurityIcon />
+    },
     {
-         label: "Detailed Employee Login Report",
-         path: "./DetailedUserLogReports",
-          icon: <SecurityIcon /> 
-        },
+        label: "Detailed Employee Login Report",
+        path: "./DetailedUserLogReports",
+        icon: <SecurityIcon />
+    },
+    {
+        label: "Daily Employee Productivity Report",
+        path: "./dailyemployeeproductivity",
+        icon: <AssessmentIcon />
+    },
+    {
+        label: "Employee Call Details Report",
+        path: "./employeecalldetails",
+        icon: <CallIcon />
+    },
 ];
 
 const ReportSetting = () => {
 
 
-    
+
 
     const navigate = useNavigate();
     const { mode } = useThemeMode();

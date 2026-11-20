@@ -77,12 +77,13 @@ const LeadDetailsDrawer = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const [loading, setLoading] = useState(false)
 
-  const { data: QuotationData = [] } = useGetQuotationDetails(leadId);
+  const { data: QuotationData = [] } = useGetQuotationDetails(leadId, VehicleId);
   const { data: LeadCallDetails = [] } = useLeadCallDetails(leadId);
 
 
-
-
+  console.log({
+    VehicleId
+  })
 
 
   const queryClient = useQueryClient();

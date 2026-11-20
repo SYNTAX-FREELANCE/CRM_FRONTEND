@@ -100,6 +100,8 @@ import {
   getVehicleCategoryProfit,
   getQuotationDetails,
   getCallDetailsDuraiton,
+  FetchPolicyClaimStatusMaster,
+  getActivePolicyDetils,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -907,15 +909,24 @@ export const useMotorTaxRuleMaster = () => {
   });
 };
 
-export const useGetQuotationDetails = (leadId) => {
+export const useGetQuotationDetails = (leadId, VehicleId) => {
   return useQuery({
-    queryKey: ["quotationdetail", leadId],
-    queryFn: () => getQuotationDetails(leadId),
-    enabled: !!leadId,
+    queryKey: ["quotationdetail", leadId, VehicleId],
+    queryFn: () => getQuotationDetails(leadId, VehicleId),
+    enabled: !!leadId && !!VehicleId,
     staleTime: Infinity,
   });
 };
 
+
+
+export const usePolicyClaimStatusMaster = () => {
+  return useQuery({
+    queryKey: ["policy-claim-status-master"],
+    queryFn: FetchPolicyClaimStatusMaster,
+    staleTime: Infinity,
+  });
+};
 // ==================================
 
 export const useCommonMaster = (type) => {
@@ -1191,6 +1202,10 @@ export const useCommonMaster = (type) => {
       queryKey: ["motor-profit"],
       queryFn: getVehicleCategoryProfit,
     },
+    policyclaimstatus: {
+      queryKey: ["policy-claim-status-master"],
+      queryFn: FetchPolicyClaimStatusMaster,
+    },
   };
 
   const config = masterMap[type];
@@ -1213,3 +1228,15 @@ export const useLeadCallDetails = (leadId) => {
     staleTime: Infinity,
   });
 };
+
+
+export const useFetchActivePolicyClaims = () => {
+  return useQuery({
+    queryKey: ["calldetails-leads"],
+    queryFn: getActivePolicyDetils,
+    staleTime: Infinity,
+  });
+};
+
+
+

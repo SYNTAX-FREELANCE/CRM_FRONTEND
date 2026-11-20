@@ -12,26 +12,30 @@ const statusMeta = {
     overdue: {
         label: "Overdue",
         color: "#dc2626",
-        bg: "rgba(220,38,38,0.08)",
+        bg: "rgba(220, 38, 38, 0.18)",
         icon: <ErrorOutline fontSize="small" />,
+        icons: "⌛",
     },
     today: {
         label: "Today",
         color: "#2563eb",
-        bg: "rgba(37,99,235,0.08)",
+        bg: "rgba(37, 100, 235, 0.12)",
         icon: <Today fontSize="small" />,
+        icons: "📅",
     },
     tomorrow: {
         label: "Tomorrow",
         color: "#7c3aed",
-        bg: "rgba(124,58,237,0.08)",
+        bg: "rgba(124, 58, 237, 0.08)",
         icon: <Schedule fontSize="small" />,
+        icons: "👉",
     },
     upcoming: {
         label: "Upcoming",
         color: "#059669",
-        bg: "rgba(5,150,105,0.08)",
+        bg: "rgba(75, 235, 184, 0.06)",
         icon: <EventAvailable fontSize="small" />,
+        icons: "🎁",
     },
 };
 
@@ -57,10 +61,13 @@ const ReminderItem = ({ item }) => {
             sx={{
                 p: { xs: 1.25, md: 1.5 },
                 borderRadius: 3,
-                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
-               boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
-                cursor: 'pointer'
+                bgcolor: isDark ? "rgba(30,41,59,0.7)" : meta?.bg,
+                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                // border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
+                cursor: 'pointer',
+                borderTopLeftRadius: '2px solid #0d0c0cff',
+                borderBottomLeftRadius: '2px solid #030303ff',
+                borderLeft: `5px solid  ${meta?.color}`,
             }}
         >
             <Box
@@ -73,14 +80,14 @@ const ReminderItem = ({ item }) => {
             >
                 <Avatar
                     sx={{
-                        bgcolor: meta?.bg || "rgba(148,163,184,0.12)",
+                        bgcolor: meta?.color || "rgba(148,163,184,0.12)",
                         color: meta?.color || "#64748b",
                         width: { xs: 20, sm: 25, md: 34 },
                         height: { xs: 20, sm: 25, md: 34 },
                         flexShrink: 0,
                     }}
                 >
-                    {meta?.icon}
+                    {meta?.icons}
                 </Avatar>
 
                 <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -204,7 +211,7 @@ const ReminderItem = ({ item }) => {
                                 label={meta?.label || "Reminder"}
                                 size="small"
                                 sx={{
-                                    bgcolor: meta?.bg || "rgba(148,163,184,0.12)",
+                                    // bgcolor: meta?.bg || "rgba(148,163,184,0.12)",
                                     color: meta?.color || "#64748b",
                                     fontWeight: 800,
                                     fontSize: { xs: 8, sm: 10, md: 12 },
