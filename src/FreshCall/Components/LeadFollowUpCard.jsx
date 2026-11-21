@@ -1,8 +1,8 @@
+
 import React, { memo } from "react";
 import {
     Box,
     Chip,
-    Divider,
     Stack,
     Typography,
     useTheme,
@@ -17,17 +17,31 @@ const LeadFollowUpCard = ({ item, index }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
 
+    const colors = {
+        background: isDark ? "#1c2620" : "#ffffff",
+        border: isDark ? "#344239" : "#e5ebe7",
+        text: isDark ? "#e8f0ea" : "#26352b",
+        muted: isDark ? "#9ba99f" : "#718078",
+        primary: "#21834b",
+        chipBg: isDark
+            ? "rgba(33,131,75,0.18)"
+            : "#edf7f0",
+        hoverBorder: isDark ? "#397c53" : "#b8d9c2",
+    };
+
     return (
         <Box
             sx={{
-                p: 2,
-                borderRadius: 2,
-                bgcolor: isDark ? "rgba(30, 41, 59, 0.6)" : "#f8fafc",
-                border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
-                transition: "all .2s ease",
+                p: { xs: 1.75, sm: 2 },
+                borderRadius: "16px",
+                background: colors.background,
+                border: `1px solid ${colors.border}`,
+                transition: "all 0.2s ease",
                 "&:hover": {
-                    boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.4)" : 2,
-                    borderColor: "primary.main",
+                    boxShadow: isDark
+                        ? "0 4px 14px rgba(0,0,0,0.2)"
+                        : "0 4px 14px rgba(15,23,42,0.05)",
+                    borderColor: colors.hoverBorder,
                 },
             }}
         >
@@ -36,17 +50,62 @@ const LeadFollowUpCard = ({ item, index }) => {
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                mb={1.5}
+                mb={2}
             >
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                >
+                    <Box
+                        sx={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: "9px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            bgcolor: colors.chipBg,
+                        }}
+                    >
+                        <EventNoteIcon
+                            sx={{
+                                fontSize: 17,
+                                color: colors.primary,
+                            }}
+                        />
+                    </Box>
+
+                    <Typography
+                        sx={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            color: colors.text,
+                        }}
+                    >
+                        Follow-up Details
+                    </Typography>
+                </Stack>
+
                 <Chip
                     size="small"
-                    color="primary"
                     label={item.status_name}
+                    sx={{
+                        height: 25,
+                        borderRadius: "7px",
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        color: colors.primary,
+                        bgcolor: colors.chipBg,
+                        border: `1px solid ${colors.hoverBorder}`,
+                        "& .MuiChip-label": {
+                            px: 1.1,
+                        },
+                    }}
                 />
             </Stack>
 
             <Stack spacing={1.5}>
-
                 <Row
                     label="Outcome"
                     value={item.call_outcome || "-"}
@@ -56,12 +115,15 @@ const LeadFollowUpCard = ({ item, index }) => {
 
                 <Row
                     label="Next Follow Up"
-                    value={item.next_followup_date
-                        ? new Date(item?.next_followup_date).toLocaleString()
-                        : "-"}
+                    value={
+                        item.next_followup_date
+                            ? new Date(item?.next_followup_date).toLocaleString()
+                            : "-"
+                    }
                     icon={<EventNoteIcon sx={{ fontSize: 14 }} />}
                     accent="blue"
                 />
+
                 <Row
                     label="Remarks"
                     value={item.remarks || "No remarks"}
@@ -73,4 +135,4 @@ const LeadFollowUpCard = ({ item, index }) => {
     );
 };
 
-export default memo(LeadFollowUpCard);
+export default memo(LeadFollowUpCard);

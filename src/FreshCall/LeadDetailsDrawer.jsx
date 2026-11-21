@@ -41,7 +41,7 @@ const StatusActionCards = lazy(() => import("./Components/StatusActionCards"))
 const FollowUpForm = lazy(() => import("./Components/FollowUpForm"))
 const LeadHeader = lazy(() => import("./Components/LeadHeader"))
 
-const leadColor = "#2563eb";
+const leadColor = "#0a8e48";
 
 const LeadDetailsDrawer = ({
   open,
@@ -77,10 +77,10 @@ const LeadDetailsDrawer = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const [loading, setLoading] = useState(false)
 
-  const { data: QuotationData = [] } = useGetQuotationDetails(leadId, VehicleId);
+  const { data: QuotationData = [],
+    refetch: FetchQuotationDetail
+  } = useGetQuotationDetails(leadId, VehicleId);
   const { data: LeadCallDetails = [] } = useLeadCallDetails(leadId);
-
-
 
 
   const queryClient = useQueryClient();
@@ -147,16 +147,26 @@ const LeadDetailsDrawer = ({
     !!statusId &&
     Number(lead?.requires_followup) === 1;
 
-  const { data: LeadHistory = [] } = useGetLeadHistory(
+  const { data: LeadHistory = [], refetch: RefetchLeadHistory } = useGetLeadHistory(
     leadId,
     shouldFetchHistory
   );
 
-  const { data: LeadFollowUp = null } = useFollowUpDetail(
+  const { data: LeadFollowUp = null, refetch: FetchFollowUpdata } = useFollowUpDetail(
     leadId,
     statusId,
     shouldFetchFollowUp
   );
+
+  const refreshAllData = useCallback(async () => {
+    await FetchQuotationDetail();
+    await FetchFollowUpdata();
+    await RefetchLeadHistory();
+  }, [
+    FetchQuotationDetail,
+    FetchFollowUpdata,
+    RefetchLeadHistory
+  ]);
 
   const hasHistory = useMemo(
     () => LeadHistory?.length > 0,
@@ -576,6 +586,7 @@ const LeadDetailsDrawer = ({
           handleCallClose={handleCallClose}
           callAnchorEl={callAnchorEl}
           callMenuOpen={callMenuOpen}
+          refetch={refreshAllData}
         />
 
         <Box
@@ -601,13 +612,13 @@ const LeadDetailsDrawer = ({
               <Row
                 label="Address"
                 value={lead?.address}
-                icon={<LocationOnIcon sx={{ fontSize: 14 }} />}
+                icon={"🏠"}
                 accent="blue"
               />
               <Row
                 label="District - City"
                 value={`${lead?.district || "-"} - ${lead.city || "-"}`}
-                icon={<LocationOnIcon sx={{ fontSize: 14 }} />}
+                icon={"🏠"}
                 accent="blue"
               />
             </Section>
@@ -621,13 +632,13 @@ const LeadDetailsDrawer = ({
               <Row
                 label="Reg No"
                 value={lead.registration_number || "-"}
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
               />
               <Row
                 label="Expiry Date"
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
                 value={
                   <EditableDateField
                     value={lead?.known_policy_expiry_date}
@@ -638,8 +649,8 @@ const LeadDetailsDrawer = ({
               />
               <Row
                 label="Registration Date"
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
                 value={
                   <EditableDateField
                     value={lead?.registration_date}
@@ -653,20 +664,20 @@ const LeadDetailsDrawer = ({
               <Row
                 label="Model"
                 value={lead.model || "-"}
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
               />
               <Row
                 label="Engine No"
                 value={lead.engine_number || "-"}
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
               />
               <Row
                 label="Chassis No"
                 value={lead.chassis_number || "-"}
-                icon={<DirectionsCarIcon sx={{ fontSize: 14 }} />}
-                accent="orange"
+                icon={"🚘"}
+                accent="blue"
               />
             </Section>
 
@@ -723,7 +734,7 @@ const LeadDetailsDrawer = ({
             <Section
               title="Quotation Details"
               icon={<ArticleIcon sx={{ fontSize: 16 }} />}
-              accent="orange"
+              accent="purple"
               defaultExpanded={true}
             >
               <MotorQuotationSection
@@ -746,32 +757,32 @@ const LeadDetailsDrawer = ({
               <Section
                 title="Policy Details"
                 icon={<ArticleIcon sx={{ fontSize: 16 }} />}
-                accent="orange"
+                accent="blue"
                 defaultExpanded={true}
               >
                 <Row
                   label="Policy No"
                   value={lead.policy_number || "-"}
-                  icon={<ArticleIcon sx={{ fontSize: 14 }} />}
-                  accent="orange"
+                  icon={"🎯"}
+                  accent="blue"
                 />
                 <Row
                   label="Start Date"
                   value={formatDate(lead.start_date)}
-                  icon={<ArticleIcon sx={{ fontSize: 14 }} />}
-                  accent="orange"
+                  icon={"🎯"}
+                  accent="blue"
                 />
                 <Row
                   label="Expiry Date"
                   value={formatDate(lead.policy_expiry_date)}
-                  icon={<ArticleIcon sx={{ fontSize: 14 }} />}
-                  accent="orange"
+                  icon={"🎯"}
+                  accent="blue"
                 />
                 <Row
                   label="Premium"
                   value={lead.premium_amount || "-"}
-                  icon={<ArticleIcon sx={{ fontSize: 14 }} />}
-                  accent="orange"
+                  icon={"🎯"}
+                  accent="blue"
                 />
               </Section>
             )}
