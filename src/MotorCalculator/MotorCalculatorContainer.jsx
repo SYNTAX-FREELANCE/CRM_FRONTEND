@@ -62,9 +62,8 @@ const MotorCalculatorContainer = () => {
             sx={{
                 width: "100%",
                 minHeight: "90vh",
-
-                backgroundColor:
-                    colors.background,
+                // backgroundColor:
+                //     colors.background,
 
                 color: colors.text,
 

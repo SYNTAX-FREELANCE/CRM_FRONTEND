@@ -6,6 +6,7 @@ import {
     Typography,
     Chip,
     Divider,
+    useTheme,
 } from "@mui/material";
 
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -18,6 +19,24 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { format } from "date-fns";
 
 const LeadCallHistory = ({ calls = [] }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+
+    const colors = {
+        card: isDark ? "#1b241e" : "#ffffff",
+        border: isDark ? "#35443a" : "#e0ebe3",
+        text: isDark ? "#e5eee7" : "#263b30",
+        secondary: isDark ? "#a2b1a6" : "#78877e",
+        divider: isDark ? "#35443a" : "#e8f0ea",
+        mutedBg: isDark ? "#222d25" : "#f5f8f5",
+        answered: isDark ? "#70cf91" : "#168044",
+        answeredBg: isDark ? "#203b2b" : "#eaf6ed",
+        answeredBorder: isDark ? "#426c4e" : "#cde6d4",
+        missed: isDark ? "#f18b8b" : "#dc4444",
+        missedBg: isDark ? "#402929" : "#fff0f0",
+        missedBorder: isDark ? "#694040" : "#f3d4d4",
+        iconBg: isDark ? "#29372d" : "#edf6f0",
+    };
 
     const formatCallDate = (date) => {
         if (!date) return "-";
@@ -51,14 +70,15 @@ const LeadCallHistory = ({ calls = [] }) => {
                 sx={{
                     py: 4,
                     textAlign: "center",
-                    borderRadius: 2,
-                    bgcolor: "rgba(148,163,184,0.06)",
+                    borderRadius: "12px",
+                    bgcolor: colors.mutedBg,
+                    border: `1px dashed ${colors.border}`,
                 }}
             >
                 <PhoneMissedIcon
                     sx={{
                         fontSize: 32,
-                        color: "text.disabled",
+                        color: colors.secondary,
                         mb: 1,
                     }}
                 />
@@ -66,7 +86,7 @@ const LeadCallHistory = ({ calls = [] }) => {
                 <Typography
                     variant="body2"
                     fontWeight={700}
-                    color="text.secondary"
+                    sx={{ color: colors.secondary }}
                 >
                     No call history available
                 </Typography>
@@ -77,7 +97,6 @@ const LeadCallHistory = ({ calls = [] }) => {
     return (
         <Stack spacing={1.5}>
             {calls?.map((item, index) => {
-
                 const answered =
                     Number(item.answered) === 1 ||
                     item.call_status === "ANSWERED";
@@ -87,20 +106,33 @@ const LeadCallHistory = ({ calls = [] }) => {
                     item.call_ended_at ||
                     item.created_at;
 
+                const statusColor = answered
+                    ? colors.answered
+                    : colors.missed;
+
+                const statusBg = answered
+                    ? colors.answeredBg
+                    : colors.missedBg;
+
+                const statusBorder = answered
+                    ? colors.answeredBorder
+                    : colors.missedBorder;
+
                 return (
                     <Box
                         key={item.call_log_id}
                         sx={{
-                            border: "1px solid",
-                            borderColor: answered
-                                ? "rgba(22,163,74,0.22)"
-                                : "rgba(239,68,68,0.20)",
-                            borderRadius: 2.5,
-                            p: 1.5,
-                            bgcolor: "background.paper",
-                            boxShadow: "0 2px 8px rgba(15,23,42,0.035)",
+                            border: `1px solid ${statusBorder}`,
+                            borderRadius: "12px",
+                            p: { xs: 1.25, sm: 1.5 },
+                            bgcolor: colors.card,
+                            boxShadow: isDark
+                                ? "0 3px 10px rgba(0,0,0,0.16)"
+                                : "0 2px 8px rgba(31,65,43,0.04)",
+                            transition: "border-color 0.2s ease",
                         }}
                     >
+                        {/* Call Header */}
                         <Stack
                             direction="row"
                             alignItems="center"
@@ -112,21 +144,19 @@ const LeadCallHistory = ({ calls = [] }) => {
                                 direction="row"
                                 alignItems="center"
                                 spacing={1}
+                                sx={{ minWidth: 0 }}
                             >
                                 <Box
                                     sx={{
                                         width: 38,
                                         height: 38,
-                                        borderRadius: 2,
+                                        borderRadius: "10px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        bgcolor: answered
-                                            ? "rgba(22,163,74,0.10)"
-                                            : "rgba(239,68,68,0.10)",
-                                        color: answered
-                                            ? "#16a34a"
-                                            : "#ef4444",
+                                        bgcolor: statusBg,
+                                        color: statusColor,
+                                        flexShrink: 0,
                                     }}
                                 >
                                     {answered ? (
@@ -136,18 +166,24 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     )}
                                 </Box>
 
-                                <Box>
+                                <Box sx={{ minWidth: 0 }}>
                                     <Typography
                                         fontWeight={800}
                                         fontSize={13}
-                                        color="text.primary"
+                                        sx={{
+                                            color: colors.text,
+                                            wordBreak: "break-word",
+                                        }}
                                     >
                                         {item.phone_number || "-"}
                                     </Typography>
 
                                     <Typography
                                         variant="caption"
-                                        color="text.secondary"
+                                        sx={{
+                                            color: colors.secondary,
+                                            fontSize: 10,
+                                        }}
                                     >
                                         Call ID: #{item.call_log_id}
                                     </Typography>
@@ -167,12 +203,13 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     )
                                 }
                                 sx={{
+                                    height: 23,
                                     fontWeight: 800,
                                     fontSize: 10,
-                                    bgcolor: answered
-                                        ? "rgba(22,163,74,0.10)"
-                                        : "rgba(239,68,68,0.10)",
-                                    color: answered ? "#15803d" : "#dc2626",
+                                    bgcolor: statusBg,
+                                    color: statusColor,
+                                    border: `1px solid ${statusBorder}`,
+                                    borderRadius: "7px",
                                     "& .MuiChip-icon": {
                                         color: "inherit",
                                         fontSize: 15,
@@ -181,8 +218,14 @@ const LeadCallHistory = ({ calls = [] }) => {
                             />
                         </Stack>
 
-                        <Divider sx={{ my: 1.3 }} />
+                        <Divider
+                            sx={{
+                                my: 1.3,
+                                borderColor: colors.divider,
+                            }}
+                        />
 
+                        {/* Call Details */}
                         <Box
                             sx={{
                                 display: "grid",
@@ -193,6 +236,7 @@ const LeadCallHistory = ({ calls = [] }) => {
                                 gap: 1.5,
                             }}
                         >
+                            {/* Call Date */}
                             <Box>
                                 <Stack
                                     direction="row"
@@ -202,14 +246,17 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     <AccessTimeIcon
                                         sx={{
                                             fontSize: 14,
-                                            color: "text.secondary",
+                                            color: colors.secondary,
                                         }}
                                     />
 
                                     <Typography
                                         variant="caption"
-                                        color="text.secondary"
-                                        fontWeight={700}
+                                        sx={{
+                                            color: colors.secondary,
+                                            fontWeight: 700,
+                                            fontSize: 10,
+                                        }}
                                     >
                                         Call Date
                                     </Typography>
@@ -219,11 +266,16 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     fontSize={11}
                                     fontWeight={700}
                                     mt={0.5}
+                                    sx={{
+                                        color: colors.text,
+                                        wordBreak: "break-word",
+                                    }}
                                 >
                                     {formatCallDate(callDate)}
                                 </Typography>
                             </Box>
 
+                            {/* Duration */}
                             <Box>
                                 <Stack
                                     direction="row"
@@ -233,14 +285,17 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     <AccessTimeIcon
                                         sx={{
                                             fontSize: 14,
-                                            color: "text.secondary",
+                                            color: colors.secondary,
                                         }}
                                     />
 
                                     <Typography
                                         variant="caption"
-                                        color="text.secondary"
-                                        fontWeight={700}
+                                        sx={{
+                                            color: colors.secondary,
+                                            fontWeight: 700,
+                                            fontSize: 10,
+                                        }}
                                     >
                                         Duration
                                     </Typography>
@@ -250,11 +305,13 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     fontSize={11}
                                     fontWeight={700}
                                     mt={0.5}
+                                    sx={{ color: colors.text }}
                                 >
                                     {formatDuration(item.duration_seconds)}
                                 </Typography>
                             </Box>
 
+                            {/* Source */}
                             <Box>
                                 <Stack
                                     direction="row"
@@ -264,14 +321,17 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     <SmartphoneIcon
                                         sx={{
                                             fontSize: 14,
-                                            color: "text.secondary",
+                                            color: colors.secondary,
                                         }}
                                     />
 
                                     <Typography
                                         variant="caption"
-                                        color="text.secondary"
-                                        fontWeight={700}
+                                        sx={{
+                                            color: colors.secondary,
+                                            fontWeight: 700,
+                                            fontSize: 10,
+                                        }}
                                     >
                                         Source
                                     </Typography>
@@ -281,11 +341,16 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     fontSize={11}
                                     fontWeight={700}
                                     mt={0.5}
+                                    sx={{
+                                        color: colors.text,
+                                        wordBreak: "break-word",
+                                    }}
                                 >
                                     {item.source || "-"}
                                 </Typography>
                             </Box>
 
+                            {/* Called By */}
                             <Box>
                                 <Stack
                                     direction="row"
@@ -295,14 +360,17 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     <PersonIcon
                                         sx={{
                                             fontSize: 14,
-                                            color: "text.secondary",
+                                            color: colors.secondary,
                                         }}
                                     />
 
                                     <Typography
                                         variant="caption"
-                                        color="text.secondary"
-                                        fontWeight={700}
+                                        sx={{
+                                            color: colors.secondary,
+                                            fontWeight: 700,
+                                            fontSize: 10,
+                                        }}
                                     >
                                         Called By
                                     </Typography>
@@ -312,6 +380,10 @@ const LeadCallHistory = ({ calls = [] }) => {
                                     fontSize={11}
                                     fontWeight={700}
                                     mt={0.5}
+                                    sx={{
+                                        color: colors.text,
+                                        wordBreak: "break-word",
+                                    }}
                                 >
                                     {item.employee_name ||
                                         (item.created_by

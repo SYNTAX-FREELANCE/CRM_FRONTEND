@@ -1,103 +1,153 @@
+
 import React, { useState } from "react";
-import { Box, Typography, Collapse, IconButton, useTheme } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Collapse,
+    IconButton,
+    useTheme,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const Section = ({ title, icon, children, accent = "blue", defaultExpanded = true }) => {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === "dark";
-  const [expanded, setExpanded] = useState(defaultExpanded);
+const Section = ({
+    title,
+    icon,
+    children,
+    accent = "blue",
+    defaultExpanded = true,
+}) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
 
-  const isOrange = accent === "orange";
+    const [expanded, setExpanded] = useState(defaultExpanded);
 
-  return (
-    <Box
-      sx={{
-        borderRadius: 2.5,
-        border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(255, 255, 255, 0.22)",
-        boxShadow: isDark ? "0 10px 30px rgba(0, 0, 0, 0.3)" : "0 10px 30px rgba(15, 23, 42, 0.06)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        bgcolor: isDark
-          ? (isOrange ? "rgba(5, 5, 5, 0.6)" : "rgba(10, 10, 10, 0.6)")
-          : (isOrange ? "rgba(254, 252, 249, 0.45)" : "rgba(239, 246, 255, 0.45)"),
-        overflow: "hidden",
-        transition: "all 0.3s ease",
-      }}
-    >
-      <Box
-        onClick={() => setExpanded((prev) => !prev)}
-        sx={{
-          px: 1.5,
-          py: 1,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          cursor: "pointer",
-          userSelect: "none",
-          bgcolor: isDark
-            ? (isOrange ? "rgba(2, 2, 2, 0.18)" : "rgba(37, 99, 235, 0.18)")
-            : (isOrange ? "rgba(0, 0, 0, 0.08)" : "rgba(37, 99, 235, 0.08)"),
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(255, 255, 255, 0.12)",
-        }}
-      >
-        {icon && (
-          <Box
+    const isOrange = accent === "orange";
+
+    const colors = {
+        background: isDark ? "#1b241e" : "#ffffff",
+        headerBackground: isDark
+            ? (isOrange ? "#30271f" : "#203329")
+            : (isOrange ? "#fff7ed" : "#edf6f0"),
+        border: isDark ? "#35443a" : "#e0ebe3",
+        divider: isDark ? "#35443a" : "#e8f0ea",
+        accent: isOrange
+            ? (isDark ? "#f6a45e" : "#d97706")
+            : (isDark ? "#70cf91" : "#21834b"),
+        iconBackground: isDark
+            ? (isOrange ? "#493426" : "#294633")
+            : (isOrange ? "#ffedd5" : "#dff1e4"),
+        text: isDark ? "#e7efe9" : "#263b30",
+        arrow: isDark ? "#b7c8bc" : "#63766a",
+    };
+
+    return (
+        <Box
             sx={{
-              width: 28,
-              height: 28,
-              borderRadius: "10px",
-              display: "grid",
-              placeItems: "center",
-              bgcolor: isOrange
-                ? (isDark ? "rgba(9, 9, 9, 0.25)" : "rgba(0, 0, 0, 0.2)")
-                : (isDark ? "rgba(37, 99, 235, 0.25)" : "rgba(37, 99, 235, 0.2)"),
-              color: isOrange
-                ? (isDark ? "#fb923c" : "#f97316")
-                : (isDark ? "#60a5fa" : "#2563eb"),
-              flexShrink: 0,
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.15)",
+                borderRadius: "12px",
+                border: `1px solid ${colors.border}`,
+                boxShadow: isDark
+                    ? "0 3px 12px rgba(0,0,0,0.18)"
+                    : "0 3px 12px rgba(31,65,43,0.045)",
+                backgroundColor: colors.background,
+                overflow: "hidden",
+                transition: "background-color 0.2s ease, border-color 0.2s ease",
             }}
-          >
-            {icon}
-          </Box>
-        )}
-
-        <Typography
-          variant="caption"
-          sx={{
-            fontWeight: 900,
-            letterSpacing: 0.9,
-            textTransform: "uppercase",
-            color: isOrange
-              ? (isDark ? "#fb923c" : "#f97316")
-              : (isDark ? "#60a5fa" : "#2563eb"),
-            fontSize: "0.72rem",
-            flex: 1,
-          }}
         >
-          {title}
-        </Typography>
+            {/* Section Header */}
+            <Box
+                onClick={() => setExpanded((prev) => !prev)}
+                sx={{
+                    px: 1.5,
+                    py: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    cursor: "pointer",
+                    userSelect: "none",
+                    backgroundColor: colors.headerBackground,
+                    borderBottom: expanded
+                        ? `1px solid ${colors.divider}`
+                        : "none",
+                    transition: "background-color 0.2s ease",
+                    "&:hover": {
+                        filter: isDark ? "brightness(1.12)" : "brightness(0.98)",
+                    },
+                }}
+            >
+                {icon && (
+                    <Box
+                        sx={{
+                            width: 29,
+                            height: 29,
+                            borderRadius: "8px",
+                            display: "grid",
+                            placeItems: "center",
+                            backgroundColor: colors.iconBackground,
+                            color: colors.accent,
+                            flexShrink: 0,
+                            border: `1px solid ${colors.border}`,
+                            "& svg": {
+                                fontSize: 18,
+                            },
+                        }}
+                    >
+                        {icon}
+                    </Box>
+                )}
 
-        <IconButton size="small" sx={{ color: isOrange ? (isDark ? "#fb923c" : "#f97316") : (isDark ? "#60a5fa" : "#2563eb") }}>
-          <ExpandMoreIcon
-            sx={{
-              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.25s ease",
-              color: isDark ? "#ffffff" : "#1e293b",
-            }}
-          />
-        </IconButton>
-      </Box>
+                <Typography
+                    variant="caption"
+                    sx={{
+                        fontWeight: 800,
+                        letterSpacing: 0.7,
+                        textTransform: "uppercase",
+                        color: colors.accent,
+                        fontSize: "0.72rem",
+                        flex: 1,
+                    }}
+                >
+                    {title}
+                </Typography>
 
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Box sx={{ px: 1, py: 0.5 }}>{children}</Box>
-      </Collapse>
-    </Box>
-  );
+                <IconButton
+                    size="small"
+                    sx={{
+                        width: 28,
+                        height: 28,
+                        color: colors.arrow,
+                        "&:hover": {
+                            backgroundColor: isDark
+                                ? "rgba(255,255,255,0.07)"
+                                : "rgba(33,131,75,0.08)",
+                        },
+                    }}
+                >
+                    <ExpandMoreIcon
+                        sx={{
+                            transform: expanded
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            transition: "transform 0.25s ease",
+                        }}
+                    />
+                </IconButton>
+            </Box>
+
+            {/* Section Content */}
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <Box
+                    sx={{
+                        px: 1,
+                        py: 0.75,
+                        backgroundColor: colors.background,
+                        color: colors.text,
+                    }}
+                >
+                    {children}
+                </Box>
+            </Collapse>
+        </Box>
+    );
 };
 
 export default Section;

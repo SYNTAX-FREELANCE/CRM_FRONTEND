@@ -1,271 +1,539 @@
+
 import React, { memo } from "react";
 import { Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import { useThemeMode } from "../Context/ThemeContext";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SecurityIcon from "@mui/icons-material/Security";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { Stack } from "@mui/system";
-import { Paper, Typography } from "@mui/material";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CallIcon from "@mui/icons-material/Call";
+
+import { Paper, Typography } from "@mui/material";
 
 const items = [
     {
         label: "Policy Report",
         path: "./policyreport",
-        icon: <MenuIcon />
+        icon: <MenuIcon />,
     },
     {
         label: "Employee Performance Report",
         path: "./employeperformance",
-        icon: <BadgeIcon />
+        icon: <BadgeIcon />,
     },
     {
         label: "All Employee Performance Report",
         path: "./allemployeeperformance",
-        icon: <BadgeIcon />
+        icon: <BadgeIcon />,
     },
     {
         label: "Employee Login Report",
         path: "./UserLogReports",
-        icon: <SecurityIcon />
+        icon: <SecurityIcon />,
     },
     {
         label: "Detailed Employee Login Report",
         path: "./DetailedUserLogReports",
-        icon: <SecurityIcon />
+        icon: <SecurityIcon />,
     },
     {
         label: "Daily Employee Productivity Report",
         path: "./dailyemployeeproductivity",
-        icon: <AssessmentIcon />
+        icon: <AssessmentIcon />,
     },
     {
         label: "Employee Call Details Report",
         path: "./employeecalldetails",
-        icon: <CallIcon />
+        icon: <CallIcon />,
     },
 ];
 
 const ReportSetting = () => {
 
-
-
-
     const navigate = useNavigate();
+
     const { mode } = useThemeMode();
     const isDark = mode === "dark";
+
+    const handleNavigate = (item) => {
+        navigate(item.path, {
+            state: { title: item.label },
+        });
+    };
 
     return (
         <Box
             sx={{
                 minHeight: "95vh",
                 width: "100%",
+
                 overflowY: "auto",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
+
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
+
+                position: "relative",
+
                 background: isDark
                     ? `
-                      radial-gradient(circle at 15% 25%, rgba(30, 41, 59, 0.4) 0%, transparent 45%),
-                      radial-gradient(circle at 85% 75%, rgba(15, 23, 42, 0.6) 0%, transparent 45%),
-                      linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)
+                        radial-gradient(
+                            circle at 5% 10%,
+                            rgba(59,130,246,0.09),
+                            transparent 35%
+                        ),
+                        radial-gradient(
+                            circle at 5% 90%,
+                            rgba(16,185,129,0.07),
+                            transparent 30%
+                        ),
+                        ${" "}
+                        #0f172a
                     `
                     : `
-                      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-                      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-                      linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                        radial-gradient(
+                            circle at 5% 10%,
+                            rgba(111,207,207,0.35),
+                            transparent 32%
+                        ),
+                        radial-gradient(
+                            circle at 5% 90%,
+                            rgba(255,218,140,0.35),
+                            transparent 30%
+                        ),
+                        #e7f3eb
                     `,
+
+                transition: "background 0.3s ease",
+
+                px: {
+                    xs: 1.5,
+                    sm: 2,
+                    md: 3,
+                },
+
+                py: {
+                    xs: 2,
+                    sm: 2.5,
+                    md: 3,
+                },
             }}
         >
+
+            {/* MAIN CONTAINER */}
+
             <Paper
                 elevation={0}
                 sx={{
-                    minHeight: "95vh",
                     width: "100%",
-                    border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.65)",
-                    boxShadow: isDark ? "0 20px 40px rgba(0, 0, 0, 0.6)" : "0 20px 40px rgba(15, 23, 42, 0.05)",
+                    minHeight: "90vh",
+
                     overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    borderRadius: 0,
-                    background: isDark ? "rgba(15, 23, 42, 0.9)" : "rgba(255, 255, 255, 0.5)",
+
+                    borderRadius: "24px",
+
+                    background: isDark
+                        ? "rgba(15,23,42,0.72)"
+                        : "rgba(255,255,255,0.38)",
+
+                    border: isDark
+                        ? "1px solid rgba(255,255,255,0.08)"
+                        : "1px solid rgba(255,255,255,0.65)",
+
                     backdropFilter: "blur(24px)",
+
+                    boxShadow: isDark
+                        ? "0 15px 40px rgba(0,0,0,0.22)"
+                        : "0 12px 35px rgba(35,65,45,0.06)",
+
+                    position: "relative",
                 }}
             >
+
+                {/* HEADER */}
+
                 <Box
                     sx={{
-                        px: { xs: 2, md: 3 },
-                        py: 2.5,
-                        borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(226, 232, 240, 0.6)",
-                        background: isDark ? "rgba(15, 23, 42, 0.4)" : "rgba(255, 255, 255, 0.35)",
-                        flex: "0 0 auto",
-                        display: 'flex',
+                        px: {
+                            xs: 2,
+                            sm: 2.5,
+                            md: 3,
+                        },
+
+                        pt: {
+                            xs: 2.5,
+                            sm: 3,
+                        },
+
+                        pb: 2.5,
+
+                        display: "flex",
+                        alignItems: "center",
+
                         gap: 2,
-                        mb: 2
+
+                        borderBottom: isDark
+                            ? "1px solid rgba(255,255,255,0.07)"
+                            : "1px solid rgba(255,255,255,0.65)",
                     }}
                 >
+
+                    {/* HEADER ICON */}
+
                     <Box
                         sx={{
-                            width: 54,
-                            height: 54,
-                            borderRadius: "16px",
+                            width: {
+                                xs: 46,
+                                sm: 54,
+                            },
+
+                            height: {
+                                xs: 46,
+                                sm: 54,
+                            },
+
+                            borderRadius: "17px",
+
+                            flexShrink: 0,
+
                             background:
                                 "linear-gradient(135deg, #ee8207 0%, #ffebb5 50%, #077bff 100%)",
-                            color: "#020202",
+
+                            color: "#172033",
+
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            boxShadow: "0 10px 20px rgba(15, 23, 42, 0.25)",
+
+                            boxShadow: isDark
+                                ? "0 6px 18px rgba(0,0,0,0.3)"
+                                : "0 6px 18px rgba(15,23,42,0.12)",
                         }}
                     >
-                        <FlagCircleIcon sx={{ fontSize: "1.6rem" }} />
+                        <FlagCircleIcon
+                            sx={{
+                                fontSize: {
+                                    xs: 25,
+                                    sm: 29,
+                                },
+                            }}
+                        />
                     </Box>
-                    <Stack
-                        direction={{ xs: "column", md: "row" }}
-                        justifyContent="space-between"
-                        alignItems={{ xs: "flex-start", md: "center" }}
-                        gap={2}
+
+                    {/* HEADER TEXT */}
+
+                    <Box
+                        sx={{
+                            minWidth: 0,
+                        }}
                     >
-                        <Box>
-                            <Typography variant="h5" fontWeight={900} color={isDark ? "#f8fafc" : "#0f172a"} sx={{ letterSpacing: "-0.5px" }}>
-                                Report Settings
-                            </Typography>
-                            <Typography variant="body2" color={isDark ? "#94a3b8" : "#475569"} sx={{ fontWeight: 500 }}>
-                                Configure the core masters used across reporting and analytics.
-                            </Typography>
-                        </Box>
-                    </Stack>
+                        <Typography
+                            sx={{
+                                fontSize: {
+                                    xs: 22,
+                                    sm: 27,
+                                    md: 30,
+                                },
+
+                                fontWeight: 850,
+
+                                color: isDark
+                                    ? "#f1f5f9"
+                                    : "#202938",
+
+                                lineHeight: 1.15,
+
+                                letterSpacing: "-0.6px",
+                            }}
+                        >
+                            Report Settings
+                        </Typography>
+
+                        <Typography
+                            sx={{
+                                mt: 0.6,
+
+                                fontSize: {
+                                    xs: 11,
+                                    sm: 13,
+                                },
+
+                                color: isDark
+                                    ? "#94a3b8"
+                                    : "#727d83",
+
+                                lineHeight: 1.5,
+                            }}
+                        >
+                            Configure and access your reporting
+                            and analytics modules.
+                        </Typography>
+                    </Box>
+
                 </Box>
-                {/* List container */}
+
+
+                {/* REPORT LIST */}
+
                 <Box
                     sx={{
-                        borderRadius: { xs: "14px", md: "16px" },
-                        overflow: "hidden",
-                        px: 2,
+                        px: {
+                            xs: 1.5,
+                            sm: 2.5,
+                            md: 3,
+                        },
+
+                        py: 2.5,
+
+                        display: "flex",
+                        flexDirection: "column",
+
+                        gap: 1.2,
+
+                        position: "relative",
+                        zIndex: 1,
                     }}
                 >
-                    {items?.map((item, index) => {
-                        const isLast = index === items.length - 1;
 
-                        return (
+                    {items.map((item) => (
+
+                        <Box
+                            key={item.label}
+
+                            onClick={() =>
+                                handleNavigate(item)
+                            }
+
+                            sx={{
+                                display: "grid",
+
+                                gridTemplateColumns:
+                                    "auto minmax(0,1fr) auto",
+
+                                alignItems: "center",
+
+                                columnGap: 1.5,
+
+                                px: {
+                                    xs: 1.5,
+                                    sm: 2,
+                                    md: 2.2,
+                                },
+
+                                py: {
+                                    xs: 1.5,
+                                    sm: 1.7,
+                                },
+
+                                minHeight: 67,
+
+                                cursor: "pointer",
+
+                                borderRadius: "17px",
+
+                                bgcolor: isDark
+                                    ? "rgba(30,41,59,0.72)"
+                                    : "rgba(255,255,255,0.82)",
+
+                                border: isDark
+                                    ? "1px solid rgba(255,255,255,0.07)"
+                                    : "1px solid rgba(255,255,255,0.9)",
+
+                                boxShadow: isDark
+                                    ? "0 4px 14px rgba(0,0,0,0.12)"
+                                    : "0 4px 14px rgba(35,65,45,0.045)",
+
+                                transition:
+                                    "all 0.25s ease",
+
+                                userSelect: "none",
+
+                                "&:hover": {
+                                    transform: {
+                                        xs: "none",
+                                        sm: "translateY(-3px)",
+                                    },
+
+                                    bgcolor: isDark
+                                        ? "rgba(45,55,72,0.95)"
+                                        : "#ffffff",
+
+                                    borderColor: isDark
+                                        ? "rgba(59,130,246,0.3)"
+                                        : "rgba(22,128,68,0.25)",
+
+                                    boxShadow: isDark
+                                        ? "0 9px 22px rgba(0,0,0,0.25)"
+                                        : "0 9px 22px rgba(35,65,45,0.09)",
+
+                                    "& .report-icon": {
+                                        transform: "scale(1.07)",
+                                    },
+
+                                    "& .report-arrow": {
+                                        transform: "translateX(4px)",
+                                        color: "primary.main",
+                                    },
+                                },
+
+                                "&:active": {
+                                    transform: "scale(0.99)",
+                                },
+                            }}
+                        >
+
+                            {/* ICON */}
+
                             <Box
-                                key={item.label}
-                                onClick={() =>
-                                    navigate(item.path, {
-                                        state: { title: item.label },
-                                    })
-                                }
+                                className="report-icon"
                                 sx={{
-                                    display: "grid",
-                                    gridTemplateColumns: "auto minmax(0, 1fr) auto",
+                                    width: {
+                                        xs: 39,
+                                        sm: 43,
+                                    },
+
+                                    height: {
+                                        xs: 39,
+                                        sm: 43,
+                                    },
+
+                                    borderRadius: "15px",
+
+                                    display: "flex",
                                     alignItems: "center",
-                                    columnGap: 1.5,
-                                    px: { xs: 2, sm: 2.5 },
-                                    py: { xs: 1.4, sm: 1.8 },
-                                    cursor: "pointer",
-                                    bgcolor: isDark ? "#1e293b" : "#ffffff",
-                                    border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
-                                    boxShadow: isDark ? "0 4px 14px rgba(0, 0, 0, 0.3)" : "0 4px 14px rgba(15, 23, 42, 0.03)",
-                                    borderBottom: isLast ? "none" : (isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid #e5e7eb"),
-                                    mb: 1,
-                                    transition:
-                                        "background-color 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease",
-                                    "&:hover": {
-                                        bgcolor: isDark ? "#2d3748" : "#f9fafb",
-                                        transform: { xs: "none", sm: "translateY(-1px)" },
-                                        boxShadow: {
-                                            xs: "none",
-                                            sm: isDark ? "0 8px 18px rgba(0,0,0,0.4)" : "0 8px 18px rgba(15, 23, 42, 0.06)",
-                                        },
-                                    },
-                                    "&:active": {
-                                        bgcolor: isDark ? "#3b82f6" : "#e5f0ff",
-                                        transform: "scale(0.99)",
-                                    },
+                                    justifyContent: "center",
+
+                                    bgcolor: isDark
+                                        ? "rgba(251,96,13,0.16)"
+                                        : "rgba(251,96,13,0.10)",
+
+                                    color: isDark
+                                        ? "#ff9b60"
+                                        : "#e96816",
+
+                                    flexShrink: 0,
+
+                                    transition: "transform 0.25s ease",
                                 }}
                             >
-                                {/* Icon */}
-                                <Box
-                                    sx={{
-                                        width: 38,
-                                        height: 38,
-                                        borderRadius: "14px",
-                                        bgcolor: "#fb600d",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        color: "#ffffff",
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    {React.cloneElement(item.icon, {
-                                        sx: { fontSize: "1.25rem" },
-                                    })}
-                                </Box>
-
-                                {/* Text block */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        justifyContent: "center",
-                                        minWidth: 0,
-                                        rowGap: 0.3,
-                                    }}
-                                >
-                                    <Typography
-                                        level="body-sm"
-                                        sx={{
-                                            fontWeight: 600,
-                                            color: isDark ? "#f8fafc" : "#0f172a",
-                                            whiteSpace: "nowrap",
-                                            textOverflow: "ellipsis",
-                                            overflow: "hidden",
-                                        }}
-                                    >
-                                        {item.label}
-                                    </Typography>
-                                    <Typography
-                                        level="body-xs"
-                                        sx={{
-                                            color: isDark ? "#94a3b8" : "#64748b",
-                                            whiteSpace: "nowrap",
-                                            textOverflow: "ellipsis",
-                                            overflow: "hidden",
-                                        }}
-                                    >
-                                        Manage {item.label.toLowerCase()} settings.
-                                    </Typography>
-                                </Box>
-
-                                {/* Arrow */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "flex-end",
-                                        ml: 1,
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    <ArrowForwardIosIcon
-                                        sx={{
-                                            fontSize: "0.8rem",
-                                            color: isDark ? "#64748b" : "#cbd5e1",
-                                        }}
-                                    />
-                                </Box>
+                                {React.cloneElement(item.icon, {
+                                    sx: {
+                                        fontSize: {
+                                            xs: "1.2rem",
+                                            sm: "1.3rem",
+                                        },
+                                    },
+                                })}
                             </Box>
-                        );
-                    })}
+
+
+                            {/* TEXT */}
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+
+                                    justifyContent: "center",
+
+                                    minWidth: 0,
+                                    rowGap: 0.35,
+                                }}
+                            >
+
+                                <Typography
+                                    sx={{
+                                        fontSize: {
+                                            xs: 12.5,
+                                            sm: 14,
+                                        },
+
+                                        fontWeight: 750,
+
+                                        color: isDark
+                                            ? "#f1f5f9"
+                                            : "#202936",
+
+                                        lineHeight: 1.3,
+
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                    }}
+                                >
+                                    {item.label}
+                                </Typography>
+
+                                <Typography
+                                    sx={{
+                                        fontSize: {
+                                            xs: 10.5,
+                                            sm: 12,
+                                        },
+
+                                        color: isDark
+                                            ? "#94a3b8"
+                                            : "#78818a",
+
+                                        lineHeight: 1.4,
+
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                    }}
+                                >
+                                    Manage {item.label.toLowerCase()} settings.
+                                </Typography>
+
+                            </Box>
+
+
+                            {/* ARROW */}
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                    width: 30,
+                                    height: 30,
+
+                                    borderRadius: "50%",
+
+                                    bgcolor: isDark
+                                        ? "rgba(255,255,255,0.04)"
+                                        : "rgba(22,128,68,0.045)",
+
+                                    flexShrink: 0,
+                                }}
+                            >
+                                <ArrowForwardIosIcon
+                                    className="report-arrow"
+                                    sx={{
+                                        fontSize: 13,
+
+                                        color: isDark
+                                            ? "#64748b"
+                                            : "#9aa5a9",
+
+                                        transition: "all 0.25s ease",
+                                    }}
+                                />
+                            </Box>
+
+                        </Box>
+
+                    ))}
+
                 </Box>
+
             </Paper>
+
         </Box>
     );
 };

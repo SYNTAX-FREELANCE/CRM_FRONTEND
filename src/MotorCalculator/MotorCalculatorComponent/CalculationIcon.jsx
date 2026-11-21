@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Box, Tooltip } from "@mui/material";
 import FunctionsRoundedIcon from "@mui/icons-material/FunctionsRounded";
@@ -20,7 +21,6 @@ const CalculationIcon = ({
                     onClick?.(event);
                 }}
                 sx={{
-                    position: "relative",
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -28,59 +28,32 @@ const CalculationIcon = ({
                     height: size,
                     p: 0,
                     flexShrink: 0,
+
                     border: "1px solid",
-                    borderColor: active ? "#2563EB" : "#DCE4F0",
-                    borderRadius: "11px",
-                    color: active ? "#FFFFFF" : "#334B70",
-                    background: active ? "#2563EB" : "#FFFFFF",
+                    borderColor: active ? "#07833f" : "#cce8d6",
+                    borderRadius: "10px",
+
+                    color: active ? "#ffffff" : "#07833f",
+                    backgroundColor: active ? "#07833f" : "#e9f6ed",
+
                     cursor: "pointer",
                     outline: "none",
-                    transition: "all 220ms cubic-bezier(.2,.8,.2,1)",
-
-                    "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        inset: 3,
-                        border: "1px solid",
-                        borderColor: active
-                            ? "rgba(255,255,255,0.22)"
-                            : "#EDF1F7",
-                        borderRadius: "8px",
-                        pointerEvents: "none",
-                    },
-
-                    "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        top: 3,
-                        right: 3,
-                        bgcolor: active ? "#BFDBFE" : "#22C55E",
-                        boxShadow: active
-                            ? "0 0 0 2px #2563EB"
-                            : "0 0 0 2px #FFFFFF",
-                        transition: "all 200ms ease",
-                    },
+                    transition: "all 180ms ease",
 
                     "& svg": {
-                        position: "relative",
-                        zIndex: 1,
                         fontSize: size * 0.59,
-                        transition: "transform 250ms ease",
+                        transition: "transform 180ms ease",
                     },
 
                     "&:hover": {
-                        color: "#FFFFFF",
-                        background: "#172B4D",
-                        borderColor: "#172B4D",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 5px 12px rgba(23,43,77,0.20)",
+                        color: "#ffffff",
+                        backgroundColor: "#07833f",
+                        borderColor: "#07833f",
+                        boxShadow: "0 3px 8px rgba(7,131,63,0.18)",
                     },
 
                     "&:hover svg": {
-                        transform: "rotate(-12deg) scale(1.08)",
+                        transform: "scale(1.08)",
                     },
 
                     "&:active": {
@@ -88,7 +61,7 @@ const CalculationIcon = ({
                     },
 
                     "&:focus-visible": {
-                        outline: "2px solid #60A5FA",
+                        outline: "2px solid #07833f",
                         outlineOffset: 3,
                     },
 
@@ -100,7 +73,9 @@ const CalculationIcon = ({
                     },
                 }}
             >
-                <FunctionsRoundedIcon />
+                {/* <FunctionsRoundedIcon />
+                 */}
+                📟
             </Box>
         </Tooltip>
     );

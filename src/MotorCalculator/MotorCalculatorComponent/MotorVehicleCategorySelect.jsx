@@ -1,5 +1,5 @@
 
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -12,13 +12,12 @@ import DirectionsCarRoundedIcon from "@mui/icons-material/DirectionsCarRounded";
 import { useMotorVehicleCategoryMaster } from "../../CommonCode/useQuery";
 import { BACKEND_IMAGE } from "../../constant/Static";
 
-
-
 const MotorVehicleCategorySelect = ({
     value,
     onChange,
 }) => {
     const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
 
     const {
         data: vehicleCategoryMaster = [],
@@ -28,12 +27,57 @@ const MotorVehicleCategorySelect = ({
     const [selectedCategory, setSelectedCategory] =
         useState(value || null);
 
+    // Keep selection synchronized with parent value
+    useEffect(() => {
+        setSelectedCategory(value || null);
+    }, [value]);
+
     const activeVehicleCategoryMaster =
         Array.isArray(vehicleCategoryMaster)
             ? vehicleCategoryMaster.filter(
                 item => Number(item.is_active) === 1
             )
             : [];
+
+    // Theme colors
+    const pageBackground = isDark
+        ? `
+            radial-gradient(
+                circle at 5% 10%,
+                ${theme.palette.primary.main}20,
+                transparent 35%
+            ),
+            radial-gradient(
+                circle at 5% 90%,
+                rgba(255, 190, 100, 0.07),
+                transparent 30%
+            ),
+            ${theme.palette.background.default}
+        `
+        : `
+            radial-gradient(
+                circle at 5% 10%,
+                rgba(111, 207, 207, 0.35),
+                transparent 32%
+            ),
+            radial-gradient(
+                circle at 5% 90%,
+                rgba(255, 218, 140, 0.35),
+                transparent 30%
+            ),
+            #e7f3eb
+        `;
+
+    const cardBackground = isDark
+        ? theme.palette.background.paper
+        : "#ffffff";
+
+    const cardBorder = isDark
+        ? theme.palette.divider
+        : "rgba(255,255,255,0.9)";
+
+    const primaryText = theme.palette.text.primary;
+    const secondaryText = theme.palette.text.secondary;
 
     const handleSelect = category => {
         setSelectedCategory(
@@ -54,6 +98,7 @@ const MotorVehicleCategorySelect = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    bgcolor: "background.default",
                 }}
             >
                 <Typography
@@ -78,7 +123,9 @@ const MotorVehicleCategorySelect = ({
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                }}>
+                    bgcolor: "background.default",
+                }}
+            >
                 <DirectionsCarRoundedIcon
                     sx={{
                         fontSize: 42,
@@ -103,6 +150,7 @@ const MotorVehicleCategorySelect = ({
         <Box
             sx={{
                 width: "100%",
+                minHeight: "100vh",
                 position: "relative",
 
                 px: {
@@ -112,9 +160,18 @@ const MotorVehicleCategorySelect = ({
                     lg: 8,
                 },
 
+                py: {
+                    xs: 3,
+                    sm: 3,
+                    md: 3,
+                },
+
                 overflow: "hidden",
 
-                /* Very subtle background */
+                // background: pageBackground,
+
+                transition: "background 0.3s ease",
+
                 "&::before": {
                     content: '""',
                     position: "absolute",
@@ -136,42 +193,34 @@ const MotorVehicleCategorySelect = ({
 
                     borderRadius: "50%",
 
-                    background: theme =>
-                        theme.palette.mode === "dark"
-                            ? `radial-gradient(
-                                circle,
-                                ${theme.palette.primary.main}08 0%,
-                                transparent 68%
-                              )`
-                            : `radial-gradient(
-                                circle,
-                                ${theme.palette.primary.main}06 0%,
-                                transparent 68%
-                              )`,
+                    background: isDark
+                        ? `${theme.palette.primary.main}09`
+                        : "rgba(255,255,255,0.15)",
 
+                    filter: "blur(80px)",
                     pointerEvents: "none",
                 },
             }}
         >
-            
+
             {/* HEADER */}
-            
 
             <Box
                 sx={{
                     position: "relative",
                     zIndex: 1,
-
                     textAlign: "center",
 
                     mb: {
-                        xs: 4,
-                        sm: 5,
-                        md: 6,
+                        xs: 3,
+                        sm: 3,
+                        md: 2.5,
                     },
                 }}
             >
+
                 {/* SMALL TOP LABEL */}
+
                 <Box
                     sx={{
                         display: "flex",
@@ -185,8 +234,9 @@ const MotorVehicleCategorySelect = ({
                         sx={{
                             width: 24,
                             height: 1.5,
-                            backgroundColor:
-                                "primary.main",
+                            backgroundColor: isDark
+                                ? theme.palette.primary.light
+                                : "#ad5a22",
                             opacity: 0.7,
                         }}
                     />
@@ -200,10 +250,11 @@ const MotorVehicleCategorySelect = ({
 
                             fontWeight: 700,
 
-                            color: "primary.main",
+                            color: isDark
+                                ? theme.palette.primary.light
+                                : "#ad5a22",
 
                             letterSpacing: "1.5px",
-
                             textTransform: "uppercase",
                         }}
                     >
@@ -214,48 +265,50 @@ const MotorVehicleCategorySelect = ({
                         sx={{
                             width: 24,
                             height: 1.5,
-                            backgroundColor:
-                                "primary.main",
+                            backgroundColor: isDark
+                                ? theme.palette.primary.light
+                                : "#ad5a22",
                             opacity: 0.7,
                         }}
                     />
                 </Box>
 
                 {/* MAIN TITLE */}
+
                 <Typography
                     sx={{
                         fontSize: {
-                            xs: 22,
-                            sm: 26,
-                            md: 30,
+                            xs: 25,
+                            sm: 30,
+                            md: 36,
                         },
 
                         fontWeight: 800,
-
-                        color: "text.primary",
-
+                        color: primaryText,
                         lineHeight: 1.15,
-
                         letterSpacing: "-0.6px",
+                        fontFamily: "sans-serif",
                     }}
                 >
                     Select Your Vehicle
                 </Typography>
 
                 {/* SUBTITLE */}
+
                 <Typography
                     sx={{
                         mt: 1,
 
                         fontSize: {
                             xs: 12,
-                            sm: 13,
-                            md: 14,
+                            sm: 14,
+                            md: 16,
                         },
 
-                        color: "text.secondary",
-
+                        color: secondaryText,
                         lineHeight: 1.5,
+                        fontFamily: "sans-serif",
+                        fontWeight: 400,
                     }}
                 >
                     Choose the vehicle category to start
@@ -263,9 +316,8 @@ const MotorVehicleCategorySelect = ({
                 </Typography>
             </Box>
 
-            
+
             {/* VEHICLE GALLERY */}
-            
 
             <Box
                 sx={{
@@ -273,7 +325,7 @@ const MotorVehicleCategorySelect = ({
                     zIndex: 1,
 
                     width: "100%",
-                    maxWidth: 1120,
+                    maxWidth: 1024,
                     mx: "auto",
 
                     display: "grid",
@@ -285,129 +337,134 @@ const MotorVehicleCategorySelect = ({
                     },
 
                     columnGap: {
-                        xs: 2,
-                        sm: 4,
-                        md: 6,
+                        xs: 1.5,
+                        sm: 1.5,
+                        md: 2,
                     },
 
                     rowGap: {
-                        xs: 5,
-                        sm: 6,
-                        md: 7,
+                        xs: 2,
+                        sm: 2,
+                        md: 2,
                     },
-                }}>
+                }}
+            >
+
                 {activeVehicleCategoryMaster?.map(
                     category => {
+
                         const isSelected =
                             Number(selectedCategory) ===
-                            Number(
-                                category.vehicle_category_id
-                            );
+                            Number(category.vehicle_category_id);
 
                         const imageUrl =
                             category.image_path
-                                ? category.image_path.startsWith(
-                                    "http"
-                                )
+                                ? category.image_path.startsWith("http")
                                     ? category.image_path
                                     : `${BACKEND_IMAGE}${category.image_path}`
                                 : null;
 
                         return (
                             <Box
-                                key={
-                                    category.vehicle_category_id
-                                }
+                                key={category.vehicle_category_id}
+
                                 onClick={() =>
                                     handleSelect(category)
                                 }
+
                                 sx={{
                                     position: "relative",
 
                                     cursor: "pointer",
-
                                     userSelect: "none",
-
                                     minWidth: 0,
 
                                     display: "flex",
-
-                                    flexDirection:
-                                        "column",
-
+                                    flexDirection: "column",
                                     alignItems: "center",
-
+                                    justifyContent: "center",
                                     textAlign: "center",
 
-                                    
-                                    /* HOVER */
-                                    
+                                    minHeight: {
+                                        xs: 165,
+                                        sm: 180,
+                                    },
+
+                                    p: {
+                                        xs: 1.5,
+                                        sm: 2,
+                                    },
+
+                                    borderRadius: "24px",
+
+                                    bgcolor: cardBackground,
+
+                                    border: isSelected
+                                        ? `2px solid ${theme.palette.primary.main}`
+                                        : `1px solid ${cardBorder}`,
+
+                                    boxShadow: isSelected
+                                        ? `0 10px 28px ${theme.palette.primary.main}30`
+                                        : isDark
+                                            ? "0 5px 18px rgba(0,0,0,0.22)"
+                                            : "0 5px 16px rgba(35,65,45,0.07)",
+
+                                    transition: "all 0.3s ease",
 
                                     "&:hover": {
+                                        transform: "translateY(-5px)",
+
+                                        boxShadow: isDark
+                                            ? `0 12px 28px ${theme.palette.primary.main}25`
+                                            : "0 12px 28px rgba(35,65,45,0.12)",
+
                                         "& .vehicle-image": {
                                             transform:
-                                                "translateY(-7px) scale(1.055)",
-                                        },
-
-                                        "& .vehicle-glow": {
-                                            opacity: 0.85,
-                                            transform:
-                                                "translateX(-50%) scale(1.15)",
+                                                "translateY(-4px) scale(1.06)",
                                         },
 
                                         "& .vehicle-name": {
-                                            color:
-                                                "primary.main",
+                                            color: "primary.main",
                                         },
 
                                         "& .vehicle-type": {
-                                            color:
-                                                "primary.main",
+                                            color: "primary.main",
                                         },
                                     },
                                 }}
                             >
-                                
+
                                 {/* IMAGE AREA */}
-                                
 
                                 <Box
                                     sx={{
                                         width: "100%",
 
                                         height: {
-                                            xs: 125,
-                                            sm: 155,
-                                            md: 175,
+                                            xs: 85,
+                                            sm: 95,
+                                            md: 100,
                                         },
 
                                         position: "relative",
 
                                         display: "flex",
-
-                                        alignItems:
-                                            "center",
-
-                                        justifyContent:
-                                            "center",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                     }}
                                 >
+
                                     {/* SOFT IMAGE GLOW */}
+
                                     <Box
                                         className="vehicle-glow"
                                         sx={{
-                                            position:
-                                                "absolute",
+                                            position: "absolute",
 
                                             left: "50%",
+                                            bottom: 5,
 
-                                            bottom: {
-                                                xs: 15,
-                                                sm: 17,
-                                            },
-
-                                            transform:
-                                                "translateX(-50%)",
+                                            transform: "translateX(-50%)",
 
                                             width: {
                                                 xs: 95,
@@ -421,63 +478,46 @@ const MotorVehicleCategorySelect = ({
                                                 md: 38,
                                             },
 
-                                            borderRadius:
-                                                "50%",
+                                            borderRadius: "50%",
 
-                                            background:
-                                                theme =>
-                                                    `radial-gradient(
-                                                        ellipse,
-                                                        ${theme.palette.primary.main}28 0%,
-                                                        ${theme.palette.primary.main}10 42%,
-                                                        transparent 72%
-                                                    )`,
+                                            background: `radial-gradient(
+                                                ellipse,
+                                                ${theme.palette.primary.main}28 0%,
+                                                ${theme.palette.primary.main}10 42%,
+                                                transparent 72%
+                                            )`,
 
-                                            filter:
-                                                "blur(7px)",
+                                            filter: "blur(7px)",
 
-                                            opacity:
-                                                isSelected
-                                                    ? 0.9
-                                                    : 0,
+                                            opacity: isSelected ? 0.9 : 0,
 
-                                            transition:
-                                                "all 0.35s ease",
+                                            transition: "all 0.35s ease",
 
-                                            pointerEvents:
-                                                "none",
+                                            pointerEvents: "none",
                                         }}
                                     />
 
                                     {/* VEHICLE IMAGE */}
+
                                     {imageUrl ? (
                                         <Box
                                             component="img"
                                             className="vehicle-image"
                                             src={imageUrl}
-                                            alt={
-                                                category.category_name
-                                            }
+                                            alt={category.category_name}
                                             sx={{
-                                                position:
-                                                    "relative",
-
+                                                position: "relative",
                                                 zIndex: 1,
 
                                                 width: "100%",
-
                                                 height: "100%",
 
-                                                objectFit:
-                                                    "contain",
+                                                objectFit: "contain",
+                                                display: "block",
 
-                                                display:
-                                                    "block",
-
-                                                transform:
-                                                    isSelected
-                                                        ? "translateY(-5px) scale(1.04)"
-                                                        : "translateY(0) scale(1)",
+                                                transform: isSelected
+                                                    ? "translateY(-5px) scale(1.04)"
+                                                    : "translateY(0) scale(1)",
 
                                                 transition:
                                                     "transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1)",
@@ -488,36 +528,24 @@ const MotorVehicleCategorySelect = ({
                                             sx={{
                                                 height: "100%",
 
-                                                display:
-                                                    "flex",
-
-                                                flexDirection:
-                                                    "column",
-
-                                                alignItems:
-                                                    "center",
-
-                                                justifyContent:
-                                                    "center",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
                                             }}
                                         >
                                             <DirectionsCarRoundedIcon
                                                 sx={{
                                                     fontSize: 44,
-
-                                                    color:
-                                                        "text.disabled",
+                                                    color: "text.disabled",
                                                 }}
                                             />
 
                                             <Typography
                                                 sx={{
                                                     mt: 0.5,
-
                                                     fontSize: 10,
-
-                                                    color:
-                                                        "text.disabled",
+                                                    color: "text.disabled",
                                                 }}
                                             >
                                                 No Image
@@ -526,11 +554,11 @@ const MotorVehicleCategorySelect = ({
                                     )}
 
                                     {/* SELECTED CHECK */}
+
                                     {isSelected && (
                                         <Box
                                             sx={{
-                                                position:
-                                                    "absolute",
+                                                position: "absolute",
 
                                                 top: {
                                                     xs: 2,
@@ -554,50 +582,37 @@ const MotorVehicleCategorySelect = ({
                                                     sm: 27,
                                                 },
 
-                                                borderRadius:
-                                                    "50%",
+                                                borderRadius: "50%",
 
-                                                display:
-                                                    "flex",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
 
-                                                alignItems:
-                                                    "center",
-
-                                                justifyContent:
-                                                    "center",
-
-                                                backgroundColor:
-                                                    "primary.main",
+                                                backgroundColor: "primary.main",
 
                                                 color: "#fff",
 
-                                                boxShadow:
-                                                    theme =>
-                                                        `0 4px 12px ${theme.palette.primary.main}45`,
+                                                boxShadow: `0 4px 12px ${theme.palette.primary.main}45`,
 
                                                 animation:
                                                     "vehicleSelected 0.25s ease-out",
 
-                                                "@keyframes vehicleSelected":
-                                                {
+                                                "@keyframes vehicleSelected": {
                                                     from: {
                                                         opacity: 0,
-                                                        transform:
-                                                            "scale(0.6)",
+                                                        transform: "scale(0.6)",
                                                     },
 
                                                     to: {
                                                         opacity: 1,
-                                                        transform:
-                                                            "scale(1)",
+                                                        transform: "scale(1)",
                                                     },
                                                 },
                                             }}
                                         >
                                             <CheckRoundedIcon
                                                 sx={{
-                                                    fontSize:
-                                                    {
+                                                    fontSize: {
                                                         xs: 16,
                                                         sm: 18,
                                                     },
@@ -605,57 +620,48 @@ const MotorVehicleCategorySelect = ({
                                             />
                                         </Box>
                                     )}
+
                                 </Box>
 
-                                
+
                                 {/* VEHICLE TYPE */}
-                                
 
                                 <Typography
                                     className="vehicle-type"
                                     sx={{
-                                        mt: 1,
+                                        mt: 0.5,
 
                                         fontSize: {
-                                            xs: 8.5,
-                                            sm: 9.5,
-                                            md: 10,
+                                            xs: 9,
+                                            sm: 10,
                                         },
 
-                                        fontWeight: 700,
+                                        fontWeight: 500,
 
                                         color: isSelected
                                             ? "primary.main"
-                                            : "text.secondary",
+                                            : secondaryText,
 
-                                        textTransform:
-                                            "uppercase",
-
-                                        letterSpacing:
-                                            "1px",
-
+                                        textTransform: "uppercase",
+                                        letterSpacing: "1px",
                                         lineHeight: 1.2,
 
-                                        transition:
-                                            "color 0.25s ease",
+                                        transition: "color 0.25s ease",
                                     }}
                                 >
-                                    {
-                                        category.vehicle_type_name
-                                    }
+                                    {category.vehicle_type_name}
                                 </Typography>
 
-                                
+
                                 {/* CATEGORY NAME */}
-                                
 
                                 <Typography
                                     className="vehicle-name"
                                     sx={{
-                                        mt: 0.5,
+                                        mt: 0.3,
 
                                         fontSize: {
-                                            xs: 13,
+                                            xs: 12,
                                             sm: 15,
                                             md: 16,
                                         },
@@ -664,31 +670,26 @@ const MotorVehicleCategorySelect = ({
 
                                         color: isSelected
                                             ? "primary.main"
-                                            : "text.primary",
+                                            : primaryText,
 
                                         lineHeight: 1.25,
 
-                                        transition:
-                                            "color 0.25s ease",
+                                        transition: "color 0.25s ease",
 
                                         px: 0.5,
                                     }}
                                 >
-                                    {
-                                        category.category_name
-                                    }
+                                    {category.category_name}
                                 </Typography>
 
-                                
+
                                 {/* ACTIVE LINE */}
-                                
 
                                 <Box
                                     sx={{
-                                        position:
-                                            "relative",
+                                        position: "relative",
 
-                                        mt: 1.1,
+                                        mt: 1,
 
                                         width: {
                                             xs: 42,
@@ -697,58 +698,52 @@ const MotorVehicleCategorySelect = ({
 
                                         height: 3,
 
-                                        overflow:
-                                            "hidden",
+                                        overflow: "hidden",
+                                        borderRadius: 10,
 
-                                        borderRadius:
-                                            10,
-
-                                        backgroundColor:
-                                            isSelected
-                                                ? "primary.main"
-                                                : "transparent",
+                                        backgroundColor: isSelected
+                                            ? "primary.main"
+                                            : "transparent",
 
                                         transition:
                                             "background-color 0.25s ease",
 
-                                        "&::after":
-                                            isSelected
-                                                ? {
-                                                    content:
-                                                        '""',
+                                        "&::after": isSelected
+                                            ? {
+                                                content: '""',
 
-                                                    position:
-                                                        "absolute",
+                                                position: "absolute",
+                                                inset: 0,
 
-                                                    inset: 0,
+                                                background:
+                                                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)",
 
-                                                    background:
-                                                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)",
+                                                animation:
+                                                    "selectionShine 1.8s infinite",
 
-                                                    animation:
-                                                        "selectionShine 1.8s infinite",
-
-                                                    "@keyframes selectionShine":
-                                                    {
-                                                        from: {
-                                                            transform:
-                                                                "translateX(-100%)",
-                                                        },
-
-                                                        to: {
-                                                            transform:
-                                                                "translateX(100%)",
-                                                        },
+                                                "@keyframes selectionShine": {
+                                                    from: {
+                                                        transform:
+                                                            "translateX(-100%)",
                                                     },
-                                                }
-                                                : {},
+
+                                                    to: {
+                                                        transform:
+                                                            "translateX(100%)",
+                                                    },
+                                                },
+                                            }
+                                            : {},
                                     }}
                                 />
+
                             </Box>
                         );
                     }
                 )}
+
             </Box>
+
         </Box>
     );
 };

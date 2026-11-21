@@ -1,261 +1,532 @@
+
 import React from "react";
 import {
     Box,
     Paper,
     Typography,
-    Stack,
     Chip,
-    Divider,
     useTheme,
 } from "@mui/material";
+
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import SearchIcon from "@mui/icons-material/Search";
 import ShieldIcon from "@mui/icons-material/Shield";
+
 import { glassStyles } from "../CommonCode/Reusable";
 
 const EmptyCustomerState = () => {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
 
+    const features = [
+        {
+            icon: <DirectionsCarIcon sx={{ fontSize: 17 }} />,
+            title: "Vehicle records",
+            sub: "Registration, model, ownership",
+            color: "#dc2626",
+        },
+        {
+            icon: <VerifiedUserIcon sx={{ fontSize: 17 }} />,
+            title: "Insurance",
+            sub: "Policy and renewal visibility",
+            color: "#0d9488",
+        },
+        {
+            icon: <AssignmentIndIcon sx={{ fontSize: 17 }} />,
+            title: "Customer profile",
+            sub: "Contact and account details",
+            color: "#2563eb",
+        },
+        {
+            icon: <ShieldIcon sx={{ fontSize: 17 }} />,
+            title: "Service history",
+            sub: "Follow-up and status timeline",
+            color: "#d97706",
+        },
+    ];
+
     return (
         <Paper
             elevation={0}
             sx={{
-                p: { xs: 3, sm: 4, md: 5 },
+                position: "relative",
+                overflow: "hidden",
+
+                p: {
+                    xs: 2,
+                    sm: 2.5,
+                    md: 2.5,
+                },
+
+                borderRadius: "24px",
+
                 ...glassStyles(isDark),
-                minHeight: { xs: 420, md: 500 },
-            }}
-        >
-            <Box
-                sx={{
+
+                bgcolor: isDark
+                    ? theme.palette.background.paper
+                    : "#ffffff",
+
+                border: isDark
+                    ? `1px solid ${theme.palette.divider}`
+                    : "1px solid rgba(255,255,255,0.9)",
+
+                boxShadow: isDark
+                    ? "0 8px 28px rgba(0,0,0,0.22)"
+                    : "0 8px 25px rgba(35,65,45,0.07)",
+
+                minHeight: {
+                    xs: "auto",
+                    md: 294,
+                },
+
+                transition: "all 0.3s ease",
+
+                // BACKGROUND GLOW
+
+                "&::before": {
+                    content: '""',
                     position: "absolute",
                     inset: 0,
+
                     background: isDark
-                        ? "radial-gradient(circle at top left, rgba(37,99,235,0.20), transparent 32%), radial-gradient(circle at bottom right, rgba(16,185,129,0.15), transparent 30%), linear-gradient(180deg, rgba(15,23,42,0.85), rgba(15,23,42,0.95))"
-                        : "radial-gradient(circle at top left, rgba(37,99,235,0.12), transparent 32%), radial-gradient(circle at bottom right, rgba(16,185,129,0.10), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.9))",
+                        ? `
+                            radial-gradient(
+                                circle at top left,
+                                ${theme.palette.primary.main}16,
+                                transparent 38%
+                            ),
+                            radial-gradient(
+                                circle at bottom right,
+                                rgba(16,185,129,0.08),
+                                transparent 35%
+                            )
+                        `
+                        : `
+                            radial-gradient(
+                                circle at top left,
+                                rgba(16,185,129,0.07),
+                                transparent 38%
+                            ),
+                            radial-gradient(
+                                circle at bottom right,
+                                rgba(255,218,140,0.10),
+                                transparent 35%
+                            )
+                        `,
+
                     pointerEvents: "none",
-                }}
-            />
+                },
+            }}
+        >
+
+            {/* MAIN CONTENT */}
 
             <Box
                 sx={{
                     position: "relative",
+                    zIndex: 1,
+
                     display: "flex",
-                    flexDirection: { xs: "column", md: "row" },
+                    flexDirection: {
+                        xs: "column",
+                        md: "row",
+                    },
+
                     alignItems: "center",
-                    gap: { xs: 3, md: 5 },
+
+                    gap: {
+                        xs: 2.5,
+                        md: 3,
+                    },
+
                     height: "100%",
+                    minHeight: {
+                        md: 244,
+                    },
                 }}
             >
+
+                {/* LEFT ILLUSTRATION */}
+
                 <Box
                     sx={{
-                        width: { xs: 220, sm: 260, md: 320 },
+                        width: {
+                            xs: "100%",
+                            md: 220,
+                            lg: 256,
+                        },
+
+                        height: {
+                            xs: 180,
+                            md: 214,
+                        },
+
                         flexShrink: 0,
+
+                        borderRadius: "24px",
+
                         display: "grid",
                         placeItems: "center",
-                    }}
-                >
-                    <Box
-                        component="svg"
-                        viewBox="0 0 420 340"
-                        sx={{ width: "100%", height: "auto" }}
-                    >
-                        <defs>
-                            <linearGradient id="bgGrad" x1="0" x2="1" y1="0" y2="1">
-                                <stop offset="0%" stopColor={isDark ? "#1e293b" : "#eff6ff"} />
-                                <stop offset="100%" stopColor={isDark ? "#0f172a" : "#ecfeff"} />
-                            </linearGradient>
-                            <linearGradient id="carGrad" x1="0" x2="1" y1="0" y2="1">
-                                <stop offset="0%" stopColor="#2563eb" />
-                                <stop offset="100%" stopColor="#0f766e" />
-                            </linearGradient>
-                            <linearGradient id="glassGrad" x1="0" x2="1" y1="0" y2="1">
-                                <stop offset="0%" stopColor={isDark ? "#334155" : "#dbeafe"} />
-                                <stop offset="100%" stopColor={isDark ? "#1e293b" : "#bfdbfe"} />
-                            </linearGradient>
-                        </defs>
 
-                        <rect x="25" y="25" width="370" height="290" rx="34" fill="url(#bgGrad)" />
-                        <circle cx="330" cy="74" r="24" fill={isDark ? "rgba(59,130,246,0.2)" : "rgba(37,99,235,0.10)"} />
-                        <circle cx="105" cy="74" r="16" fill={isDark ? "rgba(16,185,129,0.2)" : "rgba(16,185,129,0.12)"} />
-                        <circle cx="344" cy="245" r="20" fill={isDark ? "rgba(245,158,11,0.2)" : "rgba(245,158,11,0.14)"} />
-                        <circle cx="75" cy="245" r="12" fill={isDark ? "rgba(59,130,246,0.2)" : "rgba(37,99,235,0.10)"} />
-
-                        <rect x="108" y="154" width="204" height="56" rx="22" fill="url(#carGrad)" />
-                        <path d="M132 154 L164 120 H254 L282 154 Z" fill="#3b82f6" />
-                        <rect x="172" y="128" width="48" height="20" rx="8" fill="url(#glassGrad)" />
-                        <rect x="225" y="128" width="38" height="20" rx="8" fill={isDark ? "#334155" : "#bfdbfe"} />
-                        <circle cx="158" cy="218" r="22" fill={isDark ? "#020617" : "#0f172a"} />
-                        <circle cx="260" cy="218" r="22" fill={isDark ? "#020617" : "#0f172a"} />
-                        <circle cx="158" cy="218" r="10" fill={isDark ? "#64748b" : "#94a3b8"} />
-                        <circle cx="260" cy="218" r="10" fill={isDark ? "#64748b" : "#94a3b8"} />
-
-                        <rect x="300" y="138" width="48" height="70" rx="14" fill={isDark ? "#1e293b" : "#ffffff"} />
-                        <path
-                            d="M314 158 L322 166 L337 150"
-                            stroke="#10b981"
-                            strokeWidth="6"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                        <text
-                            x="324"
-                            y="193"
-                            textAnchor="middle"
-                            fontSize="14"
-                            fill={isDark ? "#60a5fa" : "#2563eb"}
-                            fontWeight="700"
-                        >
-                            CRM
-                        </text>
-
-                        <circle cx="88" cy="210" r="28" fill={isDark ? "#1e293b" : "#ffffff"} />
-                        <path
-                            d="M88 199c5 0 9 4 9 9s-4 9-9 9-9-4-9-9 4-9 9-9zm0-8c-9 0-16 7-16 16 0 14 16 28 16 28s16-14 16-28c0-9-7-16-16-16z"
-                            fill={isDark ? "#60a5fa" : "#2563eb"}
-                        />
-                        <path d="M88 202c-4 0-7 3-7 7s3 7 7 7 7-3 7-7-3-7-7-7z" fill={isDark ? "#3b82f6" : "#93c5fd"} />
-
-                        <rect x="54" y="36" width="76" height="24" rx="12" fill={isDark ? "#1e293b" : "#ffffff"} />
-                        <text x="92" y="52" textAnchor="middle" fontSize="12" fill={isDark ? "#60a5fa" : "#2563eb"} fontWeight="700">
-                            Search ready
-                        </text>
-                    </Box>
-                </Box>
-
-                <Box
-                    sx={{
                         position: "relative",
-                        flex: 1,
-                        minWidth: 0,
-                        textAlign: { xs: "center", md: "left" },
+                        overflow: "hidden",
+
+                        background: isDark
+                            ? `
+                                linear-gradient(
+                                    145deg,
+                                    ${theme.palette.primary.dark}30,
+                                    ${theme.palette.background.default}
+                                )
+                            `
+                            : `
+                                linear-gradient(
+                                    145deg,
+                                    #e0f2e9,
+                                    #d9eee1
+                                )
+                            `,
+
+                        border: isDark
+                            ? `1px solid ${theme.palette.divider}`
+                            : "1px solid rgba(255,255,255,0.7)",
                     }}
                 >
-                    <Chip
-                        icon={<SearchIcon sx={{ fontSize: 18 }} />}
-                        label="Customer workspace"
+
+                    {/* DECORATIVE CIRCLES */}
+
+                    <Box
                         sx={{
-                            mb: 1.5,
-                            bgcolor: isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.08)",
-                            color: isDark ? "#60a5fa" : "#1d4ed8",
-                            fontWeight: 700,
-                            "& .MuiChip-icon": { color: isDark ? "#60a5fa" : "#1d4ed8" },
+                            position: "absolute",
+                            width: 130,
+                            height: 130,
+                            borderRadius: "50%",
+                            bgcolor: isDark
+                                ? `${theme.palette.primary.main}12`
+                                : "rgba(255,255,255,0.25)",
+                            top: -45,
+                            left: -35,
                         }}
                     />
 
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            width: 100,
+                            height: 100,
+                            borderRadius: "50%",
+                            bgcolor: isDark
+                                ? `${theme.palette.primary.main}10`
+                                : "rgba(255,255,255,0.2)",
+                            bottom: -35,
+                            right: -20,
+                        }}
+                    />
+
+                    {/* VEHICLE ILLUSTRATION */}
+
+                    <Box
+                        sx={{
+                            position: "relative",
+                            zIndex: 1,
+                            fontSize: {
+                                xs: 72,
+                                md: 86,
+                            },
+
+                            filter: isDark
+                                ? "drop-shadow(0 8px 12px rgba(0,0,0,0.25))"
+                                : "drop-shadow(0 8px 10px rgba(0,0,0,0.12))",
+
+                            animation: "carFloat 3s ease-in-out infinite",
+
+                            "@keyframes carFloat": {
+                                "0%, 100%": {
+                                    transform: "translateY(0)",
+                                },
+                                "50%": {
+                                    transform: "translateY(-5px)",
+                                },
+                            },
+                        }}
+                    >
+                        🚗
+                    </Box>
+
+                    {/* CRM LABEL */}
+
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            right: 12,
+                            top: "40%",
+
+                            px: 1.2,
+                            py: 0.6,
+
+                            borderRadius: "12px",
+
+                            bgcolor: isDark
+                                ? theme.palette.background.paper
+                                : "rgba(255,255,255,0.9)",
+
+                            boxShadow: "0 3px 12px rgba(0,0,0,0.06)",
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                fontSize: 11,
+                                fontWeight: 800,
+                                color: isDark
+                                    ? theme.palette.success.light
+                                    : "#15803d",
+                            }}
+                        >
+                            ✓ CRM
+                        </Typography>
+                    </Box>
+
+                </Box>
+
+
+                {/* RIGHT CONTENT */}
+
+                <Box
+                    sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        width: "100%",
+                    }}
+                >
+
+                    {/* WORKSPACE CHIP */}
+
+                    <Chip
+                        icon={
+                            <SearchIcon
+                                sx={{ fontSize: "15px !important" }}
+                            />
+                        }
+
+                        label="Customer workspace"
+
+                        size="small"
+
+                        sx={{
+                            mb: 1.2,
+
+                            height: 27,
+                            borderRadius: "20px",
+
+                            bgcolor: isDark
+                                ? `${theme.palette.success.main}20`
+                                : "#e0f2e5",
+
+                            color: isDark
+                                ? theme.palette.success.light
+                                : "#15803d",
+
+                            fontSize: 12,
+                            fontWeight: 800,
+
+                            "& .MuiChip-icon": {
+                                color: "inherit",
+                            },
+
+                            "& .MuiChip-label": {
+                                px: 1.2,
+                            },
+                        }}
+                    />
+
+                    {/* TITLE */}
+
                     <Typography
                         sx={{
-                            fontSize: { xs: 24, sm: 26, md: 28 },
-                            fontWeight: 900,
-                            color: isDark ? "#f8fafc" : "#0f172a",
-                            lineHeight: 1.05,
+                            fontSize: {
+                                xs: 23,
+                                sm: 26,
+                                md: 28,
+                            },
+
+                            fontWeight: 850,
+
+                            color: "text.primary",
+
+                            lineHeight: 1.15,
+                            letterSpacing: "-0.5px",
                         }}
                     >
                         Nothing selected yet
                     </Typography>
 
+                    {/* DESCRIPTION */}
+
                     <Typography
                         sx={{
-                            mt: 1.2,
-                            color: isDark ? "#94a3b8" : "#64748b",
-                            fontSize: { xs: 14 },
-                            maxWidth: 620,
-                            mx: { xs: "auto", md: 0 },
-                            lineHeight: 1.7,
+                            mt: 1,
+
+                            color: "text.secondary",
+
+                            fontSize: {
+                                xs: 13,
+                                sm: 14,
+                            },
+
+                            lineHeight: 1.65,
                         }}
                     >
-                        Start by searching with a vehicle number, mobile number, or customer name. Once you pick a match, this page can show vehicle records, insurance status, customer profile, and related CRM activity.
+                        Start by searching with a vehicle number,
+                        mobile number, or customer name. Once you
+                        pick a match, this page can show vehicle
+                        records, insurance status, customer profile,
+                        and related CRM activity.
                     </Typography>
 
-                    <Divider sx={{ my: 2.5, borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(226,232,240,0.9)" }} />
+
+                    {/* FEATURE CARDS */}
 
                     <Box
                         sx={{
                             display: "grid",
+
                             gridTemplateColumns: {
                                 xs: "repeat(1, minmax(0, 1fr))",
                                 sm: "repeat(2, minmax(0, 1fr))",
-                                md: "repeat(1, minmax(0, 1fr))",
-                                lg: "repeat(3, minmax(0, 1fr))",
+                                lg: "repeat(4, minmax(0, 1fr))",
                             },
-                            gap: 2,
+
+                            gap: 1.2,
+
+                            mt: 2.2,
                             width: "100%",
                         }}
                     >
-                        {[
-                            { icon: <DirectionsCarIcon sx={{ fontSize: 18 }} />, title: "Vehicle records", sub: "Registration, model, ownership" },
-                            { icon: <VerifiedUserIcon sx={{ fontSize: 18 }} />, title: "Insurance", sub: "Policy and renewal visibility" },
-                            { icon: <AssignmentIndIcon sx={{ fontSize: 18 }} />, title: "Customer profile", sub: "Contact and account details" },
-                            { icon: <ShieldIcon sx={{ fontSize: 18 }} />, title: "Service history", sub: "Follow-up and status timeline" },
-                        ].map((item) => (
+
+                        {features.map((item) => (
                             <Box
                                 key={item.title}
                                 sx={{
-                                    minWidth: { xs: "100%", sm: 220 },
-                                    flex: "1 1 220px",
-                                    p: 1.5,
-                                    borderRadius: 3,
-                                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(226,232,240,0.95)",
-                                    bgcolor: isDark ? "rgba(30,41,59,0.6)" : "rgba(248,250,252,0.9)",
+                                    minWidth: 0,
+
                                     display: "flex",
-                                    alignItems: "flex-start",
+                                    alignItems: "center",
+
                                     gap: 1.2,
-                                    transition: "0.2s ease",
+
+                                    p: 1.3,
+
+                                    borderRadius: "17px",
+
+                                    border: isDark
+                                        ? `1px solid ${theme.palette.divider}`
+                                        : "1px solid rgba(148,163,184,0.25)",
+
+                                    bgcolor: isDark
+                                        ? "rgba(255,255,255,0.025)"
+                                        : "rgba(255,255,255,0.55)",
+
+                                    transition: "all 0.25s ease",
+
                                     "&:hover": {
-                                        transform: "translateY(-2px)",
-                                        boxShadow: isDark ? "0 10px 24px rgba(0,0,0,0.4)" : "0 10px 24px rgba(15,23,42,0.06)",
-                                        borderColor: isDark ? "rgba(59,130,246,0.3)" : "rgba(37,99,235,0.18)",
+                                        transform: "translateY(-3px)",
+
+                                        borderColor: `${item.color}65`,
+
+                                        bgcolor: isDark
+                                            ? "rgba(255,255,255,0.055)"
+                                            : "#ffffff",
+
+                                        boxShadow: isDark
+                                            ? "0 5px 15px rgba(0,0,0,0.2)"
+                                            : "0 5px 15px rgba(15,23,42,0.05)",
                                     },
                                 }}
                             >
+
+                                {/* ICON */}
+
                                 <Box
                                     sx={{
-                                        width: 36,
-                                        height: 36,
+                                        width: 38,
+                                        height: 38,
+
                                         borderRadius: "50%",
+
+                                        flexShrink: 0,
+
                                         display: "grid",
                                         placeItems: "center",
-                                        bgcolor: isDark ? "rgba(37,99,235,0.20)" : "rgba(37,99,235,0.10)",
-                                        color: isDark ? "#60a5fa" : "#2563eb",
-                                        flexShrink: 0,
+
+                                        bgcolor: isDark
+                                            ? `${item.color}20`
+                                            : `${item.color}15`,
+
+                                        color: item.color,
                                     }}
                                 >
                                     {item.icon}
                                 </Box>
 
-                                <Box sx={{ minWidth: 0 }}>
-                                    <Typography 
-                                        sx={{ 
-                                            fontSize: 14,
-                                            fontWeight: 800, 
-                                            color: isDark ? "#f8fafc" : "#0f172a" 
+                                {/* LABEL */}
+
+                                <Box
+                                    sx={{
+                                        minWidth: 0,
+                                    }}
+                                >
+                                    <Typography
+                                        sx={{
+                                            fontSize: 13.5,
+                                            fontWeight: 800,
+                                            color: "text.primary",
+                                            lineHeight: 1.3,
                                         }}
                                     >
                                         {item.title}
                                     </Typography>
-                                    <Typography sx={{ fontSize: 12.5, color: isDark ? "#94a3b8" : "#64748b", mt: 0.2 }}>
+
+                                    <Typography
+                                        sx={{
+                                            fontSize: 11.5,
+                                            color: "text.secondary",
+                                            mt: 0.3,
+                                            lineHeight: 1.4,
+                                        }}
+                                    >
                                         {item.sub}
                                     </Typography>
                                 </Box>
+
                             </Box>
                         ))}
+
                     </Box>
+
+
+                    {/* TIP */}
 
                     <Typography
                         sx={{
-                            mt: 3,
-                            fontSize: 13,
-                            color: isDark ? "#64748b" : "#94a3b8",
+                            mt: 2,
+
+                            fontSize: 12.5,
+
+                            color: "text.secondary",
+
                             fontStyle: "italic",
                         }}
                     >
-                        Tip: typing at least 3 characters gives more accurate customer matches.
+                        Tip: typing at least 3 characters gives
+                        more accurate customer matches.
                     </Typography>
+
                 </Box>
+
             </Box>
+
         </Paper>
     );
 };
