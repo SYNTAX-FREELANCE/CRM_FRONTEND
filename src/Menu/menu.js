@@ -12,7 +12,7 @@ import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import TransferWithinAStationIcon from "@mui/icons-material/TransferWithinAStation";
 import CookieIcon from '@mui/icons-material/Cookie';
-
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 export const MENU = [
   {
@@ -110,6 +110,12 @@ export const MENU = [
     label: "Policy Claims",
     icon: CookieIcon,
     path: "/home/policyclaims",
+  },
+  {
+    module_id: 17,
+    label: "Notification",
+    icon: NotificationsActiveIcon,
+    path: "/home/notification",
   },
 
 ];

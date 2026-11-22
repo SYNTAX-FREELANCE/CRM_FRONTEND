@@ -409,7 +409,7 @@ export const FetchCallCenterPerformance = async (
     console.error("FetchCallCenterPerformance error:", error);
     throw new Error(
       error?.response?.data?.message ||
-      "Failed to fetch call center performance",
+        "Failed to fetch call center performance",
     );
   }
 };
@@ -1580,7 +1580,6 @@ export const getTaxRuleMasterDetails = async () => {
   }
 };
 
-
 export const getVehicleCategoryProfit = async () => {
   try {
     const response = await axioslogin.get(`/motor/profit/getall`);
@@ -1593,11 +1592,12 @@ export const getVehicleCategoryProfit = async () => {
   }
 };
 
-
 export const getQuotationDetails = async (leadid, VehicleId) => {
-  if (!leadid || !VehicleId) return infoNotify("Required Id is Missing!")
+  if (!leadid || !VehicleId) return infoNotify("Required Id is Missing!");
   try {
-    const response = await axioslogin.get(`/motor/calculation/getbylead/${leadid}/${VehicleId}`);
+    const response = await axioslogin.get(
+      `/motor/calculation/getbylead/${leadid}/${VehicleId}`,
+    );
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -1606,12 +1606,13 @@ export const getQuotationDetails = async (leadid, VehicleId) => {
     return [];
   }
 };
-
 
 export const getCallDetailsDuraiton = async (leadid) => {
-  if (!leadid) return infoNotify("Lead Id is Missing!")
+  if (!leadid) return infoNotify("Lead Id is Missing!");
   try {
-    const response = await axioslogin.get(`/lead-call-logs/getbylead/${leadid}`);
+    const response = await axioslogin.get(
+      `/lead-call-logs/getbylead/${leadid}`,
+    );
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
@@ -1620,8 +1621,6 @@ export const getCallDetailsDuraiton = async (leadid) => {
     return [];
   }
 };
-
-
 
 export const FetchPolicyClaimStatusMaster = async () => {
   try {
@@ -1633,24 +1632,48 @@ export const FetchPolicyClaimStatusMaster = async () => {
     return [];
   } catch (error) {
     console.error("FetchPolicyClaimStatusMaster error:", error);
-    throw new Error(
-      error?.response?.data?.message ||
-      "Failed to fetch policy claim statuses"
-    );
+   return [];
   }
 };
 
-
 export const getActivePolicyDetils = async () => {
   try {
-    const response = await axioslogin.get(
-      `/policyclaim/get-active`,
-    );
+    const response = await axioslogin.get(`/policyclaim/get-active`);
     const { success, data } = response.data;
     if (success === 1) return data;
     return [];
   } catch (error) {
     console.error("getPolicyClaimDetails error:", error);
+    return [];
+  }
+};
+
+export const FetchSentNotifications = async (userId) => {
+  try {
+    const response = await axioslogin.get(`/notifications/list/${userId}`);
+
+    const { success, data } = response.data;
+
+    if (success) return data || [];
+
+    return [];
+  } catch (error) {
+    console.error("FetchSentNotifications error:", error);
+
+    return [];
+  }
+};
+
+export const FetchReceivedNotifications = async (userId) => {
+  if(!userId) return ;
+  try {
+    const response = await axioslogin.get(`/notifications/received/${userId}`);
+    const { success, data } = response.data;
+
+    if (success) return data || [];
+    return [];
+  } catch (error) {
+    console.error("FetchReceivedNotifications error:", error);
     return [];
   }
 };
