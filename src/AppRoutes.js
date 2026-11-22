@@ -279,12 +279,9 @@ const PolicyClaimStatusCreation = lazy(
   () => import("./Masters/PolicyClaimStatusMaster/PolicyClaimStatusCreation"),
 );
 
-const PolicyClaims = lazy(
-  () => import("./PolicyClaims/PolicyClaims"),
-);
+const PolicyClaims = lazy(() => import("./PolicyClaims/PolicyClaims"));
 
-
-
+const NotificationPage = lazy(() => import("./Notification/NotificationPage"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<GlobalLoader />}>
@@ -339,6 +336,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: withSuspense(Settings),
+      },
+      {
+        path: "notification",
+        element: withSuspense(NotificationPage),
       },
       {
         path: "freshcalls",

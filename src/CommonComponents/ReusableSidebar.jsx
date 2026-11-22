@@ -771,7 +771,7 @@ import {
   MenuItem,
   Tooltip,
 } from "@mui/joy";
-import { Skeleton } from "@mui/material";
+import { Badge, Skeleton } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -783,7 +783,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { getAuthUser } from "../constant/Constant";
-import { useProfilePhoto } from "../CommonCode/useQuery";
+import { useProfilePhoto, useReceivedNotifications } from "../CommonCode/useQuery";
 import { useThemeMode } from "../Context/ThemeContext";
 
 import LogoutModal from "./LogoutModal";
@@ -832,6 +832,16 @@ const ReusableSidebar = ({
     data: profilePhotoUrl = "",
     isLoading: LoadingProfilePicture,
   } = useProfilePhoto(id);
+
+
+  const {
+    data: receivedNotifications = [],
+    // refetch: RefetchReceivedNotifications,
+  } = useReceivedNotifications(id);
+
+  const unreadCount = receivedNotifications.filter(
+    (notification) => Number(notification.is_read) === 0
+  ).length;
 
   const { mode, toggleTheme } = useThemeMode();
 
@@ -989,7 +999,7 @@ const ReusableSidebar = ({
         }}
       >
         {/* LOGO */}
-        <Box
+        {/* <Box
           sx={{
             width: "100%",
             height: 62,
@@ -1035,7 +1045,89 @@ const ReusableSidebar = ({
               />
             </Box>
           </Tooltip>
+        </Box> */}
+
+
+        <Box
+          sx={{
+            width: "100%",
+            height: 62,
+            minHeight: 62,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Tooltip title="POS" placement="right">
+            <Badge
+              badgeContent={unreadCount}
+              max={99}
+              invisible={unreadCount <= 0}
+              color="success"
+              overlap="circular"
+              sx={{
+                "& .MuiBadge-badge": {
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  minWidth: 19,
+                  height: 19,
+                  border: "2px solid",
+                  borderColor: isDark ? "#172d32" : "#e8f4eb",
+                  boxShadow: "0 2px 6px rgba(22,163,74,0.25)",
+                },
+              }}
+            >
+              <Box
+                // key={notificationShakeKey}
+                onClick={() => navigate("/home")}
+                sx={{
+                  width: 43,
+                  height: 43,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "15px",
+
+                  background: isDark
+                    ? "rgba(255,255,255,0.1)"
+                    : "rgba(255,255,255,0.75)",
+
+                  border: "1px solid rgba(255,255,255,0.9)",
+                  cursor: "pointer",
+                  boxShadow: "0 3px 10px rgba(15,23,42,0.08)",
+
+                  // animation: notificationShakeKey > 0
+                  //   ? "notificationShake 0.65s ease"
+                  //   : "none",
+
+                  "@keyframes notificationShake": {
+                    "0%, 100%": { transform: "rotate(0deg)" },
+                    "15%": { transform: "rotate(-13deg)" },
+                    "30%": { transform: "rotate(13deg)" },
+                    "45%": { transform: "rotate(-10deg)" },
+                    "60%": { transform: "rotate(10deg)" },
+                    "75%": { transform: "rotate(-5deg)" },
+                    "90%": { transform: "rotate(5deg)" },
+                  },
+
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                  },
+
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <SupportAgentIcon
+                  sx={{
+                    fontSize: 29,
+                    color: "#ea580c",
+                  }}
+                />
+              </Box>
+            </Badge>
+          </Tooltip>
         </Box>
+
 
         {/* NAVIGATION */}
         <Box

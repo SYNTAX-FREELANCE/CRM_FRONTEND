@@ -19,6 +19,7 @@ import { useMediaQuery } from "@mui/material";
 import MobileSidebar from "../../CommonComponents/MobileSidebar";
 import { getAuthUser } from "../../constant/Constant";
 import { useGetActiveModuleRightDetail } from "../../CommonCode/useQuery";
+import NotificationListener from "../Events/NotificationListener";
 
 const RouteLayout = () => {
 
@@ -98,6 +99,10 @@ const RouteLayout = () => {
                 },
             }}
         >
+            {userId && (
+                <NotificationListener userId={userId} />
+            )}
+
             {/* MOBILE TOP SIDEBAR */}
             {isMobile && (
                 <Box

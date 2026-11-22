@@ -102,6 +102,8 @@ import {
   getCallDetailsDuraiton,
   FetchPolicyClaimStatusMaster,
   getActivePolicyDetils,
+  FetchSentNotifications,
+  FetchReceivedNotifications,
 } from "./CommonFun";
 
 export const useRoleMaster = () => {
@@ -918,8 +920,6 @@ export const useGetQuotationDetails = (leadId, VehicleId) => {
   });
 };
 
-
-
 export const usePolicyClaimStatusMaster = () => {
   return useQuery({
     queryKey: ["policy-claim-status-master"],
@@ -1218,8 +1218,6 @@ export const useCommonMaster = (type) => {
   });
 };
 
-
-
 export const useLeadCallDetails = (leadId) => {
   return useQuery({
     queryKey: ["calldetails-leads", leadId],
@@ -1229,7 +1227,6 @@ export const useLeadCallDetails = (leadId) => {
   });
 };
 
-
 export const useFetchActivePolicyClaims = () => {
   return useQuery({
     queryKey: ["calldetails-leads"],
@@ -1238,5 +1235,20 @@ export const useFetchActivePolicyClaims = () => {
   });
 };
 
+export const useSentNotifications = (userId) => {
+  return useQuery({
+    queryKey: ["sent-notifications", userId],
+    queryFn: () => FetchSentNotifications(userId),
+    staleTime: 30000,
+    enabled: !!userId,
+  });
+};
 
-
+export const useReceivedNotifications = (userId) => {
+  return useQuery({
+    queryKey: ["received-notifications",userId],
+    queryFn: () => FetchReceivedNotifications(userId),
+    staleTime: 30000,
+      enabled: !!userId,
+  });
+};
