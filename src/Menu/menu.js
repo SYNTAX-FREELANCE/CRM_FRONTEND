@@ -112,7 +112,7 @@ export const MENU = [
     path: "/home/policyclaims",
   },
   {
-    module_id: 17,
+    module_id: 18,
     label: "Notification",
     icon: NotificationsActiveIcon,
     path: "/home/notification",
