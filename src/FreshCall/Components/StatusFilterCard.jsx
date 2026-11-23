@@ -4,7 +4,6 @@ import { Badge, Box, Typography, useTheme } from "@mui/material";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ScheduleIcon from "@mui/icons-material/Schedule";

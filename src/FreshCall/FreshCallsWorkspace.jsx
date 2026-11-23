@@ -55,22 +55,16 @@ export default function FreshCallsWorkspace() {
   const LeadId = state?.leadId
   const { id, role } = authUser ?? {};
 
-
   const isAdmin = role?.toUpperCase() === "ADMIN";
-
-
 
   const { data: LeadMasterDetail = [] } = useLeadMaster();
   const { data: EmployeeTargetDetails = [] } = useGetMyTargetDetail(id);
-
-
 
   const {
     data: AllCallDetails = [],
     isLoading: LoadingTableData,
     refetch
   } = useGetMyEmployeeActiveCalls(id);
-
 
 
   const openLead = useCallback(async (lead) => {
@@ -115,9 +109,7 @@ export default function FreshCallsWorkspace() {
     }
   }, [id, AllCallDetails, statusFilter, queryClient, statusFilter]);
 
-
   const columns = useMemo(() => TastkColumns(openLead, isMobile, isDark), [openLead, isMobile, isDark]);
-
 
   const ActiveStatus = useMemo(() => {
     if (!Array.isArray(LeadMasterDetail)) return [];
@@ -141,8 +133,6 @@ export default function FreshCallsWorkspace() {
       status_name: "RENEWAL",
     }
   ];
-
-
 
 
   const DisplayStatus = useMemo(() => {
@@ -214,31 +204,6 @@ export default function FreshCallsWorkspace() {
   }, [state, AllCallDetails, navigate]);
 
 
-  // const filteredRows = useMemo(() => {
-  //   return groupedData[statusFilter] || [];
-  // }, [groupedData, statusFilter]);
-
-  // const filteredRows = useMemo(() => {
-  //   const statusRows = groupedData[statusFilter] || [];
-
-  //   if (!selectedDateType || !selectedMonth) {
-  //     return statusRows;
-  //   }
-
-  //   return statusRows.filter((row) => {
-  //     const date = parseDateValue(row[selectedDateType]);
-
-  //     if (!date) return false;
-
-  //     const rowMonth = `${date.getFullYear()}-${String(
-  //       date.getMonth() + 1
-  //     ).padStart(2, "0")}`;
-
-  //     return rowMonth === selectedMonth;
-  //   });
-  // }, [groupedData, statusFilter, selectedDateType, selectedMonth]);
-
-
   const filteredRows = useMemo(() => {
     const search = debouncedSearchText.trim().toLowerCase();
 
@@ -293,9 +258,6 @@ export default function FreshCallsWorkspace() {
     searchText,
   ]);
 
-
-
-
   useEffect(() => {
     if (Status) setStatusFilter(Status);
     if (openedRef.current) return;
@@ -334,80 +296,134 @@ export default function FreshCallsWorkspace() {
           display: "none",
         },
         // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
-        background: isDark ? "rgba(30,41,59,0.7)" : `
-          radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-          radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-          linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-        `,
+        // background: isDark ? "rgba(30,41,59,0.7)" : `
+        //   radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+        //   radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+        //   linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+        // `,
       }}
     >
-      <Paper
+      <Box
         elevation={0}
         sx={{
           minHeight: "95vh",
           width: "100%",
-          border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
+          // border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
           boxShadow: "0 20px 40px rgba(15, 23, 42, 0.05)",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           borderRadius: 0,
-          bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+          // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
           backdropFilter: "blur(24px)",
         }}
       >
+
         <Box
           sx={{
-            px: { xs: 2, md: 3 },
-            py: 2.5,
-            borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
-            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+            px: { xs: 2, md: 2.75 },
+            py: { xs: 2, md: 2.5 },
+            mb: 2.5,
+            borderRadius: "26px",
+            background: isDark
+              ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+              : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+            border: isDark
+              ? "1px solid rgba(74, 222, 128, 0.08)"
+              : "1px solid rgba(22, 101, 52, 0.10)",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
             flex: "0 0 auto",
           }}
         >
           <Stack
-            direction={{ xs: "column", lg: "row" }}
+            direction={{ xs: "column", xl: "row" }}
+            alignItems={{ xs: "flex-start", xl: "center" }}
             justifyContent="space-between"
-            alignItems={{ xs: "flex-start", lg: "center" }}
-            gap={2}
-            width={'100%'}
+            gap={2.5}
+            width="100%"
           >
-            <Box sx={{
-              width: { xs: "100%", lg: "30%" }
-            }}>
-              <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: "-0.5px", color: isDark ? "#f8fafc" : "#0f172a" }}>
+            {/* LEFT - TITLE */}
+            <Box
+              sx={{
+                width: { xs: "100%", xl: "34%" },
+                minWidth: 220,
+              }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight={900}
+                sx={{
+                  letterSpacing: "-0.5px",
+                  color: isDark ? "#f1f5f9" : "#123b2c",
+                  fontSize: { xs: 21, md: 25 },
+                }}
+              >
                 Task Queue
               </Typography>
-              <Typography variant="body2" sx={{ mt: 0.5, fontWeight: 500, color: isDark ? "#f8fafc" : "#0f172a" }}>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 0.5,
+                  color: isDark ? "#a7b9b0" : "#587568",
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                }}
+              >
                 Process assigned leads, update status, and manage client communications.
               </Typography>
             </Box>
-            <Box sx={{
-              display: 'flex',
-              flexDirection: { xs: "column", xl: "row" },
-              gap: 1,
-              width: { xs: "100%", lg: "70%" },
-              alignItems: { xs: "flex-start", md: "flex-end", xl: 'center' },
-              justifyContent: 'flex-end'
-            }}>
-              <EmployeeTargetCard data={EmployeeTargetDetails} />
 
+            {/* RIGHT - TARGETS + BUTTON */}
+            <Box
+              sx={{
+                display: "flex",
+                flex: 1,
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
+              {/* TARGET CARDS */}
+              <Box
+                sx={{
+                  flex: 1,
+                  minWidth: 280,
+                  "& > *": {
+                    display: "flex",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    justifyContent: "flex-end",
+                  },
+                }}
+              >
+                <EmployeeTargetCard data={EmployeeTargetDetails} />
+              </Box>
+
+              {/* NEXT QUEUE */}
               <Button
                 variant="contained"
                 onClick={getFreshCalls}
                 startIcon={<PhoneIcon />}
                 sx={{
-                  background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                  background: "#43dc83",
+                  color: "#082c1c",
                   textTransform: "none",
-                  fontWeight: 700,
-                  borderRadius: 2.5,
-                  width: 200,
-                  px: 1,
-                  py: 1,
-                  boxShadow: "0 8px 20px rgba(37,99,235,0.18)",
+                  fontWeight: 800,
+                  fontSize: 15,
+                  borderRadius: "15px",
+                  minWidth: 163,
+                  px: 2.5,
+                  py: 1.5,
+                  boxShadow: "none",
+                  whiteSpace: "nowrap",
                   "&:hover": {
+                    background: "#35c975",
+                    boxShadow: "0 5px 15px rgba(67,220,131,0.2)",
                     transform: "translateY(-1px)",
-                    boxShadow: "0 10px 25px rgba(37,99,235,0.25)",
                   },
                 }}
               >
@@ -416,6 +432,8 @@ export default function FreshCallsWorkspace() {
             </Box>
           </Stack>
         </Box>
+
+
         <Box
           sx={{
             px: { xs: 2, md: 3 },
@@ -425,6 +443,15 @@ export default function FreshCallsWorkspace() {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
+            background: isDark
+              ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+              : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+            border: isDark
+              ? "1px solid rgba(74, 222, 128, 0.08)"
+              : "1px solid rgba(22, 101, 52, 0.10)",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+            flex: "0 0 auto",
+            borderRadius: 5
           }}
         >
           <Box
@@ -506,15 +533,18 @@ export default function FreshCallsWorkspace() {
                 width: "100%",
                 border: "none",
                 fontSize: "13px",
+                fontFamily: "Bahnschrift",
                 backgroundColor: "transparent",
                 "& .MuiDataGrid-columnHeaders": {
                   bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                   minHeight: "44px !important",
                   maxHeight: "44px !important",
                   borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
+                  fontFamily: "Bahnschrift",
                 },
                 "& .MuiDataGrid-columnHeader": {
                   padding: "0 12px",
+                  fontFamily: "Bahnschrift",
                 },
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontWeight: 800,
@@ -522,16 +552,19 @@ export default function FreshCallsWorkspace() {
                   fontSize: "12px",
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
+                  fontFamily: "Bahnschrift",
                 },
                 "& .MuiDataGrid-cell": {
                   padding: "12px 12px",
                   borderBottom: "1px solid rgba(226, 232, 240, 0.4)",
                   outline: "none !important",
+                  fontFamily: "Bahnschrift",
                 },
                 "& .MuiDataGrid-row": {
                   cursor: "pointer",
                   bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                   transition: "background-color 0.15s ease",
+                  fontFamily: "Bahnschrift",
                   "&:hover": {
                     backgroundColor: "rgba(37,99,235,0.04)",
                   },
@@ -539,6 +572,7 @@ export default function FreshCallsWorkspace() {
                 "& .MuiDataGrid-footerContainer": {
                   minHeight: "44px",
                   borderTop: "1px solid rgba(226, 232, 240, 0.6)",
+                  fontFamily: "Bahnschrift",
                   bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
                 },
                 "& .MuiDataGrid-virtualScroller": {
@@ -548,7 +582,7 @@ export default function FreshCallsWorkspace() {
             />
           </Paper>
         </Box>
-      </Paper>
+      </Box>
 
       <Suspense fallback={null}>
         {

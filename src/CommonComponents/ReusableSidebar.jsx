@@ -761,7 +761,7 @@
 
 
 
-import React, { useState, memo, useEffect, useMemo, useCallback } from "react";
+import React, { useState, memo, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   Box,
   Typography,
@@ -824,9 +824,22 @@ const ReusableSidebar = ({
   const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
   const [nestedAnchorEl, setNestedAnchorEl] = useState(null);
   const [nestedMenuItem, setNestedMenuItem] = useState(null);
-
+  const [animateNotification, setAnimateNotification] = useState(false);
   const authUser = getAuthUser();
   const { emp_name, id, role } = authUser ?? {};
+
+  const {
+    data: receivedNotifications = [],
+    // refetch: RefetchReceivedNotifications,
+  } = useReceivedNotifications(id);
+
+
+  const unreadCount = receivedNotifications?.filter(
+    (notification) => Number(notification.is_read) === 0
+  ).length;
+  const previousUnreadCount = useRef(unreadCount);
+
+
 
   const {
     data: profilePhotoUrl = "",
@@ -834,14 +847,25 @@ const ReusableSidebar = ({
   } = useProfilePhoto(id);
 
 
-  const {
-    data: receivedNotifications = [],
-    // refetch: RefetchReceivedNotifications,
-  } = useReceivedNotifications(id);
 
-  const unreadCount = receivedNotifications.filter(
-    (notification) => Number(notification.is_read) === 0
-  ).length;
+
+  useEffect(() => {
+    if (unreadCount > previousUnreadCount.current) {
+      setAnimateNotification(true);
+
+      const timer = setTimeout(() => {
+        setAnimateNotification(false);
+      }, 900);
+
+      previousUnreadCount.current = unreadCount;
+
+      return () => clearTimeout(timer);
+    }
+
+    previousUnreadCount.current = unreadCount;
+  }, [unreadCount]);
+
+
 
   const { mode, toggleTheme } = useThemeMode();
 
@@ -1048,6 +1072,7 @@ const ReusableSidebar = ({
         </Box> */}
 
 
+
         <Box
           sx={{
             width: "100%",
@@ -1058,7 +1083,7 @@ const ReusableSidebar = ({
             justifyContent: "center",
           }}
         >
-          <Tooltip title="POS" placement="right">
+          <Tooltip title="POS Notifications" placement="right">
             <Badge
               badgeContent={unreadCount}
               max={99}
@@ -1073,12 +1098,30 @@ const ReusableSidebar = ({
                   height: 19,
                   border: "2px solid",
                   borderColor: isDark ? "#172d32" : "#e8f4eb",
-                  boxShadow: "0 2px 6px rgba(22,163,74,0.25)",
+                  boxShadow: "0 2px 8px rgba(22,163,74,0.3)",
+
+                  animation: animateNotification
+                    ? "badgePop 0.65s ease"
+                    : "none",
+
+                  "@keyframes badgePop": {
+                    "0%": {
+                      transform: "scale(1)",
+                    },
+                    "35%": {
+                      transform: "scale(1.6)",
+                    },
+                    "65%": {
+                      transform: "scale(0.85)",
+                    },
+                    "100%": {
+                      transform: "scale(1)",
+                    },
+                  },
                 },
               }}
             >
               <Box
-                // key={notificationShakeKey}
                 onClick={() => navigate("/home")}
                 sx={{
                   width: 43,
@@ -1096,18 +1139,32 @@ const ReusableSidebar = ({
                   cursor: "pointer",
                   boxShadow: "0 3px 10px rgba(15,23,42,0.08)",
 
-                  // animation: notificationShakeKey > 0
-                  //   ? "notificationShake 0.65s ease"
-                  //   : "none",
+                  animation: animateNotification
+                    ? "notificationShake 0.8s ease"
+                    : "none",
 
                   "@keyframes notificationShake": {
-                    "0%, 100%": { transform: "rotate(0deg)" },
-                    "15%": { transform: "rotate(-13deg)" },
-                    "30%": { transform: "rotate(13deg)" },
-                    "45%": { transform: "rotate(-10deg)" },
-                    "60%": { transform: "rotate(10deg)" },
-                    "75%": { transform: "rotate(-5deg)" },
-                    "90%": { transform: "rotate(5deg)" },
+                    "0%, 100%": {
+                      transform: "rotate(0deg) scale(1)",
+                    },
+                    "15%": {
+                      transform: "rotate(-13deg) scale(1.08)",
+                    },
+                    "30%": {
+                      transform: "rotate(13deg) scale(1.08)",
+                    },
+                    "45%": {
+                      transform: "rotate(-10deg)",
+                    },
+                    "60%": {
+                      transform: "rotate(10deg)",
+                    },
+                    "75%": {
+                      transform: "rotate(-5deg)",
+                    },
+                    "90%": {
+                      transform: "rotate(5deg)",
+                    },
                   },
 
                   "&:hover": {
@@ -1121,12 +1178,25 @@ const ReusableSidebar = ({
                   sx={{
                     fontSize: 29,
                     color: "#ea580c",
+                    animation: animateNotification
+                      ? "iconPulse 0.8s ease"
+                      : "none",
+
+                    "@keyframes iconPulse": {
+                      "0%, 100%": {
+                        transform: "scale(1)",
+                      },
+                      "50%": {
+                        transform: "scale(1.2)",
+                      },
+                    },
                   }}
                 />
               </Box>
             </Badge>
           </Tooltip>
         </Box>
+
 
 
         {/* NAVIGATION */}

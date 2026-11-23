@@ -112,7 +112,7 @@ const MyCustomers = () => {
     return (
         <Box
             sx={{
-                minHeight: "95vh",
+                minHeight: "90vh",
                 width: "100%",
                 overflowY: "auto",
                 scrollbarWidth: "none",
@@ -120,101 +120,114 @@ const MyCustomers = () => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
-                background: isDark
-                    ? `
-                      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.18) 0%, transparent 45%),
-                      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.15) 0%, transparent 45%),
-                      linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)
-                    `
-                    : `
-                      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-                      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-                      linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-                    `,
+                // background: isDark
+                //     ? `
+                //       radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.18) 0%, transparent 45%),
+                //       radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.15) 0%, transparent 45%),
+                //       linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)
+                //     `
+                //     : `
+                //       radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                //       radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                //       linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                //     `,
             }}
         >
-            <Paper
-                elevation={0}
+            <Box
                 sx={{
-                    minHeight: "95vh",
+                    minHeight: "90vh",
                     width: "100%",
-                    border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.65)",
-                    boxShadow: isDark ? "0 20px 40px rgba(0, 0, 0, 0.5)" : "0 20px 40px rgba(15, 23, 42, 0.05)",
+                    // border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.65)",
+                    // boxShadow: isDark ? "0 20px 40px rgba(0, 0, 0, 0.5)" : "0 20px 40px rgba(15, 23, 42, 0.05)",
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
                     borderRadius: 0,
-                    background: isDark ? "rgba(15, 23, 42, 0.7)" : "rgba(255, 255, 255, 0.5)",
+                    // background: isDark ? "rgba(15, 23, 42, 0.7)" : "rgba(255, 255, 255, 0.5)",
                     backdropFilter: "blur(24px)",
                 }}
             >
                 <Box
                     sx={{
-                        px: { xs: 2, md: 3 },
+                        px: { xs: 2, md: 1 },
                         py: 1.5,
                         borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(226, 232, 240, 0.6)",
                         flex: "0 0 auto",
                     }}
                 >
+
                     <Card
                         sx={{
-                            borderRadius: 5,
-                            px: 2,
-                            py: 2,
-                            mb: 4,
-                            background: "linear-gradient(135deg, #282726 0%, #050505 50%, #2554b4a8 100%)",
+                            borderRadius: "26px",
+                            px: { xs: 2, sm: 2.5, md: 3.5 },
+                            py: { xs: 2.5, md: 3 },
+                            mb: 2.5,
+
+                            background: isDark
+                                ? "linear-gradient(110deg, #315c70 0%, #087b91 48%, #9a9e55 100%)"
+                                : "linear-gradient(110deg, #315c70 0%, #087b91 48%, #9a9e55 100%)",
+
                             position: "relative",
                             overflow: "hidden",
+
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+
+                            minHeight: { xs: 110, md: 126 },
+
+                            display: "flex",
+                            alignItems: "center",
                         }}
                     >
-                        {/* Decorative Circles */}
                         <Box
                             sx={{
-                                position: "absolute",
-                                top: -60,
-                                right: -60,
-                                width: 200,
-                                height: 200,
-                                borderRadius: "50%",
-                                bgcolor: "rgba(255, 255, 255, 0.1)",
+                                position: "relative",
+                                zIndex: 1,
+                                width: "100%",
                             }}
-                        />
-                        <Box
-                            sx={{
-                                position: "absolute",
-                                bottom: -80,
-                                left: -40,
-                                width: 150,
-                                height: 150,
-                                borderRadius: "50%",
-                                bgcolor: "rgba(255, 255, 255, 0.08)",
-                            }}
-                        />
+                        >
+                            <Typography
+                                sx={{
+                                    color: "rgba(255,255,255,0.85)",
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    letterSpacing: "2px",
+                                    mb: 0.4,
+                                }}
+                            >
+                                MY SALES
+                            </Typography>
 
-                        <Grid container spacing={2} alignItems="center" justifyContent={'space-between'}>
-                            <Grid item xs={12} md={8}>
-                                <Typography fontSize={{ xs: 16, sm: 20, md: 26 }} fontWeight={900} color="#fff7f7">
-                                    POLICY HOLDERS
-                                </Typography>
-                                <Typography fontSize={{ xs: 10, sm: 11, md: 13 }} sx={{
-                                    fontWeight: 800
-                                }} color="rgba(255, 248, 248, 0.88)">
-                                    View and manage your sold customers, monitor policy details, and stay prepared for upcoming renewals.
-                                </Typography>
-                            </Grid>
+                            <Typography
+                                fontSize={{ xs: 21, sm: 25, md: 28 }}
+                                fontWeight={900}
+                                sx={{
+                                    color: "#ffffff",
+                                    lineHeight: 1.2,
+                                    letterSpacing: "-0.5px",
+                                }}
+                            >
+                                Policy Holders
+                            </Typography>
 
-                            {/* <Grid item xs={12} md={4}>
-                                <DashboardDateFilter
-                                    value={dateFilter}
-                                    onChange={setDateFilter}
-                                    fromDate={fromDate}
-                                    toDate={toDate}
-                                    onFromDateChange={setFromDate}
-                                    onToDateChange={setToDate}
-                                />
-                            </Grid> */}
-                        </Grid>
+                            <Typography
+                                sx={{
+                                    mt: 0.7,
+                                    color: "rgba(255,255,255,0.9)",
+                                    fontSize: { xs: 11, sm: 12, md: 14 },
+                                    fontWeight: 500,
+                                    lineHeight: 1.5,
+                                }}
+                            >
+                                View and manage your sold customers, monitor policy details,
+                                and stay prepared for upcoming renewals.
+                            </Typography>
+                        </Box>
                     </Card>
+
+
+
+
                     <Box
                         sx={{
                             display: "grid",
@@ -260,10 +273,17 @@ const MyCustomers = () => {
                         width: "100%",
                         borderRadius: 4,
                         overflowX: "hidden",
-                        border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.55)",
-                        background: isDark ? "rgba(30, 41, 59, 0.8)" : "rgba(255, 255, 255, 0.25)",
-                        backdropFilter: "blur(16px)",
-                        boxShadow: isDark ? "0 10px 30px rgba(0, 0, 0, 0.3)" : "0 10px 30px rgba(15, 23, 42, 0.02)",
+                        // border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.55)",
+                        // background: isDark ? "rgba(30, 41, 59, 0.8)" : "rgba(255, 255, 255, 0.25)",
+                        // backdropFilter: "blur(16px)",
+                        // boxShadow: isDark ? "0 10px 30px rgba(0, 0, 0, 0.3)" : "0 10px 30px rgba(15, 23, 42, 0.02)",
+                        background: isDark
+                            ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                            : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                        border: isDark
+                            ? "1px solid rgba(74, 222, 128, 0.08)"
+                            : "1px solid rgba(22, 101, 52, 0.10)",
+                        boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
                         p: 2
                     }}
                 >
@@ -350,7 +370,7 @@ const MyCustomers = () => {
                         }}
                     />
                 </Paper>
-            </Paper>
+            </Box>
         </Box>
     );
 };

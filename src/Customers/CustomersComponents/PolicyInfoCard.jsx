@@ -31,6 +31,7 @@ import {
 import DetailLine from "./DetailLine";
 import { format, parseISO } from "date-fns";
 
+
 const compactInput = {
     "& .MuiOutlinedInput-root": {
         borderRadius: 2,
@@ -293,7 +294,7 @@ const PolicyInfoCard = ({
             }
 
         } catch (error) {
-            
+
             warningNotify(
                 error?.response?.data?.message ||
                 "Failed to update policy"
@@ -392,6 +393,14 @@ const PolicyInfoCard = ({
                     border: "1px solid #DCE8F7",
                     borderRadius: 3,
                     p: 1.5,
+                    background: isDark
+                        ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                        : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                    border: isDark
+                        ? "1px solid rgba(74, 222, 128, 0.08)"
+                        : "1px solid rgba(22, 101, 52, 0.10)",
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                    flex: "0 0 auto",
                 }}
             >
 
@@ -1207,6 +1216,14 @@ const PolicyInfoCard = ({
                     border: "1px solid #DCE8F7",
                     borderRadius: 3,
                     p: 1.5,
+                    background: isDark
+                        ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                        : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                    border: isDark
+                        ? "1px solid rgba(74, 222, 128, 0.08)"
+                        : "1px solid rgba(22, 101, 52, 0.10)",
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                    flex: "0 0 auto",
                 }}
             >
 

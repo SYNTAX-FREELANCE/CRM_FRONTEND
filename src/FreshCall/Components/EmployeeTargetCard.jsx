@@ -1,3 +1,4 @@
+
 import React, { memo } from "react";
 import {
     Box,
@@ -7,171 +8,150 @@ import {
     useTheme
 } from "@mui/material";
 
-import TrackChangesIcon from "@mui/icons-material/TrackChanges";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
-import PercentIcon from "@mui/icons-material/Percent";
-import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import { useGetCallsLeft } from "../../CommonCode/useQuery";
-
 
 const EmployeeTargetCard = ({ data = [] }) => {
     const theme = useTheme();
-    const isDark = theme.palette.mode === 'dark';
+    const isDark = theme.palette.mode === "dark";
 
     const emp = data[0];
-    const { data: callsLeftCount = 0 } = useGetCallsLeft(emp?.employee_id);
+
+    const { data: callsLeftCount = 0 } = useGetCallsLeft(
+        emp?.employee_id
+    );
 
     if (!emp) return null;
 
-
     const totalTarget =
-        Number(emp.normal_target) + Number(emp.renewal_target);
+        Number(emp.normal_target || 0) +
+        Number(emp.renewal_target || 0);
 
     const achievement =
         totalTarget > 0
-            ? ((Number(emp.total_sold) / totalTarget) * 100).toFixed(2)
-            : 0;
-
+            ? (
+                (Number(emp.total_sold || 0) / totalTarget) *
+                100
+            ).toFixed(2)
+            : "0.00";
 
     const cards = [
         {
             title: "Normal Target",
-            value: emp.normal_target,
-            icon: <TrackChangesIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#186f11'
-            }} />
+            value: emp.normal_target ?? 0,
         },
         {
             title: "Normal Sold",
-            value: emp.normal_sold,
-            icon: <TrendingUpIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#ff5a0d'
-            }} />
+            value: emp.normal_sold ?? 0,
         },
         {
             title: "Renewal Target",
-            value: emp.renewal_target,
-            icon: <AutorenewIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#186f11'
-            }} />
+            value: emp.renewal_target ?? 0,
         },
         {
             title: "Renewal Sold",
-            value: emp.renewal_sold,
-            icon: <TrendingUpIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#ff5a0d'
-            }} />
+            value: emp.renewal_sold ?? 0,
         },
         {
             title: "Total Sold",
-            value: emp.total_sold,
-            icon: <TrendingUpIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#186f11'
-            }} />
+            value: emp.total_sold ?? 0,
         },
         {
             title: "Calls Left",
             value: callsLeftCount,
-            icon: <PhoneCallbackIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#d32f2f'
-            }} />
         },
         {
             title: "Achievement",
             value: `${achievement}%`,
-            icon: <PercentIcon sx={{
-                fontSize: { xs: 12, sm: 14 },
-                color: '#ff5a0d'
-            }} />
         },
     ];
 
     return (
         <Box
-            display="grid"
-            gridTemplateColumns={{
-                xs: "repeat(2, 1fr)",
-                sm: "repeat(3, 1fr)",
-                md: "repeat(4, 1fr)",
-                lg: "repeat(7, 1fr)"
+            sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "9px",
+                width: "100%",
+                justifyContent: "flex-end",
+                alignItems: "stretch",
             }}
-            gap={{ xs: 1, sm: 1.25, md: 1.5 }}
-            width={'100%'}
         >
             {cards?.map((card) => (
                 <Card
                     key={card.title}
+                    elevation={0}
                     sx={{
-                        borderRadius: 2,
-                        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : 1,
-                        bgcolor: isDark ? "rgba(30,41,59,0.85)" : "#fff",
-                        minWidth: 0,
-                        height: "100%",
-                        minHeight: 60,
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        transition: "all 0.2s ease-in-out",
+                        flex: "1 1 105px",
+                        minWidth: {
+                            xs: "calc(50% - 9px)",
+                            sm: "105px",
+                        },
+                        maxWidth: {
+                            xs: "none",
+                            sm: "125px",
+                        },
+                        borderRadius: "15px",
+
+                        background: isDark
+                            ? "rgba(9, 31, 23, 0.82)"
+                            : "#ffffff",
+
+                        border: isDark
+                            ? "1px solid rgba(74, 222, 128, 0.05)"
+                            : "1px solid #dce9df",
+
+                        transition: "all 0.2s ease",
+
                         "&:hover": {
+                            background: isDark
+                                ? "rgba(7, 26, 19, 0.98)"
+                                : "#f4faf5",
                             transform: "translateY(-2px)",
-                            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.5)" : 3
-                        }
+                        },
                     }}
                 >
                     <CardContent
                         sx={{
-                            p: { xs: 1, sm: 1.25 },
-                            "&:last-child": { pb: { xs: 1, sm: 1.25 } }
+                            px: 1.5,
+                            py: 1.25,
+                            "&:last-child": {
+                                pb: 1.25,
+                            },
                         }}
                     >
-                        <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap={0.5}
+                        <Typography
+                            sx={{
+                                fontSize: 10,
+                                fontWeight: 800,
+                                letterSpacing: "0.35px",
+                                textTransform: "uppercase",
+                                color: isDark
+                                    ? "#9fb5aa"
+                                    : "#718579",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                lineHeight: 1.3,
+                            }}
+                            title={card.title}
                         >
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                noWrap
-                                title={card.title}
-                                sx={{
-                                    fontSize: { xs: 9, sm: 10, md: 11 },
-                                    fontWeight: 800,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                    color: isDark ? "#94a3b8" : "text.secondary"
-                                }}
-                            >
-                                {card.title}
-                            </Typography>
-
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    flexShrink: 0
-                                }}
-                            >
-                                {card.icon}
-                            </Box>
-                        </Box>
+                            {card.title}
+                        </Typography>
 
                         <Typography
-                            fontWeight={700}
                             sx={{
-                                fontSize: { xs: 13, sm: 15, md: 16 },
+                                mt: 0.35,
+                                fontSize: {
+                                    xs: 17,
+                                    sm: 19,
+                                },
+                                fontWeight: 900,
                                 lineHeight: 1.2,
-                                mt: 0.5,
-                                color: isDark ? "#f8fafc" : "text.primary"
+                                color: isDark
+                                    ? "#f1f5f9"
+                                    : "#153d2c",
+                                letterSpacing: "-0.3px",
+                                fontVariantNumeric: "tabular-nums",
                             }}
                         >
                             {card.value}
