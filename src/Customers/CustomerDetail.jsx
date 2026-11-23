@@ -1,37 +1,18 @@
 // CustomerDetail.jsx
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
-    Typography,
     CircularProgress,
     Alert,
-    Grid,
     Paper,
-    Card,
-    CardContent,
-    CardActions,
-    Chip,
     Button,
-    Divider,
-    Stack,
-    TextField,
-    MenuItem,
-    Select,
-    FormControl,
-    InputLabel,
-    Avatar,
     useTheme,
 } from '@mui/material';
 import { useGetCustomerPolicyDetails } from '../CommonCode/useQuery';
 import PolicyCard from './CustomersComponents/PolicyCard';
 
 
-import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 import FloatingBackButton from '../CommonComponents/FloatingBackButton';
 import CustomerHeader from './CustomersComponents/CustomerHeader';
 
@@ -46,15 +27,6 @@ const themeColors = {
     white: '#FFFFFF',
 };
 
-const formatDate = (isoString) => {
-    if (!isoString) return '-';
-    const d = new Date(isoString);
-    return d.toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
 
 const CustomerDetail = () => {
     const { customerid } = useParams();
@@ -67,9 +39,9 @@ const CustomerDetail = () => {
         refetch,
     } = useGetCustomerPolicyDetails(customerid);
 
-    
-        const theme = useTheme();
-        const isDark = theme.palette.mode === 'dark';
+
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const customer = useMemo(() => {
         if (!policyDetails?.length) return null;
@@ -133,24 +105,25 @@ const CustomerDetail = () => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
-                background: `
-              radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-              radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-              linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-            `,
+                //     background: `
+                //   radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                //   radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                //   linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                // `,
             }}
         >
-            <Paper
+            <Box
                 elevation={0}
                 sx={{
-                    height: "95vh",
+                    height: "90vh",
                     width: "100%",
-                    border: "1px solid rgba(255,255,255,.65)",
-                    boxShadow: "0 20px 40px rgba(15,23,42,.05)",
                     borderRadius: 0,
-                    // background: "rgba(255,255,255,.5)",
-                      bgcolor: isDark ? "rgba(36, 44, 60, 0.93)" : "#fff",
-                    backdropFilter: "blur(24px)",
+                    // border: "1px solid rgba(255,255,255,.65)",
+                    // boxShadow: "0 20px 40px rgba(15,23,42,.05)",
+                    // // background: "rgba(255,255,255,.5)",
+                    // bgcolor: isDark ? "rgba(36, 44, 60, 0.93)" : "#fff",
+                    // backdropFilter: "blur(24px)",
+
 
                     display: "flex",
                     flexDirection: "column",
@@ -188,7 +161,7 @@ const CustomerDetail = () => {
                     >
                         {policyDetails?.map((policy) => (
                             <PolicyCard
-                            isDark={isDark}
+                                isDark={isDark}
                                 key={policy.policy_id}
                                 policy={policy}
                                 onOpen={() =>
@@ -198,7 +171,7 @@ const CustomerDetail = () => {
                         ))}
                     </Box>
                 </Box>
-            </Paper>
+            </Box>
             <FloatingBackButton navigateTo="/home/mycustomer" />
         </Box>
     );

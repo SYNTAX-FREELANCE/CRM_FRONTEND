@@ -26,6 +26,7 @@ const ExpandableSectionHeader = ({
                     justifyContent: "space-between",
                     cursor: "pointer",
                     userSelect: "none",
+
                 }}
             >
                 <Box

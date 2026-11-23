@@ -6,6 +6,7 @@ import SessionTimeoutHandler from "./CommonComponents/SessionTimeoutHandler";
 import { ThemeModeProvider } from "./Context/ThemeContext";
 import ThemeConfig from "./Context/ThemeConfig";
 import RateLimitNotification from "./CommonComponents/RateLimitNotification";
+import NotificationPermission from "./utils/Events/NotificationPermission";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ function App() {
       <ThemeModeProvider>
         <ThemeConfig>
           <AuthProvider>
+            <NotificationPermission />
             <RateLimitNotification />
             <ToastContainer />
             <AppRoutes />

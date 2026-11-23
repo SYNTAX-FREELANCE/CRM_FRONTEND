@@ -51,7 +51,7 @@ export const CustomToolbar = ({
                 placeholder="Search registration / customer"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                sx={{ width: 230, "& .MuiInputBase-root": { height: 36, fontSize: 12, }, "& .MuiOutlinedInput-input": { py: 0.5, }, "& .MuiInputBase-input::placeholder": { fontSize: 12, opacity: 0.7, }, }}
+                sx={{ width: 230, "& .MuiInputBase-root": { height: 36, fontSize: 12, }, "& .MuiOutlinedInput-input": { py: 0.5, }, "& .MuiInputBase-input::placeholder": { fontSize: 12, opacity: 0.7, borderRadius: 10 }, borderRadius: 10 }}
             />
             {/* DATE TYPE */}
             <TextField

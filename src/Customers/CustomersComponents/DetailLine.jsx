@@ -11,9 +11,10 @@ const DetailLine = ({ label, value, isDark }) => {
             justifyContent="space-between"
             spacing={2}
             sx={{
-                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#ffffff",
+                // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#ffffff",
                 p: 0.5,
                 borderBottom: "0.5px solid #716c6c3d",
+                fontFamily: "Bahnschrift",
             }}
         >
             <Typography
@@ -22,7 +23,8 @@ const DetailLine = ({ label, value, isDark }) => {
                     color: isDark ? "#f8fafc" : "text.secondary",
                     minWidth: 110,
                     fontWeight: 800,
-                    fontSize: { xs: 10, sm: 14 },
+                    fontSize: { xs: 10, sm: 16 },
+                    fontFamily: "Bahnschrift",
                 }}
             >
                 {label}
@@ -30,10 +32,11 @@ const DetailLine = ({ label, value, isDark }) => {
             <Typography
                 variant="body2"
                 sx={{
-                    color: isDark ? "rgba(30,41,59,0.7)" : "#090909",
+                    color: isDark ? "rgba(40, 175, 51, 0.7)" : "#171717ff",
                     fontWeight: 800,
                     textAlign: "right",
-                    fontSize: { xs: 12, sm: 14 },
+                    fontSize: { xs: 12, sm: 16 },
+                    fontFamily: "Bahnschrift",
                 }}
             >
                 {value}

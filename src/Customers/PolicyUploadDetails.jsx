@@ -233,23 +233,23 @@ const PolicyUploadDetails = () => {
                 "&::-webkit-scrollbar": {
                     display: "none",
                 },
-                background: `
-                     radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
-                     radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
-                     linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
-                   `,
+                // background: `
+                //      radial-gradient(circle at 15% 25%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                //      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                //      linear-gradient(135deg, #ffffff 0%, #eff6ff 50%, #fff7ed 100%)
+                //    `,
             }}
         >
-            <Paper
+            <Box
                 elevation={0}
                 sx={{
                     height: "95vh",
                     width: "100%",
-                    border: "1px solid rgba(255,255,255,.65)",
-                    boxShadow: "0 20px 40px rgba(15,23,42,.05)",
-                    borderRadius: 0,
-                    background: isDark ? "rgba(12, 18, 26, 0.93)" : "#fff",
-                    backdropFilter: "blur(24px)",
+                    // border: "1px solid rgba(255,255,255,.65)",
+                    // boxShadow: "0 20px 40px rgba(15,23,42,.05)",
+                    // borderRadius: 0,
+                    // background: isDark ? "rgba(12, 18, 26, 0.93)" : "#fff",
+                    // backdropFilter: "blur(24px)",
 
                     display: "flex",
                     flexDirection: "column",
@@ -293,6 +293,14 @@ const PolicyUploadDetails = () => {
                             border: `1px solid ${themeColors.border}`,
                             width: "100%",
                             mt: 2,
+                            background: isDark
+                                ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                                : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                            border: isDark
+                                ? "1px solid rgba(74, 222, 128, 0.08)"
+                                : "1px solid rgba(22, 101, 52, 0.10)",
+                            boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                            flex: "0 0 auto",
                         }}
                     >
                         <ExpandableSectionHeader
@@ -334,6 +342,14 @@ const PolicyUploadDetails = () => {
                             border: `1px solid ${themeColors.border}`,
                             width: "100%",
                             mt: 2,
+                            background: isDark
+                                ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                                : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                            border: isDark
+                                ? "1px solid rgba(74, 222, 128, 0.08)"
+                                : "1px solid rgba(22, 101, 52, 0.10)",
+                            boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                            flex: "0 0 auto",
                         }}
                     >
 
@@ -434,7 +450,7 @@ const PolicyUploadDetails = () => {
 
                     </Paper>
                 </Box>
-            </Paper>
+            </Box>
 
             <PolicyDetails
                 open={open}

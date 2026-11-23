@@ -35,10 +35,11 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       renderCell: ({ row }) => (
         <Stack direction="row" alignItems="center" spacing={0.7}>
           <Typography
-            sx={{ fontSize: 12 }}
+            sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
             variant="body2"
             fontWeight={600}
             color={isDark ? "#f8fafc" : "#0f172a"}
+
           >
             {row.customer_name}
           </Typography>
@@ -112,7 +113,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
             </Tooltip>
           )}
           <Typography
-            sx={{ fontSize: 12 }}
+            sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
             variant="body2"
             fontWeight={600}
             color={isDark ? "#f8fafc" : "#0f172a"}
@@ -136,7 +137,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       },
       renderCell: (params) => (
         <Typography
-          sx={{ fontSize: 12 }}
+          sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
           variant="body2"
           color={isDark ? "#f8fafc" : "#0f172a"}
           fontWeight={600}
@@ -169,7 +170,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
               variant="body2"
-              sx={{ fontSize: 12 }}
+              sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
@@ -203,7 +204,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
               variant="body2"
-              sx={{ fontSize: 12 }}
+              sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
@@ -237,7 +238,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
               variant="body2"
-              sx={{ fontSize: 12 }}
+              sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
@@ -272,7 +273,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography
               variant="body2"
-              sx={{ fontSize: 12 }}
+              sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
               fontWeight={600}
               color={isDark ? "#f8fafc" : "#0f172a"}
             >
@@ -298,7 +299,7 @@ export const TastkColumns = (openLead, isMobile = false, isDark) => {
       renderCell: (params) => (
         <Typography
           variant="body2"
-          sx={{ fontSize: 12 }}
+          sx={{ fontSize: 12, fontFamily: "Bahnschrift", }}
           fontWeight={600}
           color={isDark ? "#f8fafc" : "#0f172a"}
         >
