@@ -48,6 +48,8 @@ const PolicyCard = ({ policy, onOpen, isDark }) => {
                     ? "1px solid rgba(74, 222, 128, 0.08)"
                     : "1px solid rgba(22, 101, 52, 0.10)",
                 boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+
+                
                 "&:hover": {
                     transform: "translateY(-4px)",
                     borderColor: "#43dc83",

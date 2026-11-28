@@ -39,8 +39,13 @@ const TopSalesExecutives = ({ data = [] }) => {
             sx={{
                 // p: 2.25,
                 borderRadius: 4,
-                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : `1px solid ${colors.border}`,
+                background: isDark
+                    ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                    : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                border: isDark
+                    ? "1px solid rgba(74, 222, 128, 0.08)"
+                    : "1px solid rgba(22, 101, 52, 0.10)",
+                boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
                 height: '100%',
                 display: "flex",
                 flexDirection: "column",

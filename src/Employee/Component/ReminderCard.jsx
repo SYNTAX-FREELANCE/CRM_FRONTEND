@@ -14,20 +14,37 @@ const ReminderCard = ({ title, count, color, bg, icon, icons, active, onClick })
         gap: 1.5,
         p: { xs: 1.25, md: 1.5 },
         borderRadius: 3,
-        bgcolor: active
-          ? (isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.06)")
-          : (isDark ? "rgba(30,41,59,0.7)" : "#fff"),
+
+        background: isDark
+          ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+          : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+
         border: active
-          ? "1px solid rgba(37,99,235,0.35)"
-          : (isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(226,232,240,0.9)"),
+          ? "1px solid rgba(74, 222, 128, 0.35)"
+          : isDark
+            ? "1px solid rgba(74, 222, 128, 0.08)"
+            : "1px solid rgba(22, 101, 52, 0.10)",
+
         boxShadow: active
-          ? (isDark ? "0 10px 25px rgba(0,0,0,0.5)" : "0 10px 25px rgba(37,99,235,0.10)")
-          : (isDark ? "none" : "0 6px 18px rgba(15,23,42,0.04)"),
+          ? isDark
+            ? "0 8px 25px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.10)"
+            : "0 8px 25px rgba(22,101,52,0.14), inset 0 1px 0 rgba(255,255,255,0.85)"
+          : isDark
+            ? "0 8px 25px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.07)"
+            : "0 8px 25px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.85)",
+
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+
         cursor: "pointer",
-        transition: "0.2s",
+        transition: "all 0.25s ease",
+
         "&:hover": {
-          transform: "translateY(-1px)",
-          boxShadow: "0 10px 25px rgba(15,23,42,0.08)",
+          transform: "translateY(-2px)",
+
+          boxShadow: isDark
+            ? "0 12px 30px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.12)"
+            : "0 12px 30px rgba(22,101,52,0.14), inset 0 1px 0 rgba(255,255,255,1)",
         },
       }}
     >

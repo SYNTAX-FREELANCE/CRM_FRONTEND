@@ -287,7 +287,7 @@ export default function FreshCallsWorkspace() {
   return (
     <Box
       sx={{
-        minHeight: "95vh",
+        minHeight: "90vh",
         width: "100%",
         overflowY: "auto",
         scrollbarWidth: "none",
@@ -443,14 +443,14 @@ export default function FreshCallsWorkspace() {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            background: isDark
-              ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
-              : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
-            border: isDark
-              ? "1px solid rgba(74, 222, 128, 0.08)"
-              : "1px solid rgba(22, 101, 52, 0.10)",
-            boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
-            flex: "0 0 auto",
+            // background: isDark
+            //   ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+            //   : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+            // border: isDark
+            //   ? "1px solid rgba(74, 222, 128, 0.08)"
+            //   : "1px solid rgba(22, 101, 52, 0.10)",
+            // boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+            // flex: "0 0 auto",
             borderRadius: 5
           }}
         >
@@ -481,7 +481,7 @@ export default function FreshCallsWorkspace() {
 
           </Box>
 
-          <Paper
+          <Box
             elevation={0}
             sx={{
               flex: 1,
@@ -536,7 +536,8 @@ export default function FreshCallsWorkspace() {
                 fontFamily: "Bahnschrift",
                 backgroundColor: "transparent",
                 "& .MuiDataGrid-columnHeaders": {
-                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+
+                  bgcolor: isDark ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)" : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
                   minHeight: "44px !important",
                   maxHeight: "44px !important",
                   borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
@@ -562,25 +563,43 @@ export default function FreshCallsWorkspace() {
                 },
                 "& .MuiDataGrid-row": {
                   cursor: "pointer",
-                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
-                  transition: "background-color 0.15s ease",
+
+                  background: isDark
+                    ? "linear-gradient(110deg, rgba(16,44,37,0.96) 0%, rgba(20,47,37,0.92) 55%, rgba(30,65,50,0.88) 100%)"
+                    : "linear-gradient(110deg, rgba(232,245,237,0.98) 0%, rgba(220,239,227,0.95) 55%, rgba(245,255,248,0.96) 100%)",
+
+                  boxShadow: isDark
+                    ? "inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.12)"
+                    : "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(34,100,60,0.06)",
+
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+
+                  transition: "all 0.2s ease",
                   fontFamily: "Bahnschrift",
+
                   "&:hover": {
-                    backgroundColor: "rgba(37,99,235,0.04)",
+                    background: isDark
+                      ? "linear-gradient(110deg, #194b3b 0%, #205440 100%)"
+                      : "linear-gradient(110deg, #d5f0df 0%, #c5e8d2 100%)",
+
+                    boxShadow: isDark
+                      ? "inset 0 1px 0 rgba(255,255,255,0.12), 0 3px 12px rgba(0,0,0,0.18)"
+                      : "inset 0 1px 0 rgba(255,255,255,1), 0 3px 12px rgba(34,100,60,0.10)",
                   },
                 },
                 "& .MuiDataGrid-footerContainer": {
                   minHeight: "44px",
                   borderTop: "1px solid rgba(226, 232, 240, 0.6)",
                   fontFamily: "Bahnschrift",
-                  bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                  bgcolor: isDark ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)" : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
                 },
                 "& .MuiDataGrid-virtualScroller": {
                   overflowY: "auto",
                 },
               }}
             />
-          </Paper>
+          </Box>
         </Box>
       </Box>
 
@@ -599,15 +618,3 @@ export default function FreshCallsWorkspace() {
     </Box>
   );
 }
-
-const actionBtnStyle = {
-  textTransform: "none",
-  fontWeight: 700,
-  borderRadius: 2.5,
-  px: 2.5,
-  py: 0.8,
-  boxShadow: "none",
-  "&:hover": {
-    boxShadow: "none",
-  },
-};

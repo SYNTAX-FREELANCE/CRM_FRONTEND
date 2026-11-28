@@ -112,12 +112,18 @@ const DashboardRemindersCard = ({ remindersData }) => {
         <Card
             sx={{
                 borderRadius: 5,
-                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
+                // boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
+                // border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
                 height: "100%",
                 overflow: "hidden",
                 height: '60vh',
-                bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                background: isDark
+                    ? "linear-gradient(110deg, #10292cff 0%, #142f25 100%)"
+                    : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                border: isDark
+                    ? "1px solid rgba(74, 222, 128, 0.08)"
+                    : "1px solid rgba(22, 101, 52, 0.10)",
+                boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
                 overflowY: 'scroll',
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -128,13 +134,25 @@ const DashboardRemindersCard = ({ remindersData }) => {
 
             }}
         >
-            <CardContent sx={{ px: 2, bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff", }}>
+            <CardContent sx={{
+                px: 2,
+                background: isDark
+                    ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                    : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                // border: isDark
+                //     ? "1px solid rgba(74, 222, 128, 0.08)"
+                //     : "1px solid rgba(22, 101, 52, 0.10)",
+                // boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                flex: "0 0 auto",
+            }}>
                 <Box
                     sx={{
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                        background: isDark
+                            ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                            : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
                         p: 1
                     }}
                 >
@@ -178,7 +196,14 @@ const DashboardRemindersCard = ({ remindersData }) => {
                             },
                             gap: 2,
                             width: "100%",
-                            bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fffdfd",
+                            // bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fffdfd",
+                            background: isDark
+                                ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                                : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                            // border: isDark
+                            //     ? "1px solid rgba(74, 222, 128, 0.08)"
+                            //     : "1px solid rgba(22, 101, 52, 0.10)",
+                            // boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
                         }}
                     >
 
@@ -207,7 +232,9 @@ const DashboardRemindersCard = ({ remindersData }) => {
                         alignItems: "center",
                         justifyContent: "space-between",
                         mb: 1.5,
-                        bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                        background: isDark
+                            ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                            : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
                     }}
                 >
                     <Typography sx={{ fontWeight: 800, color: isDark ? "#f8fafc" : "#0f172a" }}>
@@ -225,7 +252,9 @@ const DashboardRemindersCard = ({ remindersData }) => {
                 </Box>
 
                 <Stack spacing={1.2} sx={{
-                    bgcolor: isDark ? "rgba(30,41,59,0.7)" : "#fff",
+                    background: isDark
+                        ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                        : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
                 }}>
                     {activeItems?.length ? (
                         activeItems?.map((item) => (
@@ -239,9 +268,13 @@ const DashboardRemindersCard = ({ remindersData }) => {
                                 p: 3,
                                 textAlign: "center",
                                 borderRadius: 3,
-                                bgcolor: isDark ? "rgba(30,41,59,0.9)" : "rgba(248,250,252,0.9)",
-                                boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.06)",
-                                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.85)",
+                                background: isDark
+                                    ? "linear-gradient(110deg, #102c25 0%, #142f25 100%)"
+                                    : "linear-gradient(110deg, #e8f5ed 0%, #dcefe3 100%)",
+                                border: isDark
+                                    ? "1px solid rgba(74, 222, 128, 0.08)"
+                                    : "1px solid rgba(22, 101, 52, 0.10)",
+                                boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
                             }}
                         >
                             <Typography sx={{ fontWeight: 700, color: isDark ? "#cbd5e1" : "#334155" }}>
